@@ -1,0 +1,93 @@
+{
+  "_comment": "Product font assets. Variable fonts (VF) cover the listed weight range; sourced from github.com/google/fonts main.",
+  "Inter Tight": {
+    "files": [
+      "InterTight-VF.ttf"
+    ],
+    "weights": "variable 100-900 (use 500-900)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/inter-tight.txt"
+  },
+  "Plus Jakarta Sans": {
+    "files": [
+      "PlusJakartaSans-VF.ttf"
+    ],
+    "weights": "variable 200-800 (use 800)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/plus-jakarta-sans.txt"
+  },
+  "Anton": {
+    "files": [
+      "Anton-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/anton.txt"
+  },
+  "Instrument Serif": {
+    "files": [
+      "InstrumentSerif-Regular.ttf",
+      "InstrumentSerif-Italic.ttf"
+    ],
+    "weights": "400 regular+italic",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/instrument-serif.txt"
+  },
+  "Permanent Marker": {
+    "files": [
+      "PermanentMarker-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "Apache-2.0",
+    "license_file": "assets/LICENSES/fonts/permanent-marker.txt"
+  },
+  "Montserrat": {
+    "files": [
+      "Montserrat-Italic-VF.ttf"
+    ],
+    "weights": "variable italic 100-900 (use 900 italic)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/montserrat.txt"
+  },
+  "Jost": {
+    "files": [
+      "Jost-VF.ttf"
+    ],
+    "weights": "variable 100-900 (use 500/700)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/jost.txt"
+  },
+  "Silkscreen": {
+    "files": [
+      "Silkscreen-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/silkscreen.txt"
+  },
+  "Lilita One": {
+    "files": [
+      "LilitaOne-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/lilita-one.txt"
+  },
+  "JetBrains Mono": {
+    "files": [
+      "JetBrainsMono-VF.ttf"
+    ],
+    "weights": "variable 100-800 (use 400)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/jetbrains-mono.txt"
+  },
+  "Noto Color Emoji": {
+    "files": [
+      "NotoColorEmoji-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-color-emoji.txt",
+    "note": "COLRv1 (+SVG tables), 25 MB; source google/fonts ofl/notocoloremoji"
+  }
+}

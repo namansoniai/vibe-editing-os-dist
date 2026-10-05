@@ -1,0 +1,312 @@
+{
+ "version": 1,
+ "note": "aliases are case-insensitive mis-hearings (multi-word ok). ambiguous=true: only fix when context suggests a product. Aliases of 'Claude' need context_words nearby or another glossary term in the sentence.",
+ "context_aliases": [
+  "cloud",
+  "clod",
+  "claud",
+  "clawed",
+  "क्लाउड",
+  "क्लॉड",
+  "क्लोड"
+ ],
+ "context_words": [
+  "code",
+  "coding",
+  "skills",
+  "skill",
+  "website",
+  "websites",
+  "app",
+  "apps",
+  "design",
+  "ne",
+  "se",
+  "ko",
+  "ka",
+  "ki",
+  "ke",
+  "ai",
+  "plan",
+  "mode",
+  "hooks",
+  "prompt",
+  "prompts",
+  "agent",
+  "agents",
+  "model",
+  "pro",
+  "max",
+  "subscription",
+  "project",
+  "extension",
+  "कोड",
+  "स्किल",
+  "स्किल्स",
+  "ने",
+  "से",
+  "को",
+  "का",
+  "की",
+  "के",
+  "वेबसाइट",
+  "ऐप",
+  "डिज़ाइन"
+ ],
+ "terms": [
+  {
+   "term": "Claude",
+   "aliases": [
+    "clod",
+    "claud",
+    "cloud",
+    "clawed",
+    "क्लाउड",
+    "क्लॉड",
+    "क्लोड"
+   ]
+  },
+  {
+   "term": "Claude Code",
+   "aliases": [
+    "cloud code",
+    "clod code",
+    "claude coat",
+    "क्लाउड कोड"
+   ]
+  },
+  {
+   "term": "Anthropic",
+   "aliases": [
+    "enthropic",
+    "anthropick",
+    "anthropik",
+    "एंथ्रोपिक",
+    "एन्थ्रोपिक"
+   ]
+  },
+  {
+   "term": "Opus",
+   "aliases": [
+    "orpus",
+    "ओपस",
+    "ऑपस"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Sonnet",
+   "aliases": [
+    "sonet",
+    "sonnets",
+    "सॉनेट"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Haiku",
+   "aliases": [
+    "hyku",
+    "हाइकू"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "ChatGPT",
+   "aliases": [
+    "chat gpt",
+    "chat jpt",
+    "chat gbt",
+    "chatgbt",
+    "चैट जीपीटी",
+    "चैटजीपीटी"
+   ]
+  },
+  {
+   "term": "GPT",
+   "aliases": [
+    "jpt",
+    "gbt",
+    "जीपीटी"
+   ]
+  },
+  {
+   "term": "Lovable",
+   "aliases": [
+    "loveable",
+    "lovabel",
+    "lovably"
+   ]
+  },
+  {
+   "term": "Bolt",
+   "aliases": [
+    "bolt.new",
+    "bolt new"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Cursor",
+   "aliases": [
+    "curser",
+    "कर्सर"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Vercel",
+   "aliases": [
+    "versel",
+    "vercell",
+    "वरसेल"
+   ]
+  },
+  {
+   "term": "Supabase",
+   "aliases": [
+    "superbase",
+    "super base",
+    "supa base",
+    "सुपाबेस"
+   ]
+  },
+  {
+   "term": "Figma",
+   "aliases": [
+    "figmaa",
+    "फिग्मा"
+   ]
+  },
+  {
+   "term": "Framer",
+   "aliases": [
+    "फ्रेमर"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Webflow",
+   "aliases": [
+    "web flow"
+   ]
+  },
+  {
+   "term": "GitHub",
+   "aliases": [
+    "git hub",
+    "गिटहब",
+    "गिटहब"
+   ]
+  },
+  {
+   "term": "Next.js",
+   "aliases": [
+    "nextjs",
+    "next js",
+    "next dot js"
+   ]
+  },
+  {
+   "term": "React",
+   "aliases": [
+    "रिएक्ट"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Tailwind",
+   "aliases": [
+    "tail wind",
+    "tailwind css"
+   ]
+  },
+  {
+   "term": "Stripe",
+   "aliases": [
+    "strype",
+    "स्ट्राइप"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Kubernetes",
+   "aliases": [
+    "kubernetis",
+    "kubernates",
+    "kuber netes",
+    "कुबेरनेट्स"
+   ]
+  },
+  {
+   "term": "API",
+   "aliases": [
+    "a p i",
+    "एपीआई"
+   ]
+  },
+  {
+   "term": "PRD",
+   "aliases": [
+    "p r d",
+    "पीआरडी"
+   ]
+  },
+  {
+   "term": "MCP",
+   "aliases": [
+    "m c p",
+    "एमसीपी"
+   ]
+  },
+  {
+   "term": "SaaS",
+   "aliases": [
+    "s a a s",
+    "सास"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Instagram",
+   "aliases": [
+    "insta gram",
+    "इंस्टाग्राम"
+   ]
+  },
+  {
+   "term": "YouTube",
+   "aliases": [
+    "you tube",
+    "यूट्यूब"
+   ]
+  },
+  {
+   "term": "Notion",
+   "aliases": [],
+   "ambiguous": true
+  },
+  {
+   "term": "n8n",
+   "aliases": [
+    "n eight n",
+    "n 8 n",
+    "एनएटएन"
+   ],
+   "ambiguous": true
+  },
+  {
+   "term": "Replit",
+   "aliases": [
+    "replet",
+    "re plit"
+   ]
+  },
+  {
+   "term": "Windsurf",
+   "aliases": [
+    "wind surf"
+   ]
+  }
+ ]
+}

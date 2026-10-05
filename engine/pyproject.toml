@@ -1,0 +1,30 @@
+[project]
+name = "veos"
+version = "0.0.1"
+description = "Vibe Editing OS engine"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "numpy",
+    "scipy",
+    "pillow",
+    "pyyaml",
+    "faster-whisper",
+    "av>=14,<16",  # av 19 dropped open(metadata_errors=...) which faster-whisper passes
+    "onnxruntime",
+    "playwright",
+    "opencv-python-headless",
+    "mediapipe",
+]
+
+[project.scripts]
+veos = "veos.cli:main"
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/veos"]

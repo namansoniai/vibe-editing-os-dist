@@ -1,0 +1,17 @@
+{
+  "name": "vibe-editing-os",
+  "version": "0.1.0",
+  "description": "Turn raw talking-head clips into finished motion-graphics reels: prep, rough cut, captions, plan, storyboard, render.",
+  "author": {
+    "name": "Naman Soni"
+  },
+  "repository": "https://github.com/namansoniai/vibe-editing-os-dist",
+  "userConfig": {
+    "veos_home": {
+      "type": "directory",
+      "title": "Vibe Editing OS home",
+      "description": "Folder holding the engine (venv), models, browsers and tools. Leave empty to use the default location.",
+      "required": false
+    }
+  }
+}

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Shim: run the Vibe Editing OS engine from VEOS_HOME.
+home="${VEOS_HOME:-${CLAUDE_PLUGIN_OPTION_VEOS_HOME:-}}"
+if [ -z "$home" ]; then
+  case "$(uname -s 2>/dev/null)" in
+    Darwin) home="$HOME/Library/Application Support/VibeEditingOS" ;;
+    MINGW*|MSYS*|CYGWIN*) home="${LOCALAPPDATA:-$HOME/AppData/Local}/VibeEditingOS" ;;
+    *) home="${XDG_DATA_HOME:-$HOME/.local/share}/VibeEditingOS" ;;
+  esac
+fi
+home="${home//\\//}"
+python=""
+for v in venv dev-venv; do
+  for s in Scripts bin; do
+    for e in python.exe python; do
+      if [ -z "$python" ] && [ -f "$home/$v/$s/$e" ]; then python="$home/$v/$s/$e"; fi
+    done
+  done
+done
+if [ -z "$python" ]; then
+  echo '{"ok":false,"error":{"code":"ENGINE_MISSING","hint":"run /vibe-editing-os:reel-setup"}}'
+  exit 1
+fi
+export VEOS_HOME="$home"
+export PLAYWRIGHT_BROWSERS_PATH="$home/browsers"
+export HF_HOME="$home/models/hf"
+[ -d "$home/app" ] && export VEOS_APP="$home/app"
+export HF_HUB_DISABLE_SYMLINKS_WARNING=1
+export PYTHONIOENCODING=utf-8
+export PYTHONUTF8=1
+export PATH="$home/tools/ffmpeg/bin:$PATH"
+exec "$python" -m veos "$@"
