@@ -57,6 +57,9 @@ VEOS.scene({ id: "rec", t_in: 2, t_out: 6, z: 5, in: "pop", box: { x: 140, y: 42
 - `camera[].preset`: `snap-punch | crash-zoom | pull-out | push-drift | shake | zoom-through | rotation-snap | reset` (see `ctx.tokens.camera_presets` for tones and limits). Never the same preset twice in a row.
 - Subtitles are automatic (hidden during `captions.hide` and while a z8 scene is active). Never write subtitle cards.
 
+### Sound cues (timeline.json `sfx`, tied to your scenes)
+Every sound is anchored to a visual moment you wrote here: `{"t": <edit s>, "id": "<catalog id>", "beat": N, "on": "<scene id>@<local s>", "why": "..."}`. `on` may name a scene's start (`L4@0`, `L4@in`), its end (`L4@out`) or any time you declared in that scene's `events` (`L4@0.5`); the cue `t` must be within 3 frames of that moment (`t_in + local`). So when you want a sound at an internal beat of a scene (a counter landing, a stamp), declare that time in `events`. Other anchors: `stage@t`, `camera@t`, `transition@t`. Contract: `CONTRACT.md` section 2; rules S1-S6: `engine/SPEC.md` section 6.
+
 ## 5. Enter/exit presets (`in` / `out`)
 `settle` (scale 1.08->1 + blur, 8 f), `pop` (overshoot, 7 f), `squash`, `rise`, `drop`, `blur`, `stamp` (big -> 1, slight rotate), `slide-l`, `slide-r`, `rocket` (from below / off the top, vertical motion blur), `none`. Exit default is `none`; `rocket` is 8 f, others 5 f.
 

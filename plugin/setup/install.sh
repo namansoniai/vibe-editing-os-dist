@@ -165,7 +165,7 @@ export GIT_TERMINAL_PROMPT=0
 
 # ---- 1 home
 step home "Preparing $HOME_DIR"
-mkdir -p "$HOME_DIR"/{tools,browsers,models/rvm,models/mediapipe,models/yunet,models/hf,playbooks,scratch,cache}
+mkdir -p "$HOME_DIR"/{tools,browsers,models/rvm,models/mediapipe,models/yunet,models/hf,playbooks,scratch,cache,sfx}   # sfx = on-demand sound cache (veos sfx fetch); no bulk download
 
 # ---- 2 app
 step app "Getting the Vibe Editing OS app (engine, renderer, playbooks, assets)"

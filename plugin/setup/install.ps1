@@ -142,7 +142,7 @@ $hint = @{
 try {
   # ---- 1 home --------------------------------------------------------------------------------------------------
   Step 'home' "Preparing $Home_"
-  foreach ($d in 'tools', 'browsers', 'models\rvm', 'models\mediapipe', 'models\yunet', 'models\hf', 'playbooks', 'scratch', 'cache') {
+  foreach ($d in 'tools', 'browsers', 'models\rvm', 'models\mediapipe', 'models\yunet', 'models\hf', 'playbooks', 'scratch', 'cache', 'sfx') {  # sfx = on-demand sound cache (veos sfx fetch)
     New-Item -ItemType Directory -Force -Path (Join-Path $Home_ $d) | Out-Null
   }
 

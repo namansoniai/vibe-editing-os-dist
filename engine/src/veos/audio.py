@@ -75,7 +75,10 @@ def _env_db(a: np.ndarray, hop: int) -> np.ndarray:
 
 def measure(path: str | Path, sr: int = SR) -> dict:
     """Appendix J step 2: peak time, onset and end (s) of a sound file on a 10 ms RMS envelope (30 dB window)."""
-    a = decode_mono(path, sr)
+    return measure_array(decode_mono(path, sr), sr)
+
+
+def measure_array(a: np.ndarray, sr: int = SR) -> dict:
     env = _env_db(a, sr // 100)
     act = np.where(env > env.max() - 30)[0]
     return {"dur": r3(len(a) / sr), "peak_t": r3(int(np.argmax(env)) / 100), "onset": r3(act[0] / 100), "end": r3(act[-1] / 100)}
@@ -100,20 +103,13 @@ def _write_wav(path: Path, x: np.ndarray) -> None:
 
 
 # --------------------------------------------------------------------------- sfx
-def _sfx(args, project) -> dict:
-    cues_path = Path(args.cues)
-    if not cues_path.exists():
-        raise VeosError("CUES_MISSING", f"cue file not found: {cues_path}", "Pass the path of the sfx-cues.json file.")
-    C = read_json(cues_path)
-    if isinstance(C, list):
-        C = {"cues": C}
-    aliases = C.get("aliases", {})
-    root = Path(args.root) if args.root else Path(C["root"]) if C.get("root") else cues_path.resolve().parent
-    mix = np.zeros(int((args.dur + 1) * SR), np.float64)
+def place(cues: list[dict], root: Path, aliases: dict, dur: float):
+    """Mix cue-sheet cues ({t, f, a, db, from, to, fi, fo}) into one mono bus. Returns (bus, ledger, warnings, n_cues)."""
+    mix = np.zeros(int((dur + 1) * SR), np.float64)
     ledger: dict[str, int] = {}
     warnings: list[str] = []
     n = 0
-    for c in C.get("cues", []):
+    for c in cues:
         name = aliases.get(c["f"], c["f"])
         p = Path(name) if Path(name).is_absolute() else root / name
         if not p.exists():
@@ -142,11 +138,23 @@ def _sfx(args, project) -> dict:
             mix[st:e] += seg[:e - st]
         n += 1
         ledger[name] = ledger.get(name, 0) + 1
-    mix = mix[: int(args.dur * SR)]
+    mix = mix[: int(dur * SR)]
     pk = float(np.abs(mix).max())
     if pk > 0.9:
         mix *= 0.9 / pk
         warnings.append(f"bus peak {20 * np.log10(pk):.1f} dBFS was scaled down to -0.9 dBFS")
+    return mix, ledger, warnings, n
+
+
+def _sfx(args, project) -> dict:
+    cues_path = Path(args.cues)
+    if not cues_path.exists():
+        raise VeosError("CUES_MISSING", f"cue file not found: {cues_path}", "Pass the path of the sfx-cues.json file.")
+    C = read_json(cues_path)
+    if isinstance(C, list):
+        C = {"cues": C}
+    root = Path(args.root) if args.root else Path(C["root"]) if C.get("root") else cues_path.resolve().parent
+    mix, ledger, warnings, n = place(C.get("cues", []), root, C.get("aliases", {}), args.dur)
     out = Path(args.out)
     _write_wav(out, mix)
     over = sorted(f for f, u in ledger.items() if u > 2)
@@ -213,8 +221,17 @@ def _mix(args, project) -> dict:
         warns.append(f"loudness {res['lufs']} LUFS is off target {TARGET_I}")
     if res["tp"] > TARGET_TP + 0.05:
         warns.append(f"true peak {res['tp']} dBTP is above {TARGET_TP}")
-    return {"out": out.as_posix(), "lufs": res["lufs"], "tp": res["tp"], "dur": r3(got), "channels": 2,
-            "sfx": bool(args.sfx), "music": bool(args.music), "warnings": warns}
+    summary = {"out": out.as_posix(), "lufs": res["lufs"], "tp": res["tp"], "dur": r3(got), "channels": 2,
+               "sfx": bool(args.sfx), "music": bool(args.music), "warnings": warns}
+    if args.sfx and not getattr(args, "no_balance_check", False):
+        from .sfxlib import check_balance
+        bal = check_balance(Path(args.voice), Path(args.sfx))
+        summary["sfx_balance"] = {k: bal[k] for k in ("median_db", "p90_db", "max_db")}
+        if bal["problems"]:
+            raise VeosError("SFX_TOO_LOUD", "; ".join(bal["problems"][:3]),
+                            "Lower the db of those cues (or pick quieter sounds), then re-run `veos sfx` and `veos mix`. "
+                            "The master was written but should not be shipped.")
+    return summary
 
 
 def _scratch_dir() -> str:
@@ -226,10 +243,17 @@ def _scratch_dir() -> str:
 # --------------------------------------------------------------------------- interface
 def add_args(p, cmd: str) -> None:
     if cmd == "sfx":
-        p.add_argument("cues", help="sfx-cues.json (aliases + cues)")
-        p.add_argument("out", help="output 48 kHz mono WAV")
-        p.add_argument("--dur", type=float, required=True, help="timeline length in seconds")
-        p.add_argument("--root", default=None, help="folder holding the SFX files (default: the cue sheet's folder)")
+        p.add_argument("cues", nargs="?", default=None,
+                       help="`catalog` | `tag` | `fetch` | a legacy cue sheet sfx-cues.json; omit with --project to build work/sfx.wav from the timeline")
+        p.add_argument("out", nargs="?", default=None, help="legacy: output 48 kHz mono WAV; for `tag`: the tags.json file")
+        p.add_argument("--dur", type=float, default=None, help="legacy cue sheet: timeline length in seconds")
+        p.add_argument("--root", default=None, help="legacy cue sheet: folder holding the SFX files (default: the sheet's folder)")
+        p.add_argument("--pack", default=None, help="SFX pack folder (default: `veos paths` sfx_pack)")
+        p.add_argument("--draft", action="store_true", help="catalog: guess role/vibe/energy/use from file names, descriptions and measurements")
+        p.add_argument("--descriptions", default=None, help="catalog: the owner's SFX_description.csv (flexible columns)")
+        p.add_argument("--update", action="store_true", help="catalog: update the app catalogue (assets/sfx/catalog.json) from --pack / --descriptions")
+        p.add_argument("--ids", default=None, help="fetch: comma-separated sound ids")
+        p.add_argument("--playbook", default=None, help="fetch: every id in that playbook's sound.preferred / sound.palette_ids")
     else:
         p.add_argument("voice", help="voice WAV (any audio file)")
         p.add_argument("out", help="output stereo WAV master")
@@ -237,7 +261,23 @@ def add_args(p, cmd: str) -> None:
         p.add_argument("--sfx", default=None, help="SFX bus WAV from `veos sfx`")
         p.add_argument("--music", default=None, help="optional music bed")
         p.add_argument("--music-db", type=float, default=-26.0, help="music bed loudness (LUFS) when the master is -14")
+        p.add_argument("--no-balance-check", action="store_true", help="skip the SFX-under-voice gate")
 
 
 def main(args, project) -> dict:
-    return _sfx(args, project) if args.cmd == "sfx" else _mix(args, project)
+    if args.cmd != "sfx":
+        return _mix(args, project)
+    from . import sfxlib
+    sub = getattr(args, "cues", None)
+    if sub == "catalog":
+        return sfxlib.catalog(args)
+    if sub == "tag":
+        return sfxlib.tag(args)
+    if sub == "fetch":
+        return sfxlib.fetch(args, project)
+    if sub is None:
+        from .core import need_project
+        return sfxlib.build_project_bus(need_project(project), args)
+    if getattr(args, "dur", None) is None:
+        raise VeosError("DUR_MISSING", "--dur is required with a cue sheet", "Pass the timeline length: --dur 52.4")
+    return _sfx(args, project)

@@ -161,11 +161,15 @@ def in_out(tl: dict, b: dict) -> str:
 
 
 def sfx_names(tl: dict, b: dict) -> str:
+    """The beat's sounds as 'id - why' (catalogue cues), never file paths; legacy {"file"} cues show the file name."""
     names = []
     for s in tl.get("sfx") or []:
         if s.get("beat") == b["id"] or (s.get("beat") is None and b["t0"] <= s["t"] < b["t1"]):
-            names.append(Path(str(s.get("file", ""))).name)
-    return ", ".join(n for n in names if n)
+            if s.get("id"):
+                names.append(f"{s['id']} — {s['why']}" if s.get("why") else str(s["id"]))
+            else:
+                names.append(Path(str(s.get("file", ""))).name)
+    return "; ".join(n for n in names if n)
 
 
 # ------------------------------------------------------------------ config
@@ -309,8 +313,37 @@ def build_voice(project, tl: dict, out: Path) -> None:
         graph = "[0:a]asetpts=PTS-STARTPTS[c]"
     graph += f";[c]highpass=f=80,loudnorm=I=-14:TP=-1.5,apad,atrim=end={dur:.4f}[o]"
     out.parent.mkdir(parents=True, exist_ok=True)
+    bus = _sfx_bus(project, tl, inputs, graph, dur)
+    if bus is not None:  # the creator hears the sounds before approving: voice + SFX bus
+        inputs = inputs + ["-i", str(bus)]
+        graph = graph.replace("[o]", "[v]") + (";[1:a]aformat=channel_layouts=mono[s];[v]aresample=48000,aformat=channel_layouts=mono[vm];"
+                                               "[vm][s]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.89:level=false[o]")
     run([t.ffmpeg, "-y", "-v", "error", *inputs, "-filter_complex", graph, "-map", "[o]", "-ac", "2", "-ar", "48000",
          "-c:a", "aac", "-b:a", "128k", str(out)], project, "storyboard")
+
+
+def _sfx_bus(project, tl: dict, inputs: list, graph: str, dur: float):
+    """Bus WAV for the animatic, or None when the timeline has no catalogue cues / no catalogue (then voice only)."""
+    if not any(c.get("id") for c in tl.get("sfx") or []):
+        return None
+    from .sfxlib import pack_dir, read_catalog_doc
+    pack = pack_dir()
+    cat = read_catalog_doc()
+    if cat is None:
+        project.log("storyboard", "sfx: no catalog.json; animatic is voice only")
+        return None
+    sc = tools().scratch / "sb"
+    sc.mkdir(parents=True, exist_ok=True)
+    vref = sc / "animatic_voice.wav"  # the loudness-normalised voice, so cue levels sit where the final mix puts them
+    run([tools().ffmpeg, "-y", "-v", "error", *inputs, "-filter_complex", graph, "-map", "[o]", "-ac", "1", "-ar", "48000",
+         str(vref)], project, "storyboard")
+    return _build_bus_file(tl, cat, pack, vref, sc / "animatic_sfx.wav")
+
+
+def _build_bus_file(tl, cat, pack, vref, out):
+    from .sfxlib import build_bus
+    build_bus(tl, cat, pack, vref, out)
+    return out
 
 
 # ------------------------------------------------------------------ main

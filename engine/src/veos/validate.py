@@ -14,6 +14,8 @@ Output (summary dict; cli prints it as one JSON line and `plan/validate.json` ge
   failures [{rule, beat, t, msg, fix}]   warnings [str]   stats {...}
 Expected errors (missing timeline/scenes/playbook, unparsable JSON) raise VeosError -> ok=false, exit 1.
 
+Sound cues with a catalogue `id` are checked by sfxrules.py (S1-S6, always on); legacy {"file"} cues by M10 / M9.
+
 Rules: one function per rule id, registered in RULES. The enabled set is the playbook's `rules_v0`.
 Every rule function has the signature `rule(ctx) -> list[failure dict]`.
 """
@@ -97,6 +99,8 @@ class Ctx:
         self.camera = sorted(tl.get("camera", []), key=lambda e: e.get("t", 0))
         self.transitions = tl.get("transitions", [])
         self.sfx = sorted(tl.get("sfx", []), key=lambda e: e.get("t", 0))
+        self.legacy_sfx = [s for s in self.sfx if "id" not in s]   # {"file": ...} cues: M10 / M9 (cues with an `id`: S1-S6)
+        self.catalog_by_id: dict | None = None
         self.budgets = style.get("budgets", {})
         self.layout = style.get("layout", {})
         # measured rects: {frame: {scene id: (x0,y0,x1,y1)}}
@@ -416,7 +420,7 @@ def rule_m10(c: Ctx):
     mx = c.budgets.get("sfx_max_uses_per_file", 2)
     n_items = len(c.item_numbers())
     uses: dict[str, list[dict]] = {}
-    for s in c.sfx:
+    for s in c.legacy_sfx:
         uses.setdefault(s.get("file"), []).append(s)
     over_ok_used = False
     for f, us in uses.items():
@@ -432,7 +436,7 @@ def rule_m10(c: Ctx):
         if any(u.get("role") == "meme" for u in us) and len(us) > 1:
             out.append(fail("M10", us[1].get("beat"), us[1].get("t", 0), f"meme file {f} is used {len(us)} times (once only)",
                             "use a different meme file for the repeat"))
-    for a, b in zip(c.sfx, c.sfx[1:]):
+    for a, b in zip(c.legacy_sfx, c.legacy_sfx[1:]):
         if a.get("file") == b.get("file"):
             out.append(fail("M10", b.get("beat"), b.get("t", 0), f"{b.get('file')} is on two consecutive cues",
                             f"swap the cue at {b.get('t', 0):.2f} s for a different file in the same pool"))
@@ -442,7 +446,7 @@ def rule_m10(c: Ctx):
 def rule_m9(c: Ctx):
     out = []
     mx, gap = c.budgets.get("meme_max_per_reel", 4), c.budgets.get("meme_min_gap_s", 4)
-    memes = [s for s in c.sfx if s.get("role") == "meme"]
+    memes = [s for s in c.legacy_sfx if s.get("role") == "meme"]
     wins = 0
     for s in memes:
         b = next((x for x in c.beats if x.get("id") == s.get("beat")), None) or c.beat_at(s.get("t", 0))
@@ -603,6 +607,17 @@ def main(args, project):
 
     measure = _with_motion(proj, tl, scenes, measure, warnings, getattr(args, "skip_motion", False))
     ctx = Ctx(tl, style, tokens, words, face, scenes, measure, warnings)
+    sfx_failures = []
+    if any("id" in s for s in ctx.sfx):  # S1-S6: always on when the timeline has catalogue cues
+        from .sfxlib import load_catalog
+        try:
+            cat = load_catalog()
+        except VeosError as e:
+            warnings.append(e.message)
+            cat = None
+        ctx.catalog_by_id = {e["id"]: e for e in cat} if cat is not None else None
+        from .sfxrules import check_sfx
+        sfx_failures = check_sfx(ctx)
     enabled = style.get("rules_v0") or list(RULES)
     failures: list[dict] = []
     for rid in enabled:
@@ -616,6 +631,7 @@ def main(args, project):
         got = fn(ctx)
         gstats[gid] = len(got)
         failures.extend(got)
+    failures.extend(sfx_failures)
     failures.sort(key=lambda f: (f["t"], f["rule"]))
 
     ev = ctx.visual_events()
@@ -623,7 +639,7 @@ def main(args, project):
         "beats": len(ctx.beats), "scenes": len(ctx.scenes), "duration_s": round(ctx.duration, 3),
         "visual_events": len(ev) - 2 if len(ev) > 2 else 0,
         "events_per_s": round(max(len(ev) - 2, 0) / ctx.duration, 2) if ctx.duration else 0,
-        "camera_events": len(ctx.camera), "sfx_cues": len(ctx.sfx),
+        "camera_events": len(ctx.camera), "sfx_cues": len(ctx.sfx), "sfx_rules": len(sfx_failures),
         "rules_run": [r for r in enabled if r in RULES], "global_checks": gstats, "measured_frames": len(ctx.measured),
         "face_checked": face is not None, "measured": bool(ctx.measured), "words_loaded": words is not None,
         "tokens_loaded": tokens is not None,

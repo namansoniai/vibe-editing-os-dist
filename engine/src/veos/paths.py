@@ -54,6 +54,19 @@ def find_playbook_dir(playbook_id: str) -> Path | None:
     return None
 
 
+def sfx_pack() -> Path:
+    """Local cache of downloaded sound files: VEOS_HOME/sfx/<relpath> (filled by `veos sfx fetch`). Env VEOS_SFX overrides it
+    (a full pack folder, with its catalog.json; used by tests and by the pack owner)."""
+    env = os.environ.get("VEOS_SFX")
+    return Path(env) if env else veos_home() / "sfx"
+
+
+def sfx_catalog() -> Path:
+    """The small catalogue that ships with the app: <app_root>/assets/sfx/catalog.json (no audio ships with the app)."""
+    env = os.environ.get("VEOS_SFX")
+    return Path(env) / "catalog.json" if env else app_root() / "assets" / "sfx" / "catalog.json"
+
+
 def add_args(p, cmd):
     pass
 
@@ -64,7 +77,9 @@ def resolve() -> dict:
             "playbook_template": playbook_template().as_posix(),
             "reference_playbook": reference_playbook().as_posix(),
             "renderer_player": (root / "renderer" / "player.html").as_posix(),
-            "renderer_core": (root / "renderer" / "core.js").as_posix(), "veos_home": veos_home().as_posix()}
+            "renderer_core": (root / "renderer" / "core.js").as_posix(), "veos_home": veos_home().as_posix(),
+            "sfx_pack": sfx_pack().as_posix(), "sfx_catalog": sfx_catalog().as_posix(),
+            "sfx_catalog_exists": sfx_catalog().exists()}
 
 
 def main(args, project) -> dict:

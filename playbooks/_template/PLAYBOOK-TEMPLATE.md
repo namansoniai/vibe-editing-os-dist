@@ -85,6 +85,14 @@ Add any steps this creator needs: product shots, a screen-recording step, a reci
 - **Finishing:** grain, vignette, regrade rules.
 
 ## §11 Sound
+**The bundled SFX pack:** `veos paths` → `sfx_pack`, with tags in its `catalog.json` (role, vibe, energy, use).
+- **Choose this creator's sound palette from it:** the allowed vibes, the allowed and banned roles, a short list of preferred sound ids per use (transition, text-pop, reveal, data, warning, success, CTA, list cue), whether meme sounds are allowed, whether the hook is dry, and density (sounds per 10 s).
+- **Mirror it in `tokens.json` → `sound`:**
+  ```json
+  {"palette_vibes": [...], "allowed_roles": [...], "banned_roles": [...], "preferred": {"<use>": ["<id>", ...]}, "dry_hook": bool, "silence_before_cta": true}
+  ```
+  plus `budgets.sfx_per_10s`.
+- **Principle:** a sound only ever marks something the viewer sees happen. Restraint reads as premium.
 - Tone palettes, the SFX ledger rules (no file more than 2×, one list cue), meme/comedy rules if the tone allows them, the music bed, silence and the outro, mix targets.
 - **Only sounds the creator can legally use.** If they have no library, say so and plan voice-plus-bed.
 

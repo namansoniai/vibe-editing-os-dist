@@ -20,7 +20,7 @@ DEFAULT_PLAYBOOK = "naman"
 PROTECTED_PREFIXES = ("roles.bad", "roles.good", "roles.comedy", "fixed_meaning", "layout.safe", "layout.ig_ui",
                       "layout.size")
 PROTECTED_WORDS = ("loudness", "lufs", "truepeak", "true_peak")
-PASSTHROUGH = ("budgets", "gradients", "max_bright_per_frame", "fixed_meaning", "tones", "tone_treatment")
+PASSTHROUGH = ("budgets", "gradients", "max_bright_per_frame", "fixed_meaning", "tones", "tone_treatment", "sound")
 
 
 def add_args(p, cmd):

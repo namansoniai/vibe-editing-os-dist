@@ -73,7 +73,11 @@ If they have no inspiration files:
    - **Rules from the inspiration analysis**, translated into tokens (sizes, frames, colours).
    - **The assets list:** what they should record or supply for each B-roll family.
 4. Write `<playbooks>/<id>/tokens.json`: **copy the schema of the `tokens.json` that sits next to `reference_playbook` exactly**, with this creator's colours (roles keep their meanings; contrast-safe), font slots (bundled Google/OFL fonts only), type sizes, layout, motion, camera presets, budgets, `creator` (name, handle, language, caption_language, banner_language, cta, glossary) and `tone`.
-5. Write it in 3–4 large Write calls (header → §1–5 → §6–8 → §9–15 + appendix). Keep the reference's density.
+5. **Sound palette (§11 + `tokens.json` → `sound`):**
+   - Read `<sfx_pack>/catalog.json` (from `veos paths`).
+   - Pick the vibes, roles and preferred sound ids that fit this creator's energy and humour answers. A calm creator gets soft, premium sounds and no meme hits; a hype creator gets punchier ones; meme sounds only if they chose roast/meme humour.
+   - **Use only sounds that are in the catalogue.**
+6. Write it in 3–4 large Write calls (header → §1–5 → §6–8 → §9–15 + appendix). Keep the reference's density.
 
 ## Step 4: The glimpse (preview page)
 Write `<playbooks>/<id>/preview/index.html`: one self-contained page (inline CSS/JS, fonts from `<repo_root>/assets/fonts` via relative `file:` URLs or Google Fonts, no other network). Show 8–14 **animated 9:16 frames** (CSS/JS loops, ~360×640 each) using **their** tokens:
@@ -82,6 +86,7 @@ Write `<playbooks>/<id>/preview/index.html`: one self-contained page (inline CSS
 - **5–8 signature B-roll / motion patterns** from §8, each labelled with its P-id and the kind of line it serves.
 - **2–3 transitions** and **the zoom feel** (a short loop each).
 - **The palette and fonts** strip, and their CTA moment.
+- **Their sound palette:** 4–6 play buttons (HTML `<audio>` with relative `file:` URLs into the SFX pack), each labelled with what it marks ("card arrives", "key word pops").
 
 Under each frame, a one-line caption: "Used when you say … (P-xx)". Open the page for them (Windows `Start-Process`, macOS `open`).
 
