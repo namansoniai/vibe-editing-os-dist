@@ -24,6 +24,8 @@ def add_args(p, cmd):
     if cmd == "measure":
         p.add_argument("--every", type=int, default=10, help="sample every N-th frame (default 10)")
         p.add_argument("--range", nargs=2, type=int, metavar=("A", "B"), help="only frames A..B-1")
+        p.add_argument("--motion", action="store_true",
+                       help="every frame where a z3-10 scene is active -> plan/measure.motion.json (what validate's G3 smooth-motion check reads)")
 
 
 def _chrome_args() -> list[str]:
@@ -84,18 +86,11 @@ def load_scenes_meta(pr, auto: bool = True) -> list[dict]:
     return data
 
 
-def measure(pr, every: int, rng: tuple[int, int] | None) -> dict:
-    check_scenes_js(pr)
-    url = ensure_bundle(pr)
-    tl = read_json(pr.root / "plan" / "timeline.json")
-    frames = int((tl.get("meta") or {}).get("frames") or 0)
-    if frames < 1:
-        raise VeosError("NO_FRAMES", "timeline meta.frames missing", "Set meta.frames in plan/timeline.json.")
-    a, b = rng if rng else (0, frames)
-    every = max(1, every)
-    ns = sorted({n for n in range(a, min(b, frames), every)} | ({frames - 1} if not rng else set()))
+MOTION_CAP = 2700  # max frames measured for the smooth-motion check (90 s at 30 fps)
+
+
+def _measure_frames(pr, url: str, ns: list[int]) -> dict[str, dict]:
     out: dict[str, dict] = {}
-    t0 = time.perf_counter()
     pw, br, pg, logs = _open(url)
     try:
         boot = pg.evaluate("window.VEOS_BOOT_ERROR || null")
@@ -111,6 +106,54 @@ def measure(pr, every: int, rng: tuple[int, int] | None) -> dict:
     finally:
         br.close()
         pw.stop()
+    return out
+
+
+def _timeline_frames(pr) -> int:
+    tl = read_json(pr.root / "plan" / "timeline.json")
+    frames = int((tl.get("meta") or {}).get("frames") or 0)
+    if frames < 1:
+        raise VeosError("NO_FRAMES", "timeline meta.frames missing", "Set meta.frames in plan/timeline.json.")
+    return frames
+
+
+def motion_frames(scenes: list[dict], frames: int, cap: int = MOTION_CAP) -> tuple[list[int], bool]:
+    """Every frame where a scene of z 3..10 is active (what the smooth-motion check needs); (frames, truncated)."""
+    ns: set[int] = set()
+    for sc in scenes:
+        z = sc.get("z", 0)
+        if 3 <= z <= 10:
+            ns |= set(range(max(0, round(float(sc.get("t_in", 0)) * FPS)), min(frames, round(float(sc.get("t_out", 0)) * FPS))))
+    out = sorted(ns)
+    return (out[:cap], len(out) > cap)
+
+
+def measure_motion(pr, scenes: list[dict], cap: int = MOTION_CAP) -> dict:
+    """Per-frame rects for the frames where scenes are active (no screenshots) -> plan/measure.motion.json."""
+    check_scenes_js(pr)
+    url = ensure_bundle(pr)
+    ns, truncated = motion_frames(scenes, _timeline_frames(pr), cap)
+    t0 = time.perf_counter()
+    out = _measure_frames(pr, url, ns)
+    dt = time.perf_counter() - t0
+    write_json(pr.path("plan", "measure.motion.json"),
+               {"version": 1, "every": 1, "size": [1080, 1920], "fps": FPS, "frames": out, "truncated": truncated}, indent=None)
+    return {"frames": len(ns), "seconds": round(dt, 1), "truncated": truncated}
+
+
+def measure(pr, every: int, rng: tuple[int, int] | None, motion: bool = False) -> dict:
+    check_scenes_js(pr)
+    if motion:
+        r = measure_motion(pr, load_scenes_meta(pr))
+        return {"file": "plan/measure.motion.json", "frames_sampled": r["frames"], "truncated": r["truncated"],
+                "ms_per_frame": round(1000 * r["seconds"] / max(r["frames"], 1), 1)}
+    url = ensure_bundle(pr)
+    frames = _timeline_frames(pr)
+    a, b = rng if rng else (0, frames)
+    every = max(1, every)
+    ns = sorted({n for n in range(a, min(b, frames), every)} | ({frames - 1} if not rng else set()))
+    t0 = time.perf_counter()
+    out = _measure_frames(pr, url, ns)
     data = {"version": 1, "every": every, "size": [1080, 1920], "fps": FPS, "frames": out}
     write_json(pr.path("plan", "measure.json"), data, indent=None)
     seen = sorted({sid for f in out.values() for sid in f})
@@ -122,4 +165,4 @@ def main(args, project):
     pr = need_project(project)
     if args.cmd == "scenes-meta":
         return scenes_meta(pr)
-    return measure(pr, args.every, tuple(args.range) if args.range else None)
+    return measure(pr, args.every, tuple(args.range) if args.range else None, getattr(args, "motion", False))

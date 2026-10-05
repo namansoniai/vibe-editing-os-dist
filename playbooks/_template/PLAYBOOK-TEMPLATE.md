@@ -4,6 +4,10 @@
 
 The playbook is written for an AI editor (Claude), who reads it section by section while editing. Use tables. Use IDs (D1…, M1…, N1…, P-…, T-…, Z-…) so the editor can cite rules.
 
+**Global rules come first.** `playbooks/_global/GLOBAL-RULES.md` (G1 no overlapping, G2 no clutter, G3 smooth motion, G4 high quality) applies to every playbook.
+- Restate them in §2 as the first hard rules: "G1–G4 apply; see the global rules."
+- **Never write a rule that conflicts with them.** A dense style is still clean: dense in *time* (many changes), not dense in *space* (many things at once).
+
 ---
 
 ## Header

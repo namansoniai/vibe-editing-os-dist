@@ -105,11 +105,17 @@ This is the single source of truth for the engine's commands and data files. Mod
 | `qa <final.mp4> [--expect-frames N] [--ref-audio W]` | | `out/qa-report.md` + contact sheet | pass/fail per check |
 | `tokens [--playbook ID]` | `--project` | `work/tokens.json` | merges `playbooks/<id>/tokens.json` (+ `plan/tokens.override.json`), contrast-checks; roles, fonts, warnings |
 | `scenes-meta` | `--project` | `plan/scenes.meta.json` (list) | headless load of the bundle; scene ids; registration errors are reported with the scene id |
-| `measure [--every 10] [--range A B]` | `--project` | `plan/measure.json` `{frames:{n:{scene_id:[x0,y0,x1,y1]}}}` | rendered rect per active scene (1080x1920 px, resting position); ms/frame |
-| `validate` | `--project` | `plan/validate.json` | `passed`, failures `{rule, beat, t, msg, fix}`; reads timeline + scenes.meta (+ measure) + playbook rules |
+| `measure [--every 10] [--range A B] [--motion]` | `--project` | `plan/measure.json` `{frames:{n:{scene_id:[x0,y0,x1,y1]}}}`; `--motion`: `plan/measure.motion.json` (every frame where a z3-10 scene is active) | rendered rect per active scene, plus `"__subtitles"` (1080x1920 px, resting position); layout only, no screenshots (`--every 1` is cheap: ~17-20 ms/frame); ms/frame |
+| `validate [--skip-motion]` | `--project` | `plan/validate.json` | `passed`, failures `{rule, beat, t, msg, fix}`; reads timeline + scenes.meta (+ measure, measure.motion) + playbook rules; **always runs global checks G1 no overlap, G2 no clutter, G3 smooth motion** (SCENES-API 7b) and builds `measure.motion.json` itself when scenes.js exists and it is stale |
 | `prep-frames`, `bundle` | `--project` | `work/frames/*`, `work/render/bundle.js` | bundle `node --check`s `plan/scenes.js` and includes it plus `plan/assets/*` |
-| `project init\|show\|set\|latest [--playbook ID]` | | `project.json` | state (`playbook`, default `naman`) |
+| `project init|show|set|latest [--playbook ID]` | | `project.json` | state. `init` without `--playbook` uses the clips' folder workspace playbook (an existing project.json's playbook on `--force`), else error `PLAYBOOK_REQUIRED` (hint: choose a playbook first). Phases: init, prep, roughcut, captions, **inputs**, plan, storyboard, approved, render, done. `set inputs=@file.json` stores free JSON in the `inputs` key (the creator's per-reel inputs: screen recordings, links, numbers) |
+| `workspace get\|set [--dir D] [--playbook ID]` | | `<D>/.vibe-editing-os.json` `{version:1, playbook, created, updated}` | `get` walks up from D for the marker and lists `playbooks` (id, name, handle, updated; user playbooks dir, `_*` excluded); `set` errors `PLAYBOOK_MISSING` if the playbook does not exist |
+| `playbook new-id --name N [--handle @x]` | | none | a unique kebab id (`aria-mehta`, `aria-mehta-2`, ...) that collides with no playbook folder |
+| `learn add\|list\|remove --playbook ID` | `--text --area plan\|visuals\|captions\|sound\|cut\|pacing\|other [--reel P] [--quote Q]`; `--id L3` | `<playbook>/learned.md` + `learned.json` | numbered `L<n> · date · area · text (from: reel; said: "quote")`; `remove` sets `active:false` (history kept). Learned rules override the playbook body, never the global rules |
+| `asset add <file> [--name N]` / `asset list` | `--project` | `plan/assets/<name>.<ext>` or `plan/assets/<name>/f%05d.jpg` + `meta.json {frames, fps, w, h, duration}` | images copied; videos conformed to 30 fps, JPEG frames scaled to fit 1080 px wide (q ~90); returns name, kind, frames/size |
 | `paths` | | — | `repo_root, playbooks, renderer_player, renderer_core, veos_home` |
+
+The bundle carries `videos: {name: {frames, fps, w, h, duration, base_url}}` for video assets (`ctx.videoFrame`).
 
 Per-reel files in `<project>/plan/`: `timeline.json` (no `layers`; beats list scene ids and carry a `visual` sentence), `scenes.js` (Claude-written `VEOS.scene({...})` calls), optional `assets/`, `tokens.override.json`; generated `scenes.meta.json`, `measure.json`, `validate.json`. See `renderer/CONTRACT.md` and `renderer/SCENES-API.md`.
 

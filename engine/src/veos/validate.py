@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .core import FPS, VeosError, need_project, read_json, write_json
+from .globalchecks import GLOBAL_CHECKS
 
 NON_BRIGHT = {"ink", "paper", "canvas", "grid", "night"}
 NUM_WORDS = {w: i for i, w in enumerate(
@@ -36,6 +37,8 @@ SUBTITLE_Z = (7, 8)
 
 def add_args(p, cmd):
     p.add_argument("--timeline", default=None, help="timeline file (default <project>/plan/timeline.json)")
+    p.add_argument("--skip-motion", action="store_true",
+                   help="do not (re)measure per-frame motion for G3; use whatever plan/measure*.json already holds")
 
 
 # --------------------------------------------------------------------------- helpers
@@ -521,6 +524,40 @@ def _load_optional(path: Path, label: str, warnings: list, skip_note: str = ""):
     return None
 
 
+def _with_motion(proj, tl, scenes, measure, warnings, skip) -> dict | None:
+    """Merge plan/measure.json with plan/measure.motion.json (every frame where a z3-10 scene is active, for G3).
+
+    The motion file is (re)built headless when plan/scenes.js exists and it is missing or older than scenes.js / timeline.json
+    and measure.json does not already cover those frames (e.g. `veos measure --every 1`). Cost: see SPEC section 4.
+    """
+    from .scenes import MOTION_CAP, measure_motion, motion_frames
+    frames_data = dict((measure or {}).get("frames") or {})
+    sj, tp, mo = proj.root / "plan" / "scenes.js", proj.root / "plan" / "timeline.json", proj.root / "plan" / "measure.motion.json"
+    nframes = int((tl.get("meta") or {}).get("frames") or 0)
+    if nframes < 1:
+        return measure
+    need, truncated = motion_frames(scenes, nframes)
+    if truncated:
+        warnings.append(f"G3 smooth-motion checked only the first {MOTION_CAP} frames ({MOTION_CAP // FPS} s); the reel is longer")
+    missing = [n for n in need if str(n) not in frames_data]
+    if missing and sj.exists() and not skip:
+        stale = not mo.exists() or mo.stat().st_mtime < max(sj.stat().st_mtime, tp.stat().st_mtime)
+        if stale:
+            try:
+                measure_motion(proj, scenes)
+            except Exception as e:  # noqa: BLE001 - no browser, broken scene...: a warning, the other rules still run
+                warnings.append(f"G3 smooth-motion skipped: could not measure frames ({getattr(e, 'message', str(e))[:200]})")
+    if mo.exists():
+        extra = _load_optional(mo, "plan/measure.motion.json", warnings)
+        if extra:
+            frames_data.update(extra.get("frames") or {})
+    elif missing:
+        warnings.append("G3 smooth-motion not checked: no per-frame measure (run `veos measure --motion`, or `veos validate` with scenes.js present)")
+    if not frames_data:
+        return measure
+    return {**(measure or {}), "frames": frames_data}
+
+
 def main(args, project):
     from .scenes import load_scenes_meta
     from .tokens import load_playbook, project_playbook
@@ -564,6 +601,7 @@ def main(args, project):
     else:
         warnings.append("plan/measure.json not found; using declared scene boxes (run `veos measure` for real positions)")
 
+    measure = _with_motion(proj, tl, scenes, measure, warnings, getattr(args, "skip_motion", False))
     ctx = Ctx(tl, style, tokens, words, face, scenes, measure, warnings)
     enabled = style.get("rules_v0") or list(RULES)
     failures: list[dict] = []
@@ -573,6 +611,11 @@ def main(args, project):
             warnings.append(f"rule {rid} is enabled in the playbook but not implemented")
             continue
         failures.extend(fn(ctx))
+    gstats = {}
+    for gid, fn in GLOBAL_CHECKS.items():
+        got = fn(ctx)
+        gstats[gid] = len(got)
+        failures.extend(got)
     failures.sort(key=lambda f: (f["t"], f["rule"]))
 
     ev = ctx.visual_events()
@@ -581,7 +624,7 @@ def main(args, project):
         "visual_events": len(ev) - 2 if len(ev) > 2 else 0,
         "events_per_s": round(max(len(ev) - 2, 0) / ctx.duration, 2) if ctx.duration else 0,
         "camera_events": len(ctx.camera), "sfx_cues": len(ctx.sfx),
-        "rules_run": [r for r in enabled if r in RULES],
+        "rules_run": [r for r in enabled if r in RULES], "global_checks": gstats, "measured_frames": len(ctx.measured),
         "face_checked": face is not None, "measured": bool(ctx.measured), "words_loaded": words is not None,
         "tokens_loaded": tokens is not None,
     }

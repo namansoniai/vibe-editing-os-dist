@@ -234,11 +234,21 @@ def _bundle(args, project):
     frames = int((tl.get("meta") or {}).get("frames") or cut.get("frames") or 0)
     warnings = []
 
-    assets = {}
+    assets, videos = {}, {}
     adir = pr.root / "plan" / "assets"
     if adir.is_dir():  # plan/assets/<file>: addressable as ctx.asset("<stem>") and ctx.asset("<file name>")
+        for d in sorted(adir.rglob("meta.json")):  # video assets (veos asset add <video>): plan/assets/<name>/f%05d.jpg + meta.json
+            try:
+                m = read_json(d)
+                base = d.parent.resolve().as_uri().rstrip("/") + "/"
+                videos[d.parent.name] = {"frames": int(m["frames"]), "fps": m.get("fps", FPS), "w": m.get("w"), "h": m.get("h"),
+                                         "duration": m.get("duration"), "base_url": base}
+                assets[d.parent.name] = {"type": "video", "url": base + "f00000.jpg"}
+            except (ValueError, KeyError, TypeError):
+                warnings.append(f"plan/assets/{d.parent.name}/meta.json is not a valid video-asset meta; ignored")
+        vdirs = [adir / n for n in videos]
         for f in sorted(adir.rglob("*")):
-            if f.is_file():
+            if f.is_file() and not any(v in f.parents for v in vdirs):
                 a = {"type": ASSET_EXT.get(f.suffix.lower(), "file"), "url": f.resolve().as_uri()}
                 assets.setdefault(f.stem, a)
                 assets[f.name] = a
@@ -252,7 +262,7 @@ def _bundle(args, project):
     frames_url = frames_dir.resolve().as_uri().rstrip("/") + "/"
     bundle = {"timeline": tl, "tokens": read_json(tokens_p), "words": words, "face": face, "frames_url": frames_url,
               "frames": frames, "cuts": [s["f0"] for s in cut.get("segments", [])[1:]],
-              "scenes": [sj.resolve().as_uri()], "assets": assets}
+              "scenes": [sj.resolve().as_uri()], "assets": assets, "videos": videos}
     if getattr(args, "out", None):
         out = Path(args.out).expanduser().resolve() / "bundle.js"
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -260,7 +270,7 @@ def _bundle(args, project):
         out = pr.path("work", "render", "bundle.js")
     out.write_text("window.VEOS_BUNDLE = " + json.dumps(bundle, ensure_ascii=False) + ";\n", encoding="utf-8")
     return {"out": pr.rel(out), "url": out.resolve().as_uri(), "frames": frames, "scenes_js": pr.rel(sj),
-            "assets": len(assets), "bytes": out.stat().st_size, "warnings": warnings}
+            "assets": len(assets), "video_assets": len(videos), "bytes": out.stat().st_size, "warnings": warnings}
 
 
 def ensure_bundle(pr) -> str:

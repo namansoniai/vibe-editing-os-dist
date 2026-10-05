@@ -40,6 +40,8 @@ VEOS.scene = function (d) {
   for (const k of ["in", "out"]) if (d[k] != null && !PRESET_NAMES.includes(d[k])) return bad(`${k}: '${d[k]}' is not a preset (${PRESET_NAMES.join("|")})`);
   if (d.box != null && !(d.box && ["x", "y", "w", "h"].every(k => isNum(d.box[k])))) return bad("box must be {x,y,w,h} numbers");
   if (d.events != null && !(Array.isArray(d.events) && d.events.every(isNum))) return bad("events must be an array of local seconds");
+  if (d.cuts != null && !(Array.isArray(d.cuts) && d.cuts.every(isNum))) return bad("cuts must be an array of local seconds");
+  if (d.overlaps != null && !(Array.isArray(d.overlaps) && d.overlaps.every(x => typeof x === "string"))) return bad("overlaps must be an array of scene ids");
   if (d.roles != null && !Array.isArray(d.roles)) return bad("roles must be an array of colour-role names");
   SCENES.push(d); return d;
 };
@@ -102,7 +104,7 @@ function presetState(inName, outName, k, kRemain, inF, outF) {
 /* ---------------------------------------------------------------- per-frame state */
 let B, T, TL, WORDS = [], FACE_RAW = [], FACE_SM = [], NF = 0;
 let MEASURE = false, STAGE = [], WORLD = [], CAM = [], LAYERS = [], CARDS = [], HIDE = [], Z8 = [], BANNER_Z = 10;
-let FRAMES_URL = "", ASSETS = {}, IMG = new Map(), CANVASES = [], cvUsed = 0, VBS = [];
+let FRAMES_URL = "", ASSETS = {}, VIDEOS = {}, VPEND = [], IMG = new Map(), CANVASES = [], cvUsed = 0, VBS = [];
 
 const col = r => T.colours[r] || r;
 function hexA(hex, a) { hex = col(hex).replace("#", ""); return `rgba(${parseInt(hex.slice(0, 2), 16)},${parseInt(hex.slice(2, 4), 16)},${parseInt(hex.slice(4, 6), 16)},${a})`; }
@@ -316,7 +318,7 @@ function worldHTML(name, n, st) {
 <div style="position:absolute;inset:0;background:radial-gradient(circle at ${r2(gx)}px ${r2(gy)}px,${hexA("data", 0.14)} 0,${hexA("data", 0)} 350px)"></div>`;
   }
   // studio: footage itself (full) or a dimmed blurred copy behind a smaller stage window
-  return `<div style="position:absolute;inset:0;background:${col("ink")}"></div>` + (st ? `<img src="${st.fUrl}" style="position:absolute;left:-60px;top:-60px;width:${W + 120}px;height:${H + 120}px;filter:blur(28px) brightness(.45)">` : "");
+  return `<div style="position:absolute;inset:0;background:${col("ink")}"></div>` + (st ? `<img data-foot="1" src="${st.fUrl}" style="position:absolute;left:-60px;top:-60px;width:${W + 120}px;height:${H + 120}px;filter:blur(28px) brightness(.45)">` : "");
 }
 
 /* ---------------------------------------------------------------- images */
@@ -347,10 +349,20 @@ function layerCtx(base, L, n) {
 }
 function mk(style, html) { const d = document.createElement("div"); d.style.cssText = style; if (html) d.innerHTML = html; return d; }
 
+/* ctx.videoFrame(name, seconds): URL of the frame of a video asset (veos asset add <video>) at that local time; 30 fps, frame-exact, clamped. */
+function videoFrame(name, sec) {
+  const v = VIDEOS[name];
+  if (!v) return "";
+  const k = cl(Math.floor((+sec || 0) * (v.fps || FPS) + 1e-6), 0, Math.max(0, v.frames - 1));
+  const url = `${v.base_url}f${String(k).padStart(5, "0")}.jpg`;
+  if (!MEASURE) VPEND.push(preload(url)); // decoded before the frame is "ready", like footage
+  return url;
+}
+
 async function renderFrameImpl(n) {
   n = cl(Math.round(n), 0, NF - 1);
   const t = n / FPS;
-  VBS = []; cvUsed = 0;
+  VBS = []; cvUsed = 0; VPEND = [];
   const st = stageAt(n), g = st.g;
   const world = (() => { let w = "studio"; for (const k of WORLD) if (k.f <= n) w = k.world; return w; })();
   const cam = cameraAt(n), Fs = faceSm(n), Fr = faceRaw(n);
@@ -359,8 +371,7 @@ async function renderFrameImpl(n) {
   const showWin = g.op > 0.01 && g.w > 1 && g.h > 1;
   const needCut = showWin && behind.length > 0;
   const urls = { f: fUrl(n), c: cUrl(n) };
-  const pl = [preload(urls.f)]; if (needCut) pl.push(preload(urls.c));
-  await Promise.all(pl);
+  if (!MEASURE) { const pl = [preload(urls.f)]; if (needCut) pl.push(preload(urls.c)); await Promise.all(pl); } // measure only needs layout, not pixels
 
   // footage -> screen transform (+ banner clamp)
   const S = g.s * cam.s, rad = cam.r * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
@@ -381,7 +392,7 @@ async function renderFrameImpl(n) {
   // shared ctx
   const base = {
     n, t, fps: FPS, W, H, tokens: T, safe: T.layout.safe, face: () => faceOut,
-    ease, lerp, clamp: cl, measure, asset: id => (ASSETS[id] ? ASSETS[id].url : ""), word: i => WORDS[i] || null,
+    ease, lerp, clamp: cl, measure, asset: id => (ASSETS[id] ? ASSETS[id].url : ""), videoFrame, word: i => WORDS[i] || null,
     wordsBetween: (a, b) => WORDS.filter(w => w.s >= a && w.s < b), html: s => s, blur: px => { VBS.push(px); return `url(#vb${VBS.length - 1})`; },
     fam, col, hexA, esc, stageName: st.name, world,
   };
@@ -430,26 +441,26 @@ async function renderFrameImpl(n) {
     const imgStyle = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;`;
     const off = g.off || 0;
     if (off > 0.5) { // "low" layout: blurred, darkened copy of the frame fills the revealed area
-      win.insertAdjacentHTML("beforeend", `<img src="${urls.f}" style="position:absolute;left:${r2(-W * 0.075 - g.x)}px;top:${r2(-H * 0.075 - g.y)}px;width:${r2(W * 1.15)}px;height:${r2(H * 1.15)}px;filter:blur(40px) brightness(.45)">`);
+      win.insertAdjacentHTML("beforeend", `<img data-foot="1" src="${urls.f}" style="position:absolute;left:${r2(-W * 0.075 - g.x)}px;top:${r2(-H * 0.075 - g.y)}px;width:${r2(W * 1.15)}px;height:${r2(H * 1.15)}px;filter:blur(40px) brightness(.45)">`);
     }
     // depth sandwich: footage (lowered) -> behind layers (not lowered) -> cut-out (lowered)
     const grp = mkGrp(0);
-    grp.insertAdjacentHTML("beforeend", `<img src="${urls.f}" style="${imgStyle}">`);
+    grp.insertAdjacentHTML("beforeend", `<img data-foot="1" src="${urls.f}" style="${imgStyle}">`);
     win.appendChild(grp);
     if (behind.length) { const gb = off > 0.5 ? mkGrp(off) : grp; for (const l of behind) gb.appendChild(renderLayer(l)); if (gb !== grp) win.appendChild(gb); }
-    if (needCut) { const gc = off > 0.5 ? mkGrp(0) : grp; gc.insertAdjacentHTML("beforeend", `<img src="${urls.c}" style="${imgStyle}">`); if (gc !== grp) win.appendChild(gc); }
+    if (needCut) { const gc = off > 0.5 ? mkGrp(0) : grp; gc.insertAdjacentHTML("beforeend", `<img data-foot="1" src="${urls.c}" style="${imgStyle}">`); if (gc !== grp) win.appendChild(gc); }
     frag.appendChild(win);
   }
   const subs = subtitleHTML(n, st, world);
   const items = above.map(l => ({ z: l.z, order: l.order, l })).concat([{ z: 7, order: 1e6, sub: true }]).sort((a, b) => a.z - b.z || a.order - b.order);
-  for (const it of items) { if (it.sub) { if (subs) frag.appendChild(mk(`position:absolute;left:0;top:0;width:${W}px;height:${H}px`, subs)); } else frag.appendChild(renderLayer(it.l)); }
+  for (const it of items) { if (it.sub) { if (subs) { const sd = mk(`position:absolute;left:0;top:0;width:${W}px;height:${H}px`, subs); sd.dataset.scene = "__subtitles"; frag.appendChild(sd); } } else frag.appendChild(renderLayer(it.l)); }
   // filters
   let defs = ""; VBS.forEach((px, i) => { defs += `<filter id="vb${i}" x="-5%" y="-30%" width="110%" height="160%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 ${r2(px)}"/></filter>`; });
   const svg = mk(`position:absolute;width:0;height:0`, `<svg width="0" height="0" style="position:absolute"><defs>${defs}</defs></svg>`);
   root.replaceChildren(svg, frag);
-  await Promise.all([...root.querySelectorAll("img")].map(i => i.decode().catch(() => {})));
+  await Promise.all([...root.querySelectorAll("img")].filter(i => !(MEASURE && i.dataset.foot)).map(i => i.decode().catch(() => {})).concat(VPEND));
   await document.fonts.ready;
-  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  if (!MEASURE) await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   return true;
 }
 
@@ -507,7 +518,7 @@ async function boot() {
   MEASURE = false;
   const mo = T.motion || {};
   EO = bez(...(mo.ease_entry || [0.22, 1, 0.36, 1])); EI = bez(...(mo.ease_exit || [0.64, 0, 0.78, 0])); EIO = bez(...(mo.ease_in_out || [0.65, 0, 0.35, 1])); EL = bez(...(mo.elastic || [0.34, 1.56, 0.64, 1]));
-  FRAMES_URL = B.frames_url; ASSETS = B.assets || {}; WORDS = B.words || [];
+  FRAMES_URL = B.frames_url; ASSETS = B.assets || {}; VIDEOS = B.videos || {}; WORDS = B.words || [];
   NF = (TL.meta && TL.meta.frames) || B.frames || (B.face && B.face.frames) || 1;
   const root = document.getElementById("root"); root.style.width = W + "px"; root.style.height = H + "px";
   // stage / world / camera / layers

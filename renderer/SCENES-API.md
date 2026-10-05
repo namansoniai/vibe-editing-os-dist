@@ -23,7 +23,9 @@ VEOS.scene({ id, t_in, t_out, z, render(ctx, lt, dur) { return ctx.html(`...`); 
 | `roles: [...]` | bright colour roles you use (`primary accent bad good data concept comedy`); at most 3 bright roles on screen at once; `comedy` only in mock beats |
 | `events: [s, ...]` | LOCAL seconds (after `t_in`) when something visibly changes inside the scene (word swap, pulse, bar grows). Declare every one: they count for the "something changes every 1.5 s" rule (M7) and for "starts on the trigger word" (M6) |
 | `text: true`, `text_content: "..."` | set when it carries text; `text_content` is that text as one string (storyboard + checks) |
-| `may_overlap_face: true` | allowed to cover the face (captions, a label on the chest). Default: z>=5, non-behind scenes must stay 40 px clear of the face |
+| `overlaps: ["B", ...]` | scene ids this scene is *intentionally* nested on (a chip pinned on its card). Exempts the pair from the global G1 no-overlap check (use `"__subtitles"` for the auto-subtitles) |
+| `cuts: [s, ...]` | LOCAL seconds of deliberate hard cuts (position/size snaps). Exempts those moments (+-2 frames) from the global G3 smooth-motion check |
+| `may_overlap_face` | allowed to cover the face (captions, a label on the chest). Default: z>=5, non-behind scenes must stay 40 px clear of the face |
 | `kind` | `"banner"` (the headline slab: exactly one chip, or a bad+good pair; <=9 words; <=2 lines; <=2 emoji; needs `chips: [{text, role}]`, `lines`), `"cta-keyword"` (the CTA keyword chip; `text_content` must contain `meta.keyword`), `"meme"` (comedy sticker/stamp; mock beats only) |
 | `render(ctx, lt, dur)` | `lt` = seconds since `t_in`, `dur` = `t_out - t_in`. Return `ctx.html("<div ...>")`, or draw on `ctx.canvas()` and `return ""` |
 
@@ -35,9 +37,19 @@ Output of `render` is placed in a 1080x1920 absolutely-positioned layer at (0,0)
 - Face: `ctx.face()` -> `{x,y,w,h,cx,cy}` in output pixels after stage + camera transform, or `null` (stage hidden). Use it to place things clear of the head.
 - Animation: `ctx.V(lt, inDur, outAt, {in, out, dout, op})` returns an inline `style` string (opacity/transform/filter) for a built-in enter/exit on one element, or `null` when it is not visible (`outAt` null = never exits). `ctx.ease.out | in | inOut | back | elastic` (each `p in 0..1` -> eased 0..1, `back` overshoots), `ctx.lerp(a,b,p)`, `ctx.clamp(x,lo=0,hi=1)`.
 - Text: `ctx.measure(text, "800 60px 'Inter Tight'")` -> width px (use `ctx.fam` in the font string); `ctx.esc(s)` HTML-escapes.
-- Assets/words: `ctx.asset(id)` -> URL (id = `timeline.assets` key or a `plan/assets` file stem/name; preloaded before READY), `ctx.word(i)`, `ctx.wordsBetween(t0, t1)` -> `[{w,s,e,caption?}]` in edit time for word-synced pops.
+- Assets/words: `ctx.asset(id)` -> URL (id = `timeline.assets` key or a `plan/assets` file stem/name; preloaded before READY; for a video asset it is its first frame), `ctx.videoFrame(name, seconds)` -> URL of the frame of a video asset (`veos asset add <video>`) at that LOCAL time: 30 fps, frame-exact (`floor(seconds*30)`), clamped to the first/last frame, decoded before the frame is captured, like footage (`""` for an unknown name). Use it in `<img src>` or `background:url(...)`, `ctx.word(i)`, `ctx.wordsBetween(t0, t1)` -> `[{w,s,e,caption?}]` in edit time for word-synced pops.
 - Randomness: `ctx.rng(seed)` -> seeded PRNG that is stable per (scene, seed, frame): same frame, same numbers. `ctx.rngStable(seed)` is the same for every frame (static scatter).
 - Output: `ctx.html(str)` (identity, marks intent), `ctx.canvas()` -> 2D context of a 1080x1920 canvas owned by this scene, cleared each frame (`ctx.canvasEl()` for the element, e.g. to set a CSS filter), `ctx.blur(px)` -> `url(#id)` for a vertical motion-blur filter (`filter:${ctx.blur(12)}`).
+
+### Assets of one reel (screen recordings, images, logos)
+`veos asset add <file> --project P [--name N]`: images (png/jpg/webp/svg) go to `plan/assets/<name>.<ext>` (`ctx.asset("<name>")`). Videos (screen recordings, B-roll; mp4/mov/mkv/webm/gif) are conformed to 30 fps, scaled to fit 1080 px wide and extracted as `plan/assets/<name>/f%05d.jpg` + `meta.json {frames, fps, w, h, duration}` (`ctx.videoFrame("<name>", lt)`). `veos asset list --project P` shows what is there. Never use `<video>`: a recording plays by picking the frame for the scene's local time (`lt`, `lt * speed`, or `lt + offset` to start mid-clip):
+```js
+VEOS.scene({ id: "rec", t_in: 2, t_out: 6, z: 5, in: "pop", box: { x: 140, y: 420, w: 800, h: 1000 },
+  render(ctx, lt) {
+    return ctx.html(`<div style="position:absolute;left:140px;top:420px;width:800px;height:1000px;border-radius:48px;overflow:hidden;
+      border:6px solid ${ctx.col("ink")};background:url(${ctx.videoFrame("demo", lt)}) center/cover"></div>`);
+  } });
+```
 
 ## 4. Stage, world, camera (timeline.json, not scenes)
 - `stage[].layout`: `full | low | panel | inset | slide-aside | bubble | hidden`; `via`: `cut | panel-drop | pop-back | slide-aside | bubble-shrink | bubble-grow`. `low` lowers the footage (`offset` default 380 px) to make room above the head for banner + caption + card.
@@ -57,6 +69,14 @@ Output of `render` is placed in a 1080x1920 absolutely-positioned layer at (0,0)
 
 ## 7. Performance budget
 Core + all scenes must render in **<= 30 ms per frame** (typical frame: 3-4 active scenes). Keep DOM under ~150 nodes per scene, avoid large `filter: blur()` / `backdrop-filter` stacks and `box-shadow` blurs on many elements, cap canvas paths per frame (~500), and do not build big strings or arrays each frame (hoist constants to top-level). `veos measure` reports `ms_per_frame` of the sampled frames.
+
+## 7b. Global quality checks (`veos validate`, always on, every playbook)
+They use the measured rects (`veos measure`; `veos validate` runs the per-frame motion measure itself when `plan/scenes.js` exists). Messages are plain English with the scene ids, the time and a fix.
+- **G1 no overlap.** At every measured frame, text-bearing scenes, z>=5 non-`behind` scenes and the auto-subtitles (`"__subtitles"`) may not intersect by more than 2% of the smaller rect, unless one of the two declares `overlaps: ["<other id>"]` (deliberate nesting) or is z11. Fix: move the later scene (the hint says by how many px) or declare `overlaps`.
+- **G2 no clutter.** At most 4 active scenes with z 3-10 (`behind` and z11 not counted) and at most 3 text elements (subtitles count). Fix: drop or merge one.
+- **G3 smooth motion.** A scene's rect centre may not jump more than 90 px, nor its width/height change more than 25%, between two consecutive frames, except within 2 frames of its `t_in`/`t_out`, of a declared `events` time, or of a declared `cuts` time. Counters/typewriters whose text width changes every frame must declare their `events`. z11 and subtitles are exempt.
+
+Cost: G3 measures every frame where a z3-10 scene is active, headless, with no screenshots and no footage decode (about 17-20 ms/frame, so a 60 s reel with scenes on screen all the time is ~1800 frames, roughly 35 s once, including browser start-up). The result is cached in `plan/measure.motion.json` and only redone when `scenes.js` or `timeline.json` changed (`veos measure --motion` does it explicitly; `veos validate --skip-motion` reuses what exists; capped at 2700 frames = 90 s, with a warning beyond).
 
 ## 8. Workflow
 1. Write `plan/timeline.json` (beats with `visual`, stage, camera, ...) and `plan/scenes.js`.

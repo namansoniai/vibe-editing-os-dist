@@ -1,6 +1,6 @@
 ---
 name: playbook
-description: Set up (or revise) a creator's personal editing playbook for Vibe Editing OS — interview them about their reels, study their editing inspiration, write a full editing playbook for their niche (same depth as the reference playbook), show a visual glimpse to confirm, and save it. Use when the user runs /playbook, is new to Vibe Editing OS, says "set up my editing style", or wants to change how their reels are edited.
+description: Set up (or revise) a creator's personal editing playbook for Vibe Editing OS (one person can have several, e.g. one per account) — interview them about their reels, study their editing inspiration, write a full editing playbook for their niche (same depth as the reference playbook), show a visual glimpse to confirm, and save it. Use when the user runs /playbook, is new to Vibe Editing OS, says "set up my editing style", or wants to change how their reels are edited.
 argument-hint: "[creator name or handle]"
 ---
 
@@ -13,6 +13,18 @@ Run `veos paths` first. You need:
 - `playbook_template`: the template folder
 - `reference_playbook`: the reference playbook (read-only)
 - `repo_root`
+
+**Also read `<repo_root>/playbooks/_global/GLOBAL-RULES.md`.** Every playbook you write must obey it (G1 no overlapping, G2 no clutter, G3 smooth motion, G4 high quality).
+
+## Step −1: New playbook or revise an existing one
+1. Run `veos workspace get`. It shows the playbook linked to this folder, if any, and all existing playbooks.
+2. Ask in one question (skip it if there are no playbooks yet):
+   - **Create a new playbook** (e.g. for another account).
+   - **Revise** `<existing one>`.
+3. **New:** get a unique id with `veos playbook new-id --name "<creator or account name>" --handle <handle>`.
+   - **Never overwrite an existing playbook folder.**
+   - One person can own several playbooks; each is fully independent (its own style, brand, learned rules).
+4. **Revise:** jump to the step they want to change (interview answers, inspiration, a section, colours…), then do Steps 4–6 again.
 
 ## Step 0: Choose the setup path (one question)
 - **A. Start from a famous editing style.**
@@ -30,7 +42,7 @@ Ask with the AskUserQuestion tool (≤ 4 questions per round; always allow free 
 4. **Brand:** name and handle, primary + accent colours (hex, or "pick for me"), fonts they like (or "pick for me"), logo file, CTA habits (comment keyword → DM, follow, link in bio, community name), anything they **never** want on screen.
 5. **Assets:** do they have B-roll clips, product shots, screen recordings, or a sound-effects library they're licensed to use? Where are they?
 
-Write the answers to `<playbooks>/<id>/profile.md` (id = their handle in kebab-case).
+Write the answers to `<playbooks>/<id>/profile.md` (id from `veos playbook new-id`).
 
 ## Step 2: Editing inspiration
 Ask: "Share 1–5 reels whose **editing** you love (video files, ideally downloaded; links alone can't be analysed reliably), and optionally 2–3 of your own past reels."
@@ -54,7 +66,7 @@ If they have no inspiration files:
 ## Step 3: Write the playbook
 1. Read `<playbook_template>/PLAYBOOK-TEMPLATE.md` (the required structure).
 2. Read the reference playbook (`reference_playbook`) **selectively** for depth and format: its header + directives, §2, §6, §8.3–8.4 and §13. Don't copy its content.
-3. Write `<playbooks>/<id>/playbook.md` with **every** template section, specific to this creator:
+3. Write `<playbooks>/<id>/playbook.md` with **every** template section, specific to this creator. §2 starts with the global rules G1–G4:
    - **Directives (D1…)** from what they said matters.
    - **Result-pair table and line → pattern lookup built from their actual topics** (use the reel ideas they gave).
    - **20–60 named visual patterns (P-…) invented for their niche,** each with on-screen content + a motion recipe in frames. These are ideas the editor will build as bespoke code, so describe them concretely; don't limit them to what's easy.
@@ -73,13 +85,19 @@ Write `<playbooks>/<id>/preview/index.html`: one self-contained page (inline CSS
 
 Under each frame, a one-line caption: "Used when you say … (P-xx)". Open the page for them (Windows `Start-Process`, macOS `open`).
 
-## Step 5: Confirm
-Ask in one question:
-- **Looks right:** save.
-- **Change something:** they describe it in plain words. You update the playbook, tokens and preview together, re-open, and ask again.
+## Step 5: Improve (always ask, right after the preview)
+Ask: **"Anything you'd like to improve or add to your editing style before we save it?"**
+- Offer 3–4 quick options that fit what they just saw (e.g. "Calmer transitions", "Bigger captions", "More motion graphics", "Different colours"), plus free text and **"No, it's good"**.
+- For every change: restate it in one line, then update `playbook.md`, `tokens.json` and the preview together.
+  - If a request would break a global rule (e.g. "fill the screen with text"), explain in one line and offer the closest clean alternative.
+- Re-open the preview and ask again, until they choose "No, it's good".
 
-When confirmed:
+## Step 6: Save and link this folder
 - Add `"confirmed_at"` to `profile.md`.
-- Tell them in 3 lines how to edit: put raw clips in a folder → `/vibe-editing-os:reel <folder>`. Also mention that every reel follows this playbook and that they can revise it anytime with `/vibe-editing-os:playbook`.
+- Run `veos workspace set --playbook <id>` so **this folder** uses this playbook. Reels edited in this folder or below it pick it automatically.
+- Tell them in 3 lines:
+  1. Put raw clips in a folder here and run `/vibe-editing-os:reel <folder>`.
+  2. For another account, open a different folder and run `/vibe-editing-os:playbook` there.
+  3. Feedback they give while editing can be saved into this playbook, and they can revise it anytime with `/vibe-editing-os:playbook`.
 
 **Token note:** this runs once per creator. The playbook is long by design, because it's what makes every future reel good.

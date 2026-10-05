@@ -66,6 +66,8 @@ engine outputs (cutmap.json, words.edit.json, face/*.json, matte/*.mp4, sources.
 | `events` | local seconds (after `t_in`) of internal visual changes; counted for M7 and M6 |
 | `text`, `text_content` | `text: true` if it carries text (safe-zone check); `text_content` = the text shown, one string |
 | `may_overlap_face` | exempt from the face-clearance check |
+| `overlaps` | `["B", ...]` scene ids (or `"__subtitles"`) this scene is deliberately nested on; exempts the pair from global check G1 |
+| `cuts` | `[s, ...]` LOCAL seconds of deliberate hard cuts; exempts them from global check G3 |
 | `kind` | optional: `"banner"` (M1, M4, M13 headline), `"cta-keyword"` (M13 keyword check), `"meme"` (M9) |
 | `chips`, `lines` | banner only: `[{text, role}]` keyword chips, number of lines (M4) |
 | `render(ctx, lt, dur)` | returns an HTML string (`return ctx.html(...)`) or draws on `ctx.canvas()` and returns `""`. `lt` = seconds since `t_in`, `dur` = `t_out - t_in` |
@@ -77,17 +79,19 @@ Core wraps each scene's output in `<div data-scene="ID">` (position 0,0, 1080x19
 ## 4. Built into core.js
 - The stage (7 layouts + morphs) and the camera presets (+ shake, banner clamp).
 - Worlds (studio/canvas/data), auto-subtitles, the footage + cut-out layers, vertical motion blur.
-- Font loading and the glyph/emoji warm-up, `READY`. `window.measureFrame(n)` for `veos measure`.
+- Font loading and the glyph/emoji warm-up, `READY`. `window.measureFrame(n)` for `veos measure` (layout only: no footage decode, no paint wait; the auto-subtitles are wrapped in `data-scene="__subtitles"` and measured under that id).
+- `ctx.videoFrame(name, seconds)` for video assets (bundle key `videos: {name: {frames, fps, w, h, duration, base_url}}`; frames are `base_url + f%05d.jpg`, zero-based, decoded before the frame is ready). `plan/assets/<name>/` with a `meta.json` is a video asset (made by `veos asset add`).
 - The cut-out is only decoded when a `behind` scene is visible.
 
 ## 5. Validator (`veos validate`)
 - **Inputs:** timeline, `plan/scenes.meta.json` (auto-rebuilt when missing or older than scenes.js), `plan/measure.json` (preferred over declared boxes), face boxes, playbook tokens (`budgets`, `layout`, `rules_v0`).
 - **Output:** `{"ok": true, "passed": false, "failures": [{"rule": "M7", "beat": 12, "t": 18.4, "msg": "...", "fix": "..."}], "warnings": [...], "stats": {...}}`.
-- Ten rules, one function each: M1, M7, M4, M6, M12, N5-zoom, N6, M10, M9, M13. Component ids are not referenced anywhere; the only scene `kind`s are `banner`, `cta-keyword`, `meme`.
+- **Global checks G1 no overlap, G2 no clutter, G3 smooth motion** run for every playbook (not part of `rules_v0`), from `plan/measure.json` + `plan/measure.motion.json` (details in SCENES-API section 7b). `stats.global_checks` counts their failures.
+- Ten playbook rules, one function each: M1, M7, M4, M6, M12, N5-zoom, N6, M10, M9, M13. Component ids are not referenced anywhere; the only scene `kind`s are `banner`, `cta-keyword`, `meme`.
 - M12 uses **measured** rects per sampled frame (the safe zone for `text` scenes, the face clearance for z>=5 non-behind scenes); without `measure.json` it falls back to declared boxes.
 
 ## 6. Tokens
-`veos tokens --project P` resolves `playbooks/<id>/tokens.json` (the creator's colours by role, font slots, type, layout, motion, camera_presets, stage_morphs, budgets, tone) plus optional `plan/tokens.override.json` (`{colours, fonts, tone, patch}`) into `work/tokens.json`. The playbook id comes from `project.json` `playbook` (default `naman`; old `style`/`brand` keys are ignored).
+`veos tokens --project P` resolves `playbooks/<id>/tokens.json` (the creator's colours by role, font slots, type, layout, motion, camera_presets, stage_morphs, budgets, tone) plus optional `plan/tokens.override.json` (`{colours, fonts, tone, patch}`) into `work/tokens.json`. The playbook id comes from `project.json` `playbook` (set by `veos project init` from the folder workspace, no default; old `style`/`brand` keys are ignored).
 - Only `brandable` roles may be overridden; fixed-meaning roles (`bad`, `good`, `comedy`) are ignored with a warning.
 - Brandable colours are contrast-checked against `text_on` (>= 4.5:1, or 3:1 for large-text-only roles) and nudged in OKLCH lightness if they fail; adjustments are listed in `warnings`.
 - Patches touching safe zones, fixed meanings or loudness are rejected.

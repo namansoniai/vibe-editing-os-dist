@@ -20,6 +20,7 @@ COMMANDS = {
     "tokens": "tokens", "prep-frames": "prep", "bundle": "prep",
     "project": "project", "voice": "voice", "context": "context", "captions": "captions", "paths": "paths",
     "scenes-meta": "scenes", "measure": "scenes",
+    "workspace": "workspace", "playbook": "workspace", "learn": "learn", "asset": "asset",
 }
 
 

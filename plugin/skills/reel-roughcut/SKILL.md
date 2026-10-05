@@ -29,3 +29,5 @@ user-invocable: false
    - `gaps_ge_150ms` is small (≤ 1 per 15 s, except deliberate pauses)
    - If it's still gappy, tighten the EDL and run it again (at most 2 rounds).
 5. `veos project set phase=roughcut --project "P"`. Tell the user in one line: kept duration, takes removed, seconds trimmed.
+
+**Learned rules:** if the playbook folder has `learned.md`, follow its entries for this phase's area. They override the playbook body.

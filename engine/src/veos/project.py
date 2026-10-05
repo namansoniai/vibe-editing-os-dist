@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .core import VeosError, need_project, read_json, veos_home, write_json
 
-PHASES = ["init", "prep", "roughcut", "captions", "plan", "storyboard", "approved", "render", "done"]
+PHASES = ["init", "prep", "roughcut", "captions", "inputs", "plan", "storyboard", "approved", "render", "done"]
 MODES = ["autopilot", "director"]
 
 
@@ -16,7 +16,7 @@ def add_args(p, cmd):
     p.add_argument("items", nargs="*", help="init: clip files/folders; set: key=value pairs")
     p.add_argument("--script", help="init: script file")
     p.add_argument("--mode", choices=MODES, help="init: autopilot (default) or director")
-    p.add_argument("--playbook", help="init: playbook id (default naman)")
+    p.add_argument("--playbook", help="init: playbook id (default: the folder's workspace playbook)")
     p.add_argument("--force", action="store_true", help="init: overwrite an existing project.json")
 
 
@@ -52,6 +52,25 @@ def _brief(root: Path, st: dict) -> dict:
     return {"path": root.as_posix(), "phase": st.get("phase"), "mode": st.get("mode"), "updated": st.get("updated")}
 
 
+def _workspace_playbook(first: Path, root: Path) -> str:
+    """Playbook for a new project: an existing project.json's (backward compat), else the clips' folder workspace, else cwd's."""
+    from .workspace import find_workspace
+    pj = root / "project.json"
+    if pj.exists():
+        try:
+            if read_json(pj).get("playbook"):
+                return str(read_json(pj)["playbook"])
+        except ValueError:
+            pass
+    for start in (first if first.is_dir() else first.parent, Path.cwd()):
+        ws = find_workspace(start)
+        if ws:
+            return ws["playbook"]
+    raise VeosError("PLAYBOOK_REQUIRED", "no playbook chosen for this folder",
+                    "choose a playbook first: `veos workspace get` lists them, `veos workspace set --playbook ID --dir <clips folder>` remembers one "
+                    "(or pass --playbook ID).")
+
+
 def _init(args, project) -> dict:
     from .ingest import _collect  # lazy: pulls numpy
     if not args.items:
@@ -72,9 +91,10 @@ def _init(args, project) -> dict:
         if not sp.exists():
             raise VeosError("INPUT_MISSING", f"script not found: {args.script}", "Check the --script path.")
         script = sp.resolve().as_posix()
+    pb = args.playbook or _workspace_playbook(first, root)
     t = now()
     st = {"version": 1, "created": t, "updated": t, "clips": [c.as_posix() for c in clips], "script": script,
-          "mode": args.mode or "autopilot", "playbook": args.playbook or "naman",
+          "mode": args.mode or "autopilot", "playbook": pb, "inputs": None,
           "phase": "init", "approved_at": None, "last_error": None, "history": [{"t": t, "phase": "init"}]}
     root.mkdir(parents=True, exist_ok=True)
     write_json(root / "project.json", st)
@@ -84,6 +104,24 @@ def _init(args, project) -> dict:
 
 def _coerce(v: str):
     return None if v == "null" else v
+
+
+def _json_value(k: str, v: str):
+    """`inputs=@file.json` loads a JSON file; `inputs={"a":1}` parses inline JSON."""
+    if v.startswith("@"):
+        f = Path(v[1:]).expanduser()
+        if not f.is_file():
+            raise VeosError("INPUT_MISSING", f"JSON file not found: {v[1:]}", f"Check the path after @ for {k}.")
+        try:
+            return json.loads(f.read_text(encoding="utf-8-sig"))
+        except ValueError as e:
+            raise VeosError("BAD_JSON", f"{f.name} is not valid JSON: {e}", "Fix the JSON syntax.")
+    if v == "null":
+        return None
+    try:
+        return json.loads(v)
+    except ValueError as e:
+        raise VeosError("BAD_JSON", f"value for {k} is not valid JSON: {e}", "Pass JSON, or @file.json.")
 
 
 def _set(args, project) -> dict:
@@ -98,7 +136,7 @@ def _set(args, project) -> dict:
         k = k.strip()
         if k in ("version", "created", "history", "updated"):
             raise VeosError("READONLY_KEY", f"'{k}' is managed by the engine", "")
-        val = _coerce(v)
+        val = _json_value(k, v) if k == "inputs" else _coerce(v)
         if k == "phase":
             if val not in PHASES:
                 raise VeosError("BAD_PHASE", f"phase '{v}' is not one of {', '.join(PHASES)}", "Use one of the listed phases.")

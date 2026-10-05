@@ -26,3 +26,5 @@ Input: project folder `P`. Precondition: `P/plan/timeline.json` validated (`pass
    If opening fails, just print the path.
 8. `veos project set --project "P" phase=storyboard last_error=""`.
 9. Reply: mockup path, duration, number of beats, "layout check: clean". The orchestrator owns the approval gate; do not ask for approval yourself.
+
+**Learned rules:** if the playbook folder has `learned.md`, follow its entries for this phase's area. They override the playbook body.

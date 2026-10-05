@@ -26,3 +26,5 @@ user-invocable: false
    - **Hidden words:** use `""` for a duplicated fragment (e.g. a number split into two tokens).
 5. `veos captions apply "P/work/captions.map.json" --project "P"` → it must report `missing: 0` with every word captioned.
 6. `veos project set phase=captions --project "P"`.
+
+**Learned rules:** if the playbook folder has `learned.md`, follow its entries for this phase's area. They override the playbook body.
