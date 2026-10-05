@@ -1,17 +1,13 @@
 """veos ingest: register source files, classify them and detect camera-setup segments."""
 from __future__ import annotations
 
-import urllib.request
 from pathlib import Path
 
 import numpy as np
 
-from . import media
+from . import facedet, media
 from .core import FPS, VeosError, need_project, r3, read_json, tools, write_json
 
-MODEL_NAME = "blaze_face_short_range.tflite"
-MODEL_URL = ("https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/"
-             "blaze_face_short_range.tflite")
 SPEECH_LUFS = -45.0       # quieter than this is treated as "no speech"
 FACE_TH = 0.5             # face_ratio needed for talking-head
 SELFIE_W = 0.35           # face width / frame width at or above this = selfie
@@ -25,46 +21,22 @@ def add_args(p, cmd):
 
 
 # ---------------------------------------------------------------- face detection
-def _model_path() -> Path:
-    path = tools().models / "mediapipe" / MODEL_NAME
-    if not path.exists():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            urllib.request.urlretrieve(MODEL_URL, path)
-        except Exception as e:  # noqa: BLE001
-            path.unlink(missing_ok=True)
-            raise VeosError("MODEL_MISSING", f"face model missing and download failed ({e})",
-                            f"Download {MODEL_URL} to {path}.") from e
-    return path
-
-
 class FaceFinder:
-    """BlazeFace short-range on up to three full-width square windows (the model squashes its input to 128 px,
-    so a small face in a tall frame is only found when the frame is tiled)."""
+    """Face detection via facedet (MediaPipe on tiled square windows, else YuNet / Haar on the whole frame)."""
 
     def __init__(self):
-        import mediapipe as mp
-        from mediapipe.tasks.python import BaseOptions, vision
-        self.mp = mp
-        self.det = vision.FaceDetector.create_from_options(vision.FaceDetectorOptions(
-            base_options=BaseOptions(model_asset_path=str(_model_path())), min_detection_confidence=0.5))
+        facedet.backend_name()
 
     def find(self, gray: np.ndarray):
         """-> (w, h, cx, cy, score) as fractions of the frame, or None."""
         import cv2
         H, W = gray.shape
-        offs = [0] if H <= W else sorted({0, int((H - W) * 0.4), H - W})
-        best = None
-        for y0 in offs:
-            rgb = cv2.cvtColor(np.ascontiguousarray(gray[y0:y0 + W]), cv2.COLOR_GRAY2RGB)
-            res = self.det.detect(self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=rgb))
-            for d in res.detections:
-                sc = d.categories[0].score
-                if best is None or sc > best[0]:
-                    b = d.bounding_box
-                    best = (sc, b.width / W, b.height / H, (b.origin_x + b.width / 2) / W,
-                            (b.origin_y + y0 + b.height / 2) / H)
-        return None if best is None else (best[1], best[2], best[3], best[4], best[0])
+        rgb = cv2.cvtColor(np.ascontiguousarray(gray), cv2.COLOR_GRAY2RGB)
+        r = facedet.detect(rgb, tiled=True, min_score=0.5)
+        if not r:
+            return None
+        x, y, w, h, sc = r[0]
+        return (w / W, h / H, (x + w / 2) / W, (y + h / 2) / H, sc)
 
 
 # ---------------------------------------------------------------- analysis

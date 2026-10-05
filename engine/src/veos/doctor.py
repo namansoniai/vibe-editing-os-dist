@@ -108,10 +108,20 @@ def main(args, project) -> dict:
     rvm = sorted((models / "rvm").glob("*.onnx")) if (models / "rvm").exists() else []
     add("model: background matte (RVM)", bool(rvm), rvm[0].name if rvm else "missing",
         "Run /reel-setup to download the background-removal model.")
-    mp = sorted((models / "mediapipe").glob("*.tflite")) if (models / "mediapipe").exists() else []
-    face = [p for p in mp if "face" in p.name]
-    add("model: face detector (mediapipe)", bool(face), face[0].name if face else "missing",
-        "Run /reel-setup to download the face detection model.")
+    # face detector chain (mediapipe -> yunet -> haar): ok when any backend works
+    from . import facedet
+    if args.quick:
+        st = facedet.read_state()
+        if st is None:
+            add("face detector", True, "not self-tested yet (run `veos doctor` for the full check)")
+        else:
+            add("face detector", bool(st.get("backend")), f"{st.get('backend')} (cached self-test)" if st.get("backend")
+                else "no backend works", "No face detector works; run `veos doctor`, then re-run /reel-setup.")
+    else:
+        st = facedet.run_selftests()
+        det = "; ".join(f"{n}: {'ok' if r['ok'] else 'FAILED ' + r['detail']}" for n, r in st["results"].items())
+        add("face detector", bool(st["backend"]), f"active: {st['backend']} ({det})" if st["backend"] else det,
+            "No face detector works; re-run /reel-setup (downloads the models and repairs the packages).")
     hf = Path(os.environ.get("HF_HOME", models / "hf"))
     wh = sorted((hf / "hub").glob("models--*faster-whisper-large-v3-turbo*")) if (hf / "hub").exists() else []
     wok = any(list(p.glob("snapshots/*/model.bin")) for p in wh)

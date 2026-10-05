@@ -1,60 +1,35 @@
-"""Face boxes: MediaPipe BlazeFace short-range, full frame first, then a 640 px crop around the last box.
+"""Face boxes via facedet (MediaPipe -> YuNet -> Haar chain), full frame first, then a 640 px crop around the last box.
 
 Used by `veos matte` in the same decode pass. Boxes are [x, y, w, h, score] in source pixels.
 """
 from __future__ import annotations
 
-import urllib.request
-from pathlib import Path
-
 import numpy as np
 
-from .core import VeosError, tools
+from . import facedet
 
-MODEL_URL = ("https://storage.googleapis.com/mediapipe-models/face_detector/"
-             "blaze_face_short_range/float16/1/blaze_face_short_range.tflite")
 CROP = 640
 MAX_GAP = 6
 
 
-def model_path() -> Path:
-    p = tools().models / "mediapipe" / "blaze_face_short_range.tflite"
-    if not p.exists():
-        p.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            urllib.request.urlretrieve(MODEL_URL, p)
-        except Exception as e:  # noqa: BLE001
-            raise VeosError("MODEL_MISSING", f"face model not found and download failed ({e})",
-                            "Run `veos doctor` / /reel-setup to download the models.") from e
-    return p
-
-
 class FaceTracker:
     def __init__(self):
-        import mediapipe as mp
-        from mediapipe.tasks import python as mpt
-        from mediapipe.tasks.python import vision
-        self._mp = mp
-        self._det = vision.FaceDetector.create_from_options(vision.FaceDetectorOptions(
-            base_options=mpt.BaseOptions(model_asset_path=str(model_path())),
-            running_mode=vision.RunningMode.IMAGE, min_detection_confidence=0.4))
+        facedet.backend_name()  # pick the backend now (raises FACE_DETECTOR_MISSING if none works)
         self.last: tuple[float, float] | None = None  # centre of the last box
         self.fallback_frames = 0
 
     def reset(self) -> None:
         self.last = None
 
-    def _run(self, rgb: np.ndarray):
-        r = self._det.detect(self._mp.Image(image_format=self._mp.ImageFormat.SRGB, data=np.ascontiguousarray(rgb)))
-        if not r.detections:
-            return None
-        d = max(r.detections, key=lambda d: d.categories[0].score)
-        return d.bounding_box, float(d.categories[0].score)
+    @staticmethod
+    def _best(rgb: np.ndarray):
+        r = facedet.detect(rgb)
+        return r[0] if r else None
 
     def detect(self, rgb: np.ndarray) -> list | None:
         """rgb: HxWx3 uint8 at source size. Returns [x, y, w, h, score] or None."""
         h, w = rgb.shape[:2]
-        res = self._run(rgb)
+        res = self._best(rgb)
         ox = oy = 0
         if res is None:
             self.fallback_frames += 1
@@ -62,11 +37,11 @@ class FaceTracker:
             cw, ch = min(CROP, w), min(CROP, h)
             ox = int(np.clip(cx - cw / 2, 0, w - cw))
             oy = int(np.clip(cy - ch / 2, 0, h - ch))
-            res = self._run(rgb[oy:oy + ch, ox:ox + cw])
+            res = self._best(rgb[oy:oy + ch, ox:ox + cw])
         if res is None:
             return None
-        b, score = res
-        box = [int(b.origin_x + ox), int(b.origin_y + oy), int(b.width), int(b.height), round(score, 3)]
+        x, y, bw, bh, score = res
+        box = [int(x + ox), int(y + oy), int(bw), int(bh), round(score, 3)]
         self.last = (box[0] + box[2] / 2, box[1] + box[3] / 2)
         return box
 

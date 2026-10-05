@@ -13,6 +13,8 @@ set -u
 
 UV_VERSION="0.12.23"
 RVM_URL="https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_mobilenetv3_fp32.onnx"
+YUNET_URL="https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
+YUNET_SHA="8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
 FACE_URL="https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite"
 WHISPER_REPO="mobiuslabsgmbh/faster-whisper-large-v3-turbo"
 TOTAL=10
@@ -139,7 +141,7 @@ if [ "$DRY_RUN" = 1 ]; then
   UVT="$(uv_target)" || { echo "unsupported platform"; exit 1; }
   check "$UV_BASE/uv-$UVT.tar.gz"; check "$UV_BASE/uv-$UVT.tar.gz.sha256"
   for b in ffmpeg ffprobe; do check "$(ffmpeg_url $b)"; check "$(ffmpeg_url $b).sha256"; done
-  check "$RVM_URL"; check "$FACE_URL"
+  check "$RVM_URL"; check "$FACE_URL"; check "$YUNET_URL"
   check "https://huggingface.co/$WHISPER_REPO/resolve/main/config.json"
   if command -v git >/dev/null 2>&1; then
     if GIT_TERMINAL_PROMPT=0 git ls-remote --exit-code "$REPO.git" HEAD >/dev/null 2>&1; then echo "ok git access to $REPO"; else echo "NOTE: git cannot read $REPO yet (private repo: sign in once with gh auth login)"; fi
@@ -163,7 +165,7 @@ export GIT_TERMINAL_PROMPT=0
 
 # ---- 1 home
 step home "Preparing $HOME_DIR"
-mkdir -p "$HOME_DIR"/{tools,browsers,models/rvm,models/mediapipe,models/hf,playbooks,scratch,cache}
+mkdir -p "$HOME_DIR"/{tools,browsers,models/rvm,models/mediapipe,models/yunet,models/hf,playbooks,scratch,cache}
 
 # ---- 2 app
 step app "Getting the Vibe Editing OS app (engine, renderer, playbooks, assets)"
@@ -236,15 +238,13 @@ retry "python download" "$UV" python install 3.12 || fail "uv python install fai
 # ---- 5 engine
 step engine "Installing the veos engine and its packages (~700 MB)"
 HAVE=""; [ -f "$STATE/engine.sha" ] && HAVE="$(cat "$STATE/engine.sha")"
-IMPORT_OK=0
-if [ "$HAVE" = "$AFTER" ] && "$VENVPY" -c "import veos, faster_whisper, onnxruntime, playwright, cv2, mediapipe" >/dev/null 2>&1; then IMPORT_OK=1; fi
-if [ "$IMPORT_OK" = 1 ]; then info "engine packages already match the app version"; else
-  "$UV" export --project "$APP/engine" --frozen --no-dev --no-emit-project --no-hashes -o "$DL/requirements.txt" -q
-  retry "package download" "$UV" pip sync --python "$VENVPY" "$DL/requirements.txt" || fail "uv pip sync failed"
-  # editable: the engine finds renderer/, assets/, playbooks/ relative to app/engine/src
-  retry "engine install" "$UV" pip install --python "$VENVPY" --no-deps -e "$APP/engine" || fail "engine install failed"
-  rm -f "$DL/requirements.txt"; echo "$AFTER" > "$STATE/engine.sha"
-fi
+# Always sync to EXACTLY the locked set (removes extras, restores changed versions, e.g. a hand-downgraded package);
+# uv makes this a no-op when the venv already matches.
+"$UV" export --project "$APP/engine" --frozen --no-dev --no-emit-project --no-hashes -o "$DL/requirements.txt" -q
+retry "package sync" "$UV" pip sync --python "$VENVPY" "$DL/requirements.txt" || fail "uv pip sync failed"
+# editable: the engine finds renderer/, assets/, playbooks/ relative to app/engine/src
+retry "engine install" "$UV" pip install --python "$VENVPY" --no-deps -e "$APP/engine" || fail "engine install failed"
+rm -f "$DL/requirements.txt"; echo "$AFTER" > "$STATE/engine.sha"
 
 # ---- 6 ffmpeg
 step ffmpeg "ffmpeg + ffprobe (static build, checksum-verified)"
@@ -274,6 +274,9 @@ if [ "$SKIP_MODELS" = 1 ]; then info "skipped (--skip-models)"; else
   if [ ! -f "$RVM" ]; then download "$RVM_URL" "$RVM.part"; mv "$RVM.part" "$RVM"; else info "RVM already present"; fi
   FACE="$HOME_DIR/models/mediapipe/blaze_face_short_range.tflite"
   if [ ! -f "$FACE" ]; then download "$FACE_URL" "$FACE.part"; mv "$FACE.part" "$FACE"; else info "face model already present"; fi
+  YUNET="$HOME_DIR/models/yunet/face_detection_yunet_2023mar.onnx"
+  if [ -f "$YUNET" ] && [ "$(sha256_of "$YUNET")" != "$YUNET_SHA" ]; then rm -f "$YUNET"; fi
+  if [ ! -f "$YUNET" ]; then download "$YUNET_URL" "$YUNET.part" "$YUNET_SHA"; mv "$YUNET.part" "$YUNET"; else info "YuNet face model already present"; fi
   info "whisper turbo: downloading (resumes if interrupted; this is the long one)"
   cat > "$DL/prefetch_whisper.py" <<PYEOF
 from huggingface_hub import snapshot_download

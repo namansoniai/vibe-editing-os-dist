@@ -76,3 +76,8 @@ Talk to the user in plain language and in their language. **Never show internal 
   - Mechanical runs go to the `vibe-editing-os:veos-runner` agent.
 - **The footage is the truth:** never invent words, numbers or claims.
 - **Never modify the user's clips.** Outputs stay inside `P`.
+- **Never patch, reinstall or downgrade the engine on the user's machine, and never ask the user to choose an engine fix.** If a `veos` command fails with an engine error (a crash or missing tool):
+  1. Run `veos doctor` once.
+  2. Tell the user in plain words what failed.
+  3. Suggest `/vibe-editing-os:setup update` (it installs the latest engine with fixes).
+  4. Stop. The engine has built-in fallbacks; don't improvise workarounds.

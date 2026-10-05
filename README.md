@@ -2,7 +2,7 @@
 
 Turn raw talking-head clips into finished short-form reels, edited in **your** style, inside the Claude desktop app.
 
-## Install (no Terminal needed), version 0.2.0
+## Install (no Terminal needed), version 0.2.1
 1. Install the **Claude desktop app**, open the **Code** tab, and start a **local** session in any folder.
 2. Paste this message and send it:
 

@@ -32,6 +32,8 @@ $FFMPEG_NAME  = 'ffmpeg-N-127142-g12b7b9891b-win64-gpl'
 $FFMPEG_URL   = "https://github.com/BtbN/FFmpeg-Builds/releases/download/$FFMPEG_TAG/$FFMPEG_NAME.zip"
 $FFMPEG_SHA   = 'a885f564dee2b60f69ab866c6c89b96ae531fc2ee1f24ff8b5b1a6d29960a96b'
 $RVM_URL      = 'https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_mobilenetv3_fp32.onnx'
+$YUNET_URL    = 'https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx'
+$YUNET_SHA    = '8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4'
 $FACE_URL     = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite'
 $WHISPER_REPO = 'mobiuslabsgmbh/faster-whisper-large-v3-turbo'
 $TOTAL = 10
@@ -140,7 +142,7 @@ $hint = @{
 try {
   # ---- 1 home --------------------------------------------------------------------------------------------------
   Step 'home' "Preparing $Home_"
-  foreach ($d in 'tools', 'browsers', 'models\rvm', 'models\mediapipe', 'models\hf', 'playbooks', 'scratch', 'cache') {
+  foreach ($d in 'tools', 'browsers', 'models\rvm', 'models\mediapipe', 'models\yunet', 'models\hf', 'playbooks', 'scratch', 'cache') {
     New-Item -ItemType Directory -Force -Path (Join-Path $Home_ $d) | Out-Null
   }
 
@@ -234,17 +236,14 @@ try {
   Step 'engine' 'Installing the veos engine and its packages (~700 MB)'
   $stamp = Join-Path $State 'engine.sha'
   $have = if (Test-Path $stamp) { (Get-Content $stamp -Raw).Trim() } else { '' }
-  $importOk = $false
-  if ($have -eq $after -and $after) { & $VenvPy -c "import veos, faster_whisper, onnxruntime, playwright, cv2, mediapipe" 2>$null; $importOk = ($LASTEXITCODE -eq 0); $global:LASTEXITCODE = 0 }
-  if ($importOk) { Info 'engine packages already match the app version' } else {
-    $req = Join-Path $Dl 'requirements.txt'
-    Run $Uv @('export', '--project', (Join-Path $App 'engine'), '--frozen', '--no-dev', '--no-emit-project', '--no-hashes', '-o', $req, '-q')
-    Retry { Run $Uv @('pip', 'sync', '--python', $VenvPy, $req) } 'package download'
-    # editable: the engine locates renderer/, assets/, playbooks/ relative to app/engine/src, so it must run from app/
-    Retry { Run $Uv @('pip', 'install', '--python', $VenvPy, '--no-deps', '-e', (Join-Path $App 'engine')) } 'engine install'
-    Remove-Item $req -Force -ErrorAction SilentlyContinue
-    Set-Content -Path $stamp -Value $after -Encoding ascii
-  }
+  # Always sync to EXACTLY the locked set (removes extras, restores changed versions); a no-op when already matching.
+  $req = Join-Path $Dl 'requirements.txt'
+  Run $Uv @('export', '--project', (Join-Path $App 'engine'), '--frozen', '--no-dev', '--no-emit-project', '--no-hashes', '-o', $req, '-q')
+  Retry { Run $Uv @('pip', 'sync', '--python', $VenvPy, $req) } 'package sync'
+  # editable: the engine locates renderer/, assets/, playbooks/ relative to app/engine/src, so it must run from app/
+  Retry { Run $Uv @('pip', 'install', '--python', $VenvPy, '--no-deps', '-e', (Join-Path $App 'engine')) } 'engine install'
+  Remove-Item $req -Force -ErrorAction SilentlyContinue
+  Set-Content -Path $stamp -Value $after -Encoding ascii
 
   # ---- 6 ffmpeg ------------------------------------------------------------------------------------------------
   Step 'ffmpeg' 'ffmpeg (pinned BtbN build, ~150 MB, checksum-verified)'
@@ -273,6 +272,9 @@ try {
     if (-not (Test-Path $rvm)) { Download $RVM_URL "$rvm.part"; Move-Item "$rvm.part" $rvm -Force } else { Info 'RVM already present' }
     $face = Join-Path $Home_ 'models\mediapipe\blaze_face_short_range.tflite'
     if (-not (Test-Path $face)) { Download $FACE_URL "$face.part"; Move-Item "$face.part" $face -Force } else { Info 'face model already present' }
+    $yn = Join-Path $Home_ 'models\yunet\face_detection_yunet_2023mar.onnx'
+    if ((Test-Path $yn) -and ((Get-FileHash -Algorithm SHA256 -Path $yn).Hash.ToLower() -ne $YUNET_SHA)) { Remove-Item $yn -Force }
+    if (-not (Test-Path $yn)) { Download $YUNET_URL "$yn.part" $YUNET_SHA; Move-Item "$yn.part" $yn -Force } else { Info 'YuNet face model already present' }
     Info 'whisper turbo: downloading (resumes if interrupted; this is the long one)'
     $py = @"
 from huggingface_hub import snapshot_download

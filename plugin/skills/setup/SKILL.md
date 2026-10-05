@@ -33,3 +33,5 @@ Run the same script with the update flag (`-Update` on Windows, `--update` on ma
 ## Notes
 - `veos` is on PATH while the plugin is enabled; before the first install it prints `ENGINE_MISSING`, which means: run this skill.
 - Never delete `VEOS_HOME`. To uninstall, the user deletes that folder.
+
+**Never patch, downgrade or edit the engine, and never ask the user to pick an engine fix.** Report the failing step plainly and suggest `/vibe-editing-os:setup update`.

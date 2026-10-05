@@ -21,3 +21,5 @@ Input: project folder `P` (the `vibe-edit/` folder with project.json). Never han
 6. Reply to the orchestrator in 2-3 lines: sources found, total duration, word count, and that phase is `prep`.
 
 Rules: phases are idempotent and re-use cached outputs, so on resume just run the steps again. Make no creative decisions here.
+
+**Never patch, downgrade or edit the engine, and never ask the user to pick an engine fix.** Report the failing step plainly and suggest `/vibe-editing-os:setup update`.
