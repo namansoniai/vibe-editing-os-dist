@@ -1,0 +1,30 @@
+{
+  "package": "veos.template/1",
+  "id": "naman-infotainment-motion",
+  "tier": "core",
+  "order": 0,
+  "tagline": "Hype, result-first reels: a tilted yellow headline slab, your bad-vs-premium result in the first second, numbers that turn into moving crowds and machines, and roasts with stamps, stickers and meme sounds.",
+  "inspired_by_display": [],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Best with a person matte (made automatically) and screen recordings of what you talk about; missing recordings become built mock-ups.",
+  "requires": [
+    "tokens_v3",
+    "layouts_v3",
+    "data_figures",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Result-First Roast hook: yellow slab, bad site marked up in red, AI SLOP stamp, presenter cut out in front",
+      "Data Theatre: 5 users become 5,000 dots on the night stage, the gauge hits red, the phone cracks",
+      "Pop-back CTA: the keyword on a yellow key-cap flies into a DM, community chip on top"
+    ]
+  }
+}

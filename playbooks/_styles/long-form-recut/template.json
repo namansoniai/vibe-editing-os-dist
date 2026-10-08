@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "long-form-recut",
+  "tier": "full",
+  "order": 14,
+  "tagline": "Turn your own long video into a calm 2-minute short: it starts mid-thought on your best shot, every shot reframed to vertical, with serif captions that turn gold when a guest speaks.",
+  "inspired_by_display": [
+    "Veritasium"
+  ],
+  "needs": "your own finished long-form video (16:9, 1080p or 4K)",
+  "readiness": "R4",
+  "readiness_note": "Works from your finished long-form video only; 4K masters crop sharpest. Wide diagrams show as a centred band.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "multi_speaker",
+    "diarisation",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Cold open: a moving render, the first serif caption already running at y 1380",
+      "Voice-coded captions: the guest's words in gold, the host's in white",
+      "A wide diagram kept whole as a centred 16:9 band over its blurred copy, caption under the band"
+    ]
+  }
+}

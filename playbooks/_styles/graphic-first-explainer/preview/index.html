@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Graphic-First Explainer Glimpse</title>
+<!-- Template preview. Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 6 s CSS loops, 1080x1920 at 1/3. -->
+<style>
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-Italic-VF.ttf");font-style:italic;font-weight:100 900}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-SemiBold.ttf");font-weight:600}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Bold.ttf");font-weight:700}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-ExtraBold.ttf");font-weight:800}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Regular.ttf")}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-style:italic}
+@font-face{font-family:"JetBrains Mono";src:url("../../../../assets/fonts/JetBrainsMono-VF.ttf");font-weight:100 800}
+:root{--stage:#141210;--cream:#EDE6D6;--coral:#F08060;--blue:#4F8CFF;--mute:#9A9384;--bad:#D4372D;
+  --bcream:#FBF3E4;--orange:#F26B3A;--orangeT:#DB5320;--lime:#8CFF3C;--ink:#111;--red:#D63A20;
+  --pink:#F4849C;--sage:#A9B9B4;--plum:#2B1F2A;--e:cubic-bezier(.22,1,.36,1);--b:cubic-bezier(.34,1.56,.64,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0D0C;color:#EDE6D6;font-family:"Inter Tight",system-ui,sans-serif;padding:32px 16px 60px}
+h1{font-weight:700;font-size:22px;max-width:1180px;margin:0 auto 4px}
+p.lead{font-size:13px;opacity:.7;max-width:1180px;margin:0 auto 22px;line-height:1.45}
+h2{font:600 12px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);max-width:1180px;margin:26px auto 12px}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px}
+figcaption{font-size:12px;opacity:.75;margin-top:8px;line-height:1.4}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate}
+.abs{position:absolute}
+/* worlds */
+.w-ed{background:radial-gradient(130% 80% at 50% 45%,#1d1a17 0%,#141210 60%,#0c0b0a 100%)}
+.w-ed:after{content:"";position:absolute;inset:0;opacity:.07;background-image:repeating-radial-gradient(circle at 37% 23%,#fff 0 .6px,transparent .6px 2.6px);pointer-events:none}
+.w-paper{background:var(--cream);background-image:linear-gradient(#CFC5B0 1px,transparent 1px),linear-gradient(90deg,#CFC5B0 1px,transparent 1px);background-size:24px 24px}
+.w-br{background:var(--bcream);background-image:linear-gradient(#EADCC4 .7px,transparent .7px),linear-gradient(90deg,#EADCC4 .7px,transparent .7px);background-size:16px 16px}
+.w-pink{background:var(--pink)}
+.w-pink:after,.w-sage:after{content:"";position:absolute;inset:0;opacity:.08;background-image:repeating-radial-gradient(circle at 60% 30%,#000 0 .5px,transparent .5px 2.2px);pointer-events:none}
+.w-sage{background:var(--sage)}
+/* FIG line */
+.fig{left:21px;right:21px;top:72px;display:flex;justify-content:space-between;font:500 8.7px/1 "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.fig b{color:var(--coral);font-weight:600;margin-right:8px}
+/* caption pill */
+.cap{left:0;right:0;text-align:center;font:600 15.3px/1 "Inter Tight"}
+.cap span{display:inline-block;padding:3px 6px 4px;border-radius:3.3px;background:#1C1A17;color:#fff;opacity:0}
+.cap.b span{font-family:Poppins;font-weight:700;background:var(--red)}
+.c1{animation:cw 6s steps(1) infinite}
+@keyframes cw{0%{opacity:1}100%{opacity:1}}
+.seq span{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
+/* presenter illustration (neutral) */
+.pres{left:0;right:0;bottom:0;overflow:hidden}
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,#7FB4E8,#CFE6F7 70%,#EAF3FA)}
+.arch{position:absolute;left:-30px;right:-30px;top:18px;height:420px;border-radius:50%;border:9px solid #C8463A;box-shadow:0 0 0 8px #3E7FD0 inset}
+.person{position:absolute;left:50%;bottom:-8px;width:170px;height:240px;transform:translateX(-50%);animation:sway 3s ease-in-out infinite alternate}
+@keyframes sway{to{transform:translateX(-50%) rotate(1.2deg)}}
+.head{position:absolute;left:50%;top:10px;width:74px;height:86px;margin-left:-37px;border-radius:46% 46% 42% 42%;background:#B98262}
+.hair{position:absolute;left:50%;top:0;width:82px;height:42px;margin-left:-41px;border-radius:40px 40px 12px 12px;background:#231711}
+.mouth{position:absolute;left:50%;top:70px;width:16px;height:4px;margin-left:-8px;border-radius:4px;background:#6E352C;animation:talk .3s steps(2) infinite}
+@keyframes talk{50%{height:8px}}
+.body{position:absolute;left:0;right:0;bottom:0;height:120px;border-radius:70px 70px 0 0;background:#6F7377}
+/* hourglass */
+.hg{left:77px;top:100px;width:206px;height:350px}
+.dot{position:absolute;width:9px;height:9px;border-radius:50%;background:#141210}
+.drop{left:98px;top:120px;animation:drop 1s cubic-bezier(.55,0,1,.45) infinite}
+@keyframes drop{0%{transform:translateY(0);opacity:1}85%{opacity:1}100%{transform:translateY(190px);opacity:0}}
+.ctr{font:400 53px/1 "Instrument Serif";color:var(--coral);width:40px;height:54px;overflow:hidden}
+.ctr .col{display:flex;flex-direction:column;animation:roll 6s steps(5) infinite}
+.ctr .col i{font-style:normal;height:54px;display:block}
+@keyframes roll{from{transform:translateY(0)}to{transform:translateY(-270px)}}
+.micro{font:500 10px/1 "JetBrains Mono";letter-spacing:.12em;color:var(--mute);text-transform:uppercase}
+/* slab */
+.slab{left:21px;font:900 italic 28px/.95 Montserrat;color:#fff;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.55)}
+.slab div{animation:slab 6s var(--e) infinite;opacity:0}
+.slab div+div{animation-delay:.1s}
+@keyframes slab{0%{opacity:0;transform:translateX(90px);filter:blur(4px)}6%,96%{opacity:1;transform:none;filter:none}100%{opacity:0}}
+/* rings */
+.ring{position:absolute;left:50%;top:50%;border-radius:50%;border:1.4px solid;transform:translate(-50%,-50%) scale(.6);opacity:0;animation:ring 6s var(--e) infinite}
+@keyframes ring{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}8%,92%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0}}
+.orb{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px;animation:spin 2s linear infinite}
+.orb:after{content:"";position:absolute;right:-3px;top:50%;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 8px #9BC0FF}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* grid fill */
+.gf{left:42px;top:255px;display:grid;grid-template-columns:repeat(12,18.6px);gap:4.7px}
+.gf i{width:18.6px;height:18.6px;border-radius:3.3px;background:rgba(154,147,132,.14);animation:fill 6s steps(1) infinite}
+@keyframes fill{0%{background:rgba(154,147,132,.14)}100%{background:rgba(154,147,132,.14)}}
+/* bars */
+.bar{position:absolute;bottom:0;width:58px;transform-origin:bottom;animation:grow 6s var(--e) infinite}
+@keyframes grow{0%{transform:scaleY(0)}10%,94%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+/* brutal window */
+.win{position:absolute;background:#fff;border:1.7px solid var(--ink);border-radius:5px;box-shadow:4px 5px 0 var(--ink)}
+.win .tb{height:20px;border-bottom:1.7px solid var(--ink);display:flex;align-items:center;gap:4px;padding:0 6px;font:500 7px "JetBrains Mono";color:#6E6559}
+.win .tb i{width:6px;height:6px;border-radius:50%;border:1.2px solid var(--ink)}
+.win .tb span{flex:1;text-align:center}
+.skew{animation:skew 6s var(--b) infinite;transform-origin:30% 80%}
+@keyframes skew{0%{transform:perspective(600px) rotateY(-10deg) rotate(-4deg) scale(.94) translateX(14px);opacity:0}5%,95%{transform:none;opacity:1}100%{opacity:0}}
+.wt{font:700 40px/.96 "Barlow Condensed";text-transform:uppercase;color:var(--ink)}
+.wt em{font-style:normal;color:var(--orangeT)}
+.chip{position:absolute;font:600 11px/1 "JetBrains Mono";padding:4px 9px;border:1.2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);opacity:0;animation:pop 6s var(--b) infinite}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}4%,95%{opacity:1;transform:scale(1)}100%{opacity:0}}
+.slug{position:absolute;left:21px;top:50px;font:600 10.7px/1 "JetBrains Mono";padding:5px 9px;background:var(--lime);border:1px solid var(--ink);border-radius:9px;color:var(--ink)}
+.hdr{position:absolute;left:21px;top:73px;font:700 34.7px/.98 "Barlow Condensed";text-transform:uppercase;color:var(--ink)}
+.hdr em{font-style:normal;color:var(--orangeT)}
+.type{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;animation:type 6s steps(12) infinite}
+@keyframes type{0%{max-width:0}12%,100%{max-width:200px}}
+.pip{position:absolute;left:202px;top:40px;width:140px;height:140px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3.3px var(--orange)}
+.pip .sky{background:linear-gradient(180deg,#2E3A2E,#476147)}
+.decor{position:absolute;left:0;right:0;top:527px;height:90px}
+/* numeral */
+.num{position:absolute;left:0;right:0;top:60px;text-align:center;font:800 240px/1 Poppins;color:#fff;-webkit-text-stroke:2.7px var(--ink);paint-order:stroke fill;text-shadow:5px 6px 0 var(--ink);animation:numpop 6s var(--e) infinite}
+@keyframes numpop{0%{transform:scale(1.25);opacity:0}3%,96%{transform:scale(1);opacity:1}100%{opacity:0}}
+.lbox{position:absolute;left:21px;right:21px;top:300px;height:54px;background:#fff;border:1.7px solid var(--ink);box-shadow:3px 4px 0 var(--ink);font:700 29px/52px Poppins;color:var(--ink);padding-left:14px;white-space:nowrap;overflow:hidden}
+.caret{display:inline-block;width:3px;height:30px;background:var(--ink);vertical-align:-5px;animation:blink .53s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+/* ticker */
+.tick{position:absolute;left:21px;right:21px;top:70px;height:180px;background:var(--pink);border:1.7px solid var(--plum);box-shadow:3px 4px 0 var(--plum)}
+.tick .hs{height:24px;background:var(--plum);color:#fff;font:500 11px/24px "JetBrains Mono";padding-left:10px}
+.trow{display:flex;align-items:center;gap:10px;padding:16px 14px 0;font:800 50px/1 Poppins;color:#fff;-webkit-text-stroke:1.7px var(--plum);paint-order:stroke fill;text-shadow:3px 3px 0 var(--plum)}
+.plate{font:700 13px/1 Poppins;-webkit-text-stroke:0;text-shadow:none;color:var(--plum);background:#fff;border:1.2px solid var(--plum);border-radius:10px;padding:6px 8px;width:86px;text-align:center}
+.vbox{height:52px;overflow:hidden;width:150px}
+.vbox .col{display:flex;flex-direction:column;animation:tk 6s steps(12) infinite}
+.vbox .col i{font-style:normal;height:52px;display:block}
+@keyframes tk{0%{transform:translateY(0)}60%,100%{transform:translateY(-624px)}}
+/* keyword */
+.kw{position:absolute;left:0;right:0;top:360px;text-align:center;font:800 44px/1 Poppins;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.kw b{display:block;font-size:68px;color:var(--lime);margin-top:2px;animation:numpop 6s var(--b) infinite}
+.wipe{animation:wipe 6s steps(1) infinite}
+</style>
+</head>
+<body>
+<h1>Graphic-First Explainer</h1>
+<p class="lead">Inspired by 100xEngineers. One full-screen designed card per idea, hard cuts every 1.5–3 s, numbers that move, word-by-word pill captions, and the presenter as a guest. Two formats (editorial figure explainer, ad card) and three theme packs (dark editorial, cream neo-brutalist, pink and sage). Illustrated presenter; 1080×1920 shown at 1/3.</p>
+
+<h2>F-A · Editorial figure explainer · TH-editorial</h2>
+<div class="grid">
+<figure><div class="f" data-card="1">
+  <!-- L-stack hook: live number at f0 -->
+  <div class="abs w-ed" style="left:0;top:0;width:360px;height:320px;overflow:hidden">
+    <div class="abs micro" style="left:258px;top:62px;line-height:1.4">DAY 1<br>START</div>
+    <svg class="abs" style="left:120px;top:40px" width="130" height="190" viewBox="0 0 130 190"><path d="M8 4h114v28c0 28-40 46-48 63 8 17 48 35 48 63v28H8v-28c0-28 40-46 48-63C48 78 8 60 8 32z" fill="#EDE6D6"/>
+      <g fill="#141210"><circle cx="45" cy="30" r="4"/><circle cx="55" cy="30" r="4"/><circle cx="65" cy="30" r="4"/><circle cx="75" cy="30" r="4"/><circle cx="85" cy="30" r="4"/><circle cx="50" cy="39" r="4"/><circle cx="60" cy="39" r="4"/><circle cx="70" cy="39" r="4"/><circle cx="80" cy="39" r="4"/><circle cx="55" cy="48" r="4"/><circle cx="75" cy="48" r="4"/><circle cx="45" cy="172" r="4"/><circle cx="55" cy="172" r="4"/><circle cx="65" cy="172" r="4"/><circle cx="75" cy="172" r="4"/><circle cx="85" cy="172" r="4"/><circle cx="60" cy="163" r="4"/><circle cx="70" cy="163" r="4"/></g><circle cx="65" cy="48" r="4" fill="#F08060"/></svg>
+    <div class="abs dot drop" style="left:182px;top:120px;animation-duration:.8s"></div>
+    <div class="abs ctr" style="left:21px;top:96px"><div class="col"><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>7</i></div></div>
+    <div class="abs micro" style="left:21px;top:154px">DAYS</div>
+    <div class="abs micro" style="left:21px;top:170px;color:#EDE6D6"><span style="color:#D4372D">●</span> NONSTOP</div>
+    <div class="abs slab" style="top:233px"><div>Claim solved</div><div>a hard thing</div></div>
+  </div>
+  <div class="abs pres" style="top:320px"><div class="sky"></div><div class="arch"></div><div class="person"><div class="body"></div><div class="head"></div><div class="hair"></div><div class="mouth"></div></div></div>
+  <div class="abs cap" style="top:310px"><span style="opacity:1">working on it</span></div>
+</div><figcaption>Card 1 · HA-07 hook on L-stack: the day counter is already rolling at f0, the title slab slides in, the caption pill sits on the seam.</figcaption></figure>
+
+<figure><div class="f w-ed">
+  <div class="abs fig"><span><b>FIG. 02</b>SCATTERING LAYERS</span><span>SRC: SOURCE · SEP 2026</span></div>
+  <div class="abs" style="left:180px;top:267px;width:0;height:0">
+    <div class="ring" style="width:60px;height:60px;border-color:#F08060;animation-delay:0s"></div>
+    <div class="ring" style="width:80px;height:80px;border-color:#E9806E;animation-delay:.3s"></div>
+    <div class="ring" style="width:100px;height:100px;border-color:#D27F95;animation-delay:.6s"></div>
+    <div class="ring" style="width:120px;height:120px;border-color:#B07CE8;animation-delay:.9s"></div>
+    <div class="ring" style="width:140px;height:140px;border-color:#8C82F0;animation-delay:1.2s"></div>
+    <div class="ring" style="width:160px;height:160px;border-color:#6D88F8;animation-delay:1.5s"></div>
+    <div class="ring" style="width:180px;height:180px;border-color:#4F8CFF;animation-delay:1.8s"></div>
+    <div class="orb" style="width:180px;height:180px;margin:-90px"></div>
+    <div class="abs ctr" style="left:-14px;top:-28px;width:30px"><div class="col" style="animation-timing-function:steps(5)"><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>7</i></div></div>
+  </div>
+  <div class="abs" style="left:0;right:0;top:385px;text-align:center;font:italic 24px 'Instrument Serif';color:#F08060">layers · rounds · loops</div>
+  <div class="abs cap" style="top:458px"><span style="opacity:1">every new loop</span></div>
+</div><figcaption>P-03 loop rings: one ring per counted layer, the numeral steps (E6), FIG line + SRC on every F-A card.</figcaption></figure>
+
+<figure><div class="f w-ed">
+  <div class="abs fig"><span><b>FIG. 03</b>CAPACITY</span><span>SRC: SOURCE · SEP 2026</span></div>
+  <div class="abs micro" style="left:42px;top:228px">UNITS RUNNING</div>
+  <div class="abs" style="right:42px;top:205px;font:40px/1 'Instrument Serif';color:#F08060;height:42px;overflow:hidden"><div style="display:flex;flex-direction:column;animation:roll3 6s steps(3) infinite"><i style="font-style:normal;height:42px">3</i><i style="font-style:normal;height:42px">44</i><i style="font-style:normal;height:42px">90</i><i style="font-style:normal;height:42px">96</i></div></div>
+  <div class="gf abs" id="gf"></div>
+  <div class="abs cap" style="top:458px"><span style="opacity:1">on 96 machines</span></div>
+</div><figcaption>P-12 grid fill: the cells and the counter share one figure and land on the spoken number.</figcaption></figure>
+
+<figure><div class="f w-ed">
+  <div class="abs fig"><span><b>FIG. 04</b>OLD VS NEW</span><span>SRC: SOURCE · SEP 2026</span></div>
+  <div class="abs" style="left:30px;top:120px;width:300px;height:260px;border-left:1px solid #3a352f;border-bottom:1px solid #3a352f">
+    <div style="position:absolute;left:0;right:0;top:20px;border-top:1.3px dashed #4F8CFF"></div>
+    <div class="abs micro" style="right:0;top:6px;color:#F7B046">FRONTIER</div>
+    <div class="bar" style="left:22px;height:200px;background:linear-gradient(#F06A5E,#8A2320)"></div>
+    <div class="bar" style="left:120px;height:240px;background:linear-gradient(#E4ECFF,#3B74FF);animation-delay:.2s"></div>
+    <div class="bar" style="left:218px;height:240px;background:linear-gradient(#E4ECFF,#3B74FF);animation-delay:.4s"></div>
+  </div>
+  <div class="abs" style="left:52px;top:388px;width:270px;display:flex;justify-content:space-between;font:600 13px 'Inter Tight';text-transform:uppercase"><span style="color:#F08060">Old record</span><span style="color:#4F8CFF">New A</span><span style="color:#4F8CFF">New B</span></div>
+  <div class="abs cap" style="top:458px"><span style="opacity:1">the frontier</span></div>
+</div><figcaption>P-15 compare bars: old = warm red, new = accent, one shared scale, a dashed threshold.</figcaption></figure>
+</div>
+
+<h2>F-B · Ad card · TH-brutal</h2>
+<div class="grid">
+<figure><div class="f w-br" data-card="2">
+  <div class="slug">// who_we_are</div>
+  <div class="hdr"><span class="type">LEARN BY</span><br><em class="type" style="animation-delay:.4s">BUILDING.</em></div>
+  <div class="pip"><div class="sky"></div><div class="person" style="width:110px;height:150px;bottom:-12px"><div class="body" style="height:70px;background:#2C2A48"></div><div class="head" style="width:48px;height:56px;margin-left:-24px"></div><div class="hair" style="width:54px;height:28px;margin-left:-27px"></div><div class="mouth" style="top:44px"></div></div></div>
+  <div class="win skew" style="left:27px;top:213px;width:306px;height:220px">
+    <div class="tb"><i></i><i></i><i></i><span>who_we_are.exe</span>□□</div>
+    <div class="wt" style="padding:34px 14px 0">Strength<br><em>program.</em></div>
+    <div style="margin:10px 14px;display:inline-block;font:600 9.5px 'JetBrains Mono';background:var(--lime);border:1px solid var(--ink);border-radius:9px;padding:4px 8px;color:var(--ink)">home-or-gym</div>
+  </div>
+  <div class="chip" style="left:30px;top:420px;transform:rotate(-3deg);animation-delay:.6s;background:var(--lime)">12 weeks</div>
+  <div class="chip" style="left:128px;top:424px;animation-delay:.8s">live · online</div>
+  <div class="chip" style="left:240px;top:419px;animation-delay:1s;background:#FBF3E4">3x a week</div>
+  <div class="abs cap b" style="top:472px"><span style="opacity:1">is fully</span></div>
+  <svg class="decor" viewBox="0 0 360 90"><path d="M30 30l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="none" stroke="#111" stroke-width="1.4"/><path d="M110 50c10-12 20 12 30 0s20 12 30 0 20 12 30 0" fill="none" stroke="#F26B3A" stroke-width="2.4"/><g fill="#6E6559">
+    <circle cx="260" cy="30" r="1.3"/><circle cx="268" cy="30" r="1.3"/><circle cx="276" cy="30" r="1.3"/><circle cx="284" cy="30" r="1.3"/><circle cx="260" cy="38" r="1.3"/><circle cx="268" cy="38" r="1.3"/><circle cx="276" cy="38" r="1.3"/><circle cx="284" cy="38" r="1.3"/><circle cx="260" cy="46" r="1.3"/><circle cx="268" cy="46" r="1.3"/><circle cx="276" cy="46" r="1.3"/><circle cx="284" cy="46" r="1.3"/></g><path d="M330 20l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#8CFF3C" stroke="#111"/></svg>
+</div><figcaption>Card 2 · F-B HA-02 on L-pip: slug + header beside the ringed bubble (never under it), a window card skewing in, chips popping on the attribute words, the decor band below.</figcaption></figure>
+
+<figure><div class="f w-br">
+  <div class="num">1</div>
+  <div class="lbox"><span class="type" style="animation-timing-function:steps(14)">Forgotten fees</span><span class="caret"></span></div>
+  <div class="abs cap b" style="top:458px"><span style="opacity:1">One:</span></div>
+</div><figcaption>P-39 numeral card: one per list item, the label types with a caret.</figcaption></figure>
+
+<figure><div class="f">
+  <div class="abs pres" style="top:0"><div class="sky" style="background:linear-gradient(180deg,#2D3A55,#4A5B7A)"></div><div class="person" style="width:230px;height:330px;bottom:-10px;transform:translateX(-50%) scale(1.35);transform-origin:bottom"><div class="body" style="height:160px;background:#2C2A48"></div><div class="head" style="width:96px;height:112px;margin-left:-48px"></div><div class="hair" style="width:104px;height:54px;margin-left:-52px"></div><div class="mouth" style="top:92px"></div></div></div>
+  <div class="kw">comment<b>“PLAN”</b></div>
+</div><figcaption>P-48 keyword card on L-full after a Z-1 re-crop: said twice (mid and end), held ≥ 1.5 s.</figcaption></figure>
+</div>
+
+<h2>Theme strip · TH-pinksage</h2>
+<div class="grid">
+<figure><div class="f" data-card="3">
+  <div class="abs w-sage" style="left:0;top:0;width:360px;height:320px">
+    <div class="tick">
+      <div class="hs">Monthly Subscriptions</div>
+      <div class="trow"><span class="plate">Streaming</span>–<div class="vbox"><div class="col"><i>$12</i><i>$15</i><i>$18</i><i>$21</i><i>$24</i><i>$27</i><i>$30</i><i>$33</i><i>$36</i><i>$39</i><i>$42</i><i>$45</i><i>$45</i></div></div></div>
+      <div class="trow"><span class="plate">Apps</span>–<div class="vbox"><div class="col"><i>$20</i><i>$24</i><i>$28</i><i>$32</i><i>$35</i><i>$39</i><i>$43</i><i>$47</i><i>$51</i><i>$55</i><i>$58</i><i>$62</i><i>$62</i></div></div></div>
+    </div>
+  </div>
+  <div class="abs pres" style="top:320px"><div class="sky"></div><div class="arch"></div><div class="person"><div class="body"></div><div class="head"></div><div class="hair"></div><div class="mouth"></div></div></div>
+  <div class="abs cap b" style="top:310px"><span style="opacity:1">keep climbing</span></div>
+</div><figcaption>Card 3 · TH-pinksage HA-07: a ticker card ticking every 4 f at frame 0 in the stack's top band; white values carry the ink stroke.</figcaption></figure>
+
+<figure><div class="f w-pink">
+  <div class="win skew" style="left:96px;top:120px;width:168px;height:58px;background:var(--pink);border-color:var(--plum);box-shadow:3px 4px 0 var(--plum);font:700 34px/56px 'Barlow Condensed';text-align:center;color:var(--plum)">AUDIT</div>
+  <svg class="abs" style="left:60px;top:182px" width="240" height="110"><path d="M120 0v40M50 40h140M50 40v50M190 40v50" fill="none" stroke="#2B1F2A" stroke-width="2.4" stroke-dasharray="7 6"/></svg>
+  <div class="win" style="left:40px;top:272px;width:120px;height:56px;font:600 20px/54px Poppins;text-align:center;color:var(--plum);border-color:var(--plum)">Keep</div>
+  <div class="win" style="left:200px;top:272px;width:120px;height:56px;font:600 20px/54px Poppins;text-align:center;color:#fff;background:#D4372D;border-color:var(--plum)">Cancel</div>
+  <div class="abs cap b" style="top:458px"><span style="opacity:1">keep or cancel</span></div>
+</div><figcaption>P-28 router fork on the pink world; the next card cuts to sage (W-alt alternation).</figcaption></figure>
+
+<figure><div class="f w-paper">
+  <div class="abs" style="left:28px;top:110px;width:304px">
+    <div style="display:flex;justify-content:space-between;margin:22px 0;font:600 10px 'JetBrains Mono';color:#111"><span>GUESSING</span><span>· · ●</span><span>SYSTEM</span></div>
+    <div style="display:flex;justify-content:space-between;margin:22px 0;font:600 10px 'JetBrains Mono';color:#111"><span>HIGH FEE</span><span>· · ●</span><span>LOW FEE</span></div>
+    <div style="display:flex;justify-content:space-between;margin:22px 0;font:600 10px 'JetBrains Mono';color:#111"><span>MONTHLY</span><span>· · ●</span><span>AUTOMATIC</span></div>
+  </div>
+  <div class="abs" style="left:186px;top:118px;width:30px;height:150px;border-radius:15px;background:rgba(79,140,255,.25);filter:blur(3px);animation:grow 6s var(--e) infinite;transform-origin:top"></div>
+  <div class="abs cap"style="top:458px"><span style="opacity:1">what changes</span></div>
+</div><figcaption>P-18 slider matrix on the editorial W-alt graph paper: the summary card that closes an F-A reel.</figcaption></figure>
+</div>
+
+<script>
+/* builds static grid cells once (no timing loops); their colours animate with CSS delays */
+(function(){var g=document.getElementById('gf');var cols=['#F08060','#E9806E','#D27F95','#C07EBE','#B07CE8','#9E80EE','#8C82F0','#7D85F4','#6D88F8','#5F8AFB','#548BFD','#4F8CFF'];
+var css='';for(var k=0;k<96;k++){var i=document.createElement('i');var c=cols[k%12];var at=k<3?6:k<44?20:k<90?45:62;i.style.animationName='f'+k;g.appendChild(i);
+css+='@keyframes f'+k+'{0%{background:rgba(154,147,132,.14)}'+at+'%{background:'+c+'}96%{background:'+c+'}100%{background:rgba(154,147,132,.14)}}';}
+css+='@keyframes roll3{0%{transform:translateY(0)}20%{transform:translateY(-42px)}45%{transform:translateY(-84px)}62%,100%{transform:translateY(-126px)}}';
+var s=document.createElement('style');s.textContent=css;document.head.appendChild(s);})();
+</script>
+</body>
+</html>

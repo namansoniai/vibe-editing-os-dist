@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "tech-countdown",
+  "tier": "core",
+  "order": 5,
+  "tagline": "Premium tech-news countdowns: big lime #NN numerals, tool cards over your dimmed shot, small pill captions with italic-serif emphasis and a Save / Follow / Community finish.",
+  "inspired_by_display": [
+    "Vaibhav Sisinty"
+  ],
+  "needs": "you talking + screen recordings of each tool (logos optional)",
+  "readiness": "R1",
+  "readiness_note": "Best with a 5-15 s screen recording per item; without them the tool cards fall back to recreated, labelled UI.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "type_floors",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A hook: two-line plate + proof card over the presenter",
+      "F-A item ritual: #07 numeral with label chip, then the tool card over the dimmed presenter (TH-lime)",
+      "End stack: the community card with the Link in Bio pill"
+    ]
+  }
+}

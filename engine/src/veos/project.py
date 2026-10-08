@@ -18,6 +18,38 @@ def add_args(p, cmd):
     p.add_argument("--mode", choices=MODES, help="init: autopilot (default) or director")
     p.add_argument("--playbook", help="init: playbook id (default: the folder's workspace playbook)")
     p.add_argument("--force", action="store_true", help="init: overwrite an existing project.json")
+    p.add_argument("--source-type", choices=SOURCE_TYPES,
+                   help="init: talking_head, voiceover_only or animated_plates (default: voiceover_only when every clip "
+                        "is audio, when --voiceover is given, or when the playbook's profile says so; animated_plates "
+                        "when the profile says so; else talking_head). animated_plates: the clips are animation / "
+                        "puppet plates, so face detection is skipped")
+    p.add_argument("--voiceover", action="append", default=None, metavar="FILE",
+                   help="init: the voice-over file (audio, or a video whose picture is ignored); implies voiceover_only")
+
+
+SOURCE_TYPES = ["talking_head", "voiceover_only", "animated_plates"]
+
+
+def detect_source_type(clips: list[Path], explicit: str | None, voiceover: list | None, playbook: str | None) -> tuple[str, str]:
+    """(source_type, why). Explicit flag > --voiceover > the playbook profile > every clip is audio > talking_head."""
+    from .media import AUDIO_EXT
+    if explicit:
+        return explicit, "chosen"
+    if voiceover:
+        return "voiceover_only", "voice-over file given"
+    if playbook:
+        try:
+            from .tokens import load_playbook
+            prof = (load_playbook(playbook).get("profile") or {})
+            if prof.get("source_type") == "voiceover_only":
+                return "voiceover_only", "the playbook is voice-over only"
+            if prof.get("source_type") == "animated_plates":
+                return "animated_plates", "the playbook edits animation plates (no face detection)"
+        except Exception:  # noqa: BLE001 - a missing / v3 playbook must not block init
+            pass
+    if clips and all(c.suffix.lower() in AUDIO_EXT for c in clips):
+        return "voiceover_only", "only audio files given"
+    return "talking_head", "video clips"
 
 
 def now() -> str:
@@ -82,7 +114,12 @@ def _init(args, project) -> dict:
     if (root / "project.json").exists() and not args.force:
         raise VeosError("PROJECT_EXISTS", f"{root / 'project.json'} already exists",
                         "Resume it, or pass --force to start over.")
+    vo = [Path(v).expanduser().resolve() for v in (getattr(args, "voiceover", None) or [])]
+    for v in vo:
+        if not v.exists():
+            raise VeosError("INPUT_MISSING", f"voice-over not found: {v}", "Check the --voiceover path.")
     clips = [f for f in _collect(args.items) if root not in f.parents]
+    clips += [v for v in vo if v not in clips]
     if not clips:
         raise VeosError("NO_MEDIA", "no video or audio files found", "Pass video files or a folder that contains them.")
     script = None
@@ -92,14 +129,18 @@ def _init(args, project) -> dict:
             raise VeosError("INPUT_MISSING", f"script not found: {args.script}", "Check the --script path.")
         script = sp.resolve().as_posix()
     pb = args.playbook or _workspace_playbook(first, root)
+    stype, why = detect_source_type(clips, getattr(args, "source_type", None), vo, pb)
     t = now()
     st = {"version": 1, "created": t, "updated": t, "clips": [c.as_posix() for c in clips], "script": script,
-          "mode": args.mode or "autopilot", "playbook": pb, "inputs": None,
+          "mode": args.mode or "autopilot", "playbook": pb, "source_type": stype, "inputs": None,
           "phase": "init", "approved_at": None, "last_error": None, "history": [{"t": t, "phase": "init"}]}
+    if vo:
+        st["voiceover"] = [v.as_posix() for v in vo]
     root.mkdir(parents=True, exist_ok=True)
     write_json(root / "project.json", st)
     register(root, t)
-    return {"path": root.as_posix(), "phase": "init", "clips": len(clips), "mode": st["mode"]}
+    return {"path": root.as_posix(), "phase": "init", "clips": len(clips), "mode": st["mode"], "source_type": stype,
+            "source_type_why": why}
 
 
 def _coerce(v: str):
@@ -144,6 +185,8 @@ def _set(args, project) -> dict:
                 st.setdefault("history", []).append({"t": now(), "phase": val})
         elif k == "mode" and val not in MODES:
             raise VeosError("BAD_MODE", f"mode '{v}' must be autopilot or director", "")
+        elif k == "source_type" and val not in SOURCE_TYPES:
+            raise VeosError("BAD_SOURCE_TYPE", f"source_type '{v}' must be one of {', '.join(SOURCE_TYPES)}", "")
         elif k == "approved_at" and val == "now":
             val = now()
         elif k == "clips" and val is not None:

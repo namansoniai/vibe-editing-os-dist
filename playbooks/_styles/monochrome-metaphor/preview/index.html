@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monochrome Metaphor Glimpse</title>
+<!-- Template glimpse (TEMPLATE-PACKAGE §3). 360x640 frames = 1080x1920 at 1/3. data-card="1..3" become the gallery card frames
+     (tools/template_frames.py). CSS animations only, 6 s loops. Engine-made graphics and a neutral illustrated presenter only. -->
+<style>
+@font-face{font-family:"EB Garamond";src:url("../../../../assets/fonts/EBGaramond-VF.ttf");font-weight:400 800}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Regular.ttf");font-weight:400}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Medium.ttf");font-weight:500}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+:root{--night:#000;--mist:#D8D8D8;--smoke:#8A8A8A;--slate:#4A4A4A;--ash:#141414;--paper:#F4F4F4;--accent:#E8A83C;--cap:#E4E4E4;
+  --glow:drop-shadow(0 0 4px rgba(255,255,255,.55));--soft:cubic-bezier(.37,0,.63,1);--in:cubic-bezier(.33,0,.2,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050505;color:#cfcfcf;font-family:"Poppins",system-ui,sans-serif;padding:28px 16px 64px}
+header{max-width:1180px;margin:0 auto 22px}
+h1{font:500 22px/1.2 "Montserrat",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#eee}
+header p{font:400 13px/1.5 "Poppins",sans-serif;color:#9a9a9a;max-width:760px;margin-top:6px}
+h2{font:500 12px/1 "Montserrat",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;margin:26px auto 12px;max-width:1180px}
+.row{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;max-width:1180px;margin:0 auto}
+.cell{display:flex;flex-direction:column;gap:8px;align-items:center}
+.lbl{font:400 11px/1.3 "Poppins",sans-serif;color:#7a7a7a;max-width:360px;text-align:center}
+.f{width:360px;height:640px;position:relative;overflow:hidden;background:#000;isolation:isolate}
+.void:before{content:"";position:absolute;inset:0;background:radial-gradient(190px 190px at 50% 47%,rgba(255,255,255,.07),rgba(255,255,255,0) 100%);animation:voidDrift 6s var(--soft) infinite}
+.void:after{content:"";position:absolute;inset:0;background:radial-gradient(75% 60% at 50% 48%,transparent 55%,rgba(0,0,0,.55));pointer-events:none}
+@keyframes voidDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(8px,-10px)}}
+.abs{position:absolute}
+svg.abs{left:0;top:0;width:360px;height:640px;overflow:visible}
+.cap{position:absolute;left:0;right:0;text-align:center;opacity:0}
+.capB{top:481px;font:500 14.7px/1.2 "Poppins",sans-serif;color:var(--cap)}
+.capA{top:445px;font:400 20px/1.2 "EB Garamond",serif;color:var(--accent);text-transform:lowercase;text-shadow:0 1px 4px rgba(0,0,0,.45)}
+.capA0{top:306px;font:400 22.7px/1.2 "EB Garamond",serif;color:var(--paper);text-transform:lowercase}
+.dot{position:absolute;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.55)}
+.breathe{animation:breathe 3s var(--soft) infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* ---------- caption word blur-in (CS-B) ---------- */
+.w{display:inline-block;opacity:0;filter:blur(3px)}
+
+/* ================= F1: row eaten (HA-15) ================= */
+.f1 .rowdot{position:absolute;top:320px;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.5)}
+.f1 .chomp{position:absolute;top:320px;left:0;width:24px;height:24px;margin:-12px 0 0 -12px;animation:chompMove 6s linear infinite}
+.f1 .chomp i{position:absolute;left:0;width:24px;height:12px;background:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.55))}
+.f1 .chomp .t{top:0;border-radius:12px 12px 0 0;transform-origin:50% 100%;animation:jawT .17s linear infinite}
+.f1 .chomp .b{top:12px;border-radius:0 0 12px 12px;transform-origin:50% 0;animation:jawB .17s linear infinite}
+@keyframes jawT{0%,100%{transform:rotate(-32deg)}50%{transform:rotate(0)}}
+@keyframes jawB{0%,100%{transform:rotate(32deg)}50%{transform:rotate(0)}}
+@keyframes chompMove{0%,8%{left:-20px;opacity:1}38%{left:162px;opacity:1}44%,100%{left:175px;opacity:0}}
+.f1 .d0{left:23px;animation:eat0 6s linear infinite}.f1 .d1{left:62px;animation:eat1 6s linear infinite}
+.f1 .d2{left:102px;animation:eat2 6s linear infinite}.f1 .d3{left:141px;animation:eat3 6s linear infinite}
+.f1 .d4{left:180px;animation:keep 6s var(--soft) infinite}
+.f1 .d5{left:219px}.f1 .d6{left:258px}.f1 .d7{left:298px}.f1 .d8{left:337px}
+.f1 .d5,.f1 .d6,.f1 .d7,.f1 .d8{animation:fadeR 6s var(--soft) infinite}
+@keyframes eat0{0%,13%{transform:scale(1)}15%,100%{transform:scale(0)}}
+@keyframes eat1{0%,19%{transform:scale(1)}21%,100%{transform:scale(0)}}
+@keyframes eat2{0%,26%{transform:scale(1)}28%,100%{transform:scale(0)}}
+@keyframes eat3{0%,32%{transform:scale(1)}34%,100%{transform:scale(0)}}
+@keyframes fadeR{0%,36%{opacity:1}46%,100%{opacity:0}}
+@keyframes keep{0%,40%{transform:scale(1)}55%{transform:scale(1.25)}70%{transform:scale(1.15)}85%{transform:scale(1.25)}100%{transform:scale(1)}}
+.f1 .k1{animation:wIn1 6s var(--in) infinite}.f1 .k2{animation:wIn2 6s var(--in) infinite}
+.f1 .k3{animation:wIn3 6s var(--in) infinite}
+@keyframes wIn1{0%,4%{opacity:0;filter:blur(3px)}9%,33%{opacity:1;filter:blur(0)}37%,100%{opacity:0;filter:blur(3px)}}
+@keyframes wIn2{0%,37%{opacity:0;filter:blur(3px)}42%,63%{opacity:1;filter:blur(0)}67%,100%{opacity:0;filter:blur(3px)}}
+@keyframes wIn3{0%,67%{opacity:0;filter:blur(3px)}72%,94%{opacity:1;filter:blur(0)}98%,100%{opacity:0;filter:blur(3px)}}
+.f1 .k1,.f1 .k2,.f1 .k3{opacity:0}
+
+/* ================= F2: eye-clock -> push-through -> lighthouse ================= */
+.f2 .eye{transform-origin:180px 320px;animation:eyeZoom 6s var(--in) infinite}
+@keyframes eyeZoom{0%{transform:scale(.96);opacity:0}6%{opacity:1;transform:scale(1)}38%{transform:scale(1.04);opacity:1}48%{transform:scale(6);opacity:1}52%,100%{transform:scale(7);opacity:0}}
+.f2 .gear{transform-origin:180px 320px;animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.f2 .hand{transform-origin:180px 320px;animation:spin 1s linear infinite}
+.f2 .threads{animation:threads 3s var(--soft) infinite}
+@keyframes threads{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.f2 .tower{animation:towerUp 6s var(--in) infinite;transform-origin:180px 395px}
+@keyframes towerUp{0%,50%{transform:scaleY(0);opacity:0}60%,96%{transform:scaleY(1);opacity:1}100%{opacity:0}}
+.f2 .ground{animation:groundIn 6s var(--in) infinite}
+@keyframes groundIn{0%,48%{opacity:0}56%,96%{opacity:1}100%{opacity:0}}
+.f2 .beam{transform-origin:180px 252px;animation:beam 6s var(--soft) infinite}
+@keyframes beam{0%,60%{opacity:0;transform:rotate(-35deg)}64%{opacity:1;transform:rotate(-35deg)}96%{opacity:1;transform:rotate(35deg)}100%{opacity:0;transform:rotate(35deg)}}
+.f2 .lamp{animation:lamp 6s var(--soft) infinite}
+@keyframes lamp{0%,58%{opacity:0}62%,96%{opacity:1}100%{opacity:0}}
+.f2 .c1{animation:wIn1 6s var(--in) infinite}.f2 .c2{animation:c2 6s var(--in) infinite}.f2 .c3{animation:wIn3 6s var(--in) infinite}
+@keyframes c2{0%,37%{opacity:0;filter:blur(3px)}41%,62%{opacity:1;filter:blur(0)}66%,100%{opacity:0;filter:blur(3px)}}
+
+/* ================= F3: emitters converge, the dot grows ================= */
+.f3 .orbit{transform-origin:180px 320px;animation:spin 18s linear infinite}
+.f3 .arc{transform-origin:180px 320px;opacity:0;animation:arcIn 1.2s linear infinite}
+.f3 .arc.a2{animation-delay:-.4s}.f3 .arc.a3{animation-delay:-.8s}
+@keyframes arcIn{0%{transform:scale(1.25);opacity:0}25%{opacity:.7}100%{transform:scale(.35);opacity:0}}
+.f3 .grow{position:absolute;left:180px;top:320px;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;box-shadow:0 0 10px 3px rgba(255,255,255,.5);animation:grow 6s var(--soft) infinite}
+@keyframes grow{0%,30%{transform:scale(1)}42%,62%{transform:scale(3)}74%,92%{transform:scale(5.4)}100%{transform:scale(1)}}
+.f3 .c1{animation:wIn1 6s var(--in) infinite}.f3 .c2{animation:c2 6s var(--in) infinite}.f3 .c3{animation:wIn3 6s var(--in) infinite}
+
+/* ================= F4: the feed ================= */
+.f4 .phone{position:absolute;left:105px;top:179px;width:150px;height:282px;border:1.5px solid var(--mist);border-radius:15px;overflow:hidden;filter:drop-shadow(0 0 4px rgba(255,255,255,.35))}
+.f4 .notch{position:absolute;left:52px;top:3px;width:46px;height:9px;border:1px solid var(--mist);border-top:0;border-radius:0 0 7px 7px;background:#000;z-index:2}
+.f4 .list{position:absolute;left:12px;top:20px;width:120px;animation:scroll 6s var(--soft) infinite}
+.f4 .card{height:31px;margin-bottom:5px;border-radius:5px;background:linear-gradient(#5a5a5a,#444)}
+.f4 .card.word{display:flex;align-items:center;justify-content:center;font:700 13.3px/1 "Montserrat",sans-serif;letter-spacing:.08em;color:var(--mist)}
+@keyframes scroll{0%{transform:translateY(0)}100%{transform:translateY(-144px)}}
+.f4 .hop{position:absolute;left:0;top:0;animation:hop 6s var(--soft) infinite}
+@keyframes hop{0%{transform:translate(150px,232px)}20%{transform:translate(198px,268px)}40%{transform:translate(160px,304px)}60%{transform:translate(204px,340px)}80%{transform:translate(170px,376px)}100%{transform:translate(150px,232px)}}
+.f4 .c1{animation:wIn1 6s var(--in) infinite}.f4 .c2{animation:c2 6s var(--in) infinite}.f4 .c3{animation:wIn3 6s var(--in) infinite}
+
+/* ================= F5: spiral spotlight + strike ================= */
+.f5 .vortex{transform-origin:180px 320px;animation:spin 14s linear infinite}
+.f5 .wedge{transform-origin:180px 320px;animation:wedge 6s var(--soft) infinite}
+@keyframes wedge{0%{transform:rotate(180deg);opacity:0}8%{opacity:1}70%{transform:rotate(0deg);opacity:1}100%{transform:rotate(0deg);opacity:.9}}
+.f5 .pic{opacity:.25}
+.f5 .p1{animation:lit1 6s var(--soft) infinite}.f5 .p2{animation:lit2 6s var(--soft) infinite}.f5 .p3{animation:lit3 6s var(--soft) infinite}
+@keyframes lit1{0%,18%{opacity:.2}26%,74%{opacity:1}82%,100%{opacity:.35}}
+@keyframes lit2{0%,34%{opacity:.2}42%,74%{opacity:1}82%,100%{opacity:.35}}
+@keyframes lit3{0%,50%{opacity:.2}58%,74%{opacity:1}82%,100%{opacity:.35}}
+.f5 .x{stroke-dasharray:40;stroke-dashoffset:40;animation:xdraw 6s linear infinite}
+.f5 .x2{animation-name:xdraw2}.f5 .x3{animation-name:xdraw3}
+@keyframes xdraw{0%,76%{stroke-dashoffset:40}80%,100%{stroke-dashoffset:0}}
+@keyframes xdraw2{0%,79%{stroke-dashoffset:40}83%,100%{stroke-dashoffset:0}}
+@keyframes xdraw3{0%,82%{stroke-dashoffset:40}86%,100%{stroke-dashoffset:0}}
+.f5 .src{position:absolute;left:180px;top:320px;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;box-shadow:0 0 18px 6px rgba(255,255,255,.55)}
+.f5 .c1{animation:wIn1 6s var(--in) infinite}.f5 .c2{animation:c2 6s var(--in) infinite}.f5 .c3{animation:wIn3 6s var(--in) infinite}
+
+/* ================= F6: bar -> screen -> sphere ================= */
+.f6 .bar{position:absolute;left:36px;top:306px;width:288px;height:27px;border:1px solid var(--mist);box-shadow:0 0 6px rgba(255,255,255,.35);animation:barGrow 6s var(--soft) infinite}
+@keyframes barGrow{0%,52%{top:306px;height:27px}64%,100%{top:248px;height:144px}}
+.f6 .fill{position:absolute;left:0;top:0;bottom:0;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.6);animation:fill 6s var(--soft) infinite}
+@keyframes fill{0%{width:0}14%,22%{width:78%}32%,38%{width:18%}48%,52%{width:34%}64%{width:100%;background:#9a9a9a}80%,100%{width:100%;background:#f2f2f2}}
+.f6 .ball{position:absolute;left:157px;top:392px;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2f2f2,#9a9a9a 45%,#2a2a2a 85%);opacity:0;animation:ball 6s var(--soft) infinite}
+@keyframes ball{0%,78%{opacity:0;transform:translateY(20px)}88%,100%{opacity:1;transform:translateY(-6px)}}
+.f6 .c1{animation:wIn1 6s var(--in) infinite}.f6 .c2{animation:c2 6s var(--in) infinite}.f6 .c3{animation:wIn3 6s var(--in) infinite}
+
+/* ================= F7: product end card ================= */
+.f7{background:#000}
+.f7 .streak{position:absolute;left:-60px;top:250px;width:480px;height:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent);transform:rotate(-12deg);filter:blur(6px);animation:streak 6s linear infinite}
+.f7 .streak.s2{top:380px;transform:rotate(9deg);animation-delay:-3s}
+@keyframes streak{0%{translate:-40px 0}100%{translate:40px 0}}
+.f7 .line{position:absolute;left:0;right:0;top:66px;text-align:center;font:500 15.3px/1.25 "Montserrat",sans-serif;letter-spacing:.02em;color:var(--paper);animation:lineIn 6s var(--in) infinite}
+@keyframes lineIn{0%,4%{clip-path:inset(0 100% 0 0);filter:blur(3px)}18%,100%{clip-path:inset(0 0 0 0);filter:blur(0)}}
+.f7 .cover{position:absolute;left:73px;top:120px;width:214px;height:320px;background:var(--ash);border-radius:2px;box-shadow:0 0 16px 2px rgba(255,255,255,.28);animation:coverIn 6s var(--in) infinite;text-align:center}
+@keyframes coverIn{0%{transform:translateY(13px);filter:blur(4px);opacity:0}12%,100%{transform:none;filter:blur(0);opacity:1}}
+.f7 .ct{margin-top:30px;font:800 21px/1.02 "Montserrat",sans-serif;color:#f2f2f2;letter-spacing:.01em}
+.f7 .ct small{display:block;font-weight:800;font-size:11px;letter-spacing:.06em}
+.f7 .rings{margin:22px auto 0;width:96px;height:96px;border:1px solid #cfcfcf;border-radius:50%;position:relative}
+.f7 .rings:before{content:"";position:absolute;left:24px;top:24px;width:46px;height:46px;border:1px solid #cfcfcf;border-radius:50%}
+.f7 .rings:after{content:"";position:absolute;left:45px;top:45px;width:6px;height:6px;background:#fff;border-radius:50%}
+.f7 .cn{margin-top:30px;font:800 13px/1 "Montserrat",sans-serif;letter-spacing:.06em;color:#e6e6e6}
+
+/* ================= F-A frames ================= */
+.wall{position:absolute;inset:0;background:linear-gradient(180deg,#3b4a4a 0%,#2f3c3c 60%,#253030 100%)}
+.strip{position:absolute;top:-10px;bottom:-10px;width:7px;background:linear-gradient(#e9f5f4,#bcd9d6);filter:blur(1.5px);box-shadow:0 0 18px 6px rgba(160,210,205,.35)}
+.strip.l{left:26px}.strip.r{right:26px}
+.person{position:absolute;left:0;top:0;width:360px;height:640px;animation:sway 6s var(--soft) infinite}
+@keyframes sway{0%,100%{transform:translateY(0)}50%{transform:translateY(1.5px)}}
+.head{position:absolute;left:131px;top:80px;width:98px;height:126px;border-radius:48% 48% 46% 46%/42% 42% 58% 58%;background:radial-gradient(circle at 50% 38%,#c9a891,#a7826c 70%,#8a6a58)}
+.neck{position:absolute;left:158px;top:192px;width:44px;height:40px;background:#9b7964;border-radius:0 0 10px 10px}
+.torso{position:absolute;left:28px;top:218px;width:304px;height:460px;border-radius:120px 120px 0 0;background:linear-gradient(#141414,#0c0c0c)}
+.hands{position:absolute;left:142px;top:520px;width:76px;height:90px;border-radius:40px 40px 10px 10px;background:linear-gradient(#b48d76,#9b7964);animation:hands 3s var(--soft) infinite}
+@keyframes hands{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(3deg)}}
+.f8 .card{position:absolute;inset:0;background:#000;z-index:3;animation:cardCut 6s steps(1,end) infinite}
+@keyframes cardCut{0%,71.6%{opacity:1}71.7%,100%{opacity:0}}
+.f8 .o1{animation:o1 6s var(--soft) infinite}.f8 .o2{animation:o2 6s var(--soft) infinite}.f8 .o3{animation:o3 6s var(--soft) infinite}
+@keyframes o1{0%{opacity:0}1%,24%{opacity:1}25.5%,100%{opacity:0}}
+@keyframes o2{0%,24%{opacity:0}25.5%,46%{opacity:1}47.5%,100%{opacity:0}}
+@keyframes o3{0%,46%{opacity:0}47.5%,71.5%{opacity:1}71.6%,100%{opacity:0}}
+.f8 .g1{animation:g1 6s var(--soft) infinite}
+@keyframes g1{0%,71.7%{opacity:0}73%,98%{opacity:1}100%{opacity:0}}
+.f9 .g1{animation:ga 6s var(--soft) infinite}.f9 .g2{animation:gb 6s var(--soft) infinite}.f9 .g3{animation:gc 6s var(--soft) infinite}
+@keyframes ga{0%{opacity:0}1.5%,31%{opacity:1}32.5%,100%{opacity:0}}
+@keyframes gb{0%,32%{opacity:0}33.5%,64%{opacity:1}65.5%,100%{opacity:0}}
+@keyframes gc{0%,65%{opacity:0}66.5%,97%{opacity:1}99%,100%{opacity:0}}
+
+/* ================= F10: keyword card ================= */
+.f10 .cl{position:absolute;left:0;right:0;top:252px;text-align:center;font:500 14.7px/1 "Poppins",sans-serif;color:var(--mist);animation:kIn 6s var(--in) infinite}
+.f10 .kw{position:absolute;left:0;right:0;top:284px;text-align:center;font:700 29.3px/1 "Montserrat",sans-serif;letter-spacing:.06em;color:var(--accent);animation:kIn2 6s var(--in) infinite}
+@keyframes kIn{0%{opacity:0;filter:blur(3px)}8%,100%{opacity:1;filter:blur(0)}}
+@keyframes kIn2{0%,4%{opacity:0;filter:blur(3px)}12%,100%{opacity:1;filter:blur(0)}}
+.f10 .handle{position:absolute;left:0;right:0;top:470px;text-align:center;font:400 10px/1 "Poppins",sans-serif;color:var(--smoke)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Monochrome Metaphor</h1>
+  <p>Inspired by Dan Koe. A voice-over essay becomes one glowing, black-and-white metaphor that morphs scene to scene with no cuts; a single white dot stands for "you"; captions whisper in small type at the bottom. The seated format opens on a text-only black card, then holds one still take with gold lowercase serif captions.</p>
+</header>
+
+<h2>F-B · Metaphor animation (default, voice-over only)</h2>
+<div class="row">
+
+  <div class="cell">
+  <div class="f void f1" data-card="1">
+    <div class="rowdot d0"></div><div class="rowdot d1"></div><div class="rowdot d2"></div><div class="rowdot d3"></div>
+    <div class="rowdot d4"></div><div class="rowdot d5"></div><div class="rowdot d6"></div><div class="rowdot d7"></div><div class="rowdot d8"></div>
+    <div class="chomp"><i class="t"></i><i class="b"></i></div>
+    <div class="cap capB k1">Every day</div>
+    <div class="cap capB k2">gets quietly eaten</div>
+    <div class="cap capB k3">until one is left</div>
+  </div>
+  <div class="lbl">HA-15 hook: P-DOT-ROW-EATEN; the survivor becomes the dot (CS-B captions, 44 px)</div>
+  </div>
+
+  <div class="cell">
+  <div class="f void f2" data-card="2">
+    <svg class="abs" viewBox="0 0 360 640">
+      <defs>
+        <linearGradient id="cyl" x1="0" x2="1"><stop offset="0" stop-color="#5A5A5A"/><stop offset=".45" stop-color="#E9E9E9"/><stop offset=".75" stop-color="#B5B5B5"/><stop offset="1" stop-color="#3C3C3C"/></linearGradient>
+        <radialGradient id="gnd" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2E2E2E"/><stop offset=".7" stop-color="#0C0C0C"/><stop offset="1" stop-color="#000"/></radialGradient>
+        <linearGradient id="bm" x1="0" x2="1"><stop offset="0" stop-color="rgba(255,255,255,.34)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></linearGradient>
+      </defs>
+      <g class="eye">
+        <g class="gear" opacity=".35" fill="none" stroke="#D8D8D8" stroke-width="1">
+          <path d="M180 227 l12 0 4 17 15 6 14-10 9 9-10 14 6 15 17 4 0 12-17 4-6 15 10 14-9 9-14-10-15 6-4 17-12 0-4-17-15-6-14 10-9-9 10-14-6-15-17-4 0-12 17-4 6-15-10-14 9-9 14 10 15-6z" transform="translate(-6 0) scale(1) "/>
+        </g>
+        <g class="threads" fill="none" stroke="rgba(255,255,255,.22)" stroke-width=".7">
+          <path d="M180 320 C120 250 70 230 20 240"/><path d="M180 320 C240 250 290 230 340 240"/>
+          <path d="M180 320 C130 390 80 420 30 410"/><path d="M180 320 C230 390 280 420 330 410"/>
+          <path d="M180 320 C170 240 150 190 120 150"/><path d="M180 320 C190 240 210 190 240 150"/>
+          <path d="M180 320 C175 400 160 450 140 500"/><path d="M180 320 C185 400 200 450 220 500"/>
+        </g>
+        <path d="M110 320 C140 282 220 282 250 320 C220 358 140 358 110 320 Z" fill="#E8E8E8" style="filter:drop-shadow(0 0 6px rgba(255,255,255,.6))"/>
+        <circle cx="180" cy="320" r="22" fill="#111" stroke="#fff" stroke-width="1.5"/>
+        <g stroke="#fff" stroke-width="1">
+          <line x1="180" y1="300" x2="180" y2="303"/><line x1="180" y1="337" x2="180" y2="340"/><line x1="160" y1="320" x2="163" y2="320"/><line x1="197" y1="320" x2="200" y2="320"/>
+        </g>
+        <line class="hand" x1="180" y1="320" x2="180" y2="305" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="180" y1="320" x2="190" y2="324" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <polygon class="beam" points="180,252 470,214 470,290" fill="url(#bm)" style="filter:blur(2px)"/>
+      <ellipse class="ground" cx="180" cy="398" rx="107" ry="15" fill="url(#gnd)" stroke="rgba(255,255,255,.65)" stroke-width="1"/>
+      <g class="tower"><polygon points="165,262 195,262 210,396 150,396" fill="url(#cyl)"/><rect x="170" y="248" width="20" height="14" fill="#9a9a9a"/></g>
+      <circle class="lamp" cx="180" cy="254" r="5" fill="#fff" style="filter:drop-shadow(0 0 8px #fff)"/>
+    </svg>
+    <div class="cap capB c1">You weren't born</div>
+    <div class="cap capB c2">to rent your hours</div>
+    <div class="cap capB c3">to someone else's dream</div>
+  </div>
+  <div class="lbl">P-EYE-CLOCK → T-PUSH-THROUGH into the pupil → P-BEAM-SWEEP (flat 2D lit tower)</div>
+  </div>
+
+  <div class="cell">
+  <div class="f void f3">
+    <svg class="abs" viewBox="0 0 360 640">
+      <g class="orbit" fill="none" stroke="#D8D8D8" stroke-width="1.2" style="filter:drop-shadow(0 0 3px rgba(255,255,255,.5))">
+        <g transform="translate(180 233)"><path d="M-4 -8 L8 -14 L8 14 L-4 8 Z M-8 -6 L-4 -6 L-4 6 L-8 6 Z"/></g>
+        <g transform="translate(255 363) rotate(120)"><path d="M-4 -8 L8 -14 L8 14 L-4 8 Z M-8 -6 L-4 -6 L-4 6 L-8 6 Z"/></g>
+        <g transform="translate(105 363) rotate(240)"><path d="M-4 -8 L8 -14 L8 14 L-4 8 Z M-8 -6 L-4 -6 L-4 6 L-8 6 Z"/></g>
+      </g>
+      <g fill="none" stroke="#8A8A8A" stroke-width=".8">
+        <circle class="arc a1" cx="180" cy="320" r="80"/><circle class="arc a2" cx="180" cy="320" r="80"/><circle class="arc a3" cx="180" cy="320" r="80"/>
+      </g>
+    </svg>
+    <div class="grow"></div>
+    <div class="cap capB c1">Everyone wants</div>
+    <div class="cap capB c2">a piece of your attention</div>
+    <div class="cap capB c3">and it grows</div>
+  </div>
+  <div class="lbl">P-EMITTERS-CONVERGE + P-DOT-GROW</div>
+  </div>
+
+  <div class="cell">
+  <div class="f void f4">
+    <div class="phone"><div class="notch"></div>
+      <div class="list"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card word">WAKE UP</div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    </div>
+    <div class="hop"><div class="dot" style="position:absolute;left:0;top:0"></div></div>
+    <div class="cap capB c1">Numb your mind</div>
+    <div class="cap capB c2">with endless scrolling</div>
+    <div class="cap capB c3">and wake up one day</div>
+  </div>
+  <div class="lbl">P-FEED-PHONE: generic grey cards, one in-object word, the dot hopping</div>
+  </div>
+
+  <div class="cell">
+  <div class="f void f5">
+    <svg class="abs" viewBox="0 0 360 640">
+      <defs><linearGradient id="wg" x1="0" x2="1"><stop offset="0" stop-color="rgba(255,255,255,.3)"/><stop offset="1" stop-color="rgba(255,255,255,.04)"/></linearGradient></defs>
+      <g class="vortex" fill="none" stroke="#8A8A8A" stroke-width="1" stroke-linecap="round">
+        <path d="M180 250 a70 70 0 0 1 60 34"/><path d="M250 320 a70 70 0 0 1 -30 58"/><path d="M180 390 a70 70 0 0 1 -60 -34"/><path d="M110 320 a70 70 0 0 1 30 -58"/>
+        <path d="M180 220 a100 100 0 0 1 86 50"/><path d="M280 320 a100 100 0 0 1 -44 82"/><path d="M180 420 a100 100 0 0 1 -86 -50"/><path d="M80 320 a100 100 0 0 1 44 -82"/>
+        <path d="M200 280 a40 40 0 0 1 20 30"/><path d="M160 360 a40 40 0 0 1 -20 -30"/>
+      </g>
+      <polygon class="wedge" points="180,320 360,250 360,390" fill="url(#wg)"/>
+      <g fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" style="filter:drop-shadow(0 0 2px rgba(255,255,255,.6))">
+        <g class="pic p1" transform="translate(268 268)"><circle cx="0" cy="-10" r="5"/><path d="M0 -5 V10 M-8 0 H8 M0 10 L-6 20 M0 10 L6 20"/><rect x="10" y="2" width="14" height="10"/></g>
+        <g class="pic p2" transform="translate(298 322)"><circle cx="0" cy="-10" r="5"/><path d="M0 -5 V10 M-12 -4 H12 M-12 -8 V0 M12 -8 V0 M0 10 L-6 20 M0 10 L6 20"/></g>
+        <g class="pic p3" transform="translate(268 378)"><circle cx="0" cy="-10" r="5"/><path d="M0 -5 V10 M0 10 L-6 20 M0 10 L6 20"/><path d="M-12 0 L-2 4 L8 0 L8 10 L-2 14 L-12 10 Z"/></g>
+      </g>
+      <g stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round" fill="none">
+        <path class="x" d="M282 254 L298 270 M298 254 L282 270"/>
+        <path class="x x2" d="M312 308 L328 324 M328 308 L312 324"/>
+        <path class="x x3" d="M282 364 L298 380 M298 364 L282 380"/>
+      </g>
+    </svg>
+    <div class="src"></div>
+    <div class="cap capB c1">Look at your options</div>
+    <div class="cap capB c2">one at a time</div>
+    <div class="cap capB c3">It's not those</div>
+  </div>
+  <div class="lbl">P-SPIRAL-SPOTLIGHT + P-PICTOGRAM-TRIAD + P-STRIKE-X</div>
+  </div>
+
+  <div class="cell">
+  <div class="f void f6">
+    <div class="bar"><div class="fill"></div></div>
+    <div class="ball"></div>
+    <div class="cap capB c1">Level by level</div>
+    <div class="cap capB c2">until the bar</div>
+    <div class="cap capB c3">becomes the world</div>
+  </div>
+  <div class="lbl">P-BAR-TO-SCREEN: the bar morphs into a screen; a lit sphere rises</div>
+  </div>
+
+</div>
+
+<h2>F-A · Seated essay (one take, one cut)</h2>
+<div class="row">
+
+  <div class="cell">
+  <div class="f f8" data-card="3">
+    <div class="wall"></div><div class="strip l"></div><div class="strip r"></div>
+    <div class="person"><div class="neck"></div><div class="head"></div><div class="torso"></div><div class="hands"></div></div>
+    <div class="cap capA g1">you change the places you go</div>
+    <div class="card">
+      <div class="cap capA0 o1">the fastest way</div>
+      <div class="cap capA0 o2">to change your life</div>
+      <div class="cap capA0 o3">is to change your room</div>
+    </div>
+  </div>
+  <div class="lbl">HA-12 cold open: white serif card (CS-A0, y 960) → the one cut → the seated take with gold captions (CS-A)</div>
+  </div>
+
+  <div class="cell">
+  <div class="f f9">
+    <div class="wall"></div><div class="strip l"></div><div class="strip r"></div>
+    <div class="person"><div class="neck"></div><div class="head"></div><div class="torso"></div><div class="hands"></div></div>
+    <div class="cap capA g1">you stop living the same day</div>
+    <div class="cap capA g2">over and over on repeat</div>
+    <div class="cap capA g3">the books that you read</div>
+  </div>
+  <div class="lbl">P-SEATED-HOLD: no zoom, no cuts; 60 px gold lowercase EB Garamond on the chest</div>
+  </div>
+
+</div>
+
+<h2>End cards</h2>
+<div class="row">
+
+  <div class="cell">
+  <div class="f f7">
+    <div class="streak"></div><div class="streak s2"></div>
+    <div class="line">NOW AVAILABLE</div>
+    <div class="cover"><div class="ct"><small>THE QUIET</small>HOURS</div><div class="rings"></div><div class="cn">YOUR NAME</div></div>
+  </div>
+  <div class="lbl">P-PRODUCT-CARD: the creator's own cover on an ash panel, rim light (illustrative cover)</div>
+  </div>
+
+  <div class="cell">
+  <div class="f void f10">
+    <div class="cl">comment</div>
+    <div class="kw">KEYWORD</div>
+    <div class="dot breathe" style="left:180px;top:360px"></div>
+    <div class="handle">@yourhandle</div>
+  </div>
+  <div class="lbl">P-KEYWORD-CARD: the only place the accent appears in F-B</div>
+  </div>
+
+</div>
+</body>
+</html>

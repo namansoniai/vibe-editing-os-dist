@@ -1,24 +1,50 @@
 ---
 name: reel-prep
-description: Prep phase of a reel project: ingest, conform, transcribe and matte the source clips. Called by the reel orchestrator before roughcut; not meant to be invoked directly.
+description: Prep phase of a reel project: ingest, conform, transcribe and find the face in the source clips (or, for a faceless reel, the voice-over). Called by the reel orchestrator before roughcut; not meant to be invoked directly.
+model: claude-opus-5-5
+effort: high
 user-invocable: false
 ---
 # reel-prep
 
 Input: project folder `P` (the `vibe-edit/` folder with project.json). Never hand-edit project.json; use `veos project`.
 
-1. Run `veos project show --project "P"`. Read `clips` (clip paths) and `script` (may be null). If it fails, stop and tell the user the project is missing.
+1. Run `veos project show --project "P"`. Read `clips` (clip paths), `script` (may be null) and `source_type` (`talking_head` when missing). If it fails, stop and tell the user the project is missing.
 2. Delegate with the Agent tool: `subagent_type: "vibe-editing-os:veos-runner"`. Prompt it with the project path and these commands, in order:
-   - `veos ingest --project "P"` (no paths: it uses the clips stored in project.json)
-   - `veos conform --project "P"`
-   - `veos transcribe --project "P"` (append `--script "<script path>"` only if the project has a script)
-   - `veos matte --project "P"`
+   - **Talking head:**
+     - `veos ingest --project "P"` (no paths: it uses the clips stored in project.json)
+     - `veos conform --project "P"`
+     - `veos transcribe --project "P"` (append `--script "<script path>"` only if the project has a script)
+     - `veos faces --project "P"` (the face in every frame. The person cut-out is NOT made here: the plan decides later whether the reel needs it)
+   - **Faceless (`voiceover_only`):**
+     - `veos ingest --project "P"` (it picks the voice-over from project.json; the picture of a video voice-over is ignored; other clips become B-roll)
+     - `veos conform --project "P"` (sound only for the voice-over)
+     - `veos transcribe --project "P"` (append `--script "<script path>"` if the project has a script; the words are aligned to it)
+     - no matte: there is no presenter to cut out.
 
-   Tell it matte and transcribe can take minutes (Bash timeout 600000) and to stop at the first failure.
+   Tell it transcribe can take minutes (Bash timeout 600000) and to stop at the first failure.
+
+   **Conversation reels** (orchestrator §1b; `P/plan/cast.json` exists or the playbook's `source_type` is
+   `multi_speaker`) run this list instead (no matte; N = the number of people in the cast):
+   - `veos ingest --project "P"`, then `veos conform --project "P"`
+   - **2+ files of the same conversation:** `veos sync --project "P"` (audio-only files are treated as per-person
+     mics; it writes the session master `MIX`). Master `M` = `MIX`. **One file:** no sync; `M` = that file's id.
+   - `veos transcribe --id M --project "P"` (only the master; add `--script` as above)
+   - `veos speakers --num N --project "P"`, then `veos speakers name "S1=<name>:<role>" "S2=<name>:<role>" --project "P"`
+     (match ids to people with `role_guess` (host = the one asking) and, for mic mode, the `mic` each id came from)
+   - `veos angles --project "P"` (who is on which camera; faux crops from a wide shot)
+
+   A `SYNC_UNRELIABLE` failure means the files don't share sound: tell the user which file could not be lined up and
+   ask whether it really belongs to this conversation (a clap at the start of the next recording helps).
 3. If its verdict is `failed`: run `veos project set --project "P" last_error="prep: <short reason>"` and stop with a plain-language message (what failed, what the user can try: re-run `/vibe-editing-os:reel` to resume, or run `veos doctor`). Do not continue.
-4. Verify the done condition (workflow phase `prep`). In the project work folder: `sources.json` exists, and for every talking-head source `src/`, `audio/<id>.wav`, `words/<id>.json`, `matte/<id>*` and `face/<id>*` exist. Check with Bash `ls`. If anything is missing, treat it as a failure (step 3) and name the missing file.
+4. Verify the done condition (workflow phase `prep`) with Bash `ls` in the project work folder:
+   - **Talking head:** `sources.json` exists, and for every talking-head source `src/`, `audio/<id>.wav`, `words/<id>.json` and `face/<id>.json` exist (no matte yet: that comes after the plan, only when needed).
+   - **Faceless:** `sources.json` exists with `"source_type": "voiceover_only"`, and `audio/V.wav` and `words/V.json` exist.
+   - **Conversation:** `words/<M>.json`, `speakers.json` and `angles.json` exist, and `veos speakers show` lists N speakers with names.
+
+   If anything is missing, treat it as a failure (step 3) and name the missing file.
 5. Only now run `veos project set --project "P" phase=prep last_error=""`.
-6. Reply to the orchestrator in 2-3 lines: sources found, total duration, word count, and that phase is `prep`.
+6. Reply to the orchestrator in 2-3 lines: sources found (for a faceless reel: the voice-over length and any B-roll clips), total duration, word count (and the script match rate when there is a script), and that phase is `prep`.
 
 Rules: phases are idempotent and re-use cached outputs, so on resume just run the steps again. Make no creative decisions here.
 

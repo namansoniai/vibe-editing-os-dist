@@ -3,12 +3,18 @@
 Images (png/jpg/webp/svg/...) are copied to plan/assets/<name>.<ext>  -> ctx.asset("<name>").
 Videos are conformed to 30 fps and extracted as JPEG frames plan/assets/<name>/f%05d.jpg (zero-based, scaled to fit
 1080 px wide, never upscaled) + plan/assets/<name>/meta.json {frames, fps, w, h, duration} -> ctx.videoFrame("<name>", seconds).
+
+Origin (E-10, NC-7): every asset is recorded in plan/assets.json `{version, assets: {name: {origin, kind, src, sha256,
+added}}}` with `--origin creator` (the creator's own file, or one they hold and hand over; the default) or
+`--origin created` (a visual Claude made locally). The engine never downloads media: a URL is refused (NO_FETCH).
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
+import time
 from pathlib import Path
 
 from .core import FPS, VeosError, need_project, read_json, run, tools, write_json
@@ -16,12 +22,16 @@ from .core import FPS, VeosError, need_project, read_json, run, tools, write_jso
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".avif"}
 VIDEO_EXT = {".mp4", ".mov", ".mkv", ".webm", ".m4v", ".avi", ".gif"}
 MAX_W = 1080
+ORIGINS = ("creator", "created")
+URL_RE = re.compile(r"^[a-z][a-z0-9+.-]*://", re.I)
 
 
 def add_args(p, cmd):
     p.add_argument("action", choices=["add", "list"])
     p.add_argument("file", nargs="?", help="add: image or video file")
     p.add_argument("--name", help="add: asset name (default: file name without extension)")
+    p.add_argument("--origin", choices=ORIGINS, default="creator",
+                   help="add: creator (the creator's own or handed-over file; default) or created (made locally by Claude)")
 
 
 def _clean(name: str) -> str:
@@ -67,8 +77,31 @@ def _add_image(pr, src: Path, name: str) -> dict:
     return {"name": name, "kind": "image", "size": size, "file": pr.rel(dest)}
 
 
+def _manifest_path(pr) -> Path:
+    return pr.root / "plan" / "assets.json"
+
+
+def _record(pr, name: str, kind: str, src: Path, origin: str) -> dict:
+    """Write the asset's origin to plan/assets.json (read by V-INSERTS)."""
+    mp = _manifest_path(pr)
+    data = read_json(mp) if mp.exists() else {}
+    if not isinstance(data, dict):
+        data = {}
+    h = hashlib.sha256()
+    with open(src, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    rec = {"origin": origin, "kind": kind, "src": src.name, "sha256": h.hexdigest(),
+           "added": time.strftime("%Y-%m-%dT%H:%M:%S")}
+    data = {"version": 1, "assets": {**(data.get("assets") or {}), name: rec}}
+    write_json(mp, data)
+    return rec
+
+
 def _list(pr) -> dict:
     adir = pr.root / "plan" / "assets"
+    mp = _manifest_path(pr)
+    origins = (read_json(mp).get("assets") or {}) if mp.exists() else {}
     items = []
     if adir.is_dir():
         for f in sorted(adir.iterdir()):
@@ -76,6 +109,8 @@ def _list(pr) -> dict:
                 items.append({"name": f.name, "kind": "video", **read_json(f / "meta.json")})
             elif f.is_file():
                 items.append({"name": f.stem, "kind": "image" if f.suffix.lower() in IMAGE_EXT else "file", "file": f.name})
+    for it in items:
+        it["origin"] = (origins.get(it["name"]) or {}).get("origin")
     return {"assets": items}
 
 
@@ -85,14 +120,25 @@ def main(args, project) -> dict:
         return _list(pr)
     if not args.file:
         raise VeosError("NO_FILE", "asset add needs a file", "Example: veos asset add demo.mp4 --project P --name demo")
+    if URL_RE.match(str(args.file)):
+        raise VeosError("NO_FETCH", "veos never downloads media: asset add takes a file the creator already has",
+                        "Ask the creator for their own file (drag it into the chat), or build a created card instead (structure §12.5).")
+    origin = getattr(args, "origin", None) or "creator"
+    if origin not in ORIGINS:
+        raise VeosError("BAD_ORIGIN", f"origin '{origin}' is not allowed", "Use --origin creator or --origin created.")
     src = Path(args.file).expanduser()
     if not src.is_file():
         raise VeosError("INPUT_MISSING", f"not found: {args.file}", "Check the path (quote paths with spaces).")
     name = _clean(args.name or src.stem)
     ext = src.suffix.lower()
     if ext in VIDEO_EXT:
-        return _add_video(pr, src, name)
-    if ext in IMAGE_EXT:
-        return _add_image(pr, src, name)
+        out = _add_video(pr, src, name)
+    elif ext in IMAGE_EXT:
+        out = _add_image(pr, src, name)
+    else:
+        out = None
+    if out is not None:
+        out["origin"] = _record(pr, name, out["kind"], src, origin)["origin"]
+        return out
     raise VeosError("BAD_ASSET_TYPE", f"{ext or 'this file'} is not a supported image or video",
                     "Use png/jpg/webp/svg images or mp4/mov/mkv/webm videos.")

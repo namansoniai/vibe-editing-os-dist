@@ -1,35 +1,45 @@
-# Global quality rules (apply to EVERY playbook, every reel; nothing overrides them)
+# Editing rules (every style, every reel)
 
-Every edit made with Vibe Editing OS must look **premium**: clean, smooth, never cluttered. These rules sit above the creator's playbook, their learned feedback, and any reference reel.
+These are directions, not limits. Edit like a great motion designer: creative first, never sloppy. They sit above the
+creator's playbook, their learned feedback and any reference reel, and where a playbook says otherwise (a label on a
+made-up card, a credit line, a cap on flashes, a ban on text behind the speaker), these win.
 
-**The validator checks G1–G3 automatically on the measured frames** (`veos measure` + `veos validate`). Fix every failure before the storyboard.
+1. **Smooth, seamless motion.** Everything moves with intent and eases in and out. Nothing teleports or stutters.
+   A hard cut, a snap or a flash is fine when it's a deliberate beat (declare it in the scene's `cuts` / `events`).
+2. **Nothing overlaps by accident.** Two components never sit on top of each other unless the layering is intended:
+   a chip on its card, a stamp slammed onto a card, a graphic tucked behind the speaker (declare it in `overlaps`,
+   or put it `behind`).
+3. **Keep the face clear.** Nothing in front of the speaker covers their face. Behind them is fair game, text
+   included.
+4. **Readable at a glance.** Text must be easy to read on a phone in the time it's on screen.
+5. **One idea at a time.** Give each idea the screen; clear the last one before the next arrives. If a frame feels
+   busy, take something away.
+6. **Show what's being said.** Every visual earns its place by showing the words: an app is an app, a number is
+   that number. No decoration for its own sake.
+7. **Never fake facts.** Numbers come from what was said or the script, and quotes and headlines are word for word.
+   If the hook promises 3 tips, show 3. Made-up cards and recreated screens are fine, with no labels or credits
+   needed.
+8. **Pace like the style, not like a timer.** Keep it moving the way the style does, and let moments breathe.
+   Never add something just to fill a gap.
+9. **The style decides the look.** Colours, fonts, sounds, flashes, glitches, shakes and memes all come from the
+   style. If the style calls for rapid flashes, use them.
 
-## G1 No overlapping
-- **Nothing on screen overlaps anything else unless it's deliberately nested.** That covers text on text, a card over a caption, a chip over a title, and subtitles under a graphic.
-  - A deliberate nesting (a chip pinned on its own card) must be declared in the scene with `overlaps: ["<card id>"]`. The validator then allows it.
-- **Text never covers the face.** Only `behind: true` depth-sandwich graphics may pass behind the head.
-- **Give every element its own space:**
-  - Plan positions from the free bands (`veos context`).
-  - Elements that appear together go on a clear grid, with at least 40 px between rects.
-  - Subtitles get their band, and graphics stay out of it while subtitles show.
+## What the engine checks automatically (facts, not taste)
 
-## G2 No clutter
-- **At most 4 graphic elements on screen at once** (z 3–10). **At most 3 text blocks at once, subtitles included.**
-- **One idea per screen:** when a new visual idea starts, the previous one exits first. Never stack a third card onto two.
-- **Breathing room:** keep at least 64 px of margin to the frame edges and the safe zone. A layout that feels full is too full; remove the least important element.
-- **Every element earns its place.** It shows what's being said. **No decoration for its own sake.**
+`veos validate` blocks a reel only on these (its `failures`):
 
-## G3 Smooth motion
-- **Every element enters and exits with eased motion** (expo-out / back-out entries 6–14 frames; exits 4–8 frames). Nothing just appears or disappears, except a deliberate hard cut declared with `cuts: [...]`.
-- **No jumps:**
-  - An element never teleports, jumping more than 90 px or resizing more than 25% between two frames, unless the jump is a declared event or cut.
-  - Morph positions and sizes; don't swap them.
-- **Hold before moving on:** text holds at least 0.25 s per word; titles at least 10 frames after they finish building.
-- **Camera moves are eased** (no linear zooms); never two camera moves within 0.4 s.
-- **Keep the frame rate honest:** keep each frame's render ≤ 30 ms so nothing stutters.
+- two components overlapping by accident (G1);
+- an element jumping instead of moving (G3);
+- something in front covering the face, judged where the face really is on screen (V-FACE);
+- text too small or too faint to read on a phone (V-TYPE);
+- a number, quote or headline that doesn't match what was said or the script (V-DATA, V-INSERTS, V-CITE), and the
+  hook's promised count (`meta.count`) not matching the item sections (V-PROMISE);
+- the scene code not matching the plan (V-PLAN); a broken effect or anchor field (V-FX, V-ANCHOR); an unknown sound
+  (S6); a missing person cut-out (V-CUTOUT);
+- and, after the render, the final video file: size, frame rate, loudness, audio sync and the other technical checks
+  (`veos qa`), plus the sound mix staying under the voice (`veos mix`).
 
-## G4 High quality (checked by the frame reviewer and the planner's self-check)
-- Crisp text: real fonts from the playbook, measured to fit, never clipped, never smaller than 40 px on the final 1080×1920 frame (subtitles ≥ 54 px).
-- Colours from the playbook tokens only; readable contrast; at most yellow (primary) + 2 bright hues per frame unless the playbook says otherwise.
-- Visuals are **literal**: they show the exact thing being said (an app → a phone app, a dish → that dish, a number → that number).
-- No placeholder text, no empty cards, no broken glyphs, no stock clichés.
+Everything else `veos validate` reports is **advice** (pacing, layout shares, colour counts, camera-move variety,
+meme and sound budgets, re-hooks, the frame-0 recipe, the safe area, clutter counts): direction for the Director
+while it plans. Follow it unless there's a creative reason not to; never add something just to satisfy it. It never
+blocks a reel and never starts a fix loop.

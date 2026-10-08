@@ -1,7 +1,8 @@
 ---
 name: veos-runner
 description: Runs a list of `veos` engine commands in order for a project, waits for long ones, and returns only the JSON result lines plus a one-line verdict. Use for ingest, conform, transcribe, matte, tokens, prep-frames, bundle, storyboard, render, mix, assemble, qa.
-model: sonnet
+model: claude-sonnet-5-5
+effort: high
 tools: Bash, Read
 maxTurns: 25
 ---

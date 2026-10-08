@@ -49,6 +49,8 @@ def main(args, project) -> dict:
             raise VeosError("SOURCE_MISSING", f"source file not found: {src}", "Move it back or re-run `veos ingest`.")
         pr = media.probe(src)
         v = pr["video"]
+        if s.get("kind") == "voiceover":  # a voice-over: only its sound is used (a video's picture is ignored)
+            v = None
         vid = proj.path("work", "src", f"{s['id']}.mp4")
         wav = proj.path("work", "audio", f"{s['id']}.wav")
         a_idx = (s.get("audio") or {}).get("stream", 0)
@@ -94,6 +96,13 @@ def main(args, project) -> dict:
             s["duration"] = r3(frames / FPS)
         if pr["audio"]:
             info["audio"] = proj.rel(wav)
+        if s.get("kind") == "voiceover" and wav.exists():  # the voice-over's timeline length is its conformed audio
+            import wave
+            with wave.open(str(wav), "rb") as w:
+                adur = w.getnframes() / float(w.getframerate())
+            s["duration"] = r3(adur)
+            s["frames"] = int(round(adur * FPS))
+            info["frames"] = s["frames"]
         s["conformed"] = info
         s["notes"] = notes
         cached = all("cached" in x for x in status) and bool(status)

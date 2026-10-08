@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Device Whip preview</title>
+<style>
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-Italic-VF.ttf");font-style:italic;font-weight:100 900}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Medium.ttf");font-weight:500}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Bold.ttf");font-weight:700}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-ExtraBold.ttf");font-weight:800}
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+:root{--bg:#f4f4f6;--fg:#111;--muted:#666;--primary:#1A64FF;--ttop:#5AA2FF;--tbot:#1450D6;--tsh:#06143D;--accent:#D3122A;--cstroke:#4A0610;--hl:#4FE1FF;--good:#1A7F38;--bad:#D92D20}
+@media (prefers-color-scheme:dark){:root{--bg:#0d0d10;--fg:#eee;--muted:#999}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 "Inter Tight",system-ui,sans-serif;padding:24px 16px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:28px 0 10px}p{margin:0 0 8px;color:var(--muted);max-width:760px}
+.strip{display:flex;flex-wrap:wrap;gap:18px}
+.cell{width:360px}.cap{font-size:13px;color:var(--muted);margin-top:6px}
+.f{position:relative;width:360px;height:640px;overflow:hidden;border-radius:14px;background:#000;isolation:isolate}
+/* ---- illustrated set + presenter ---- */
+.set{position:absolute;inset:0;background:radial-gradient(circle at 20% 22%,#ffb35c 0 7%,transparent 18%),radial-gradient(circle at 78% 30%,#ff7a3a 0 6%,transparent 16%),radial-gradient(circle at 60% 75%,#c2462a 0 9%,transparent 22%),linear-gradient(180deg,#5a2412,#2b1209 70%,#1a0a05);filter:blur(6px);transform:scale(1.1)}
+.set.cool{background:radial-gradient(circle at 25% 25%,#4a7dff 0 8%,transparent 20%),radial-gradient(circle at 75% 35%,#c13fd8 0 7%,transparent 18%),linear-gradient(180deg,#1d2c6b,#0f1230 75%)}
+.set.day{background:radial-gradient(circle at 30% 20%,#9bd16a 0 10%,transparent 24%),radial-gradient(circle at 70% 30%,#5fa83f 0 9%,transparent 22%),linear-gradient(180deg,#6aa34a,#3c6b2c 55%,#9a9a90 56%,#7d7d76)}
+.person{position:absolute;left:96px;top:70px;width:170px;height:600px}
+.person .head{position:absolute;left:42px;top:0;width:86px;height:104px;border-radius:44% 44% 46% 46%;background:#b9805a}
+.person .hair{position:absolute;left:40px;top:-6px;width:90px;height:44px;border-radius:45px 45px 12px 12px;background:#1d1410}
+.person .torso{position:absolute;left:0;top:118px;width:170px;height:480px;border-radius:70px 70px 0 0;background:#9aa3b0}
+.person.soft{filter:blur(4px)}
+/* ---- phone ---- */
+.phone{position:absolute;border-radius:22px;background:#111;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.phone .scr{width:100%;height:100%;border-radius:17px;background:linear-gradient(160deg,#c9f78a,#62d84a);position:relative;overflow:hidden}
+.phone .isl{position:absolute;left:50%;top:7px;width:34%;height:9px;margin-left:-17%;border-radius:6px;background:#111;z-index:2}
+.grid{position:absolute;left:9%;right:9%;top:16%;display:grid;grid-template-columns:repeat(4,1fr);gap:9%}
+.grid i{display:block;aspect-ratio:1;border-radius:24%;background:#fff;opacity:.85}
+.grid i:nth-child(3n){background:#ffd23f}.grid i:nth-child(4n){background:#4a90ff}.grid i:nth-child(5n){background:#ff5a5a}
+.hand{position:absolute;border-radius:40px 40px 20px 20px;background:#b9805a}
+/* ---- type ---- */
+.ttl{position:absolute;left:21px;width:318px;top:418px;text-align:center;white-space:nowrap}
+.ttl span{position:absolute;left:0;right:0;font:italic 900 25px/1 "Montserrat",sans-serif;text-transform:uppercase;letter-spacing:.01em}
+.ttl .ex{color:var(--tsh);text-shadow:1px 1px 0 var(--tsh),1.5px 2px 0 var(--tsh),0 3px 6px rgba(0,0,0,.35)}
+.ttl .st{color:#fff;-webkit-text-stroke:2px #fff}
+.ttl .fi{background:linear-gradient(180deg,var(--ttop),var(--primary) 55%,var(--tbot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{position:absolute;left:10px;right:10px;text-align:center;font:500 19px/1.12 "Poppins",sans-serif;color:#fff;-webkit-text-stroke:.7px #000;paint-order:stroke fill;text-shadow:0 1px 4px rgba(0,0,0,.65);white-space:nowrap}
+.cnt{position:absolute;left:0;right:0;text-align:center;font:700 24px/1 "Poppins",sans-serif;color:var(--accent);-webkit-text-stroke:1px var(--cstroke);paint-order:stroke fill;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.slot{position:absolute;left:0;right:0;opacity:0}
+.ring{position:absolute;border:3px solid var(--hl);box-shadow:0 0 6px var(--hl),0 0 14px rgba(79,225,255,.5),inset 0 0 6px rgba(79,225,255,.4)}
+.streaks{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at var(--x,50%) var(--y,45%),rgba(255,255,255,.0) 0 4deg,rgba(255,255,255,.28) 4deg 5deg,rgba(255,255,255,0) 5deg 9deg);-webkit-mask:radial-gradient(circle at var(--x,50%) var(--y,45%),transparent 0 18%,#000 40%);mask:radial-gradient(circle at var(--x,50%) var(--y,45%),transparent 0 18%,#000 40%);opacity:0}
+.chip{position:absolute;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.94);color:#0B0B0F;font:700 15px/1.1 "Poppins",sans-serif;white-space:nowrap}
+.verdict{position:absolute;padding:5px 12px;border-radius:9px;font:700 16px/1.1 "Poppins",sans-serif;color:#fff;letter-spacing:.02em}
+.bubble{position:absolute;display:flex;gap:8px;align-items:center}
+.bubble .av{width:37px;height:37px;border-radius:50%;background:#6b7a90;border:1.5px solid #fff;color:#fff;font:700 15px/37px "Inter Tight";text-align:center;flex:none}
+.bubble .bd{background:#fff;color:#2C2C30;border-radius:12px;padding:7px 11px;font:500 14px/1.25 "Inter Tight";max-width:214px}
+.bubble .mt{position:absolute;right:2px;bottom:-14px;font:600 9px "Inter Tight";color:rgba(255,255,255,.8)}
+.leg{position:absolute;font:600 8px "Inter Tight";letter-spacing:.08em;color:rgba(255,255,255,.8);text-transform:uppercase}
+.wm{position:absolute;left:0;right:0;text-align:center;font:700 37px/1 "Barlow Condensed",sans-serif;color:#fff;text-transform:uppercase}
+.kw{position:absolute;left:0;right:0;text-align:center;font:700 16px/1 "Poppins";color:#fff}
+.kw b{display:inline-block;margin-left:6px;padding:5px 9px;border-radius:7px;background:var(--primary);font:800 21px/1 "Poppins";letter-spacing:.02em}
+.band{position:absolute;left:0;right:0;background:linear-gradient(180deg,var(--primary),#0A1A4A 60%,#000);overflow:hidden}
+.band i{position:absolute;width:40px;height:16px;background:var(--primary);opacity:.5;transform:rotate(-24deg);clip-path:polygon(0 0,100% 30%,70% 100%)}
+.ripple{position:absolute;width:13px;height:13px;margin:-7px;border-radius:50%;border:2px solid var(--hl);opacity:0}
+.legend{position:absolute;left:8px;font:600 10px "Inter Tight";color:#ffd23f}
+.band-line{position:absolute;left:0;right:0;border-top:1px dashed #ffd23f;opacity:.7}
+/* ---- frame 1: hook title whip (6 s) ---- */
+@keyframes p1{0%{opacity:0;transform:translateX(47px) skewX(-10deg);filter:blur(3px)}1.4%{opacity:1;transform:none;filter:none}9%{opacity:1;transform:none}10%,100%{opacity:0;transform:translateX(-20px)}}
+@keyframes p2{0%,9.5%{opacity:0;transform:translateX(47px) skewX(-10deg);filter:blur(3px)}11%{opacity:1;transform:none;filter:none}22.5%{opacity:1;transform:none}23.5%,100%{opacity:0;transform:translateX(-20px)}}
+@keyframes p3{0%,23%{opacity:0;transform:translateX(47px) skewX(-10deg);filter:blur(3px)}24.5%{opacity:1;transform:none;filter:none}38%{opacity:1;transform:scale(1)}40.5%,100%{opacity:0;transform:scale(1.5)}}
+@keyframes holdup{0%{transform:translate(60px,140px) rotate(18deg) scale(.8)}5%{transform:none}38%{transform:scale(1)}41%{transform:scale(1.8)}41.1%,100%{opacity:0}}
+@keyframes arollz{0%,38%{transform:scale(1);opacity:1}41%{transform:scale(1.8);opacity:1}41.1%,93%{opacity:0}97%,100%{opacity:1;transform:scale(1)}}
+@keyframes whip{0%,37.5%{opacity:0}40.5%{opacity:.95}44.5%,100%{opacity:0}}
+@keyframes povin{0%,41%{opacity:0;transform:scale(1.18);filter:blur(5px)}43.5%{opacity:1;transform:scale(1);filter:none}92%{opacity:1;transform:scale(1.06)}95%,100%{opacity:0}}
+@keyframes ring1{0%,6%{opacity:0;clip-path:inset(0 100% 100% 0)}9%{opacity:1;clip-path:inset(0 0 0 0)}12.5%{opacity:1}14%,100%{opacity:0}}
+@keyframes subA{0%,43%{opacity:0}43.5%,66%{opacity:1}66.5%,100%{opacity:0}}
+@keyframes subB{0%,66%{opacity:0}66.5%,92%{opacity:1}92.5%,100%{opacity:0}}
+@keyframes rip{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(12)}}
+.a6{animation-duration:6s;animation-iteration-count:infinite;animation-timing-function:linear}
+/* counter slots: visible for 1/6 of the loop, offset by negative delays */
+@keyframes slot6{0%,16.6%{opacity:1}16.7%,100%{opacity:0}}
+@keyframes bump{0%{transform:scale(1)}3%{transform:scale(1.12)}6%,100%{transform:scale(1)}}
+@keyframes ringB{0%{opacity:0;clip-path:inset(0 100% 100% 0)}3%{opacity:1;clip-path:inset(0 0 0 0)}7%{opacity:1}9%,100%{opacity:0}}
+@keyframes chunk3{0%,33.2%{opacity:1}33.3%,100%{opacity:0}}
+@keyframes zoomB{0%,34%{transform:scale(1);opacity:1}38%{transform:scale(1.7);opacity:1}38.1%,100%{opacity:0}}
+@keyframes povB{0%,38%{opacity:0;transform:scale(1.18)}41%,96%{opacity:1;transform:scale(1)}100%{opacity:0}}
+@keyframes pop{0%,15%{opacity:0;transform:scale(.8)}18%{opacity:1;transform:scale(1.04)}20%,80%{opacity:1;transform:scale(1)}84%,100%{opacity:0}}
+@keyframes rise{0%,10%{opacity:0;transform:translateY(10px) scale(.92)}16%{opacity:1;transform:none}85%{opacity:1}90%,100%{opacity:0}}
+@keyframes stamp{0%,25%{opacity:0;transform:scale(1.4) rotate(-4deg)}28%,85%{opacity:1;transform:none}90%,100%{opacity:0}}
+@keyframes cardin{0%,8%{opacity:0}16%,92%{opacity:1}100%{opacity:0}}
+@keyframes kwin{0%,22%{opacity:0;transform:scale(.8)}26%{opacity:1;transform:scale(1.05)}28%,92%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes drift{0%{transform:translateX(0) rotate(-24deg)}100%{transform:translateX(40px) rotate(-24deg)}}
+@keyframes kb{0%{transform:scale(1)}100%{transform:scale(1.1)}}
+</style>
+</head>
+<body>
+<h1>Device Whip</h1>
+<p>Hands-on gadget reviews: a blue italic title over the device you hold, a whip into a close-up of it in your hand, small clean captions and a red counter that ticks up. Illustrated frames (no real footage); 1080 × 1920 shown at one third.</p>
+
+<h2>F-A Device Whip: hook, body, end</h2>
+<div class="strip">
+
+<!-- 1. HOOK H-A: title stagger + ring + whip into the device (card 1) -->
+<div class="cell"><div class="f" data-card="1">
+  <div class="a6" style="position:absolute;inset:0;animation-name:arollz;transform-origin:52% 40%">
+    <div class="set"></div>
+    <div class="person soft"><div class="hair"></div><div class="head"></div><div class="torso"></div></div>
+    <div class="a6" style="position:absolute;inset:0;animation-name:holdup;transform-origin:50% 38%">
+      <div class="phone" style="left:118px;top:120px;width:124px;height:262px"><div class="isl"></div><div class="scr"><div class="grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+      <div class="hand" style="left:100px;top:300px;width:58px;height:90px"></div>
+      <div class="ring a6" style="left:112px;top:114px;width:136px;height:274px;border-radius:26px;animation-name:ring1"></div>
+    </div>
+    <div class="ttl" style="top:418px">
+      <div class="a6" style="position:absolute;inset:0;animation-name:p1"><span class="ex">What they</span><span class="st">What they</span><span class="fi">What they</span></div>
+      <div class="a6" style="position:absolute;inset:0;animation-name:p2"><span class="ex">Don't tell you</span><span class="st">Don't tell you</span><span class="fi">Don't tell you</span></div>
+      <div class="a6" style="position:absolute;inset:0;animation-name:p3;transform-origin:50% -150px"><span class="ex">About your phone</span><span class="st">About your phone</span><span class="fi">About your phone</span></div>
+    </div>
+  </div>
+  <div class="a6" style="position:absolute;inset:0;animation-name:povin">
+    <div class="set" style="filter:blur(10px)"></div>
+    <div class="phone" style="left:98px;top:96px;width:164px;height:330px;transform:rotate(-4deg)"><div class="isl"></div><div class="scr" style="background:linear-gradient(180deg,#f2f2f5,#e4e4ea)"><div style="position:absolute;left:8%;right:8%;bottom:10%;height:34%;display:grid;grid-template-columns:repeat(10,1fr);gap:4%">
+      <i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i><i style="background:#fff;border-radius:3px"></i></div>
+      <div style="position:absolute;left:12%;top:20%;width:60%;height:4px;background:#999;border-radius:2px"></div><div style="position:absolute;left:12%;top:26%;width:44%;height:4px;background:#999;border-radius:2px"></div></div></div>
+    <div class="hand" style="left:60px;top:370px;width:120px;height:270px;transform:rotate(14deg)"></div>
+    <div class="hand" style="left:172px;top:330px;width:30px;height:110px;border-radius:15px;transform:rotate(-28deg)"></div>
+    <div class="sub a6" style="top:454px;animation-name:subA">Hold the space bar</div>
+    <div class="sub a6" style="top:454px;animation-name:subB">and it turns into a trackpad</div>
+  </div>
+  <div class="streaks a6" style="--x:50%;--y:40%;animation-name:whip"></div>
+</div><div class="cap">Card 1 · HA-17 H-A: title phrases smear in under the held-up device, ring trace, whip into the POV by 2.3 s.</div></div>
+
+<!-- 2. COUNT-UP: POV clamp + counter ticking (card 2) -->
+<div class="cell"><div class="f" data-card="2">
+  <div class="set day" style="filter:blur(8px)"></div>
+  <div class="phone a6" style="left:70px;top:70px;width:220px;height:460px;animation-name:kb;animation-direction:alternate;animation-timing-function:ease-in-out"><div class="isl"></div><div class="scr" style="background:linear-gradient(180deg,#eef0f3 0 16%,#3b62c8 16% 62%,#5d6a3c 62% 84%,#eef0f3 84%)">
+    <div style="position:absolute;left:42%;top:36%;width:16%;height:30%;border-radius:40% 40% 10% 10%;background:#2a2f3a"></div>
+    <div style="position:absolute;left:46%;top:30%;width:9%;height:8%;border-radius:50%;background:#b9805a"></div></div></div>
+  <div style="position:absolute;left:150px;top:520px;width:60px;height:120px;background:#333"></div>
+  <div class="cnt" style="top:371px">
+    <div class="slot a6" style="animation-name:slot6;animation-delay:0s">Reframes: 1</div>
+    <div class="slot a6" style="animation-name:slot6;animation-delay:-5s">Reframes: 2</div>
+    <div class="slot a6" style="animation-name:slot6;animation-delay:-4s">Reframes: 3</div>
+    <div class="slot a6" style="animation-name:slot6;animation-delay:-3s">Reframes: 5</div>
+    <div class="slot a6" style="animation-name:slot6;animation-delay:-2s">Reframes: 7</div>
+    <div class="slot a6" style="animation-name:slot6;animation-delay:-1s">Reframes: 8</div>
+  </div>
+  <div class="sub" style="top:412px">Let's go again</div>
+</div><div class="cap">Card 2 · RS-COUNT: the red counter sits 120 px above the caption (caption y mid = 1270) and ticks across every cut.</div></div>
+
+<!-- 3. HOOK H-B: question captions + ring on the clamped device -->
+<div class="cell"><div class="f">
+  <div class="a6" style="position:absolute;inset:0;animation-name:zoomB;transform-origin:68% 42%">
+    <div class="set day"></div>
+    <div class="person" style="left:20px;top:110px"><div class="hair"></div><div class="head"></div><div class="torso" style="background:#22305a"></div></div>
+    <div class="phone" style="left:206px;top:180px;width:80px;height:160px;padding:4px"><div class="isl" style="height:6px"></div><div class="scr" style="background:linear-gradient(180deg,#eef0f3,#7aa75a)"></div></div>
+    <div style="position:absolute;left:242px;top:340px;width:7px;height:300px;background:#111"></div>
+    <div class="ring a6" style="left:200px;top:174px;width:92px;height:172px;border-radius:16px;animation-name:ringB"></div>
+    <div class="ripple a6" style="left:236px;top:260px;animation-name:rip;animation-duration:6s;animation-delay:-4.7s;animation-timing-function:ease-out"></div>
+    <div class="sub a6" style="top:454px;animation-name:chunk3">Can your phone</div>
+    <div class="sub a6" style="top:454px;animation-name:chunk3;animation-delay:-4s">actually see</div>
+  </div>
+  <div class="a6" style="position:absolute;inset:0;animation-name:povB">
+    <div class="set day" style="filter:blur(12px)"></div>
+    <div class="phone" style="left:80px;top:60px;width:200px;height:420px"><div class="isl"></div><div class="scr" style="background:linear-gradient(180deg,#eef0f3 0 15%,#5a86d6 15% 60%,#6b7a43 60% 85%,#eef0f3 85%)"></div></div>
+    <div class="hand" style="left:210px;top:250px;width:30px;height:150px;border-radius:15px;transform:rotate(-30deg)"></div>
+    <div class="sub" style="top:454px">So using the new feature</div>
+  </div>
+</div><div class="cap">HA-17 H-B: the question in captions from f0, the ring traces the device on its clamp, then the whip.</div></div>
+
+<!-- 4. Whip close-up -->
+<div class="cell"><div class="f">
+  <div class="set cool"></div>
+  <div class="person soft" style="transform:scale(1.4);transform-origin:50% 20%"><div class="hair"></div><div class="head"></div><div class="torso" style="background:#151515"></div></div>
+  <div class="phone a6" style="left:200px;top:240px;width:90px;height:190px;padding:4px;animation-name:kb"><div class="isl" style="height:6px"></div><div class="scr" style="background:linear-gradient(160deg,#ffb08a,#ff6a3a)"></div></div>
+  <div class="streaks a6" style="--x:68%;--y:52%;animation-name:whip;animation-delay:-1.5s"></div>
+</div><div class="cap">T-WHIP: 8 f zoom + radial streaks centred on the device, the POV lands 1.18 → 1.00 with de-blur.</div></div>
+
+<!-- 5. Setting chip on POV -->
+<div class="cell"><div class="f">
+  <div class="set" style="filter:blur(10px)"></div>
+  <div class="phone" style="left:90px;top:130px;width:180px;height:380px;transform:rotate(3deg)"><div class="isl"></div><div class="scr" style="background:#1c1c1e">
+    <div style="position:absolute;left:8%;right:8%;top:16%;height:22%;border-radius:10px;background:#2c2c2e"></div>
+    <div style="position:absolute;left:8%;right:8%;top:44%;height:30%;border-radius:10px;background:#2c2c2e"></div>
+    <div style="position:absolute;right:12%;top:50%;width:22px;height:13px;border-radius:7px;background:#34c759"></div></div></div>
+  <div class="hand" style="left:40px;top:430px;width:130px;height:230px;transform:rotate(16deg)"></div>
+  <div class="chip a6" style="left:120px;top:72px;animation-name:pop">Snooze: 9 min</div>
+  <div class="sub" style="top:454px">It does actually end</div>
+</div><div class="cap">P-22 setting chip at the top band (cy 250) when the UI text is too small to read.</div></div>
+
+<!-- 6. Message bubble on A-roll -->
+<div class="cell"><div class="f">
+  <div class="set cool"></div>
+  <div class="person"><div class="hair"></div><div class="head"></div><div class="torso" style="background:#151515"></div></div>
+  <div class="phone" style="left:236px;top:230px;width:62px;height:130px;padding:3px;transform:rotate(12deg)"><div class="scr" style="background:linear-gradient(160deg,#ffb08a,#ff6a3a)"></div></div>
+  <div class="bubble a6" style="left:27px;top:353px;animation-name:rise"><div class="av">S</div><div class="bd">Are these <b>your keys</b>? Left on the café table</div><div class="mt">Sam · 10:37</div></div>
+  <div class="leg" style="left:72px;top:418px">Representational</div>
+  <div class="sub" style="top:454px">And then my friend texted me</div>
+</div><div class="cap">P-23 message bubble (created when no screenshot is supplied), above the low caption band.</div></div>
+
+<!-- 7. Verdict chip on the TURN -->
+<div class="cell"><div class="f">
+  <div class="a6" style="position:absolute;inset:0;animation-name:kb;animation-direction:alternate">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#ffffff 0 18%,#dfe7ef 30%,#9fb3c4 60%,#59697a)"></div>
+    <div style="position:absolute;left:70px;top:120px;width:220px;height:300px;border-radius:30px 30px 60px 60px;border:6px solid rgba(255,255,255,.7);background:rgba(220,235,250,.5)"></div>
+  </div>
+  <div class="verdict a6" style="left:118px;top:370px;background:var(--good);animation-name:stamp">WORKS ✓</div>
+  <div class="sub" style="top:412px">Snow. Every single time.</div>
+</div><div class="cap">The TURN: the result full-bleed with a slow push, counter gone, P-25 verdict in the counter band.</div></div>
+
+<!-- 8. End card (card 3) -->
+<div class="cell"><div class="f" data-card="3">
+  <div class="a6" style="position:absolute;inset:0;animation-name:cardin">
+    <div class="band" style="top:0;height:110px;background:linear-gradient(0deg,var(--primary),#0A1A4A 60%,#000)"><i class="a6" style="left:30px;top:70px;animation-name:drift"></i><i class="a6" style="left:200px;top:40px;animation-name:drift"></i><i class="a6" style="left:290px;top:80px;animation-name:drift"></i></div>
+    <div class="wm" style="top:242px">YOURNAME</div>
+    <div class="band" style="top:333px;height:167px;opacity:.55"><i class="a6" style="left:60px;top:120px;animation-name:drift"></i><i class="a6" style="left:250px;top:130px;animation-name:drift"></i></div>
+    <div class="kw a6" style="top:380px;animation-name:kwin">Comment <b>BLENDER</b></div>
+  </div>
+</div><div class="cap">Card 3 · P-32 end card: black, white condensed wordmark, artwork bands, keyword chip ≥ 1.5 s, ≤ 4 s total.</div></div>
+</div>
+
+<h2>Caption profile CS-1 "quiet line"</h2>
+<div class="strip">
+<div class="cell"><div class="f">
+  <div class="set" style="filter:blur(10px)"></div>
+  <div class="phone" style="left:100px;top:110px;width:160px;height:330px"><div class="isl"></div><div class="scr"><div class="grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+  <div class="band-line" style="top:423px"></div><div class="legend" style="top:408px">mid · cy 1270</div>
+  <div class="band-line" style="top:467px"></div><div class="legend" style="top:470px">low · cy 1400 (default)</div>
+  <div class="sub a6" style="top:454px;animation-name:chunk3">When you take a screenshot</div>
+  <div class="sub a6" style="top:454px;animation-name:chunk3;animation-delay:-4s">while you're on a video call</div>
+  <div class="sub a6" style="top:454px;animation-name:chunk3;animation-delay:-2s">it's not actually a screenshot.</div>
+</div><div class="cap">One white line, 3–6 words, Poppins 500 56 px, hard swaps, no emphasis; one y per reel (rule CY).</div></div>
+</div>
+</body>
+</html>

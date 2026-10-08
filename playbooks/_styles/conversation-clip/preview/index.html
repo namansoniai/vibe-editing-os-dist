@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conversation Clip Preview</title>
+<style>
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900;font-style:normal}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-Italic-VF.ttf");font-weight:100 900;font-style:italic}
+@font-face{font-family:"Permanent Marker";src:url("../../../../assets/fonts/PermanentMarker-Regular.ttf")}
+:root{--red:#E4001B;--yel:#FFE600;--paper:#FFFFFF;--ink:#0B0B0B;--board:#F4F4F1;--void:#0E0E10;
+  --bg:#F2F1EE;--fg:#141414;--muted:#5B5B60;--card:#FFFFFF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0D0D0F;--fg:#EDEDED;--muted:#A0A0A8;--card:#17171A}}
+:root[data-theme="dark"]{--bg:#0D0D0F;--fg:#EDEDED;--muted:#A0A0A8;--card:#17171A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:Montserrat,system-ui,sans-serif;padding:32px 16px 60px}
+h1{font-weight:800;font-size:22px;max-width:1160px;margin:0 auto 6px}
+p.lead{font-size:13px;color:var(--muted);max-width:1160px;margin:0 auto 22px;line-height:1.5}
+h2{font-weight:700;font-size:15px;max-width:1160px;margin:26px auto 12px;letter-spacing:.02em}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1160px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+figcaption b{color:var(--fg)}
+.f{width:360px;height:640px;position:relative;overflow:hidden;background:#000;isolation:isolate}
+.cell{position:absolute;left:0;width:360px;height:320px;overflow:hidden}
+.cell.top{top:0}.cell.bot{top:320px}
+.full{position:absolute;inset:0;overflow:hidden}
+.stage{background:radial-gradient(90% 60% at 70% 20%,#C9D2FF 0%,transparent 55%),linear-gradient(160deg,#8E9BFF 0%,#5C66E6 45%,#2E2F9A 100%)}
+.wall{background:linear-gradient(90deg,#4F7F7B 0 18%,#6E9A95 18% 22%,#5C8A85 22% 70%,#6E9A95 70% 74%,#4F7F7B 74%)}
+.solo{background:linear-gradient(180deg,#3A3530,#211E1B)}
+.void{background:var(--void)}
+.board{background:var(--board)}
+.wall:after,.stage:after,.solo:after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,transparent 60%,rgba(0,0,0,.35));pointer-events:none}
+.crop{position:absolute;inset:0;transform-origin:50% 30%;animation:jz 6s step-end infinite}
+@keyframes jz{0%{transform:scale(1)}41.6%{transform:scale(1.25)}78%{transform:scale(1)}}
+/* illustrated people */
+.p{position:absolute;width:140px;height:270px;transform-origin:50% 0}
+.p i{position:absolute;display:block}
+.p .body{left:0;right:0;top:118px;height:420px;border-radius:70px 70px 0 0;background:#2F5446}
+.p .neck{left:56px;top:96px;width:28px;height:30px;background:#B98563;border-radius:8px}
+.p .head{left:36px;top:18px;width:68px;height:84px;border-radius:44% 44% 40% 40%;background:#C8946F}
+.p .hair{left:30px;top:6px;width:80px;height:40px;border-radius:40px 40px 14px 14px;background:#1E1712}
+.p .beard{left:38px;top:62px;width:64px;height:58px;border-radius:12px 12px 34px 34px;background:#1E1712}
+.p .mouth{left:62px;top:76px;width:16px;height:4px;border-radius:4px;background:#5A2B22;animation:talk .36s steps(2) infinite}
+.p .mouth.still{animation:none}
+@keyframes talk{50%{height:8px}}
+.p.guest .body{background:#151515}
+.p.guest .head{background:#E2B08C}
+.p.guest .hair{left:22px;top:2px;width:96px;height:150px;border-radius:48px 48px 30px 30px;background:#D9B25E;z-index:-1}
+.p.guest .beard{display:none}
+.p.guest .mouth{background:#9E4A44;top:80px}
+.p.solo .body{background:#24324A}
+.p.solo .head{background:#B7825C}
+.p.solo .hair{background:#2A1D16;height:34px}
+.p.solo .beard{display:none}
+.p.solo .mouth{top:80px}
+.mic{position:absolute;left:236px;top:150px;width:6px;height:170px;background:#222;transform:rotate(-8deg)}
+.mic:before{content:"";position:absolute;left:-10px;top:-22px;width:26px;height:26px;border-radius:50%;background:#bbb;box-shadow:inset -4px -4px 0 #888}
+.mic.big{left:262px;top:240px;height:400px}
+/* the pill: one red box per line */
+.pill{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;z-index:5;pointer-events:none}
+.pill span{display:block;background:var(--red);color:var(--paper);font:800 22.7px/28px Montserrat,sans-serif;text-transform:uppercase;
+  padding:0 7px;border-radius:5px;letter-spacing:0;box-shadow:0 1px 3px rgba(0,0,0,.25);white-space:nowrap}
+/* captions: 60 px at 1/3 = 20 px; cy 940 -> top ~300; seam 960 -> top ~307 */
+.cap{position:absolute;left:37px;right:37px;text-align:center;font:600 20px/26px Montserrat,sans-serif;white-space:nowrap;z-index:4;
+  text-shadow:0 1px 1px rgba(0,0,0,.85),0 0 4px rgba(0,0,0,.35);opacity:0}
+.cap b{font-weight:800}
+.cap.h{color:var(--paper)}
+.cap.g{color:var(--yel);font-style:italic}
+.cap.punch{font-size:28px;font-weight:800;line-height:34px}
+/* F-B question card */
+.qcard{position:absolute;left:27px;top:343px;width:293px;border-radius:10px;background:#1A1A1D;padding:14px 16px 10px;z-index:3;
+  box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.qn{font:700 13.3px/1.2 Montserrat,sans-serif;color:var(--paper);opacity:.9}
+.qt{margin-top:8px;font:italic 600 17.3px/1.3 Montserrat,sans-serif;color:var(--yel)}
+.qt u{text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--yel)}
+.ql{margin-top:10px;font:500 8px/1 Montserrat,sans-serif;letter-spacing:.08em;color:#9A9AA0}
+/* F-B board */
+.bcard{position:absolute;left:27px;top:23px;width:293px;height:157px;border-radius:10px;background:var(--board);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.bw{position:absolute;left:20px;font:400 26px/1 "Permanent Marker",cursive;color:#1A1A1A;clip-path:inset(0 100% 0 0);animation:write 6s linear infinite}
+.bw.t1{top:14px}.bw.t2{top:60px;animation-delay:1s}.bw.t3{top:106px;animation-delay:3.2s}
+@keyframes write{0%{clip-path:inset(0 100% 0 0)}5.5%{clip-path:inset(0 0 0 0)}96%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 100% 0 0)}}
+.tick{position:absolute;left:18px;height:3px;background:#1A1A1A;border-radius:2px;width:0;animation:tick 6s linear infinite}
+.tick.k1{top:44px;animation-delay:4.4s}.tick.k2{top:90px;animation-delay:4.6s}.tick.k3{top:136px;animation-delay:4.8s}
+@keyframes tick{0%{width:0}3.4%{width:120px}24%{width:120px}25%{width:0}}
+/* caption spec card */
+.spec{background:linear-gradient(160deg,#30343A,#16181C);padding:26px 18px}
+.spec .sl{font:600 11px/1.4 Montserrat,sans-serif;color:#C9C9CF;margin-bottom:16px}
+.spec .cap{opacity:1;left:auto;right:auto;margin:10px 0 2px}
+.spec .sm{font:500 10px/1.3 Montserrat,sans-serif;color:#9EA0A8;text-align:center}
+
+@keyframes w1{0%{opacity:1}16.667%{opacity:0}100%{opacity:0}}
+@keyframes w2{0%{opacity:0}16.667%{opacity:1}35.000%{opacity:0}100%{opacity:0}}
+@keyframes w3{0%{opacity:0}35.000%{opacity:1}45.000%{opacity:0}100%{opacity:0}}
+@keyframes w4{0%{opacity:0}45.000%{opacity:1}65.000%{opacity:0}100%{opacity:0}}
+@keyframes w5{0%{opacity:0}65.000%{opacity:1}83.333%{opacity:0}100%{opacity:0}}
+@keyframes w6{0%{opacity:0}83.333%{opacity:1}100%{opacity:1}}
+@keyframes w7{0%{opacity:1}15.000%{opacity:0}100%{opacity:0}}
+@keyframes w8{0%{opacity:0}15.000%{opacity:1}30.000%{opacity:0}100%{opacity:0}}
+@keyframes w9{0%{opacity:0}30.000%{opacity:1}41.667%{opacity:0}100%{opacity:0}}
+@keyframes w10{0%{opacity:0}41.667%{opacity:1}60.000%{opacity:0}100%{opacity:0}}
+@keyframes w11{0%{opacity:0}60.000%{opacity:1}78.333%{opacity:0}100%{opacity:0}}
+@keyframes w12{0%{opacity:0}78.333%{opacity:1}100%{opacity:1}}
+@keyframes w13{0%{opacity:1}20.000%{opacity:0}100%{opacity:0}}
+@keyframes w14{0%{opacity:0}20.000%{opacity:1}38.333%{opacity:0}100%{opacity:0}}
+@keyframes w15{0%{opacity:0}38.333%{opacity:1}56.667%{opacity:0}100%{opacity:0}}
+@keyframes w16{0%{opacity:0}56.667%{opacity:1}76.667%{opacity:0}100%{opacity:0}}
+@keyframes w17{0%{opacity:0}76.667%{opacity:1}100%{opacity:1}}
+@keyframes w18{0%{opacity:1}16.667%{opacity:0}100%{opacity:0}}
+@keyframes w19{0%{opacity:0}16.667%{opacity:1}33.333%{opacity:0}100%{opacity:0}}
+@keyframes w20{0%{opacity:0}33.333%{opacity:1}48.333%{opacity:0}100%{opacity:0}}
+@keyframes w21{0%{opacity:0}48.333%{opacity:1}66.667%{opacity:0}100%{opacity:0}}
+@keyframes w22{0%{opacity:0}66.667%{opacity:1}83.333%{opacity:0}100%{opacity:0}}
+@keyframes w23{0%{opacity:0}83.333%{opacity:1}100%{opacity:1}}
+@keyframes w24{0%{opacity:1}21.667%{opacity:0}100%{opacity:0}}
+@keyframes w25{0%{opacity:0}21.667%{opacity:1}50.000%{opacity:0}100%{opacity:0}}
+@keyframes w26{0%{opacity:0}50.000%{opacity:1}70.000%{opacity:0}100%{opacity:0}}
+@keyframes w27{0%{opacity:0}70.000%{opacity:1}100%{opacity:1}}
+@keyframes w28{0%{opacity:0}10.000%{opacity:1}100%{opacity:1}}
+@keyframes w29{0%{opacity:1}13.333%{opacity:0}100%{opacity:0}}
+@keyframes w30{0%{opacity:0}13.333%{opacity:1}26.667%{opacity:0}100%{opacity:0}}
+@keyframes w31{0%{opacity:0}26.667%{opacity:1}43.333%{opacity:0}100%{opacity:0}}
+@keyframes w32{0%{opacity:0}43.333%{opacity:1}60.000%{opacity:0}100%{opacity:0}}
+@keyframes w33{0%{opacity:0}60.000%{opacity:1}80.000%{opacity:0}100%{opacity:0}}
+@keyframes w34{0%{opacity:0}80.000%{opacity:1}100%{opacity:1}}
+@keyframes w35{0%{opacity:1}16.667%{opacity:0}100%{opacity:0}}
+@keyframes w36{0%{opacity:0}16.667%{opacity:1}33.333%{opacity:0}100%{opacity:0}}
+@keyframes w37{0%{opacity:0}33.333%{opacity:1}53.333%{opacity:0}100%{opacity:0}}
+@keyframes w38{0%{opacity:0}53.333%{opacity:1}73.333%{opacity:0}100%{opacity:0}}
+@keyframes w39{0%{opacity:0}73.333%{opacity:1}100%{opacity:1}}
+@keyframes w40{0%{opacity:1}18.333%{opacity:0}100%{opacity:0}}
+@keyframes w41{0%{opacity:0}18.333%{opacity:1}36.667%{opacity:0}100%{opacity:0}}
+@keyframes w42{0%{opacity:0}36.667%{opacity:1}56.667%{opacity:0}100%{opacity:0}}
+@keyframes w43{0%{opacity:0}56.667%{opacity:1}76.667%{opacity:0}100%{opacity:0}}
+@keyframes w44{0%{opacity:0}76.667%{opacity:1}100%{opacity:1}}
+</style>
+</head>
+<body>
+<h1>Conversation Clip: glimpse</h1>
+<p class="lead">Inspired by Alex Hormozi. Each frame is 360 × 640 (1080 × 1920 at 1/3), looping every 6 s. Illustrated people stand in for your footage; everything else is drawn exactly as the template draws it: one red quote pill, centre captions in two speaker styles, hard cuts. Nothing else.</p>
+<h2>F-A · Two-person Q&A</h2><div class="grid"><figure><div class="f" data-card="1"><div class="cell top stage"><div class="p host " style="left:118px;top:58px;transform:scale(1.0)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth still"></i></div></div><div class="cell bot wall"><div class="p guest " style="left:104px;top:54px;transform:scale(1.0)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div><i class="mic"></i></div><div class="pill" style="top:224px;"><span>“SHOULD I SELL MY</span><span>COMPANY?”</span></div><div class="cap g seam" style="top:307px;animation:w1 6.0s step-end infinite">I sell</div><div class="cap g seam" style="top:307px;animation:w2 6.0s step-end infinite"><b>performance</b> upgrades</div><div class="cap g seam" style="top:307px;animation:w3 6.0s step-end infinite">to</div><div class="cap g seam" style="top:307px;animation:w4 6.0s step-end infinite"><b>german car</b> owners</div><div class="cap g seam" style="top:307px;animation:w5 6.0s step-end infinite"><b>$5M</b> in revenue</div><div class="cap g seam" style="top:307px;animation:w6 6.0s step-end infinite">I do <b>like</b> it</div></div><figcaption><b>F-A opener (HA-03).</b> Host on top, the asker below, the red question pill; the asker's words in yellow italic on the seam, hard swaps.</figcaption></figure><figure><div class="f" data-card="2"><div class="full stage"><div class="crop"><div class="p host " style="left:108px;top:36px;transform:scale(1.5)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div></div></div><div class="cap h" style="top:300px;animation:w7 6.0s step-end infinite">you need to make</div><div class="cap h" style="top:300px;animation:w8 6.0s step-end infinite">than you're making</div><div class="cap h" style="top:300px;animation:w9 6.0s step-end infinite">right now</div><div class="cap h" style="top:300px;animation:w10 6.0s step-end infinite">you're playing too <b>small</b></div><div class="cap h" style="top:300px;animation:w11 6.0s step-end infinite">with the <b>bet size</b></div><div class="cap h" style="top:300px;animation:w12 6.0s step-end infinite">to move the <b>needle</b></div></div><figcaption><b>F-A body: SHOT-HOST.</b> White upright 600, one bold word, cy 940. On 'small' the same camera jumps ×1.25 on a cut (no animated zoom).</figcaption></figure><figure><div class="f"><div class="full wall"><div class="p guest " style="left:92px;top:30px;transform:scale(1.5)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth still"></i></div><i class="mic big"></i></div><div class="cap h" style="top:300px;animation:w13 6.0s step-end infinite">a <b>$50M</b> business</div><div class="cap h" style="top:300px;animation:w14 6.0s step-end infinite">to <b>$100M</b> business</div><div class="cap h" style="top:300px;animation:w15 6.0s step-end infinite"><b>$100K</b> bets is</div><div class="cap h" style="top:300px;animation:w16 6.0s step-end infinite">probably not gonna</div><div class="cap g" style="top:300px;animation:w17 6.0s step-end infinite">yeah</div></div><figcaption><b>F-A listener cutaway.</b> The asker reacts for 1.5–3 s while the host talks: the caption stays white because the colour follows the voice.</figcaption></figure><figure><div class="f"><div class="cell top stage"><div class="p host " style="left:118px;top:50px;transform:scale(1.0)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div></div><div class="cell bot wall"><div class="p guest " style="left:104px;top:54px;transform:scale(1.0)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth still"></i></div><i class="mic"></i></div><div class="cap h seam" style="top:307px;animation:w18 6.0s step-end infinite">and be like</div><div class="cap h seam" style="top:307px;animation:w19 6.0s step-end infinite">“learn all this shit”</div><div class="cap h seam" style="top:307px;animation:w20 6.0s step-end infinite">and then</div><div class="cap h seam" style="top:307px;animation:w21 6.0s step-end infinite"><i>you</i> start doing it</div><div class="cap h seam" style="top:307px;animation:w22 6.0s step-end infinite"><b>they</b> start beating</div><div class="cap h seam" style="top:307px;animation:w23 6.0s step-end infinite">because they should</div></div><figcaption><b>F-A stack return.</b> Long turns come back to the 50/50 stack (host top, seam y 960, no line). Voiced quotes go italic in curly quotes.</figcaption></figure><figure><div class="f"><div class="full stage"><div class="crop"><div class="p host " style="left:108px;top:36px;transform:scale(1.5)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div></div></div><div class="cap h punch" style="top:292px;animation:w24 6.0s step-end infinite">you're gonna</div><div class="cap h punch" style="top:292px;animation:w25 6.0s step-end infinite">work again</div><div class="cap h" style="top:300px;animation:w26 6.0s step-end infinite">it's tiny little</div><div class="cap h" style="top:300px;animation:w27 6.0s step-end infinite"><b>wins</b> like that</div></div><figcaption><b>CS-2 punch line.</b> The one line per 30 s that is the answer: 84 px, 800, still a hard swap.</figcaption></figure></div><h2>F-B · Solo answer</h2><div class="grid"><figure><div class="f" data-card="3"><div class="cell top solo"><div class="p solo " style="left:112px;top:48px;transform:scale(1.0)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div></div><div class="cell bot void"></div><div class="qcard"><div class="qn">A follower asked</div><div class="qt">how do I ask for a <u style="animation:w28 6.0s step-end infinite">raise</u> without sounding greedy?</div><div class="ql">REPRESENTATIONAL</div></div><div class="pill" style="top:224px;"><span>“HOW DO I ASK</span><span>FOR A RAISE?”</span></div><div class="cap g seam" style="top:307px;animation:w29 6.0s step-end infinite">how do I ask</div><div class="cap g seam" style="top:307px;animation:w30 6.0s step-end infinite">for a <b>raise</b></div><div class="cap g seam" style="top:307px;animation:w31 6.0s step-end infinite">without sounding <b>greedy</b>?</div><div class="cap h seam" style="top:307px;animation:w32 6.0s step-end infinite">okay</div><div class="cap h seam" style="top:307px;animation:w33 6.0s step-end infinite"><b>three</b> things</div><div class="cap h seam" style="top:307px;animation:w34 6.0s step-end infinite">first, bring <b>proof</b></div></div><figcaption><b>F-B opener (HA-05).</b> You on top, the question card below (your screenshot, or a created card labelled REPRESENTATIONAL), the same pill.</figcaption></figure><figure><div class="f"><div class="cell top solo"><div class="p solo " style="left:112px;top:48px;transform:scale(1.0)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div></div><div class="cell bot void"><div class="bcard"><div class="bw t1">PROOF</div><div class="bw t2">NUMBER</div><div class="bw t3">DATE</div><i class="tick k1"></i><i class="tick k2"></i><i class="tick k3"></i></div></div><div class="cap h seam" style="top:307px;animation:w35 6.0s step-end infinite"><b>proof</b></div><div class="cap h seam" style="top:307px;animation:w36 6.0s step-end infinite">ask for a <b>number</b></div><div class="cap h seam" style="top:307px;animation:w37 6.0s step-end infinite">not “more”</div><div class="cap h seam" style="top:307px;animation:w38 6.0s step-end infinite">give them a <b>date</b></div><div class="cap h seam" style="top:307px;animation:w39 6.0s step-end infinite">ask on <b>Monday</b></div></div><figcaption><b>F-B board.</b> When you list things, a flip-chart board fills the bottom cell; each word writes on as you say it.</figcaption></figure><figure><div class="f"><div class="full solo"><div class="crop"><div class="p solo " style="left:110px;top:36px;transform:scale(1.5)"><i class="body"></i><i class="neck"></i><i class="head"></i><i class="hair"></i><i class="beard"></i><i class="mouth"></i></div></div></div><div class="cap h" style="top:300px;animation:w40 6.0s step-end infinite">it's not <b>greedy</b></div><div class="cap h" style="top:300px;animation:w41 6.0s step-end infinite">if it's <b>priced</b></div><div class="cap h" style="top:300px;animation:w42 6.0s step-end infinite">proof, number, date</div><div class="cap h" style="top:300px;animation:w43 6.0s step-end infinite">ask on <b>Monday</b></div><div class="cap h" style="top:300px;animation:w44 6.0s step-end infinite">that's it</div></div><figcaption><b>F-B full with re-crops.</b> Solo shots split every 2–4 s; each cut alternates the framing 1.0 ↔ 1.25.</figcaption></figure></div><h2>Caption profile</h2><div class="grid"><figure><div class="f spec"><div class="sl">CS-1 · Montserrat 600 · 60 px · 1–4 words · hard swap</div><div class="cap h" style="position:relative;top:0">so this is <b>me</b></div><div class="sm">host · white upright · bold = 800</div><div class="cap g" style="position:relative;top:0">we did <b>$44M</b></div><div class="sm">other voice · yellow italic</div><div class="cap h" style="position:relative;top:0"><i>“great!”</i></div><div class="sm">voiced quote · italic, curly quotes</div><div class="cap h punch" style="position:relative;top:0">work again</div><div class="sm">CS-2 punch · 84 px</div><div class="pill" style="top:520px;"><span>“WHY DO MY</span><span>EMPLOYEES LEAVE?”</span></div></div><figcaption><b>Caption profile.</b> The whole type system: one pill, two speaker styles, bold emphasis, a punch size. Nothing else.</figcaption></figure></div>
+</body>
+</html>

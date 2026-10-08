@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stunt Compression Preview</title>
+<style>
+@font-face{font-family:"Bangers";src:url("../../../../assets/fonts/Bangers-Regular.ttf")}
+@font-face{font-family:"Lilita One";src:url("../../../../assets/fonts/LilitaOne-Regular.ttf")}
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+:root{--good:#39FF14;--edge:#0A3A06;--bad:#E5191B;--acc:#FFE600;--pri:#1179CB;--punch:#FF4FD8;--paper:#FFFFFF;--ink:#000000;
+  --bg:#F3F2EF;--fg:#141414;--muted:#5C5C62}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0E0E10;--fg:#EDEDED;--muted:#A3A3AB}}
+:root[data-theme="dark"]{--bg:#0E0E10;--fg:#EDEDED;--muted:#A3A3AB}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:"Inter Tight",system-ui,sans-serif;padding:32px 16px 60px}
+h1{font-weight:800;font-size:22px;max-width:1180px;margin:0 auto 6px}
+p.lead{font-size:13px;color:var(--muted);max-width:1180px;margin:0 auto 22px;line-height:1.5}
+h2{font-weight:700;font-size:15px;max-width:1180px;margin:28px auto 12px}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+figcaption b{color:var(--fg)}
+/* a 9:16 frame at 1/3 scale: 1080x1920 -> 360x640 */
+.f{width:360px;height:640px;position:relative;overflow:hidden;background:#000;isolation:isolate}
+.shot{position:absolute;inset:0;overflow:hidden;opacity:0}
+/* worlds (illustrated footage) */
+.campus{background:linear-gradient(180deg,#8EC9F2 0%,#CDE8F7 34%,#B8553E 34%,#B8553E 47%,#7DB85A 47%,#6FA94D 60%,#C98E7E 60%,#B9786A 100%)}
+.campus:before{content:"";position:absolute;left:30px;top:150px;width:300px;height:70px;background:repeating-linear-gradient(90deg,#E9E3D6 0 26px,#B8553E 26px 40px)}
+.lane{background:linear-gradient(180deg,#F2D9A8 0%,#E8B86B 30%,#9C6B3E 30%,#7E5432 100%)}
+.lane:before{content:"";position:absolute;left:0;right:0;top:70px;height:120px;background:repeating-linear-gradient(90deg,#C0392B 0 60px,#F1C40F 60px 120px,#2E86C1 120px 180px);opacity:.55}
+.vault{background:linear-gradient(180deg,#C9CED3 0%,#AEB4BA 55%,#2A2A2C 55%,#1C1C1E 100%)}
+.vault:before{content:"";position:absolute;left:40px;top:90px;width:180px;height:260px;border:10px solid #8D949B;border-radius:18px;background:#9AA1A8}
+.pile{background:radial-gradient(circle at 20% 30%,#9FB58C 0 6px,transparent 7px) 0 0/34px 30px,radial-gradient(circle at 70% 70%,#7E9A6C 0 7px,transparent 8px) 0 0/40px 36px,linear-gradient(180deg,#B9C9A6,#8FA67C)}
+.room{background:linear-gradient(180deg,#F4EAD5 0%,#E9DCC0 52%,#C9B79A 52%,#B9A587 100%)}
+.room:before{content:"";position:absolute;left:24px;right:24px;top:300px;height:150px;background:repeating-linear-gradient(90deg,#3E7CB1 0 44px,#E84A5F 44px 88px,#F6C85F 88px 132px,#6FB07F 132px 176px);opacity:.35}
+.gym{background:linear-gradient(180deg,#3B3F46 0%,#2C3036 50%,#5A4A3A 50%,#4A3C2F 100%)}
+.desk{position:absolute;left:30px;right:30px;top:420px;height:40px;background:#D9B57E;border-radius:6px;box-shadow:0 8px 0 #A9875A}
+.blur{filter:blur(2px)}
+/* illustrated people */
+.p{position:absolute;width:120px;height:330px}
+.p i{position:absolute;display:block}
+.p .h{left:34px;top:0;width:54px;height:66px;border-radius:46% 46% 42% 42%;background:#E2B08C}
+.p .hr{left:30px;top:-6px;width:62px;height:28px;border-radius:30px 30px 10px 10px;background:#4A2E1E}
+.p .t{left:10px;top:62px;width:102px;height:150px;border-radius:40px 40px 14px 14px;background:#1F2A44}
+.p .l{left:24px;top:206px;width:74px;height:124px;border-radius:8px;background:#8A8F98}
+.p .m{left:52px;top:44px;width:18px;height:5px;border-radius:5px;background:#7A3A2A;animation:talk .4s steps(2) infinite}
+.p.sub .t{background:#6FB7E3}.p.sub .h{background:#F0C29E}.p.sub .hr{background:#2B1A10;height:34px}
+.p.sub2 .t{background:#2E7D4F}.p.sub2 .h{background:#C98E66}.p.sub2 .hr{background:#111}
+.p.tea .t{background:#222;border-radius:44px 44px 30px 30px}.p.tea .h{background:#E7B58F}.p.tea .hr{background:#5A3B22;height:44px;width:70px;left:26px}
+.p.walk{animation:bob .5s ease-in-out infinite}
+.p.big{transform:scale(1.9);transform-origin:50% 0}
+@keyframes talk{50%{height:10px}}
+@keyframes bob{50%{margin-top:-6px}}
+/* stake objects */
+.case{position:absolute;width:220px;height:120px;background:linear-gradient(180deg,#E6E8EA,#B9BEC3);border:4px solid #8E949A;border-radius:10px}
+.case:before{content:"";position:absolute;left:10px;right:10px;top:10px;bottom:16px;border-radius:4px;
+  background:repeating-linear-gradient(90deg,#CFE3C2 0 30px,#9DBE8A 30px 34px),#CFE3C2}
+.case.lid:after{content:"";position:absolute;left:-4px;right:-4px;top:-100px;height:96px;background:linear-gradient(180deg,#2B2D30,#45484C);border:4px solid #8E949A;border-radius:10px 10px 2px 2px}
+.stack{position:absolute;width:150px;height:56px;border-radius:6px;background:repeating-linear-gradient(0deg,#BFD8AE 0 6px,#93B57E 6px 8px);box-shadow:0 4px 0 #6E8F5C}
+.phone{position:absolute;width:120px;height:220px;border-radius:20px;background:#111;border:5px solid #333}
+.phone:after{content:"";position:absolute;inset:8px;border-radius:12px;background:linear-gradient(180deg,#26324A,#121826)}
+/* text systems at 1/3 scale */
+.cap{position:absolute;left:10px;right:10px;text-align:center;white-space:nowrap;opacity:0;z-index:7}
+.comic{font:400 32px/1 "Bangers",cursive;letter-spacing:.02em;color:var(--paper);-webkit-text-stroke:2.4px var(--ink);paint-order:stroke fill;
+  text-shadow:0 2.4px 0 rgba(0,0,0,.9);transform:rotate(-3deg)}
+.shout{font:400 37px/1 "Bangers",cursive;letter-spacing:.02em;color:var(--acc);-webkit-text-stroke:2.4px var(--ink);paint-order:stroke fill;
+  text-shadow:0 2.4px 0 rgba(0,0,0,.9);transform:rotate(-8deg)}
+.neutral{font:600 18.7px/1 "Inter Tight",sans-serif;color:var(--paper);-webkit-text-stroke:.7px #1A1A1A;paint-order:stroke fill;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.punch{font:400 30.7px/1 "Lilita One",cursive;color:var(--punch);-webkit-text-stroke:2px var(--paper);paint-order:stroke fill;text-shadow:0 1.4px 0 rgba(0,0,0,.55)}
+.money{color:var(--good)}
+.tag{position:absolute;text-align:center;white-space:nowrap;font:400 42.7px/1 "Lilita One",cursive;color:var(--good);
+  -webkit-text-stroke:1.7px var(--edge);paint-order:stroke fill;text-shadow:0 0 7px rgba(57,255,20,.85),0 0 2px rgba(57,255,20,.9),0 2px 0 rgba(0,0,0,.55);opacity:0;z-index:6}
+.tag.sm{font-size:34.7px}
+.loss{color:var(--bad);-webkit-text-stroke:2px var(--paper);text-shadow:0 2px 0 rgba(0,0,0,.7)}
+.clock{position:absolute;left:97px;top:68px;width:166px;height:57px;text-align:center;font:400 56.7px/57px "Lilita One",cursive;color:var(--paper);
+  -webkit-text-stroke:3px var(--ink);paint-order:stroke fill;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1px #fff);opacity:0;z-index:6}
+.chip{position:absolute;height:32px;padding:0 12px 0 40px;border-radius:16px;background:var(--paper);color:var(--ink);font:700 14.7px/32px "Inter Tight",sans-serif;opacity:0;z-index:5}
+.chip:before{content:"YH";position:absolute;left:-6px;top:-3px;width:37px;height:37px;border-radius:50%;background:var(--pri);border:1.7px solid var(--paper);
+  box-shadow:0 0 0 1.7px var(--pri);color:#fff;font:800 12px/37px "Inter Tight",sans-serif;text-align:center}
+.xf{position:absolute;width:67px;height:67px;opacity:0;z-index:5;filter:drop-shadow(0 0 8px rgba(229,25,27,.9))}
+.xf:before,.xf:after{content:"";position:absolute;left:28px;top:-4px;width:11px;height:75px;border-radius:4px;background:var(--bad);transform:rotate(45deg)}
+.xf:after{transform:rotate(-45deg)}
+.brand{position:absolute;left:0;right:0;text-align:center;font:900 40px/1 "Montserrat",sans-serif;color:var(--paper);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;
+  text-shadow:0 2px 0 rgba(0,0,0,.6);opacity:0;z-index:8}
+.url{position:absolute;left:0;right:0;text-align:center;font:800 21.3px/1 "Inter Tight",sans-serif;color:var(--paper);-webkit-text-stroke:1.3px var(--ink);paint-order:stroke fill;opacity:0;z-index:8}
+.legal{position:absolute;left:21px;top:483px;font:600 8.7px/1 "Inter Tight",sans-serif;color:var(--paper);text-shadow:0 1px 2px rgba(0,0,0,.8);opacity:0;z-index:6}
+.scrim{position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 52%,rgba(0,0,0,.55),rgba(0,0,0,0));opacity:0;z-index:7}
+.badge{position:absolute;width:47px;height:47px;border-radius:50%;background:var(--pri);border:2.7px solid #fff;color:#fff;font:800 15px/42px "Inter Tight",sans-serif;text-align:center;opacity:0;z-index:5}
+.tick{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--good);color:#000;font:800 18px/30px "Inter Tight",sans-serif;text-align:center;opacity:0;z-index:5;
+  box-shadow:0 0 8px rgba(57,255,20,.9)}
+.flash{position:absolute;inset:0;background:var(--good);mix-blend-mode:color;opacity:0;z-index:11}
+.bw{position:absolute;inset:0;background:#808080;mix-blend-mode:saturation;opacity:0;z-index:11}
+.glow{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(57,255,20,.85),rgba(57,255,20,0));mix-blend-mode:screen;opacity:0;z-index:5}
+/* --- frame timelines (6 s loops, hard cuts via step-end) --- */
+.a6{animation-duration:6s;animation-iteration-count:infinite;animation-timing-function:step-end}
+/* F1 cold open */
+@keyframes f1a{0%{opacity:1}36.67%{opacity:0}100%{opacity:0}}
+@keyframes f1b{0%{opacity:0}36.67%{opacity:1}55%{opacity:0}100%{opacity:0}}
+@keyframes f1c{0%{opacity:0}55%{opacity:1}75%{opacity:0}100%{opacity:0}}
+@keyframes f1d{0%{opacity:0}75%{opacity:1}100%{opacity:1}}
+@keyframes f1c1{0%{opacity:1}11.67%{opacity:0}100%{opacity:0}}
+@keyframes f1c2{0%{opacity:0}11.67%{opacity:1}23.33%{opacity:0}100%{opacity:0}}
+@keyframes f1c3{0%{opacity:0}23.33%{opacity:1}36.67%{opacity:0}100%{opacity:0}}
+@keyframes f1c4{0%{opacity:0}36.67%{opacity:1}55%{opacity:0}100%{opacity:0}}
+@keyframes f1c5{0%{opacity:0}56.7%{opacity:1}75%{opacity:0}100%{opacity:0}}
+@keyframes pop1{0%,76.6%{opacity:0;transform:scale(.6)}77.8%{opacity:1;transform:scale(1.12)}79.5%{opacity:1;transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+/* F2 money tag */
+@keyframes f2a{0%{opacity:1}43.33%{opacity:0}100%{opacity:0}}
+@keyframes f2b{0%{opacity:0}43.33%{opacity:1}70%{opacity:0}100%{opacity:0}}
+@keyframes f2c{0%{opacity:0}70%{opacity:1}100%{opacity:1}}
+@keyframes pop2{0%,6.6%{opacity:0;transform:scale(.6)}7.8%{opacity:1;transform:scale(1.12)}9.5%{opacity:1;transform:scale(1)}14%{transform:scale(1)}17%{transform:scale(1.06)}20%{transform:scale(1)}43.3%{opacity:1;transform:scale(1)}43.34%,100%{opacity:0}}
+@keyframes pop2b{0%,71.6%{opacity:0;transform:scale(.6)}72.8%{opacity:1;transform:scale(1.12)}74.5%{opacity:1;transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+@keyframes sh2{0%,45%{opacity:0;transform:rotate(-8deg) scale(.8)}46.2%{opacity:1;transform:rotate(-8deg) scale(1.06)}47.5%,69.9%{opacity:1;transform:rotate(-8deg) scale(1)}70%,100%{opacity:0}}
+/* F3 clock */
+@keyframes q1{0%{opacity:1}13.33%{opacity:0}100%{opacity:0}}
+@keyframes q2{0%{opacity:0}13.33%{opacity:1}25%{opacity:0}100%{opacity:0}}
+@keyframes q3{0%{opacity:0}25%{opacity:1}36.67%{opacity:0}100%{opacity:0}}
+@keyframes q4{0%{opacity:0}36.67%{opacity:1}48.33%{opacity:0}100%{opacity:0}}
+@keyframes q5{0%{opacity:0}48.33%{opacity:1}60%{opacity:0}100%{opacity:0}}
+@keyframes q6{0%{opacity:0}60%{opacity:1}71.67%{opacity:0}100%{opacity:0}}
+@keyframes q7{0%{opacity:0}71.67%{opacity:1}81.67%{opacity:0}100%{opacity:0}}
+@keyframes q8{0%{opacity:0}81.67%{opacity:1}91.67%{opacity:0}100%{opacity:0}}
+@keyframes q9{0%{opacity:0}91.67%{opacity:1}100%{opacity:1}}
+@keyframes bgA{0%{opacity:1}13.33%{opacity:0}36.67%{opacity:1}48.33%{opacity:0}71.67%{opacity:1}81.67%{opacity:0}100%{opacity:0}}
+@keyframes bgB{0%{opacity:0}13.33%{opacity:1}25%{opacity:0}48.33%{opacity:1}60%{opacity:0}81.67%{opacity:1}91.67%{opacity:0}100%{opacity:0}}
+@keyframes bgC{0%{opacity:0}25%{opacity:1}36.67%{opacity:0}60%{opacity:1}71.67%{opacity:0}91.67%{opacity:1}100%{opacity:1}}
+@keyframes clkIn{0%{transform:scale(.6)}1.4%{transform:scale(1.12)}2.8%{transform:scale(1)}91.6%{transform:scale(1)}93%{transform:scale(1.12)}95%{transform:scale(1)}100%{transform:scale(1)}}
+@keyframes sh3{0%,81.6%{opacity:0;transform:rotate(-8deg) scale(.8)}82.8%{opacity:1;transform:rotate(-8deg) scale(1.06)}84%,100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+/* F4 loss */
+@keyframes l1{0%{opacity:1}25%{opacity:0}100%{opacity:0}}
+@keyframes l2{0%{opacity:0}25%{opacity:1}45%{opacity:0}100%{opacity:0}}
+@keyframes l3{0%{opacity:0}45%{opacity:1}70%{opacity:0}100%{opacity:0}}
+@keyframes l4{0%{opacity:0}70%{opacity:1}100%{opacity:1}}
+@keyframes xin{0%,26.6%{opacity:0;transform:scale(1.3)}27.8%{opacity:1;transform:scale(1)}36%{opacity:1}38%,100%{opacity:0}}
+@keyframes lossIn{0%,45.8%{opacity:0;transform:scale(1.4) rotate(-6deg)}47%{opacity:1;transform:scale(1) rotate(0) translateX(3px)}47.6%{transform:translateX(-3px)}48.2%{transform:translateX(2px)}48.8%{transform:translateX(-1px)}49.4%,69.9%{opacity:1;transform:none}70%,100%{opacity:0}}
+@keyframes lc1{0%{opacity:1}12.5%{opacity:0}100%{opacity:0}}
+@keyframes lc2{0%{opacity:0}12.5%{opacity:1}25%{opacity:0}100%{opacity:0}}
+@keyframes sh4{0%,71%{opacity:0;transform:rotate(-8deg) scale(.8)}72.2%{opacity:1;transform:rotate(-8deg) scale(1.06)}73.4%,100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+/* F5 neutral */
+@keyframes n1{0%{opacity:1}35%{opacity:0}100%{opacity:0}}
+@keyframes n2{0%{opacity:0}35%{opacity:1}65%{opacity:0}100%{opacity:0}}
+@keyframes n3{0%{opacity:0}65%{opacity:1}100%{opacity:1}}
+@keyframes w1{0%{opacity:1}5%{opacity:0}100%{opacity:0}}
+@keyframes w2{0%{opacity:0}5%{opacity:1}10%{opacity:0}100%{opacity:0}}
+@keyframes w3{0%{opacity:0}10%{opacity:1}25%{opacity:0}100%{opacity:0}}
+@keyframes w4{0%{opacity:0}36%{opacity:1}48%{opacity:0}100%{opacity:0}}
+@keyframes w5{0%{opacity:0}48%{opacity:1}60%{opacity:0}100%{opacity:0}}
+@keyframes chipIn{0%,13.9%{opacity:0;transform:scale(.5)}15.5%{opacity:1;transform:scale(1.1)}17%{opacity:1;transform:scale(1) translateX(0)}23%{opacity:1;transform:translateX(-6px)}24.2%,100%{opacity:0}}
+@keyframes pk{0%,66.6%{opacity:0;transform:scale(.8)}67.8%{opacity:1;transform:scale(1.06)}69%,84%{opacity:1;transform:scale(1)}84.1%{opacity:0}85%{opacity:0;transform:scale(.8)}86.2%{opacity:1;transform:scale(1.06)}87.4%,100%{opacity:1;transform:scale(1)}}
+/* F6 total */
+@keyframes t1{0%{opacity:1}66.67%{opacity:0}100%{opacity:0}}
+@keyframes t2{0%{opacity:0}66.67%{opacity:1}100%{opacity:1}}
+@keyframes tv1{0%{opacity:1}41.67%{opacity:0}100%{opacity:0}}
+@keyframes tv2{0%{opacity:0}41.67%{opacity:1}66.67%{opacity:0}100%{opacity:0}}
+@keyframes tpulse{0%,41.6%{transform:scale(1)}43%{transform:scale(1.15)}45%{transform:scale(1)}100%{transform:scale(1)}}
+@keyframes sh6{0%,68%{opacity:0;transform:rotate(-8deg) scale(.8)}69.2%{opacity:1;transform:rotate(-8deg) scale(1.06)}70.4%,100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+/* F7 brand */
+@keyframes b1{0%{opacity:1}58.33%{opacity:0}100%{opacity:0}}
+@keyframes b2{0%{opacity:0}58.33%{opacity:1}100%{opacity:1}}
+@keyframes scrimIn{0%,16.6%{opacity:0}18%,50%{opacity:1}53%,100%{opacity:0}}
+@keyframes logoIn{0%,16.6%{opacity:0;transform:scale(.4)}19.4%{opacity:1;transform:scale(1.1)}20.6%{transform:scale(1)}50%{opacity:1;transform:scale(1)}53%,100%{opacity:0;transform:scale(1.08)}}
+@keyframes urlIn{0%,23.3%{opacity:0;transform:translateY(8px)}25.5%{opacity:1;transform:none}50%{opacity:1}53%,100%{opacity:0}}
+@keyframes legalIn{0%,16.6%{opacity:0}18%,100%{opacity:1}}
+@keyframes bc1{0%{opacity:0}60%{opacity:1}75%{opacity:0}100%{opacity:0}}
+@keyframes bc2{0%{opacity:0}75%{opacity:1}100%{opacity:1}}
+/* F8 colour events */
+@keyframes e1{0%{opacity:1}33.33%{opacity:0}100%{opacity:0}}
+@keyframes e2{0%{opacity:0}33.33%{opacity:1}66.67%{opacity:0}100%{opacity:0}}
+@keyframes e3{0%{opacity:0}66.67%{opacity:1}100%{opacity:1}}
+@keyframes bwOn{0%{opacity:0}10%{opacity:1}33.33%{opacity:0}100%{opacity:0}}
+@keyframes flashOn{0%,43.3%{opacity:0}43.4%{opacity:.6}45%{opacity:.6}47.8%,100%{opacity:0}}
+@keyframes badgeIn{0%,43.3%{opacity:0;transform:scale(0)}45%{opacity:1;transform:scale(1.15)}46.6%,64%{opacity:1;transform:scale(1)}66.6%,100%{opacity:0}}
+@keyframes tickIn{0%,45.5%{opacity:0;transform:scale(.4)}47%{opacity:1;transform:scale(1.1)}48%,64%{opacity:1;transform:scale(1)}66.6%,100%{opacity:0}}
+@keyframes sh8{0%,68%{opacity:0;transform:rotate(-8deg) scale(.8)}69.2%{opacity:1;transform:rotate(-8deg) scale(1.06)}70.4%,100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+/* F9 caption profiles */
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.legend{position:absolute;left:0;right:0;text-align:center;opacity:1}
+.lab{position:absolute;left:0;right:0;text-align:center;font:600 9px/1 "Inter Tight",sans-serif;color:#fff;opacity:.85;letter-spacing:.06em}
+</style>
+</head>
+<body>
+<h1>Stunt Compression · template preview</h1>
+<p class="lead">Inspired by MrBeast. Raw stunt footage compressed to a new moment every 1.0–1.5 s: a cold open mid-action, neon-green money tags pinned to the real cash, per-beat caption modes (comic caps, yellow shouts, neutral lowercase, none), a set-time countdown clock and two colour events. People and props are illustrated stand-ins for the creator's own footage. Frames are 1080×1920 at one third.</p>
+
+<h2>F-A Stunt compression</h2>
+<div class="grid">
+
+<figure>
+<div class="f" data-card="1">
+  <div class="shot campus a6" style="animation-name:f1a;opacity:1">
+    <div class="p walk big" style="left:150px;top:150px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="p sub walk" style="left:30px;top:250px;transform:scale(1.1)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+  </div>
+  <div class="shot campus a6" style="animation-name:f1b;filter:hue-rotate(-12deg)">
+    <div class="p big" style="left:30px;top:120px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="p sub2 big" style="left:210px;top:170px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+  </div>
+  <div class="shot lane a6" style="animation-name:f1c">
+    <div class="p sub2 walk" style="left:110px;top:300px;transform:scale(.7)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="p sub walk" style="left:170px;top:300px;transform:scale(.7)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+  </div>
+  <div class="shot vault a6" style="animation-name:f1d">
+    <div class="case lid" style="left:70px;top:390px;transform:scale(1.0)"></div>
+    <div class="tag a6" style="left:0;right:0;top:395px;animation-name:pop1;animation-timing-function:linear">$10,000</div>
+  </div>
+  <div class="cap comic a6" style="top:322px;animation-name:f1c1">I'M ABOUT TO</div>
+  <div class="cap comic a6" style="top:322px;animation-name:f1c2">ASK PEOPLE</div>
+  <div class="cap comic a6" style="top:322px;animation-name:f1c3">A VERY IMPORTANT</div>
+  <div class="cap comic a6" style="top:322px;animation-name:f1c4">QUESTION...</div>
+  <div class="cap shout a6" style="top:170px;left:-60px;animation-name:f1c5">HOLY GOD!</div>
+</div>
+<figcaption><b>Cold open (HA-13).</b> f0 is the host mid-stride with comic caps already on screen; hard cut at 2.2 s, a wide with a yellow shout, then the stake with its tag by 4.6 s (the reel's rule: by 2.3 s).</figcaption>
+</figure>
+
+<figure>
+<div class="f" data-card="2">
+  <div class="shot vault a6" style="animation-name:f2a;opacity:1">
+    <div class="p" style="left:-20px;top:120px;transform:scale(1.5)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="case lid" style="left:80px;top:420px;transform:scale(1.15)"></div>
+    <div class="glow a6" style="left:40px;top:330px;width:290px;height:240px;animation-name:f2a;animation-timing-function:linear;opacity:.55"></div>
+    <div class="tag a6" style="left:0;right:0;top:400px;animation-name:pop2;animation-timing-function:linear">$10,000</div>
+  </div>
+  <div class="shot campus a6" style="animation-name:f2b">
+    <div class="p sub big" style="left:70px;top:150px;transform:scale(2.4)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap shout a6" style="top:330px;animation-name:sh2;animation-timing-function:linear">NO WAY!</div>
+  </div>
+  <div class="shot campus a6" style="animation-name:f2c">
+    <div class="p big" style="left:10px;top:140px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="p sub big" style="left:200px;top:170px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="tag sm a6" style="left:170px;width:180px;top:380px;animation-name:pop2b;animation-timing-function:linear">+$10,000</div>
+  </div>
+</div>
+<figcaption><b>Money tag (P-20 → P-21).</b> The amount pops onto the open case with a green glow, the cut lands on the winner's face with a yellow shout (R-03), then "+$10,000" sits on her chest. Captions are off under every tag.</figcaption>
+</figure>
+
+<figure>
+<div class="f" data-card="3">
+  <div class="shot pile a6" style="animation-name:bgA;opacity:1"></div>
+  <div class="shot vault a6" style="animation-name:bgB">
+    <div class="p sub2" style="left:40px;top:250px;transform:scale(1.3) rotate(18deg)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="p" style="left:200px;top:230px;transform:scale(1.3)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="stack" style="left:110px;top:520px"></div>
+  </div>
+  <div class="shot pile a6" style="animation-name:bgC;filter:brightness(.9)">
+    <div class="p sub" style="left:120px;top:200px;transform:scale(1.6) rotate(-10deg)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+  </div>
+  <div class="a6" style="position:absolute;inset:0;animation-name:clkIn;animation-timing-function:linear;transform-origin:180px 96px">
+    <div class="clock a6" style="animation-name:q1">0:58</div>
+    <div class="clock a6" style="animation-name:q2">0:49</div>
+    <div class="clock a6" style="animation-name:q3">0:48</div>
+    <div class="clock a6" style="animation-name:q4">0:47</div>
+    <div class="clock a6" style="animation-name:q5">0:26</div>
+    <div class="clock a6" style="animation-name:q6">0:03</div>
+    <div class="clock a6" style="animation-name:q7">0:02</div>
+    <div class="clock a6" style="animation-name:q8">0:01</div>
+    <div class="clock a6" style="animation-name:q9;color:var(--bad)">0:00</div>
+  </div>
+  <div class="cap shout a6" style="top:330px;animation-name:sh3;animation-timing-function:linear">TIME...</div>
+</div>
+<figcaption><b>Countdown clock (P-24).</b> Set time, not video time: one value per hard cut (E6 swap), jumping 0:58 → 0:26 → 0:03, red at 0:00. Captions stay off while it runs, except the closing shout.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="shot campus a6" style="animation-name:l1;opacity:1">
+    <div class="p big" style="left:10px;top:140px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="p sub2 big" style="left:200px;top:160px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap comic a6" style="top:322px;animation-name:lc1">WHO'S</div>
+    <div class="cap comic a6" style="top:322px;animation-name:lc2">CALLING?</div>
+  </div>
+  <div class="shot campus a6" style="animation-name:l2">
+    <div class="p sub2 big" style="left:70px;top:130px;transform:scale(2.4)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="xf a6" style="left:150px;top:380px;animation-name:xin;animation-timing-function:linear"></div>
+  </div>
+  <div class="shot campus a6" style="animation-name:l3">
+    <div class="p sub2 big" style="left:120px;top:150px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="tag loss a6" style="left:0;right:0;top:400px;animation-name:lossIn;animation-timing-function:linear">$0</div>
+  </div>
+  <div class="shot lane a6" style="animation-name:l4">
+    <div class="p sub big" style="left:80px;top:160px;transform:scale(2.2)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap shout a6" style="top:330px;animation-name:sh4;animation-timing-function:linear">BRO!!</div>
+  </div>
+</div>
+<figcaption><b>Wrong answer (P-27 → P-22).</b> A glowing red X on the subject's chest, then a red "$0" with a short shake, then the friend's shout. Red only ever means loss.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="shot campus a6" style="animation-name:n1;opacity:1">
+    <div class="p walk big" style="left:170px;top:140px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="p sub walk big" style="left:0;top:180px;transform:scale(1.6)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap neutral a6" style="top:304px;animation-name:w1">are</div>
+    <div class="cap neutral a6" style="top:304px;animation-name:w2">you</div>
+    <div class="cap neutral a6" style="top:304px;animation-name:w3">subscribed</div>
+    <div class="chip a6" style="left:40px;top:340px;animation-name:chipIn;animation-timing-function:linear">@yourhandle</div>
+  </div>
+  <div class="shot lane a6" style="animation-name:n2">
+    <div class="p sub big" style="left:70px;top:130px;transform:scale(2.3)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap neutral a6" style="top:304px;animation-name:w4">nevermind</div>
+    <div class="cap neutral a6" style="top:304px;animation-name:w5">then</div>
+  </div>
+  <div class="shot campus a6" style="animation-name:n3">
+    <div class="p sub2 big" style="left:90px;top:150px;transform:scale(2.1)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="phone" style="left:220px;top:370px;transform:rotate(-12deg) scale(.7)"></div>
+    <div class="cap punch a6" style="top:290px;animation-name:pk;animation-timing-function:linear">beast!</div>
+  </div>
+</div>
+<figcaption><b>Neutral register (CS-1, P-26, CS-4).</b> One lowercase word at a time, hard swaps at the chest; the creator's handle chip pops beside the shoulder; one pink punch word.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="shot room a6" style="animation-name:t1;opacity:1">
+    <div class="p tea big" style="left:110px;top:170px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="desk"></div>
+    <div class="a6" style="position:absolute;left:0;right:0;top:300px;height:50px;animation-name:tpulse;animation-timing-function:linear">
+      <div class="tag sm a6" style="left:0;right:0;top:0;animation-name:tv1">+$8,370</div>
+      <div class="tag sm a6" style="left:0;right:0;top:0;animation-name:tv2">+$9,000</div>
+    </div>
+  </div>
+  <div class="shot room a6" style="animation-name:t2">
+    <div class="p sub" style="left:20px;top:250px;transform:scale(1.2)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="p sub2" style="left:120px;top:240px;transform:scale(1.25)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="p sub" style="left:220px;top:255px;transform:scale(1.15)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap shout a6" style="top:120px;animation-name:sh6;animation-timing-function:linear">YEAH!</div>
+  </div>
+</div>
+<figcaption><b>Running total (P-23).</b> The teacher's total holds its spot and ticks from +$8,370 to +$9,000 with a pulse (E6 swap), then the class reacts.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="shot vault a6" style="animation-name:b1;opacity:1">
+    <div class="p big" style="left:130px;top:120px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="scrim a6" style="animation-name:scrimIn;animation-timing-function:linear"></div>
+    <div class="brand a6" style="top:313px;animation-name:logoIn;animation-timing-function:linear">YOUR BRAND</div>
+    <div class="url a6" style="top:362px;animation-name:urlIn;animation-timing-function:linear">YOURBRAND.COM</div>
+  </div>
+  <div class="shot room a6" style="animation-name:b2">
+    <div class="p big" style="left:60px;top:130px;transform:scale(2.1)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i><i class="m"></i></div>
+    <div class="cap comic a6" style="top:322px;animation-name:bc1">TRY IT</div>
+    <div class="cap comic a6" style="top:322px;animation-name:bc2">AND <span class="money">WIN</span></div>
+  </div>
+  <div class="legal a6" style="animation-name:legalIn">Paid partnership</div>
+</div>
+<figcaption><b>Sponsor beat (P-30/P-31, P-32).</b> The brand pops mid-frame over a soft dark scrim (logo file, or the name set in type), the URL line rises under it, and the disclosure stays on ≥ 2 s.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="shot campus a6" style="animation-name:e1;opacity:1">
+    <div class="p big" style="left:10px;top:150px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="p sub2 big" style="left:190px;top:160px"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="phone" style="left:215px;top:380px;transform:scale(.6)"></div>
+    <div class="bw a6" style="animation-name:bwOn"></div>
+  </div>
+  <div class="shot lane a6" style="animation-name:e2">
+    <div class="phone" style="left:120px;top:250px;transform:scale(1.4)"></div>
+    <div class="badge a6" style="left:157px;top:150px;animation-name:badgeIn;animation-timing-function:linear">YH</div>
+    <div class="tick a6" style="left:165px;top:205px;animation-name:tickIn;animation-timing-function:linear">✓</div>
+    <div class="flash a6" style="animation-name:flashOn;animation-timing-function:linear"></div>
+  </div>
+  <div class="shot campus a6" style="animation-name:e3">
+    <div class="p sub2 big" style="left:80px;top:140px;transform:scale(2.2)"><i class="t"></i><i class="l"></i><i class="h"></i><i class="hr"></i></div>
+    <div class="cap shout a6" style="top:330px;animation-name:sh8;animation-timing-function:linear">LET'S GO!</div>
+  </div>
+</div>
+<figcaption><b>Colour events (GR-bw, GR-green, P-29).</b> A black-and-white hold while the subject reads the phone; on the follow tap the avatar badge pops with a ✓ and a 0.2 s green flash. Two events per reel at most.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="shot campus blur" style="opacity:1;filter:blur(3px) brightness(.8)"></div>
+  <div class="lab" style="top:70px">CS-1 NEUTRAL · INTER TIGHT 600 · 56 PX</div>
+  <div class="legend neutral" style="top:90px;opacity:1">subscribed</div>
+  <div class="lab" style="top:150px">CS-2 COMIC · BANGERS · 96 PX · −3°</div>
+  <div class="legend comic a6" style="top:172px;opacity:1;animation:breathe 1.5s ease-in-out infinite">I'M ABOUT TO</div>
+  <div class="lab" style="top:240px">CS-2 MONEY WORD IN GREEN</div>
+  <div class="legend comic" style="top:262px;opacity:1">UNLIMITED <span class="money">MONEY</span></div>
+  <div class="lab" style="top:330px">CS-3 SHOUT · YELLOW · 112 PX · −8°</div>
+  <div class="legend shout" style="top:355px;opacity:1">HOLY GOD!</div>
+  <div class="lab" style="top:425px">CS-4 PUNCH · LILITA ONE · 92 PX</div>
+  <div class="legend punch" style="top:445px;opacity:1">beast!</div>
+  <div class="lab" style="top:510px">MONEY TAG · LILITA ONE · 128 PX</div>
+  <div class="legend tag" style="position:absolute;top:528px;opacity:1;animation:breathe 1.2s ease-in-out infinite">$14,000</div>
+</div>
+<figcaption><b>Caption modes.</b> One register per reel (comic by default, neutral for quiet street conversations, action for loud scenes), switched per beat; mode none whenever a tag, the clock or a logo is on screen.</figcaption>
+</figure>
+
+</div>
+</body>
+</html>

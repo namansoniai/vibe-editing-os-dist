@@ -140,12 +140,17 @@ def build(pr, part: str) -> dict:
     sj = pr.work / "sources.json"
     if not sj.exists():
         raise VeosError("NO_SOURCES", "work/sources.json missing", "Run `veos ingest` first.")
-    sources = read_json(sj)["sources"]
+    sdoc = read_json(sj)
+    sources = sdoc["sources"]
     by_id = {s["id"]: s for s in sources}
     cut_p, we_p = pr.work / "cutmap.json", pr.work / "words.edit.json"
     cut = read_json(cut_p) if cut_p.exists() else None
     edit_time = bool(cut and we_p.exists())
-    ctx: dict = {"time": "edit" if edit_time else "source", "fps": FPS}
+    ctx: dict = {"time": "edit" if edit_time else "source", "fps": FPS,
+                 "source_type": sdoc.get("source_type", "talking_head")}
+    if ctx["source_type"] == "voiceover_only":
+        ctx["voiceover"] = ("no presenter: the stage is hidden throughout and every frame is built from scenes "
+                            "(one scene per sentence, no gaps); the whole safe box is free (no face)")
     if part in ("sources", "all"):
         ctx["sources"] = [{"id": s["id"], "kind": s["kind"], "duration": s["duration"],
                            "setups": [[r3(a), r3(b), lab] for a, b, lab in _setups(s)]} for s in sources]

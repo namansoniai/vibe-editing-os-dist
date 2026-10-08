@@ -1,0 +1,36 @@
+{
+  "package": "veos.template/1",
+  "id": "two-tier-hero",
+  "tier": "core",
+  "order": 4,
+  "tagline": "Fast desk talking-head reels: every word pops on your chest in two sizes, and a giant number or word stands behind your head.",
+  "inspired_by_display": [
+    "Tharun Speaks"
+  ],
+  "needs": "just you at a desk (props and your own B-roll make it better, both optional)",
+  "readiness": "R1",
+  "readiness_note": "Best with one or two props in the hook and a few of your own B-roll clips; every one has a built-in fallback.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "data_figures",
+    "number_format",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: '3 SKILLS' slams in behind the head while two-tier captions build on the chest",
+      "Signature: a neon ₹1,20,000 odometer rolls behind the head, captions 'rupees / per month'",
+      "Theme TH-yellow: a year ruler and '5 YEARS' counting up behind the head"
+    ]
+  }
+}

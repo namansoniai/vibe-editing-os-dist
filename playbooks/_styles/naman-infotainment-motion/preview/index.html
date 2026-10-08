@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naman · Infotainment Motion: preview</title>
+<style>
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Lilita One";src:url("../../../../assets/fonts/LilitaOne-Regular.ttf")}
+@font-face{font-family:"Plus Jakarta Sans";src:url("../../../../assets/fonts/PlusJakartaSans-VF.ttf");font-weight:200 800}
+@font-face{font-family:"Anton";src:url("../../../../assets/fonts/Anton-Regular.ttf")}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-style:italic}
+@font-face{font-family:"Permanent Marker";src:url("../../../../assets/fonts/PermanentMarker-Regular.ttf")}
+@font-face{font-family:"Jost";src:url("../../../../assets/fonts/Jost-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Emoji";src:url("../../../../assets/fonts/NotoColorEmoji-Regular.ttf")}
+:root{--hype:#FCF700;--blaze:#FF6A00;--alarm:#FF2A2A;--volt:#22F06A;--cyan:#00D8FF;--violet:#8A5CFF;--meme:#FF2E8B;--ink:#0B0B0B;--paper:#FFFFFF;--canvas:#FCFCFC;--grid:#C5C5C5;--night:#07070C;
+  --page:#f4f4f1;--text:#111;--muted:#555}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#121214;--text:#eee;--muted:#aaa}}
+:root[data-theme="dark"]{--page:#121214;--text:#eee;--muted:#aaa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--text);font-family:"Jost",system-ui,sans-serif;padding:24px 16px}
+h1{font:800 22px "Inter Tight",sans-serif;margin-bottom:4px}
+h2{font:700 15px "Inter Tight",sans-serif;margin:22px 0 8px}
+p.lead{color:var(--muted);font-size:14px;max-width:760px}
+.strip{display:flex;gap:14px;flex-wrap:wrap}
+.cell{width:360px;max-width:100%}
+.cap{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+.f{position:relative;width:360px;height:640px;overflow:hidden;border-radius:14px;background:#1a1410;font-family:"Plus Jakarta Sans",sans-serif;--E:"Emoji"}
+.studio{background:radial-gradient(circle at 70% 30%,#5a2a3a 0,#2a1a18 40%,#120d0b 100%)}
+.canvasw{background-color:var(--canvas);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:47px 47px}
+.nightw{background-color:var(--night);background-image:radial-gradient(rgba(0,216,255,.22) 1px,transparent 1.2px);background-size:20px 20px}
+.em{font-family:"Emoji",sans-serif;font-weight:400}
+/* the headline slab: x 40-1040, top 150, stroke 6, shadow +12/+14, -1.5deg (1/3 scale) */
+.slab{position:absolute;left:13px;top:50px;width:334px;background:var(--hype);border:2px solid var(--ink);border-radius:9px;box-shadow:4px 5px 0 var(--ink);transform:rotate(-1.5deg);
+  font:900 23px/1.02 "Inter Tight",sans-serif;letter-spacing:-.02em;color:var(--ink);text-align:center;padding:7px 8px;z-index:10;animation:slabIn 6s infinite}
+.chip{display:inline-block;background:var(--ink);color:var(--hype);border-radius:5px;padding:0 5px;margin:0 2px}
+.chip.bad{background:var(--alarm);color:#fff}.chip.good{background:var(--volt);color:var(--ink)}
+@keyframes slabIn{0%{transform:rotate(-1.5deg) scale(1.06);box-shadow:0 0 0 var(--ink)}3%{transform:rotate(-1.5deg) scale(1);box-shadow:4px 5px 0 var(--ink)}100%{transform:rotate(-1.5deg) scale(1);box-shadow:4px 5px 0 var(--ink)}}
+/* illustrated presenter (neutral cut-out) */
+.person{position:absolute;width:190px;height:330px;z-index:5}
+.person .head{position:absolute;left:55px;top:0;width:80px;height:96px;border-radius:44% 44% 46% 46%;background:#c98e6a}
+.person .hair{position:absolute;left:52px;top:-6px;width:86px;height:40px;border-radius:40px 40px 14px 14px;background:#1b1210}
+.person .body{position:absolute;left:5px;top:100px;width:180px;height:240px;border-radius:70px 70px 0 0;background:#151515}
+.person .logo{position:absolute;left:70px;top:150px;width:50px;height:34px;background:var(--alarm);border-radius:4px;opacity:.85}
+.person .arm{position:absolute;left:-30px;top:130px;width:90px;height:26px;border-radius:14px;background:#c98e6a;transform:rotate(-38deg);transform-origin:right center}
+.card{position:absolute;border-radius:13px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.bar{height:12px;background:#eee;display:flex;gap:3px;align-items:center;padding-left:5px}.bar i{width:5px;height:5px;border-radius:50%;background:#f66;display:block}
+.slop{background:linear-gradient(135deg,#7b4dff,#c04de0 55%,#e04da8);color:#fff;text-align:center;font:800 13px "Inter Tight",sans-serif;padding:12px 8px 0}
+.slop .btn{display:inline-block;margin-top:6px;background:#fff;color:#7b4dff;border-radius:9px;font-size:8px;padding:2px 8px}
+.slop .row{display:flex;gap:5px;justify-content:center;margin-top:12px;padding-bottom:10px}.slop .row b{width:52px;height:38px;background:rgba(255,255,255,.9);border-radius:5px;display:block}
+.premium{background:#0d0d0f;color:#fff;padding:14px 12px;font:italic 30px/0.95 "Instrument Serif",serif}
+.premium .orb{position:absolute;right:-20px;top:30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffb15c,#ff6a00 55%,#7a2400);animation:orb 6s linear infinite}
+@keyframes orb{to{transform:rotate(360deg)}}
+.chunky{position:absolute;left:0;right:0;text-align:center;font-family:"Lilita One",sans-serif;z-index:8}
+.chunky .help{font-size:22px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+.chunky .key{font-size:46px;color:var(--hype);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:2px 3px 0 var(--ink);line-height:1}
+.marker{position:absolute;font:20px "Permanent Marker",cursive;color:var(--alarm);z-index:9;white-space:nowrap}
+.stamp{position:absolute;font:900 34px "Inter Tight",sans-serif;color:var(--alarm);border:3px solid var(--alarm);border-radius:6px;padding:0 8px;z-index:9;letter-spacing:.02em;background:rgba(255,255,255,.06)}
+.sub{position:absolute;left:0;right:0;text-align:center;font:800 19px "Plus Jakarta Sans",sans-serif;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6);text-transform:lowercase;z-index:7}
+.bubble{position:absolute;left:20px;top:470px;width:100px;height:100px;border-radius:50%;border:3px solid #fff;box-shadow:4px 4px 0 var(--ink);overflow:hidden;background:#2a1a18;z-index:6}
+.panel{position:absolute;left:4px;right:4px;top:378px;bottom:0;border-radius:21px 21px 0 0;overflow:hidden;background:radial-gradient(circle at 60% 30%,#5a2a3a,#1a120f 70%)}
+/* hook loop timings (6 s) */
+.a-circle{animation:circ 6s infinite}
+@keyframes circ{0%,8%{stroke-dashoffset:300}15%,40%{stroke-dashoffset:0;opacity:1}45%,100%{opacity:0;stroke-dashoffset:0}}
+.a-note{animation:note 6s infinite}@keyframes note{0%,12%{clip-path:inset(0 100% 0 0)}18%,40%{clip-path:inset(0 0 0 0);opacity:1}45%,100%{opacity:0}}
+.a-stamp{animation:stamp 6s infinite}@keyframes stamp{0%,25%{opacity:0;transform:rotate(-12deg) scale(1.7)}28%{opacity:1;transform:rotate(-12deg) scale(1)}40%{opacity:1;transform:rotate(-12deg) scale(1)}43%,100%{opacity:0;transform:rotate(-12deg) scale(1)}}
+.a-bad{animation:bad 6s infinite}@keyframes bad{0%{transform:rotate(4deg) scale(1)}25%{transform:rotate(4deg) scale(1.08)}28%{transform:rotate(4deg) translate(3px,-2px) scale(1.08)}30%{transform:rotate(4deg) translate(-3px,2px) scale(1.08)}40%{transform:rotate(4deg) scale(1.08);opacity:1}48%{transform:rotate(30deg) translateY(520px) scale(1.08);opacity:1}49%,100%{opacity:0}}
+.a-prem{animation:prem 6s infinite}@keyframes prem{0%,46%{opacity:0;transform:perspective(600px) rotateY(18deg);filter:blur(7px)}55%{opacity:1;transform:perspective(600px) rotateY(0);filter:blur(0)}96%{opacity:1}100%{opacity:0}}
+.sweep{position:absolute;top:-40px;width:40px;height:760px;background:linear-gradient(90deg,transparent,#FF6A00 30%,#fff 50%,#FF6A00 70%,transparent);transform:rotate(15deg);z-index:11;animation:sweep 6s infinite;mix-blend-mode:screen}
+@keyframes sweep{0%,46%{left:-80px;opacity:0}47%{opacity:1}56%{left:420px;opacity:1}57%,100%{opacity:0;left:420px}}
+.flipA{animation:flipA 6s infinite;display:inline-block}.flipB{animation:flipB 6s infinite;display:none}
+@keyframes flipA{0%,52%{transform:rotateX(0);opacity:1}54%{transform:rotateX(90deg);opacity:0}55%,100%{opacity:0;transform:rotateX(90deg)}}
+@keyframes flipB{0%,54%{opacity:0;transform:rotateX(90deg)}56%,100%{opacity:1;transform:rotateX(0)}}
+.cA{animation:cA 6s infinite}.cB{animation:cB 6s infinite;opacity:0}.cC{animation:cC 6s infinite;opacity:0}
+@keyframes cA{0%,24%{opacity:1}25%,100%{opacity:0}}@keyframes cB{0%,25%{opacity:0}26%,44%{opacity:1}45%,100%{opacity:0}}@keyframes cC{0%,52%{opacity:0}53%{opacity:1;transform:scale(1,.7)}55%{transform:scale(.95,1.15)}57%,100%{opacity:1;transform:scale(1)}}
+.punch{animation:punch 6s infinite}@keyframes punch{0%,5%{transform:rotate(0)}7%,24%{transform:rotate(-3deg)}26%,44%{transform:scale(1.04)}46%,100%{transform:none}}
+/* data stage loop */
+.dots i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--cyan);animation:pour 6s infinite;opacity:0}
+@keyframes pour{0%,20%{opacity:0;transform:translateY(-60px)}30%,92%{opacity:.9;transform:none}100%{opacity:0}}
+.av{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--cyan);border:2px solid #fff;animation:av 6s infinite}
+@keyframes av{0%{transform:scale(0)}4%{transform:scale(1.15)}6%,22%{transform:scale(1)}28%,100%{transform:scale(.15);opacity:.9}}
+.ctr{position:absolute;left:0;right:0;top:300px;text-align:center;font:64px "Anton",sans-serif;color:#fff;text-shadow:0 0 18px rgba(0,216,255,.8);z-index:6}
+.n1{animation:n1 6s infinite}.n2{animation:n2 6s infinite;opacity:0}
+@keyframes n1{0%,22%{opacity:1}24%,100%{opacity:0}}@keyframes n2{0%,26%{opacity:0;transform:translateY(20px)}32%,92%{opacity:1;transform:none}100%{opacity:0}}
+.gauge{position:absolute;left:105px;top:400px;width:150px;height:75px;border-radius:150px 150px 0 0;background:conic-gradient(from -90deg at 50% 100%,var(--volt) 0 60deg,var(--hype) 60deg 120deg,var(--alarm) 120deg 180deg,transparent 180deg);z-index:5}
+.gauge::after{content:"";position:absolute;left:18px;top:18px;right:18px;bottom:0;border-radius:120px 120px 0 0;background:var(--night)}
+.needle{position:absolute;left:178px;top:410px;width:4px;height:64px;background:#fff;transform-origin:50% 100%;z-index:6;animation:needle 6s infinite}
+@keyframes needle{0%,22%{transform:rotate(-70deg)}45%{transform:rotate(68deg)}47%{transform:rotate(64deg)}49%{transform:rotate(70deg)}100%{transform:rotate(68deg)}}
+.phone{position:absolute;left:220px;top:130px;width:110px;height:200px;border-radius:16px;border:3px solid #ddd;background:#111;overflow:hidden;z-index:5}
+.phone .rows i{display:block;height:12px;margin:9px 8px;background:#2b2f3a;border-radius:3px;animation:lag 6s infinite}
+@keyframes lag{0%,40%{transform:none}44%{transform:translateX(6px)}46%{transform:translateX(-5px)}50%,100%{opacity:.2}}
+.crack{position:absolute;inset:0;z-index:7;animation:crack 6s infinite;opacity:0}
+@keyframes crack{0%,50%{opacity:0}53%,92%{opacity:1}100%{opacity:0}}
+.black{position:absolute;inset:0;background:#000;opacity:0;animation:blk 6s infinite;z-index:6}@keyframes blk{0%,58%{opacity:0}62%,92%{opacity:1}100%{opacity:0}}
+.rail{position:absolute;left:30px;right:30px;top:40px;height:3px;background:var(--hype);z-index:8}
+.rail b{position:absolute;top:-6px;width:15px;height:15px;border-radius:50%;background:var(--night);border:3px solid var(--hype)}
+.rail b.on{background:var(--hype);animation:pulse 1s infinite}@keyframes pulse{50%{transform:scale(1.3)}}
+/* CTA loop */
+.keycap{position:absolute;left:70px;top:330px;width:220px;height:90px;border-radius:16px;background:var(--hype);border:3px solid var(--ink);box-shadow:0 12px 0 #b9b400,0 14px 0 var(--ink);font:900 42px "Inter Tight",sans-serif;color:var(--ink);display:flex;align-items:center;justify-content:center;z-index:9;animation:press 6s infinite}
+@keyframes press{0%,10%{transform:translateY(-40px);opacity:0}16%{transform:none;opacity:1}30%{transform:translateY(9px);box-shadow:0 3px 0 #b9b400,0 5px 0 var(--ink)}36%,100%{transform:none;box-shadow:0 12px 0 #b9b400,0 14px 0 var(--ink)}}
+.pdf{position:absolute;left:120px;top:230px;width:96px;height:120px;background:#fff;border-radius:8px;border:2px solid var(--ink);z-index:9;font:700 10px "Jost",sans-serif;padding:8px;animation:fly 6s infinite;opacity:0}
+.pdf b{display:block;background:var(--alarm);color:#fff;border-radius:3px;padding:1px 4px;width:30px;margin-bottom:5px}
+@keyframes fly{0%,38%{opacity:0;transform:none}42%{opacity:1}62%{transform:translate(120px,-150px) scale(.5) rotate(12deg);opacity:1}66%,100%{opacity:0;transform:translate(120px,-150px) scale(.4)}}
+.dm{position:absolute;right:22px;top:70px;width:110px;height:56px;border-radius:18px;background:#3a7bff;color:#fff;font:700 12px "Jost",sans-serif;display:flex;align-items:center;justify-content:center;z-index:8;animation:dm 6s infinite;opacity:0}
+@keyframes dm{0%,34%{opacity:0;transform:scale(.6)}40%,96%{opacity:1;transform:none}100%{opacity:0}}
+.comm{position:absolute;left:40px;top:48px;background:#fff;border:2px solid var(--ink);box-shadow:3px 4px 0 var(--ink);border-radius:8px;font:700 14px "Jost",sans-serif;color:var(--ink);padding:5px 10px;z-index:10;animation:comm 6s infinite;opacity:0}
+@keyframes comm{0%,44%{opacity:0;transform:scale(.5)}48%{opacity:1;transform:scale(1.1)}50%,96%{opacity:1;transform:none}100%{opacity:0}}
+.zoomwrap{position:absolute;inset:0;animation:zw 6s infinite}@keyframes zw{0%,12%{transform:none}13%,30%{transform:scale(1.07)}31%,100%{transform:none}}
+/* static frames */
+.glow{position:absolute;left:0;right:0;text-align:center;font:900 64px "Inter Tight",sans-serif;background:linear-gradient(180deg,#B48CFF,#8A5CFF 50%,#5B2FD6);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px rgba(138,92,255,.8));animation:type 6s steps(6) infinite}
+@keyframes type{0%{clip-path:inset(0 100% 0 0)}20%,100%{clip-path:inset(0 0 0 0)}}
+.sticker{position:absolute;font-size:46px;z-index:9;filter:drop-shadow(2px 3px 0 var(--ink));animation:stk 6s infinite}
+@keyframes stk{0%,30%{transform:scale(0)}34%{transform:scale(1.25) rotate(8deg)}37%{transform:scale(.95) rotate(-3deg)}40%,44%{transform:scale(1) rotate(3deg)}47%,100%{transform:scale(0)}}
+.lab{position:absolute;font:800 13px "Inter Tight",sans-serif;padding:3px 8px;border-radius:5px;z-index:8}
+.shield{position:absolute;left:24px;top:40px;width:56px;height:66px;z-index:8}
+.lanes{position:absolute;left:24px;right:24px;top:150px;display:flex;gap:12px;z-index:5}
+.lane{flex:1;height:250px;border-radius:12px;border:3px solid var(--alarm);position:relative;background:rgba(255,255,255,.04)}
+.lane.win{border-color:var(--volt);box-shadow:0 0 18px rgba(34,240,106,.5)}
+.lane .fill{position:absolute;left:12px;right:12px;bottom:12px;border-radius:6px;animation:grow 6s infinite}
+@keyframes grow{0%,10%{height:0}40%,100%{height:var(--h)}}
+.lane .v{position:absolute;top:10px;left:0;right:0;text-align:center;font:28px "Anton",sans-serif;color:#fff}
+</style>
+</head>
+<body>
+<h1>Naman · Infotainment Motion</h1>
+<p class="lead">Naman's own style. A tilted yellow headline slab, the viewer's bad result and the creator's premium result inside the first two seconds, numbers that turn into countable crowds and machines on a night stage, and roasts with marker circles, stamps, stickers and meme cues. Format F-A (one format), single theme. Frames are 1/3 scale (360 × 640) with an illustrated presenter.</p>
+
+<h2>F-A · the hook (Result-First Roast)</h2>
+<div class="strip">
+ <div class="cell">
+  <div class="f studio" data-card="1">
+   <div class="zoomwrap punch">
+    <div class="card a-bad" style="left:30px;top:118px;width:300px;transform:rotate(4deg)">
+     <div class="bar"><i></i><i></i><i></i></div>
+     <div class="slop">Welcome to the Future of Innovation<br><span class="btn">Get Started →</span><div class="row"><b></b><b></b><b></b></div></div>
+    </div>
+    <svg style="position:absolute;left:30px;top:118px;z-index:9;transform:rotate(4deg)" width="300" height="200" viewBox="0 0 300 200">
+     <ellipse class="a-circle" cx="150" cy="40" rx="120" ry="24" fill="none" stroke="#FF2A2A" stroke-width="3" stroke-dasharray="300"/>
+     <ellipse class="a-circle" cx="150" cy="128" rx="128" ry="30" fill="none" stroke="#FF2A2A" stroke-width="3" stroke-dasharray="300" style="animation-delay:.2s"/>
+    </svg>
+    <div class="marker a-note" style="left:16px;top:290px;transform:rotate(-4deg)">purple gradient <span class="em">🤢</span></div>
+    <div class="marker a-note" style="left:150px;top:316px;transform:rotate(5deg);animation-delay:.2s">same 3 cards</div>
+    <div class="stamp a-stamp" style="left:70px;top:190px">AI SLOP</div>
+    <div class="sticker em" style="left:268px;top:250px">💀</div>
+    <div class="card premium a-prem" style="left:28px;top:120px;width:304px;height:200px;position:absolute">Crafted<br>to move.<div class="orb"></div>
+     <div style="position:absolute;left:12px;bottom:12px;font:600 9px 'Jost';letter-spacing:.1em">DESIGN · MOTION · BUILD</div></div>
+    <div class="sweep"></div>
+    <div class="person" style="left:150px;top:310px"><div class="arm"></div><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div>
+   </div>
+   <div class="slab">Your Claude website <span class="em">🤢</span><br>vs <span class="chip" style="display:inline-grid;vertical-align:bottom"><span class="flipA" style="grid-area:1/1">MINE</span><span class="flipB" style="display:inline-block;grid-area:1/1">PREMIUM</span></span> <span class="em">🔥</span></div>
+   <div class="chunky cA" style="top:440px"><div class="help">ye tumhari</div><div class="key">WEBSITE</div></div>
+   <div class="chunky cB" style="top:440px"><div class="key" style="color:var(--alarm)">AI SLOP</div></div>
+   <div class="chunky cC" style="top:440px"><div class="help">vibe coding</div><div class="key">SE</div></div>
+  </div>
+  <div class="cap">f0 slab + bad card + cut-out → flaw circles → AI SLOP stamp + 💀 → shatter → orange light-sweep premium reveal; the chip flips.</div>
+ </div>
+
+ <div class="cell">
+  <div class="f studio">
+   <div class="slab" style="animation:none">Your savings <span class="em">🤢</span> vs <span class="chip">MINE</span> <span class="em">🔥</span></div>
+   <div class="card" style="left:40px;top:150px;width:200px;height:300px;transform:rotate(4deg);background:#f5f6fa;border:3px solid #222;border-radius:24px;padding:16px;font:700 12px 'Jost'">
+     <div style="color:#666">Savings account</div><div style="font:34px 'Anton';color:#111;margin-top:6px">₹1,00,000</div>
+     <div style="margin-top:8px;color:var(--alarm)">▼ real value</div></div>
+   <div class="marker a-note" style="left:120px;top:250px;transform:rotate(-5deg)">3 % interest <span class="em">😴</span></div>
+   <div class="stamp a-stamp" style="left:60px;top:300px">SHRINKING</div>
+   <div class="person" style="left:175px;top:330px"><div class="arm"></div><div class="body"></div><div class="logo" style="background:#2b6"></div><div class="hair"></div><div class="head"></div></div>
+   <div class="chunky" style="top:470px"><div class="help">ye tumhari</div><div class="key">SAVINGS</div></div>
+  </div>
+  <div class="cap">The same hook in example niche B (finance): bad state circled in marker, verdict stamp.</div>
+ </div>
+</div>
+
+<h2>F-A · Data Theatre on the night stage</h2>
+<div class="strip">
+ <div class="cell">
+  <div class="f nightw" data-card="2" id="data">
+   <div style="position:absolute;left:60px;top:150px;width:300px;height:300px;border-radius:50%;background:radial-gradient(rgba(0,216,255,.18),transparent 70%)"></div>
+   <div class="slab" style="animation:none"><span class="chip">5</span> users <span class="em">✅</span> <span class="chip bad">5,000</span> users <span class="em">💥</span></div>
+   <div class="dots" id="dots"></div>
+   <div class="av" style="left:40px;top:200px"></div><div class="av" style="left:76px;top:200px;animation-delay:.08s"></div><div class="av" style="left:112px;top:200px;animation-delay:.16s"></div><div class="av" style="left:58px;top:236px;animation-delay:.24s"></div><div class="av" style="left:94px;top:236px;animation-delay:.32s"></div>
+   <div class="phone"><div class="rows"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="black"></div>
+    <svg class="crack" viewBox="0 0 110 200"><path d="M60 90 L20 40 M60 90 L95 30 M60 90 L30 160 M60 90 L100 150 M60 90 L70 196 M40 65 L10 70" stroke="#fff" stroke-width="2" fill="none"/></svg>
+    <div class="crack em" style="display:flex;align-items:center;justify-content:center;font-size:40px">💀</div></div>
+   <div class="ctr"><span class="n1" style="position:absolute;left:0;right:0">5</span><span class="n2" style="position:absolute;left:0;right:0">5,000</span></div>
+   <div class="gauge"></div><div class="needle"></div>
+   <div class="lab" style="left:150px;top:482px;color:#fff;background:#222">SERVER</div>
+   <div class="sub" style="top:525px">5,000 users aaye</div>
+   <div class="bubble"><div class="person" style="left:-45px;top:12px;transform:scale(.62);transform-origin:top center"><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div></div>
+  </div>
+  <div class="cap">P-40 crowd counter → P-41 pour to 5,000 → P-42 gauge into the red → P-43 crash device; presenter in the reaction bubble (G-4).</div>
+ </div>
+
+ <div class="cell">
+  <div class="f nightw">
+   <div class="rail"><b style="left:0" class="on"></b><b style="left:33%"></b><b style="left:66%"></b><b style="left:97%"></b></div>
+   <div class="glow" style="top:70px">INDEX</div>
+   <div class="lanes">
+    <div class="lane"><div class="v">slow scan</div><div class="fill" style="--h:60px;background:var(--alarm)"></div></div>
+    <div class="lane win"><div class="v">row #4217 ✓</div><div class="fill" style="--h:200px;background:var(--volt)"></div></div>
+   </div>
+   <div class="panel" style="top:430px"><div class="person" style="left:85px;top:30px"><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div></div>
+   <div class="sub" style="top:395px">poori book</div>
+  </div>
+  <div class="cap">Item ritual on the Data Stage: SM-9 progress rail, CS-3 violet glow keyword, P-46 / P-44 lanes on the same axis, presenter in the panel.</div>
+ </div>
+
+ <div class="cell">
+  <div class="f nightw">
+   <svg class="shield" viewBox="0 0 56 66"><path d="M28 2 L54 12 V34 C54 50 40 60 28 64 C16 60 2 50 2 34 V12 Z" fill="#111" stroke="#fff" stroke-width="2"/><path d="M28 6 L50 14 V30 H6 V14 Z" fill="#22F06A"/></svg>
+   <div class="lab" style="left:90px;top:56px;font:italic 26px 'Instrument Serif';color:#fff">1 Rate limiting</div>
+   <div style="position:absolute;left:250px;top:180px;width:70px;height:120px;border:3px solid var(--cyan);border-radius:10px;font:900 26px 'Inter Tight';color:var(--cyan);display:flex;align-items:center;justify-content:center">API</div>
+   <div style="position:absolute;left:225px;top:160px;width:4px;height:160px;background:var(--hype)"></div>
+   <div id="pellets"></div>
+   <div class="stamp" style="left:40px;top:330px;transform:rotate(-12deg);font-size:24px">SPAM ✕</div>
+   <div class="panel" style="top:430px"><div class="person" style="left:85px;top:30px"><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div></div>
+  </div>
+  <div class="cap">Risk as a machine: SM-8 shield segment lights green, P-50 bouncer gate lets a steady few through and bounces the flood.</div>
+ </div>
+</div>
+
+<h2>F-A · captions and the CTA</h2>
+<div class="strip">
+ <div class="cell">
+  <div class="f canvasw">
+   <div style="position:absolute;left:0;right:0;top:66px;text-align:center;font:italic 32px 'Instrument Serif';color:#111">Tool Title</div>
+   <div class="card" style="left:8px;top:100px;width:344px;height:200px;background:#fff;border:2px solid #111"><div class="bar"><i></i><i></i><i></i></div>
+    <div style="padding:14px;font:800 14px 'Jost'">Prompt:<div style="font:500 12px 'Jost';margin-top:6px;color:#333">make the hero section feel premium, serif display type, one accent…</div></div></div>
+   <div class="sub" style="top:345px;color:#111;text-shadow:none">ye prompt daalo</div>
+   <div class="panel"><div class="person" style="left:85px;top:30px"><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div></div>
+  </div>
+  <div class="cap">Mode S on the canvas: serif tool title, P-08 prompt card, CS-1 black lowercase subtitle at panel top − 60, presenter in the P-BLEED panel.</div>
+ </div>
+
+ <div class="cell">
+  <div class="f studio" data-card="3">
+   <div class="person" style="left:85px;top:250px;transform:scale(1.25);transform-origin:top center"><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div>
+   <div class="comm"><span class="em">🚀</span> Your community · link in bio</div>
+   <div class="dm">DM ✓ sent</div>
+   <div class="pdf"><b>PDF</b>KEYWORD – the full checklist</div>
+   <div class="keycap">KEYWORD</div>
+   <div class="sub" style="top:450px">comment kar do</div>
+  </div>
+  <div class="cap">CTA: G-2 pop-back, P-68 key-cap presses, the deliverable flies into a DM bubble, P-29 community chip pops in the top band.</div>
+ </div>
+
+ <div class="cell">
+  <div class="f studio">
+   <div class="person" style="left:85px;top:220px;transform:scale(1.25);transform-origin:top center"><div class="body"></div><div class="logo"></div><div class="hair"></div><div class="head"></div></div>
+   <div class="chunky" style="top:150px"><div class="help">ekdam</div><div class="key" style="color:var(--volt)">BUTTER</div></div>
+   <div class="lab" style="left:24px;top:60px;background:var(--meme);color:#fff;transform:rotate(-6deg);border:3px solid #fff">⏸ freeze</div>
+   <svg style="position:absolute;left:95px;top:205px;z-index:9" width="180" height="150"><ellipse cx="90" cy="70" rx="80" ry="62" fill="none" stroke="#FF2E8B" stroke-width="3" stroke-dasharray="520" class="a-circle"/></svg>
+   <div class="marker a-note" style="left:200px;top:330px;color:var(--meme);-webkit-text-stroke:.5px #fff">ye tum ho <span class="em">😭</span></div>
+   <div class="sub" style="top:470px">wahi purani galti</div>
+  </div>
+  <div class="cap">Mode F: CS-2 chunky keyword with squash-pop, a P-64 freeze-frame roast (pink marker around, never on, the face), CS-1 subtitle at y 1300.</div>
+ </div>
+</div>
+
+<script>
+// static, seeded layout only (no timers): the animations themselves are CSS
+(function(){
+  let s=7;const r=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+  const d=document.getElementById("dots");let h="";
+  for(let k=0;k<420;k++){const x=10+r()*340,y=110+r()*400;h+=`<i style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;animation-delay:${(r()*0.5).toFixed(2)}s"></i>`;}
+  d.innerHTML=h;
+  const p=document.getElementById("pellets");let q="";
+  for(let k=0;k<14;k++){const y=170+r()*140,bad=k%3!==0;q+=`<i style="position:absolute;left:${(30+k*12)}px;top:${y.toFixed(0)}px;width:9px;height:9px;border-radius:50%;background:${bad?'#FF2A2A':'#00D8FF'}"></i>`;}
+  p.innerHTML=q;
+})();
+</script>
+</body>
+</html>

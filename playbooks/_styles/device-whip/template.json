@@ -1,0 +1,31 @@
+{
+  "package": "veos.template/1",
+  "id": "device-whip",
+  "tier": "full",
+  "order": 13,
+  "tagline": "Hands-on gadget reviews: a blue italic title over the device you hold, a whip into a close-up of it in your hand, small clean captions and a red counter that ticks up.",
+  "inspired_by_display": [
+    "Mrwhosetheboss"
+  ],
+  "needs": "you talking with the device in hand + close-up clips of the device in your hand (a second camera or phone)",
+  "readiness": "R4",
+  "readiness_note": "Shoot close-ups of the device in your hand (checklist included); without them the reel falls back to screen recordings in a drawn phone.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: the device held up, a punch-in zoom on the device, the blue italic title pops in phrase by phrase, then the zoom-flash whip",
+      "Count-up: hand-held close-up of the device with the red counter ticking above one white caption line",
+      "End card: black wordmark card with the comment keyword"
+    ]
+  }
+}

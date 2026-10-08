@@ -7,12 +7,12 @@
   "plugins": [
     {
       "name": "vibe-editing-os",
-      "version": "0.3.0",
+      "version": "0.5.0",
       "description": "Turn raw talking-head clips into finished motion-graphics reels: prep, rough cut, captions, plan, storyboard, render.",
       "source": {
         "source": "archive",
-        "url": "https://github.com/namansoniai/vibe-editing-os-dist/releases/download/v0.3.0/vibe-editing-os-plugin-0.3.0.zip",
-        "sha256": "1a9cc861dd1d0707ffc42a575a33b7a3c4b98599a9bfa68be232d500c1aa41ce"
+        "url": "https://github.com/namansoniai/vibe-editing-os-dist/releases/download/v0.5.0/vibe-editing-os-plugin-0.5.0.zip",
+        "sha256": "7c059fe11e46b577d25104f26d9fc08bdfa80a52cd289d4af51b363e1736bccd"
       }
     }
   ]

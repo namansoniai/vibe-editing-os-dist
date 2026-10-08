@@ -1,4 +1,11 @@
-"""veos ingest: register source files, classify them and detect camera-setup segments."""
+"""veos ingest: register source files, classify them and detect camera-setup segments.
+
+Voice-over reels (E-12, `source_type: voiceover_only`): `veos ingest --audio vo.wav [--script script.md]` registers the
+voice-over as source `V` (kind `voiceover`; a video file is accepted and its picture is ignored). The same happens with
+no `--audio` when project.json says `source_type: voiceover_only` (the VO is project.json `voiceover`, else the
+audio-only file, else the longest file with sound). In a voice-over project every other clip is supplementary (B-roll /
+screen recording, never a talking head).
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,6 +25,10 @@ MIN_SEG_S = 2.0
 def add_args(p, cmd):
     p.add_argument("inputs", nargs="*", help="video/audio files and/or folders (searched recursively); "
                    "default: the clips stored in project.json")
+    p.add_argument("--audio", action="append", default=None, metavar="FILE",
+                   help="a voice-over (wav/mp3/m4a/..., or a video whose picture is ignored): makes this a voice-over "
+                        "project (source V); repeat for a VO recorded in parts (V, V2, ...)")
+    p.add_argument("--script", default=None, help="the voice-over's script (stored; transcribe aligns the words to it)")
 
 
 # ---------------------------------------------------------------- face detection
@@ -172,40 +183,121 @@ def _talking_id(n: int) -> str:
     return chr(ord("A") + n) if n < 26 else f"A{n - 25}"
 
 
+VO_KIND = "voiceover"
+
+
+def _best_audio(f: Path, pr: dict, notes: list[str]) -> dict | None:
+    if not pr["audio"]:
+        return None
+    best = None
+    for a in pr["audio"]:
+        lufs, tp = media.loudness(f, a["stream"])
+        if best is None or (lufs if lufs is not None else -999) > (best[1] if best[1] is not None else -999):
+            best = (a, lufs, tp)
+    a, lufs, tp = best
+    if len(pr["audio"]) > 1:
+        notes.append(f"{len(pr['audio'])} audio streams; stream {a['stream']} is the loudest")
+    if lufs is None:
+        notes.append("audio is silent")
+    return {"stream": a["stream"], "channels": a["channels"], "lufs": lufs, "tp": tp}
+
+
+def voiceover_source(f: Path, sid: str, proj) -> dict:
+    """A voice-over source entry: audio only; a video's picture is ignored (no frames, no faces)."""
+    pr = media.probe(f)
+    notes: list[str] = []
+    audio = _best_audio(f, pr, notes)
+    if audio is None:
+        raise VeosError("VO_NO_AUDIO", f"{f.name} has no audio stream",
+                        "Give the voice-over as an audio file (wav, mp3, m4a) or a video with sound.")
+    if audio["lufs"] is None or audio["lufs"] <= SPEECH_LUFS:
+        notes.append(f"voice-over is very quiet ({audio['lufs']} LUFS); check it is the right file")
+    adur = max((a["duration"] for a in pr["audio"]), default=0.0) or pr["duration"]
+    if pr["video"] is not None:
+        notes.append("video file: only its sound is used (picture ignored)")
+    return {"id": sid, "path": proj.rel(f), "kind": VO_KIND, "duration": r3(adur), "frames": int(round(adur * FPS)),
+            "audio": audio, "picture_ignored": pr["video"] is not None, "segments": [], "face_ratio": 0.0, "notes": notes}
+
+
+def _vo_id(k: int) -> str:
+    return "V" if k == 0 else f"V{k + 1}"
+
+
+def pick_voiceover(files: list[Path], declared=None) -> list[Path]:
+    """The VO file(s) of a voice-over project: project.json `voiceover` when set, else the audio-only files, else the
+    longest file that has sound."""
+    if declared:
+        want = [Path(d).expanduser().resolve() for d in ([declared] if isinstance(declared, str) else declared)]
+        return [f for f in files if f in want] or [w for w in want if w.exists()]
+    audio = [f for f in files if f.suffix.lower() in media.AUDIO_EXT]
+    if audio:
+        return audio
+    best, dur = None, -1.0
+    for f in files:
+        pr = media.probe(f)
+        d = pr["duration"] if pr["audio"] else -1.0
+        if d > dur:
+            best, dur = f, d
+    return [best] if best else []
+
+
 def main(args, project) -> dict:
     proj = need_project(project)
-    inputs = args.inputs
-    if not inputs:  # default to the clips registered by `veos project init`
-        pj = proj.root / "project.json"
-        inputs = (read_json(pj).get("clips") or []) if pj.exists() else []
+    inputs = list(args.inputs or [])
+    pj = proj.root / "project.json"
+    pstate = read_json(pj) if pj.exists() else {}
+    vo_args = list(getattr(args, "audio", None) or [])
+    voice_mode = bool(vo_args) or pstate.get("source_type") == "voiceover_only"
+    plates = not voice_mode and pstate.get("source_type") == "animated_plates"  # puppets / animation: no face detection
+    if not inputs and not vo_args:  # default to the clips registered by `veos project init`
+        inputs = pstate.get("clips") or []
         if not inputs:
             raise VeosError("NO_INPUT", "no files given and project.json has no clips",
-                            "Pass files/folders, or run `veos project init <clips> --project P` first.")
-    files = _collect(inputs)
+                            "Pass files/folders (or --audio <voice-over>), or run `veos project init <clips> --project P` first.")
+    files = _collect(inputs) if inputs else []
+    vo_files: list[Path] = []
+    if voice_mode:
+        vo_files = _collect(vo_args) if vo_args else pick_voiceover(files, pstate.get("voiceover"))
+        if not vo_files:
+            raise VeosError("VO_MISSING", "this is a voice-over project but no voice-over file was found",
+                            "Pass it with --audio <file> (an audio file, or a video whose picture is ignored).")
+        files = [f for f in files if f not in vo_files]
+    script = getattr(args, "script", None)
+    if script:
+        sp = Path(script).expanduser()
+        if not sp.exists():
+            raise VeosError("SCRIPT_MISSING", f"script file not found: {script}", "Check the --script path.")
+        script = sp.resolve().as_posix()
+    elif pstate.get("script"):
+        script = pstate["script"]
     finder = None
     sources, summary, warnings = [], [], []
+    for k, f in enumerate(vo_files):
+        entry = voiceover_source(f, _vo_id(k), proj)
+        sources.append(entry)
+        summary.append({"id": entry["id"], "file": f.name, "kind": VO_KIND, "duration": entry["duration"],
+                        "picture_ignored": entry["picture_ignored"]})
+        warnings += [f"{f.name}: {n}" for n in entry["notes"] if "quiet" in n or "silent" in n]
     nth, ns = 0, 0
     for f in files:
         pr = media.probe(f)
         v = pr["video"]
         notes: list[str] = []
-        audio = None
-        if pr["audio"]:
-            best = None
-            for a in pr["audio"]:
-                lufs, tp = media.loudness(f, a["stream"])
-                if best is None or (lufs if lufs is not None else -999) > (best[1] if best[1] is not None else -999):
-                    best = (a, lufs, tp)
-            a, lufs, tp = best
-            audio = {"stream": a["stream"], "channels": a["channels"], "lufs": lufs, "tp": tp}
-            if len(pr["audio"]) > 1:
-                notes.append(f"{len(pr['audio'])} audio streams; stream {a['stream']} is the loudest")
-            if lufs is None:
-                notes.append("audio is silent")
+        audio = _best_audio(f, pr, notes)
         entry: dict = {"path": proj.rel(f)}
         if v is None:
             kind, ratio, segs = "audio-only", 0.0, []
             entry.update(duration=r3(pr["duration"]), frames=int(round(pr["duration"] * FPS)))
+        elif plates:
+            dur = v["duration"] or pr["duration"]
+            kind, ratio = "talking-head", 0.0  # the plate carries the picture and its own sound (the reel's main track)
+            segs = [{"start": 0.0, "end": r3(dur), "setup": "plate"}]
+            notes.append("animated plate: face detection skipped")
+            frames = v["frames"] or int(round(dur * (v["fps"] or FPS)))
+            entry.update(duration=r3(dur), frames=frames, width=v["disp_w"], height=v["disp_h"],
+                         rotation=v["rotation"], fps_in=v["fps_in"], vfr=v["vfr"])
+            if v["vfr"]:
+                warnings.append(f"{f.name}: variable frame rate (conform makes it a constant 30 fps)")
         else:
             if finder is None:
                 finder = FaceFinder()
@@ -222,6 +314,10 @@ def main(args, project) -> dict:
                          rotation=v["rotation"], fps_in=v["fps_in"], vfr=v["vfr"])
             if v["vfr"]:
                 warnings.append(f"{f.name}: variable frame rate (conform makes it a constant 30 fps)")
+        if voice_mode and kind == "talking-head":  # a voice-over reel has no presenter: extra clips are B-roll
+            kind = "broll"
+            notes.append("voice-over project: used as B-roll, not as a talking head")
+            segs = [{"start": 0.0, "end": entry["duration"], "setup": "other"}]
         if kind == "talking-head":
             sid = _talking_id(nth)
             nth += 1
@@ -236,6 +332,21 @@ def main(args, project) -> dict:
         summary.append({"id": sid, "file": f.name, "kind": kind, "duration": entry["duration"],
                         "segments": [[s["start"], s["end"], s["setup"]] for s in segs],
                         "vfr": entry.get("vfr", False)})
-    write_json(proj.path("work", "sources.json"), {"version": 1, "fps": FPS, "sources": sources})
-    proj.log("ingest", f"ingested {len(sources)} sources")
-    return {"sources": summary, "warnings": warnings}
+    doc = {"version": 1, "fps": FPS, "source_type": "voiceover_only" if voice_mode else "animated_plates" if plates else "talking_head",
+           "sources": sources}
+    if script:
+        doc["script"] = script
+    write_json(proj.path("work", "sources.json"), doc)
+    if pj.exists() and voice_mode:  # remember the branch (and the script) for the skills and later commands
+        st = read_json(pj)
+        new = {"source_type": "voiceover_only", "voiceover": [f.as_posix() for f in vo_files]}
+        if script and not st.get("script"):
+            new["script"] = script
+        if any(st.get(k) != v for k, v in new.items()):
+            st.update(new)
+            write_json(pj, st)
+    proj.log("ingest", f"ingested {len(sources)} sources ({doc['source_type']})")
+    out = {"source_type": doc["source_type"], "sources": summary, "warnings": warnings}
+    if script:
+        out["script"] = Path(script).name
+    return out

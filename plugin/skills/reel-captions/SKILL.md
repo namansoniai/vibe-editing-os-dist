@@ -1,6 +1,8 @@
 ---
 name: reel-captions
 description: Captions phase of a Vibe Editing OS project — produce the exact on-screen text for every spoken word in the language and script the creator's playbook specifies, with correct names and fixed mis-hearings, then apply it. Called by the reel orchestrator after the rough cut.
+model: claude-opus-5-5
+effort: high
 user-invocable: false
 ---
 
@@ -26,5 +28,7 @@ user-invocable: false
    - **Hidden words:** use `""` for a duplicated fragment (e.g. a number split into two tokens).
 5. `veos captions apply "P/work/captions.map.json" --project "P"` → it must report `missing: 0` with every word captioned.
 6. `veos project set phase=captions --project "P"`.
+
+**Faceless reels:** the same steps. The caption text matters even more here (it also feeds the kinetic type lines the planner builds from the words), so when there is a script, prefer the script's spelling for every word it matched. Mark nothing as "face" related; there is no presenter.
 
 **Learned rules:** if the playbook folder has `learned.md`, follow its entries for this phase's area. They override the playbook body.

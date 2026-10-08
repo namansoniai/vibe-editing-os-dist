@@ -1,0 +1,35 @@
+{
+  "package": "veos.template/1",
+  "id": "whiteboard-split",
+  "tier": "core",
+  "order": 3,
+  "tagline": "Teach a framework like a whiteboard: an animated diagram on top, one word at a time in the middle, your face in a rounded window below, and a hard cut to your face on every claim.",
+  "inspired_by_display": [
+    "Kallaway"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "best with a 4K landscape take: the full-face punches are a crop of it",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "data_figures",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: lockup with a crimson key phrase, a phone card whose curve drops, one-word caption, face window",
+      "The recurring loop diagram: node 2 lit, hero numeral and step name",
+      "The full-face punch: one big word, an italic-serif keyword swap"
+    ]
+  }
+}

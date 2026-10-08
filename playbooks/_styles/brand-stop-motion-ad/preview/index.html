@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brand Stop-motion Ad Glimpse</title>
+<!-- Template glimpse (TEMPLATE-PACKAGE §3). data-card="1..3" frames become the gallery card loops
+     (tools/template_frames.py). Engine-made graphics and neutral illustrated felt/clay characters only;
+     6 s CSS loops; character motion uses steps() so it moves "on twos" like stop-motion. 1 px here = 3 px on 1080x1920. -->
+<style>
+@font-face{font-family:"Plus Jakarta Sans";src:url("../../../../assets/fonts/PlusJakartaSans-VF.ttf");font-weight:200 800}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+@font-face{font-family:"EB Garamond";src:url("../../../../assets/fonts/EBGaramond-VF.ttf");font-weight:400 800}
+:root{--paper:#FFFFFF;--ink:#000000;--primary:#A30B22;--accent:#C9D9EE;--shade:#2A1E14;--static:#8E8E8E;
+  --bg:#141110;--fg:#EFE7DF;--muted:#B9AEA4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:"Plus Jakarta Sans",system-ui,sans-serif;padding:32px 16px 60px}
+h1{font-weight:700;font-size:24px;max-width:1180px;margin:0 auto 6px}
+p.lead{font-size:14px;color:var(--muted);max-width:1180px;margin:0 auto 10px;line-height:1.5}
+h2{font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);max-width:1180px;margin:26px auto 12px}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:#000}
+.shot{position:absolute;inset:0;overflow:hidden}
+/* felt texture over every set */
+.felt::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;opacity:.55;
+  background:repeating-radial-gradient(circle at 30% 20%,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),
+             repeating-radial-gradient(circle at 70% 80%,rgba(0,0,0,.18) 0 1px,transparent 1px 4px)}
+/* captions: CS-1 64 px -> 21.3 px, block centre y 1420 -> 473 */
+.cap{position:absolute;left:0;right:0;top:473px;transform:translateY(-50%);text-align:center;font-weight:500;font-size:21.3px;
+  line-height:1.18;color:var(--paper);text-shadow:0 .7px 3.3px rgba(0,0,0,.55);opacity:0;z-index:7;padding:0 30px}
+.cap.cs2{font-weight:600;-webkit-text-stroke:.7px var(--shade);paint-order:stroke fill;text-shadow:0 .7px 4.7px rgba(42,30,20,.75)}
+.legal{position:absolute;left:21px;top:45px;font-size:8px;font-weight:500;color:#fff;text-shadow:0 .3px 1.3px rgba(0,0,0,.6);z-index:6}
+/* ---------- forest set (felt) ---------- */
+.forest{background:linear-gradient(180deg,#F6E6B8 0%,#D9C27E 22%,#7E9A4E 52%,#4E6B33 75%,#3A4F27 100%)}
+.trunk{position:absolute;bottom:200px;width:34px;border-radius:14px;background:linear-gradient(90deg,#5A3A26,#8A5A3A 55%,#5A3A26);filter:blur(1.6px)}
+.glow{position:absolute;left:150px;top:40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,244,210,.95),rgba(255,226,150,0) 70%)}
+.mush{position:absolute;left:-30px;top:150px;width:170px;height:90px;border-radius:85px 85px 30px 30px;background:radial-gradient(ellipse at 45% 35%,#E7685A,#B8392E 70%);filter:blur(.6px)}
+.stem{position:absolute;left:28px;top:225px;width:46px;height:180px;border-radius:20px;background:linear-gradient(90deg,#E9DCC6,#F7EFE2,#D8C7AC)}
+.moss{position:absolute;left:-20px;right:-20px;bottom:0;height:230px;border-radius:60% 60% 0 0;background:radial-gradient(ellipse at 50% 0%,#86A64A,#4F7030 70%)}
+.rock{position:absolute;left:52px;top:388px;width:110px;height:56px;border-radius:50%;background:radial-gradient(ellipse at 40% 30%,#8D7A86,#57475A)}
+.frog{position:absolute;width:70px;height:96px}
+.frog .b{position:absolute;inset:18px 6px 0 6px;border-radius:40% 40% 30% 30%;background:radial-gradient(ellipse at 40% 30%,#9CBF52,#5E8A2C 75%)}
+.frog .h{position:absolute;left:10px;top:0;width:50px;height:38px;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#A8CA5C,#678F33)}
+.frog .e{position:absolute;top:8px;width:9px;height:9px;border-radius:50%;background:#1E1A16;box-shadow:inset 1px 1px 0 #fff}.frog .e.l{left:16px}.frog .e.r{left:36px}
+.frog .snack{position:absolute;left:46px;top:46px;width:18px;height:20px;border-radius:5px;background:#F4EEE2;box-shadow:inset -2px -2px 0 #DCCFB8}
+.bee{position:absolute;width:44px;height:34px}
+.bee .bd{position:absolute;left:4px;top:8px;width:38px;height:26px;border-radius:50%;background:repeating-linear-gradient(90deg,#F2C21B 0 8px,#2A211A 8px 13px)}
+.bee .w{position:absolute;left:14px;top:-6px;width:22px;height:18px;border-radius:50%;background:rgba(255,255,255,.75);border:1px solid rgba(80,70,60,.4);
+  animation:flap .25s steps(2) infinite}
+@keyframes flap{50%{transform:scaleY(.4) translateY(5px)}}
+/* card 1: wide 0-1.4 s, MCU after (hard cut via steps) */
+.c1wide{animation:c1wide 6s steps(1) infinite}
+@keyframes c1wide{0%{opacity:1}23.6%{opacity:0}100%{opacity:0}}
+.c1mcu{opacity:0;animation:c1mcu 6s steps(1) infinite}
+@keyframes c1mcu{0%{opacity:0}23.6%{opacity:1}100%{opacity:1}}
+.beeIn{left:330px;top:250px;animation:beeIn 6s steps(16) infinite}
+@keyframes beeIn{0%{transform:translate(0,0)}22%{transform:translate(-200px,40px)}100%{transform:translate(-200px,40px)}}
+.c1cap1{animation:c1cap1 6s linear infinite}
+@keyframes c1cap1{0%,19.4%{opacity:0}21.6%,68%{opacity:1}70.2%,100%{opacity:0}}
+.c1cap2{animation:c1cap2 6s linear infinite}
+@keyframes c1cap2{0%,74%{opacity:0}76.2%,96%{opacity:1}98.2%,100%{opacity:0}}
+.big .frog{transform:scale(2.6);transform-origin:0 0}
+.big .bee{transform:scale(2.4);transform-origin:0 0}
+.bob{animation:bob 1s steps(4) infinite alternate}
+@keyframes bob{to{transform:translateY(-4px)}}
+/* ---------- journey (log) ---------- */
+.log{position:absolute;left:30px;top:330px;width:300px;height:52px;border-radius:26px;background:linear-gradient(180deg,#A0583A,#7A3E26);box-shadow:0 8px 0 #4C2A1C}
+.lizard{position:absolute;top:300px;width:60px;height:26px;border-radius:14px 20px 10px 10px;background:linear-gradient(90deg,#8DAA46,#B9C85A);animation:walk 6s steps(24) infinite}
+@keyframes walk{from{left:20px}to{left:250px}}
+.beeFly{top:220px;animation:fly 6s steps(24) infinite}
+@keyframes fly{from{left:120px;transform:translateY(0)}50%{transform:translateY(-14px)}to{left:330px;transform:translateY(0)}}
+.capOn{opacity:1}
+/* ---------- honey reveal (bright) ---------- */
+.honey{background:radial-gradient(ellipse at 50% 35%,#FFF4B0 0%,#FFD43A 35%,#E89A12 75%,#8A5A12 100%)}
+.fall{position:absolute;left:140px;top:0;width:80px;height:420px;background:linear-gradient(180deg,#FFF3A6,#FFC21A 60%,#E9930B);border-radius:0 0 40px 40px;
+  filter:blur(1px);animation:pour 1s steps(4) infinite}
+@keyframes pour{50%{filter:blur(1.6px) brightness(1.08)}}
+.pool{position:absolute;left:30px;right:30px;top:400px;height:80px;border-radius:50%;background:radial-gradient(ellipse,#FFE36A,#E8A015 70%)}
+/* ---------- deckchairs + iris + wordmark (card 3) ---------- */
+.lawn{background:linear-gradient(180deg,#C9D97A 0%,#7FA83E 45%,#4F7A2A 100%)}
+.chair{position:absolute;width:90px;height:150px;border-radius:12px;background:repeating-linear-gradient(0deg,#F5EFE6 0 10px,#E4D7C7 10px 13px);transform:rotate(-24deg)}
+.irisWrap{position:absolute;inset:0;animation:irisShow 6s steps(1) infinite}
+@keyframes irisShow{0%{opacity:1}55%{opacity:0}100%{opacity:0}}
+.iris{position:absolute;inset:0;z-index:9;pointer-events:none;
+  background:radial-gradient(circle at 180px 307px,transparent 0,transparent var(--r),#000 calc(var(--r) + 8px));animation:iris 6s infinite}
+@property --r{syntax:"<length>";inherits:false;initial-value:370px}
+@keyframes iris{0%,10%{--r:370px}28%{--r:170px;animation-timing-function:linear}46%{--r:170px;animation-timing-function:ease-in}49.5%{--r:0px}100%{--r:0px}}
+.c3cap{animation:c3cap 6s linear infinite}
+@keyframes c3cap{0%,30%{opacity:0}32%,47%{opacity:1}49%,100%{opacity:0}}
+.wm{position:absolute;left:0;right:0;top:320px;transform:translateY(-50%);text-align:center;opacity:0}
+.wm svg{width:216px;height:auto;display:block;margin:0 auto}
+.c3wm{animation:c3wm 6s infinite}
+@keyframes c3wm{0%,52%{opacity:0;transform:translateY(-50%) scale(.96)}56.5%,100%{opacity:1;transform:translateY(-50%) scale(1)}}
+.link{position:absolute;left:0;right:0;top:393px;text-align:center;font-size:13.3px;font-weight:500;color:#fff;opacity:0}
+.c3link{animation:c3link 6s infinite}
+@keyframes c3link{0%,60%{opacity:0;transform:translateY(4px)}64.5%,100%{opacity:1;transform:none}}
+/* ---------- living room + TV ---------- */
+.room{background:linear-gradient(180deg,#F1DCC0 0%,#E9C9A2 55%,#B07A4E 56%,#8A5634 100%)}
+.frame{position:absolute;border:7px solid #E8B98A;background:#C9A57E;box-shadow:2px 3px 0 rgba(0,0,0,.2)}
+.cab{position:absolute;left:10px;right:10px;top:415px;height:225px;background:linear-gradient(180deg,#5A3524,#3E2418);border-radius:6px}
+.cab::before{content:"";position:absolute;left:40px;right:40px;top:40px;height:90px;border:4px solid #2A170F;border-radius:4px;
+  background:repeating-linear-gradient(0deg,#6F8A9A 0 12px,#C9B27A 12px 22px,#7A9A6A 22px 30px)}
+.tv{position:absolute;left:52px;top:214px;width:256px;height:184px;border-radius:24px;background:linear-gradient(180deg,#6B5A4A,#3E3228);
+  box-shadow:inset 0 0 0 5px #8A7662,0 6px 0 #2A2018}
+/* screen rect 198-864 x 709-1141 -> 66-288, 236-380 */
+.scr{position:absolute;left:66px;top:236px;width:222px;height:144px;border-radius:9px;overflow:hidden;background:var(--accent)}
+.scr .sky{position:absolute;inset:0;background:radial-gradient(ellipse 60px 26px at 30% 30%,rgba(255,255,255,.55),transparent 70%),
+  radial-gradient(ellipse 80px 30px at 75% 55%,rgba(255,255,255,.5),transparent 70%),radial-gradient(ellipse 70px 24px at 40% 85%,rgba(236,226,250,.6),transparent 70%),var(--accent);
+  animation:drift 6s linear infinite}
+@keyframes drift{to{background-position:-12px 0,-12px 0,-12px 0,0 0}}
+.crt{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.06) 0 .7px,transparent .7px 1.3px),
+  radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(0,0,0,.18) 100%),linear-gradient(135deg,rgba(255,255,255,.08),transparent 40%)}
+.noise{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#9a9a9a 0 1px,#6e6e6e 1px 2px,#b5b5b5 2px 3px),repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 2px);
+  animation:jit .12s steps(3) infinite}
+@keyframes jit{33%{background-position:1px 2px,0 1px}66%{background-position:2px 0,1px 0}}
+.lab{position:absolute;left:0;right:0;top:30px;transform:translateY(-50%);text-align:center;font-family:"Barlow Condensed";font-weight:700;
+  font-size:21.3px;color:var(--primary);letter-spacing:.01em;text-transform:uppercase}
+.pk{position:absolute;bottom:12px;width:44px;height:64px;border-radius:5px 5px 3px 3px;box-shadow:inset 0 -8px 0 rgba(0,0,0,.12)}
+.pk::after{content:"";position:absolute;left:7px;right:7px;top:16px;height:16px;border-radius:3px;background:rgba(255,255,255,.75)}
+.p1{background:#5A2D5E}.p2{background:#E2B91E}.p3{background:#D9622B}.p4{background:#2E7A4A}
+/* card 2 timeline (6 s): static 0-0.8, ORGANIC 0.8-1.8, pack 1.8-2.8, SMOOTH 2.8-3.6, lineup 3.6-5.2, static 5.2-6 */
+.seg{position:absolute;inset:0;opacity:0}
+.s-noise{animation:sn 6s steps(1) infinite}
+@keyframes sn{0%{opacity:1}13.3%{opacity:0}86.7%{opacity:1}100%{opacity:1}}
+.s-l1{animation:sl1 6s steps(1) infinite}@keyframes sl1{0%{opacity:0}13.3%{opacity:1}30%{opacity:0}}
+.s-p1{animation:sp1 6s steps(1) infinite}@keyframes sp1{0%{opacity:0}30%{opacity:1}46.7%{opacity:0}}
+.s-p1 .pk{left:89px;animation:slide 6s infinite}
+@keyframes slide{0%,30%{transform:translateY(80px) rotate(-4deg)}35.5%,100%{transform:none}}
+.s-l2{animation:sl2 6s steps(1) infinite}@keyframes sl2{0%{opacity:0}46.7%{opacity:1}60%{opacity:0}}
+.s-lu{animation:slu 6s steps(1) infinite}@keyframes slu{0%{opacity:0}60%{opacity:1}86.7%{opacity:0}}
+.s-lu .pk{width:34px;height:50px;bottom:14px}.s-lu .pk::after{top:12px;height:12px;left:5px;right:5px}
+.arc{position:absolute;left:0;right:0;top:20px;animation:arc 6s infinite}
+.arc svg{width:190px;display:block;margin:0 auto}
+@keyframes arc{0%,60%{transform:scale(.86) rotate(-6deg)}66.7%,100%{transform:none}}
+/* characters from behind / CU */
+.pup{position:absolute;width:70px;height:110px}
+.pup .hd{position:absolute;left:10px;top:0;width:50px;height:46px;border-radius:50% 50% 45% 45%}
+.pup .bd{position:absolute;left:4px;top:40px;width:62px;height:70px;border-radius:24px 24px 8px 8px}
+.pup .ear{position:absolute;top:-4px;width:16px;height:30px;border-radius:50%}
+.pup.blue .hd,.pup.blue .ear{background:#55B8C8}.pup.blue .bd{background:#2E58A8}
+.pup.pink .hd,.pup.pink .ear{background:#E28A9C}.pup.pink .bd{background:#2E58A8}
+.pup .ear.l{left:6px}.pup .ear.r{left:50px}
+.couch{position:absolute;left:20px;right:20px;top:320px;height:130px;border-radius:20px;background:repeating-linear-gradient(90deg,#EFE9E0 0 9px,#3D4C6E 9px 11px)}
+.rug{position:absolute;left:0;right:0;top:470px;height:110px;background:repeating-radial-gradient(circle at 30% 50%,#3C4C7A 0 3px,#6C7AA8 3px 6px)}
+.tvSmall{position:absolute;left:120px;top:150px;width:120px;height:86px;border-radius:12px;background:#4E4034;box-shadow:inset 0 0 0 3px #8A7662}
+.pitch{position:absolute;left:10px;top:9px;width:100px;height:62px;border-radius:5px;background:repeating-linear-gradient(90deg,#3E9A48 0 12px,#48A852 12px 24px)}
+.pitch i{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;animation:play 2s steps(8) infinite alternate}
+@keyframes play{to{transform:translate(14px,-6px)}}
+.cuFace{position:absolute;left:60px;top:120px;width:240px;height:250px;border-radius:46% 46% 42% 42%;background:radial-gradient(ellipse at 45% 35%,#7FD0DC,#3C9AAB 70%)}
+.cuFace .e{position:absolute;top:80px;width:26px;height:30px;border-radius:50%;background:#1A1512;box-shadow:inset 4px 4px 0 rgba(255,255,255,.6)}
+.cuFace .e.l{left:52px}.cuFace .e.r{left:160px}
+.cuFace .n{position:absolute;left:90px;top:130px;width:60px;height:40px;border-radius:50%;background:#2A2220}
+.cuFace .t{position:absolute;left:104px;top:178px;width:34px;height:50px;border-radius:0 0 18px 18px;background:#F08A8A;animation:tongue 1s steps(2) infinite}
+@keyframes tongue{50%{height:40px}}
+/* ---------- street (vignette) ---------- */
+.street{background:linear-gradient(180deg,#5A73B8 0%,#8FA6D8 30%,#F2C9A0 52%,#3A3A3E 53%,#2C2C30 100%)}
+.bldgL{position:absolute;left:0;top:150px;width:90px;height:300px;background:linear-gradient(90deg,#E6A262,#D98A4A)}
+.bldgR{position:absolute;right:0;top:120px;width:80px;height:330px;background:linear-gradient(90deg,#E07A52,#C9623E)}
+.line{position:absolute;left:170px;top:340px;width:10px;height:300px;background:#E9C93A;transform:perspective(200px) rotateX(60deg);transform-origin:top}
+.sign{position:absolute;left:70px;right:70px;top:110px;height:24px;border-top:1.5px solid #222;text-align:center;font-family:"Barlow Condensed";font-size:16px;color:#E7D06A;letter-spacing:.4em}
+.walker{position:absolute;left:150px;top:300px;width:60px;height:150px;transform-origin:50% 100%;animation:approach 6s steps(30) infinite}
+@keyframes approach{from{transform:scale(.6)}to{transform:scale(1.35) translateY(30px)}}
+.walker .hd,.sipper .hd{position:absolute;left:14px;top:0;width:32px;height:38px;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#F3B47A,#D88A4E)}
+.walker .hair,.sipper .hair{position:absolute;left:12px;top:-4px;width:36px;height:18px;border-radius:18px 18px 6px 6px;background:#F2E08A}
+.walker .gl,.sipper .gl{position:absolute;left:14px;top:13px;width:32px;height:9px;border-radius:3px;background:#111}
+.walker .bd,.sipper .bd{position:absolute;left:16px;top:38px;width:28px;height:60px;border-radius:8px;background:#1E1E1E}
+.walker .leg{position:absolute;top:96px;width:9px;height:52px;border-radius:4px;background:#E8A46A;animation:leg .5s steps(2) infinite alternate}
+.walker .leg.l{left:20px}.walker .leg.r{left:32px;animation-direction:alternate-reverse}
+@keyframes leg{to{transform:rotate(14deg)}}
+.cafe{background:radial-gradient(ellipse at 50% 40%,#FBE3C4,#F2C493 40%,#6FA4A0 70%,#2F7F7A)}
+.sipper{position:absolute;left:105px;top:150px;width:150px;height:400px}
+.sipper .hd{left:30px;width:90px;height:104px}.sipper .hair{left:26px;top:-8px;width:98px;height:46px}
+.sipper .gl{left:30px;top:36px;width:92px;height:24px;border-radius:7px}
+.sipper .bd{left:38px;top:104px;width:76px;height:200px;border-radius:24px}
+.arm{position:absolute;left:-8px;top:140px;width:110px;height:20px;border-radius:10px;background:#E8A46A;transform-origin:100% 50%;animation:sip 6s steps(12) infinite}
+.cup{position:absolute;left:-6px;top:-22px;width:26px;height:36px;border-radius:4px 4px 8px 8px;background:#BFD7DA;box-shadow:inset 0 8px 0 #E9EEF0}
+@keyframes sip{0%,8%{transform:rotate(-58deg)}30%,100%{transform:rotate(0deg)}}
+.palm{position:absolute;bottom:120px;width:16px;height:300px;background:#2E5E58;filter:blur(3px)}
+.cat{position:absolute;left:130px;top:330px;width:100px;height:90px;border-radius:40% 40% 46% 46%;background:radial-gradient(ellipse at 45% 35%,#F06A4A,#C83E2A);
+  animation:peek 6s steps(6) infinite}
+.cat::before,.cat::after{content:"";position:absolute;top:-14px;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #D4492F}
+.cat::before{left:8px}.cat::after{right:8px}
+@keyframes peek{0%,20%{transform:translateY(90px)}45%,100%{transform:none}}
+.bush{position:absolute;left:-20px;right:-20px;top:380px;height:260px;border-radius:50% 50% 0 0;background:radial-gradient(ellipse at 50% 20%,#5E7A2E,#2F4A1C 75%)}
+.hold{position:absolute;inset:0}
+</style>
+</head>
+<body>
+<h1>Brand Stop-motion Ad</h1>
+<p class="lead">For brands and agencies that already own stop-motion or animated shots. The characters act first with no text, small white two-line captions appear only when someone speaks, the product shows up inside the world (in a hand, at the end of a journey, or on an in-world TV), and the wordmark closes alone on black. Inspired by Chamberlain Coffee's claymation and felt ads. The sets below are illustrations standing in for your own plates.</p>
+
+<h2>F-A Dialogue sketch (default)</h2>
+<div class="grid">
+  <figure>
+    <div class="f" data-card="1">
+      <div class="shot forest felt c1wide">
+        <div class="glow"></div><div class="trunk" style="left:150px;height:420px;top:0"></div><div class="trunk" style="left:250px;height:440px;top:0"></div>
+        <div class="trunk" style="left:320px;height:420px;top:0"></div>
+        <div class="moss"></div><div class="stem"></div><div class="mush"></div><div class="rock"></div>
+        <div class="frog bob" style="left:72px;top:300px"><div class="b"></div><div class="h"><i class="e l"></i><i class="e r"></i></div><div class="snack"></div></div>
+        <div class="bee beeIn"><div class="bd"></div><div class="w"></div></div>
+      </div>
+      <div class="shot forest felt big c1mcu">
+        <div class="glow" style="left:60px;top:-40px;width:380px;height:380px"></div>
+        <div class="mush" style="left:-120px;top:-60px;width:360px;height:200px"></div>
+        <div class="moss" style="height:180px"></div>
+        <div class="frog bob" style="left:-20px;top:260px"><div class="b"></div><div class="h"><i class="e l"></i><i class="e r"></i></div><div class="snack"></div></div>
+        <div class="bee bob" style="left:190px;top:160px"><div class="bd"></div><div class="w"></div></div>
+      </div>
+      <div class="cap c1cap1">Dude, you've GOT<br>to try this</div>
+      <div class="cap c1cap2">Oh… WOW</div>
+    </div>
+    <figcaption>HA-16 hook: the felt world is already moving on frame 0 with no text. The caption fades in on the first word (1.2 s); a hard cut on the bee's arrival goes to the close shot (1.4 s).</figcaption>
+  </figure>
+  <figure>
+    <div class="f">
+      <div class="shot forest felt">
+        <div class="glow" style="left:40px"></div><div class="trunk" style="left:60px;height:520px;top:0"></div><div class="trunk" style="left:280px;height:520px;top:0"></div>
+        <div class="moss" style="height:300px"></div><div class="log"></div>
+        <div class="lizard"></div>
+        <div class="bee beeFly"><div class="bd"></div><div class="w"></div></div>
+      </div>
+      <div class="cap capOn">Follow me!</div>
+    </div>
+    <figcaption>Journey step (P-JOURNEY-STEPS): a new place every 2.5–4.5 s, with screen direction kept. One short line per step, in CS-1: 64 px, white, block centre at y 1420.</figcaption>
+  </figure>
+  <figure>
+    <div class="f">
+      <div class="shot honey felt"><div class="fall"></div><div class="pool"></div>
+        <div class="frog" style="left:40px;top:470px;transform:scale(1.4)"><div class="b"></div><div class="h"><i class="e l"></i><i class="e r"></i></div></div></div>
+      <div class="cap cs2 capOn">Is that… a river<br>of honey?</div>
+    </div>
+    <figcaption>The product turn (P-REVEAL-WIDE) on a bright plate switches the captions to CS-2: the same soft white text with a 2 px warm-dark stroke, so it still measures 4.5:1.</figcaption>
+  </figure>
+  <figure>
+    <div class="f" data-card="3">
+      <div class="irisWrap">
+        <div class="shot lawn felt">
+          <div class="glow" style="left:180px;top:-30px"></div>
+          <div class="chair" style="left:40px;top:250px"></div><div class="chair" style="left:190px;top:210px"></div>
+          <div class="frog bob" style="left:70px;top:270px;transform:scale(1.3)"><div class="b"></div><div class="h"><i class="e l"></i><i class="e r"></i></div><div class="snack"></div></div>
+          <div class="bee bob" style="left:215px;top:250px;transform:scale(1.4)"><div class="bd"></div><div class="w"></div></div>
+        </div>
+        <div class="iris"></div>
+      </div>
+      <div class="cap c3cap">F**k that's good</div>
+      <div class="wm c3wm"><svg viewBox="0 -34 220 144" aria-label="Your Brand wordmark"><defs><path id="wa" d="M20,78 A95,95 0 0 1 200,78"/></defs>
+        <text font-family="EB Garamond" font-weight="800" font-size="34" fill="#fff"><textPath href="#wa" startOffset="50%" text-anchor="middle">Your Brand</textPath></text>
+        <text x="110" y="102" font-family="EB Garamond" font-weight="800" font-size="24" fill="#fff" text-anchor="middle">Coffee Co.</text></svg></div>
+    </div>
+    <figcaption>The close: a soft iris shrinks onto the characters while the masked button line plays, snaps shut, then the wordmark sits alone on black for about 2 s before a hard end.</figcaption>
+  </figure>
+</div>
+
+<h2>F-B Product broadcast</h2>
+<div class="grid">
+  <figure>
+    <div class="f">
+      <div class="shot room felt">
+        <div class="frame" style="left:30px;top:30px;width:110px;height:90px"></div><div class="frame" style="left:190px;top:20px;width:120px;height:100px;background:#D46A3A"></div>
+        <div class="tvSmall"><div class="pitch"><i style="left:20px;top:20px"></i><i style="left:60px;top:34px"></i><i style="left:44px;top:46px;background:#E04646"></i></div></div>
+        <div class="couch"></div><div class="rug"></div>
+        <div class="pup blue" style="left:80px;top:300px"><i class="ear l"></i><i class="ear r"></i><div class="hd"></div><div class="bd"></div></div>
+        <div class="pup pink" style="left:200px;top:300px"><i class="ear l"></i><i class="ear r"></i><div class="hd"></div><div class="bd"></div></div>
+      </div>
+      <div class="legal">Paid partnership</div>
+    </div>
+    <figcaption>F-B opener (P-OTS-WATCH): the characters watch a created, unbranded show on the in-world TV. The 24 px disclosure line shows at y 150 only when the post is paid.</figcaption>
+  </figure>
+  <figure>
+    <div class="f" data-card="2">
+      <div class="shot room felt">
+        <div class="frame" style="left:-20px;top:20px;width:140px;height:150px"></div><div class="frame" style="left:250px;top:10px;width:140px;height:160px;background:#D46A3A"></div>
+        <div class="cab"></div><div class="tv"></div>
+        <div class="scr"><div class="sky"></div>
+          <div class="seg s-noise"><div class="noise"></div></div>
+          <div class="seg s-l1"><div class="lab">Organic</div></div>
+          <div class="seg s-p1"><div class="pk p2"></div></div>
+          <div class="seg s-l2"><div class="lab">Smooth</div></div>
+          <div class="seg s-lu"><div class="pk p1" style="left:26px"></div><div class="pk p2" style="left:70px"></div><div class="pk p3" style="left:114px"></div><div class="pk p4" style="left:158px"></div>
+            <div class="arc"><svg viewBox="0 -32 220 112" aria-label="wordmark on the screen"><defs><path id="wb" d="M25,70 A90,90 0 0 1 195,70"/></defs>
+              <text font-family="EB Garamond" font-weight="800" font-size="30" fill="#fff" stroke="#5A2D5E" stroke-width="1"><textPath href="#wb" startOffset="50%" text-anchor="middle">Your Brand</textPath></text></svg></div></div>
+          <div class="crt"></div>
+        </div>
+      </div>
+    </div>
+    <figcaption>The screen spot inside the plate (E6 hard swaps): static, a red label word, a pack slides up from the screen's bottom edge, another label word, then the lineup under the wordmark arc, then static again.</figcaption>
+  </figure>
+  <figure>
+    <div class="f">
+      <div class="shot room felt" style="background:linear-gradient(180deg,#E9D2B4,#C99A6E)">
+        <div class="couch" style="top:420px;opacity:.6;filter:blur(3px)"></div>
+        <div class="cuFace"><i class="e l"></i><i class="e r"></i><div class="n"></div><div class="t"></div></div>
+      </div>
+    </div>
+    <figcaption>Reaction run (P-REACTION-RUN): 2–3 single close-ups of 1.2–2.0 s each, with no text over the characters.</figcaption>
+  </figure>
+</div>
+
+<h2>F-C Vignette</h2>
+<div class="grid">
+  <figure>
+    <div class="f">
+      <div class="shot cafe felt"><div class="palm" style="left:30px"></div><div class="palm" style="left:300px"></div>
+        <div class="sipper"><div class="hd"></div><div class="hair"></div><div class="gl"></div><div class="bd"></div><div class="arm"><div class="cup"></div></div></div></div>
+    </div>
+    <figcaption>Product in hand from frame 0 (P-COLD-ACTION + P-PRODUCT-IN-HAND): a mid-sip pose, no text.</figcaption>
+  </figure>
+  <figure>
+    <div class="f">
+      <div class="shot street felt"><div class="bldgL"></div><div class="bldgR"></div><div class="sign">TOWN</div><div class="line"></div>
+        <div class="walker"><div class="hd"></div><div class="hair"></div><div class="gl"></div><div class="bd"></div><i class="leg l"></i><i class="leg r"></i></div></div>
+    </div>
+    <figcaption>One patient hold (P-PATIENT-HOLD, 4–6.5 s): the walk toward camera plays uncut, moving on twos like stop-motion.</figcaption>
+  </figure>
+  <figure>
+    <div class="f">
+      <div class="shot forest felt" style="background:linear-gradient(180deg,#BFD6EE,#8FB0D8 40%,#4E6B33)"><div class="trunk" style="left:20px;height:640px;top:0"></div>
+        <div class="cat"></div><div class="bush"></div></div>
+    </div>
+    <figcaption>The button (P-BUTTON): a non-sequitur beat before the cut to black.</figcaption>
+  </figure>
+  <figure>
+    <div class="f">
+      <div class="hold" style="background:#000"></div>
+      <div class="wm" style="opacity:1"><svg viewBox="0 -34 220 144" aria-label="Your Brand wordmark"><defs><path id="wc" d="M20,78 A95,95 0 0 1 200,78"/></defs>
+        <text font-family="EB Garamond" font-weight="800" font-size="34" fill="#fff"><textPath href="#wc" startOffset="50%" text-anchor="middle">Your Brand</textPath></text>
+        <text x="110" y="102" font-family="EB Garamond" font-weight="800" font-size="24" fill="#fff" text-anchor="middle">Coffee Co.</text></svg></div>
+      <div class="link" style="opacity:1">link in bio</div>
+    </div>
+    <figcaption>End card with the link_bio option: the wordmark at y 960, 648 px wide, and one 40 px link line at y 1180. Nothing else.</figcaption>
+  </figure>
+</div>
+</body>
+</html>

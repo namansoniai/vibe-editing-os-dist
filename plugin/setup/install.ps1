@@ -9,6 +9,8 @@
     -Ref        <name>  branch/tag (default main).                                        env VEOS_REF
     -Update             pull a new app version and reinstall the engine if it changed (skips big downloads that exist)
     -SkipModels         skip the ~1.7 GB model downloads (doctor will report them missing)
+    env VEOS_LICENCE_KEY    activate this licence key right after the engine step (before the big downloads); a
+                            rejected key stops the install with step "licence" and licence_error = the engine's code
   Output: one progress line per step ("[n/10] ..."), final line is JSON {"ok":true|false,...}. Log: VEOS_HOME\install.log
 #>
 param(
@@ -36,6 +38,11 @@ $YUNET_URL    = 'https://github.com/opencv/opencv_zoo/raw/main/models/face_detec
 $YUNET_SHA    = '8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4'
 $FACE_URL     = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite'
 $WHISPER_REPO = 'mobiuslabsgmbh/faster-whisper-large-v3-turbo'
+# speaker labels for multi-speaker reels (no account/token): pyannote segmentation-3.0 (MIT) + CAM++ (Apache-2.0)
+$SPKSEG_URL   = 'https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2'
+$SPKSEG_SHA   = '24615ee884c897d9d2ba09bb4d30da6bb1b15e685065962db5b02e76e4996488'
+$SPKEMB_URL   = 'https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_en_voxceleb_16k.onnx'
+$SPKEMB_SHA   = '357a834f702b80161e5b981182c038e18553c1f2ca752ed6cec2052365d4129b'
 $TOTAL = 10
 
 $Home_ = [IO.Path]::GetFullPath($VeosHome)
@@ -245,6 +252,23 @@ try {
   Remove-Item $req -Force -ErrorAction SilentlyContinue
   Set-Content -Path $stamp -Value $after -Encoding ascii
 
+  # licence: activate as soon as the engine exists, before the big downloads (key from the setup skill, env only)
+  if ($env:VEOS_LICENCE_KEY) {
+    $script:Step = 'licence'
+    Info 'activating your licence'
+    $lic = & $VenvPy -m veos licence activate --key $env:VEOS_LICENCE_KEY
+    $global:LASTEXITCODE = 0
+    $lj = $null; try { $lj = (@($lic) | Select-Object -Last 1) | ConvertFrom-Json } catch {}
+    if (-not $lj -or -not $lj.ok) {
+      $le = if ($lj) { $lj.error } else { @{ code = 'UNEXPECTED'; message = "licence activation gave no answer: $lic"; hint = 'Re-run setup.' } }
+      Log "licence activation failed: $($le.code)"
+      Write-Host "FAILED at step 'licence': $($le.message)"
+      Finish $false @{ step = 'licence'; licence_error = $le.code; error = $le.message; hint = $le.hint }
+    }
+    Info $lj.message
+    $script:Step = 'engine'
+  }
+
   # ---- 6 ffmpeg ------------------------------------------------------------------------------------------------
   Step 'ffmpeg' 'ffmpeg (pinned BtbN build, ~150 MB, checksum-verified)'
   $ffDir = Join-Path $Tools 'ffmpeg'; $ffVer = Join-Path $ffDir 'VERSION'
@@ -266,7 +290,7 @@ try {
   Retry { Run $VenvPy @('-m', 'playwright', 'install', 'chromium') } 'chromium download'
 
   # ---- 8 models ------------------------------------------------------------------------------------------------
-  Step 'models' 'AI models: background matte (~14 MB), face detector (~1 MB), speech-to-text whisper turbo (~1.6 GB)'
+  Step 'models' 'AI models: background matte (~14 MB), face detector (~1 MB), speaker labels (~34 MB), speech-to-text whisper turbo (~1.6 GB)'
   if ($SkipModels) { Info 'skipped (-SkipModels)' } else {
     $rvm = Join-Path $Home_ 'models\rvm\rvm_mobilenetv3_fp32.onnx'
     if (-not (Test-Path $rvm)) { Download $RVM_URL "$rvm.part"; Move-Item "$rvm.part" $rvm -Force } else { Info 'RVM already present' }
@@ -275,6 +299,19 @@ try {
     $yn = Join-Path $Home_ 'models\yunet\face_detection_yunet_2023mar.onnx'
     if ((Test-Path $yn) -and ((Get-FileHash -Algorithm SHA256 -Path $yn).Hash.ToLower() -ne $YUNET_SHA)) { Remove-Item $yn -Force }
     if (-not (Test-Path $yn)) { Download $YUNET_URL "$yn.part" $YUNET_SHA; Move-Item "$yn.part" $yn -Force } else { Info 'YuNet face model already present' }
+    $spk = Join-Path $Home_ 'models\diarize'; New-Item -ItemType Directory -Force -Path $spk | Out-Null
+    $seg = Join-Path $spk 'pyannote-segmentation-3.0.onnx'
+    if (-not (Test-Path $seg)) {
+      $tb = Join-Path $Dl 'spk-seg.tar.bz2'; Download $SPKSEG_URL $tb $SPKSEG_SHA
+      $tx = Join-Path $Dl 'spk-seg'; New-Item -ItemType Directory -Force -Path $tx | Out-Null
+      & tar -xjf $tb -C $tx; if ($LASTEXITCODE -ne 0) { throw 'could not unpack the speaker segmentation model' }
+      $sd = Get-ChildItem $tx -Recurse -Filter model.onnx | Select-Object -First 1
+      Copy-Item $sd.FullName $seg -Force
+      Copy-Item (Join-Path $sd.DirectoryName 'LICENSE') (Join-Path $spk 'pyannote-segmentation-3.0.LICENSE.txt') -Force -ErrorAction SilentlyContinue
+      Remove-Item $tb, $tx -Recurse -Force -ErrorAction SilentlyContinue
+    } else { Info 'speaker segmentation model already present' }
+    $emb = Join-Path $spk 'campplus_sv_en_voxceleb_16k.onnx'
+    if (-not (Test-Path $emb)) { Download $SPKEMB_URL "$emb.part" $SPKEMB_SHA; Move-Item "$emb.part" $emb -Force } else { Info 'speaker embedding model already present' }
     Info 'whisper turbo: downloading (resumes if interrupted; this is the long one)'
     $py = @"
 from huggingface_hub import snapshot_download

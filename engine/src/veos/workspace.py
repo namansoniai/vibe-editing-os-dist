@@ -3,6 +3,7 @@
 workspace get [--dir D]            walk up from D (default cwd) for `.vibe-editing-os.json`; also lists available playbooks.
 workspace set --playbook ID [--dir D]   write D/.vibe-editing-os.json {"version":1,"playbook","created","updated"}.
 playbook new-id --name "Aria Mehta" [--handle @x]   a unique kebab-case id that never collides with an existing playbook folder.
+playbook index --project P | --playbook ID [--out F] [--force]   the reading guide (pbindex.py; directions, not rules).
 """
 from __future__ import annotations
 
@@ -23,9 +24,12 @@ def add_args(p, cmd):
         p.add_argument("--playbook", help="set: playbook id")
         p.add_argument("--dir", help="folder (default: current directory)")
     else:
-        p.add_argument("action", choices=["new-id"])
-        p.add_argument("--name", required=True, help="creator name, e.g. 'Aria Mehta'")
-        p.add_argument("--handle", help="creator handle, e.g. @fitwitharia (used when the name gives no usable id)")
+        p.add_argument("action", choices=["new-id", "index"])
+        p.add_argument("--name", help="new-id: creator name, e.g. 'Aria Mehta'")
+        p.add_argument("--handle", help="new-id: creator handle, e.g. @fitwitharia (used when the name gives no usable id)")
+        p.add_argument("--playbook", help="index: playbook / style template id (default: the project's playbook)")
+        p.add_argument("--out", help="index: output file (default P/work/playbook-index.md, or VEOS_HOME/cache/playbook-index/ID.md)")
+        p.add_argument("--force", action="store_true", help="index: rebuild even when the cached index is fresh")
 
 
 def _now() -> str:
@@ -58,13 +62,19 @@ def list_playbooks() -> list[dict]:
             if d.name.startswith("_") or not tk.is_file():
                 continue
             try:
-                cr = (read_json(tk) or {}).get("creator") or {}
+                tok = read_json(tk) or {}
             except ValueError:
-                cr = {}
+                tok = {}
+            cr = tok.get("creator") or {}
             pm = d / "playbook.md"
             mt = max(tk.stat().st_mtime, pm.stat().st_mtime if pm.exists() else 0)
-            out.append({"id": d.name, "name": cr.get("name"), "handle": cr.get("handle"),
-                        "updated": datetime.fromtimestamp(mt).astimezone().isoformat(timespec="seconds")})
+            rec = {"id": d.name, "name": cr.get("name"), "handle": cr.get("handle"),
+                   "updated": datetime.fromtimestamp(mt).astimezone().isoformat(timespec="seconds")}
+            if tok.get("kind") == "style_copy":  # path A copy: which template it came from (fidelity stays internal)
+                lin = tok.get("lineage") or {}
+                rec.update({"kind": "style_copy", "template": (lin.get("template") or {}).get("id"),
+                            "style": (tok.get("style") or {}).get("name")})
+            out.append(rec)
     return out
 
 
@@ -115,5 +125,10 @@ def _new_id(args) -> dict:
 
 def main(args, project) -> dict:
     if args.cmd == "playbook":
+        if args.action == "index":
+            from .pbindex import main as index_main
+            return index_main(args, project)
+        if not args.name:
+            raise VeosError("BAD_ARGS", "playbook new-id needs --name", 'Example: veos playbook new-id --name "Aria Mehta"')
         return _new_id(args)
     return _get(args) if args.action == "get" else _set(args)

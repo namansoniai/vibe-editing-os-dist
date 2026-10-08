@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Archive Explainer Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 360x640 = 1080x1920 at 1/3. -->
+<style>
+@font-face{font-family:"JetBrains Mono";src:url("../../../../assets/fonts/JetBrainsMono-VF.ttf");font-weight:100 800}
+@font-face{font-family:"Space Grotesk";src:url("../../../../assets/fonts/SpaceGrotesk-VF.ttf");font-weight:300 700}
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+:root{--blue:#1A2FAA;--lime:#D4F56A;--muted:#A6B1F0;--dim:#C2D184;--navy:#121B3A;--land:#7D8381;--focus:#E9EDE6;
+  --green:#1B473A;--gcard:#19613B;--sa:#BA3221;--sb:#DDE3DB;--endbg:#0A1314;--ea:#35CFD2;--eb:#C64D3C;--ink:#0B0B0B;
+  --page:#0E1220;--text:#E8ECF6;--sub:#A9B0C4}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--page:#F2F3F7;--text:#14182A;--sub:#4A5170}}
+:root[data-theme="light"]{--page:#F2F3F7;--text:#14182A;--sub:#4A5170}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--text);font-family:"Inter Tight",system-ui,sans-serif;padding:28px 16px 56px}
+h1{font-weight:800;font-size:22px;max-width:1180px;margin:0 auto 4px}
+p.lead{font-size:13px;color:var(--sub);max-width:1180px;margin:0 auto 22px;line-height:1.45}
+h2{font-size:14px;font-weight:700;max-width:1180px;margin:22px auto 10px;color:var(--sub);letter-spacing:.04em;text-transform:uppercase}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.4}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:var(--blue)}
+.grain:after{content:"";position:absolute;inset:0;opacity:.07;background-image:repeating-radial-gradient(circle at 30% 20%,#fff 0 .6px,transparent .6px 2.4px);mix-blend-mode:overlay;pointer-events:none;z-index:9}
+/* captions CS-A: mono 58/3 = 19.3 px, black 70 %, centre y 472 */
+.cap{position:absolute;left:50%;top:472px;transform:translate(-50%,-50%);text-align:center;font:700 19.3px/1.24 "JetBrains Mono",monospace;color:#fff;
+  background:rgba(0,0,0,.7);padding:3.3px 5.3px;white-space:nowrap;opacity:0;z-index:7}
+.capb{position:absolute;left:50%;top:468px;transform:translate(-50%,-50%);text-align:center;font:800 20px/1.45 "Inter Tight",sans-serif;color:#fff;
+  background:rgba(26,47,170,.85);padding:2px 4px;white-space:nowrap;opacity:0;text-shadow:0 .7px 1.3px rgba(0,0,0,.35);z-index:7}
+.capb i{font-style:italic}
+.tag{position:absolute;left:21px;top:43px;font:500 7.6px/1 "JetBrains Mono",monospace;letter-spacing:.08em;color:rgba(255,255,255,.85);z-index:8}
+.tag b{color:var(--lime);font-weight:500}
+/* steps: a caption chunk visible in its window (hard swaps) */
+@keyframes c1{0%,24.9%{opacity:1}25%,100%{opacity:0}}
+@keyframes c2{0%,24.9%{opacity:0}25%,49.9%{opacity:1}50%,100%{opacity:0}}
+@keyframes c3{0%,49.9%{opacity:0}50%,74.9%{opacity:1}75%,100%{opacity:0}}
+@keyframes c4{0%,74.9%{opacity:0}75%,100%{opacity:1}}
+.k1{animation:c1 6s steps(1,end) infinite}.k2{animation:c2 6s steps(1,end) infinite}.k3{animation:c3 6s steps(1,end) infinite}.k4{animation:c4 6s steps(1,end) infinite}
+/* archive plate: halftone silhouette (created, never a real person) */
+.plate{position:absolute;inset:0;background:var(--navy)}
+.plate.sepia{background:#2B2620}
+.dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.3px);background-size:7px 7px}
+.bust{position:absolute;left:50%;top:120px;width:250px;height:330px;margin-left:-125px}
+.bust .h{position:absolute;left:62px;top:0;width:126px;height:150px;border-radius:48% 48% 44% 44%;background:linear-gradient(160deg,#9AA0A6,#55595F)}
+.bust .s{position:absolute;left:0;top:150px;width:250px;height:190px;border-radius:120px 120px 0 0;background:linear-gradient(160deg,#868B91,#3E4247)}
+.kb1{animation:kb1 6s steps(24,end) infinite alternate;transform-origin:50% 35%}
+@keyframes kb1{from{transform:scale(1.18)}to{transform:scale(1.06)}}
+.kb2{animation:kb2 6s steps(24,end) infinite alternate}
+@keyframes kb2{from{transform:scale(1)}to{transform:scale(1.06)}}
+.plt{position:absolute;left:50%;top:392px;transform:translateX(-50%);font:700 13.3px/1 "JetBrains Mono",monospace;color:#fff;background:rgba(0,0,0,.7);padding:2.7px 5.3px;letter-spacing:.02em;white-space:nowrap}
+/* stinger rows (created generic notes) */
+.st{position:absolute;left:-10px;right:-10px;height:150px;border-radius:6px;background:repeating-linear-gradient(90deg,#CFD8B8 0 116px,#B9C59E 116px 120px);
+  box-shadow:0 2px 6px rgba(0,0,0,.35);z-index:6}
+.st:before{content:"";position:absolute;left:18px;top:26px;width:70px;height:96px;border-radius:50%;border:2px solid rgba(40,70,40,.35)}
+.st:after{content:"";position:absolute;right:30px;top:40px;width:110px;height:10px;background:rgba(40,70,40,.25);box-shadow:0 22px 0 rgba(40,70,40,.2),0 44px 0 rgba(40,70,40,.2)}
+@keyframes stg{0%,20%{transform:translateY(700px)}31%,34%{transform:translateY(0)}45%,100%{transform:translateY(-760px)}}
+.st1{top:0;animation:stg 6s cubic-bezier(.33,0,.15,1) infinite}.st2{top:150px;animation:stg 6s .05s cubic-bezier(.33,0,.15,1) infinite}
+.st3{top:300px;animation:stg 6s .1s cubic-bezier(.33,0,.15,1) infinite}.st4{top:450px;animation:stg 6s .15s cubic-bezier(.33,0,.15,1) infinite}
+@keyframes swapA{0%,32.9%{opacity:1}33%,100%{opacity:0}}@keyframes swapB{0%,32.9%{opacity:0}33%,100%{opacity:1}}
+.pa{animation:swapA 6s steps(1,end) infinite}.pb{animation:swapB 6s steps(1,end) infinite}
+.conf{position:absolute;width:5px;height:11px;background:#E8C547;opacity:.75;animation:fall 6s linear infinite;z-index:5}
+@keyframes fall{from{transform:translateY(-60px) rotate(0)}to{transform:translateY(560px) rotate(540deg)}}
+/* receipt */
+.rc{position:absolute;left:21px;right:21px;top:150px;animation:settle 6s cubic-bezier(.22,1,.36,1) infinite}
+@keyframes settle{0%,45%{transform:translateY(60px)}55%,100%{transform:translateY(0)}}
+.out{font:500 10px/1 "JetBrains Mono",monospace;color:var(--dim);margin-bottom:5px}
+.hd{font:700 21.3px/1.12 "Space Grotesk",sans-serif;letter-spacing:-.01em;color:#fff}
+.hd span{animation:dimw 6s infinite}.hd em{font-style:normal;animation:limew 6s infinite}
+@keyframes dimw{0%,24%{color:#fff}28%,100%{color:var(--muted)}}
+@keyframes limew{0%,24%{color:#fff}28%,100%{color:var(--lime)}}
+.ln{display:block;clip-path:inset(0 100% 0 0);animation:type 6s steps(14,end) infinite}
+.ln:nth-child(2){animation-delay:.25s}.ln:nth-child(3){animation-delay:.5s}
+@keyframes type{0%{clip-path:inset(0 100% 0 0)}10%,100%{clip-path:inset(0 0 0 0)}}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-left:6px;vertical-align:middle;animation:pop 6s infinite}
+@keyframes pop{0%,27%{transform:scale(0)}30%{transform:scale(1.15)}32%,100%{transform:scale(1)}}
+.lead{position:absolute;left:-21px;top:118px;width:340px;height:44px}
+.lead path{stroke:var(--muted);stroke-width:1;fill:none;stroke-dasharray:420;animation:draw 6s infinite}
+@keyframes draw{0%,30%{stroke-dashoffset:420}40%,100%{stroke-dashoffset:0}}
+.body{position:absolute;left:105px;top:126px;width:205px;font:400 6.7px/1.5 "JetBrains Mono",monospace;color:rgba(166,177,240,.5);animation:fade 6s infinite}
+.body b{color:var(--lime);font-weight:400}
+@keyframes fade{0%,44%{opacity:0}50%,100%{opacity:1}}
+.thumbs{position:absolute;left:50%;top:178px;transform:translateX(-50%);display:flex}
+.th{width:62px;height:96px;background:linear-gradient(170deg,#6C7480,#2F3440);position:relative;animation:tpop 6s infinite;opacity:0}
+.th:before{content:"";position:absolute;left:19px;top:18px;width:24px;height:28px;border-radius:50%;background:#9AA0A6}
+.th:after{content:"";position:absolute;left:8px;top:48px;width:46px;height:48px;border-radius:22px 22px 0 0;background:#80868D}
+.th:nth-child(2){animation-delay:.13s}.th:nth-child(3){animation-delay:.26s}
+@keyframes tpop{0%,55%{opacity:0;transform:scale(.92)}60%,100%{opacity:1;transform:scale(1)}}
+/* cards */
+.card{position:absolute;left:21px;width:318px;border-radius:13px;overflow:hidden;box-shadow:0 9px 23px rgba(0,0,0,.28)}
+.rise{animation:rise 6s cubic-bezier(.33,0,.15,1) infinite}
+@keyframes rise{0%{transform:translateY(20px);opacity:0}5%,100%{transform:none;opacity:1}}
+.grat{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.14) .7px,transparent 1px);background-size:27px 27px}
+.pin{position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--blue);animation:pinp 6s infinite}
+@keyframes pinp{0%,15%{transform:scale(0)}19%{transform:scale(1.2)}21%,100%{transform:scale(1)}}
+.lab{position:absolute;font:700 13.3px/1 "Space Grotesk",sans-serif;color:var(--ink);background:var(--focus);padding:3px 5px;border-radius:3px;text-transform:uppercase;animation:pinp 6s infinite}
+.route{position:absolute;left:0;top:0;width:318px;height:207px}
+.route path{stroke:var(--eb);stroke-width:2;stroke-dasharray:6 4;fill:none;animation:rdraw 6s infinite}
+@keyframes rdraw{0%,40%{opacity:0}45%,100%{opacity:1}}
+.x{position:absolute;font:700 16px/1 "Space Grotesk";color:#E5483B;animation:xp 6s infinite}
+@keyframes xp{0%,55%{transform:scale(0)}60%,100%{transform:scale(1)}}
+.schem{position:absolute;right:8px;top:6px;font:500 7.3px/1 "JetBrains Mono";color:rgba(255,255,255,.6);letter-spacing:.08em}
+/* compare */
+.cmp{position:absolute;left:21px;top:107px;width:318px;height:317px;border-radius:13px;background:#13238A;overflow:hidden}
+.band{position:absolute;left:-40px;top:120px;width:420px;height:47px;background:rgba(80,100,220,.4);transform:rotate(-20deg)}
+.frame{position:absolute;left:57px;top:43px;width:203px;height:213px;border:1px solid var(--sb);border-radius:3px;overflow:hidden;background:linear-gradient(170deg,#4E7A4A,#24402A)}
+.frame:before{content:"";position:absolute;left:84px;top:52px;width:34px;height:38px;border-radius:50%;background:#C7CCD1}
+.frame:after{content:"";position:absolute;left:62px;top:92px;width:80px;height:121px;border-radius:30px 30px 0 0;background:#E7EBEE}
+.chip{position:absolute;left:50%;top:250px;transform:translateX(-50%);font:700 13.3px/1 "JetBrains Mono";padding:6px 9px 6px 6px;border-radius:6px;display:flex;align-items:center;gap:6px;white-space:nowrap;animation:cpop 6s infinite}
+.chip i{width:15px;height:15px;border-radius:50%;display:inline-block;font:700 7px/15px "JetBrains Mono";text-align:center;font-style:normal}
+@keyframes cpop{0%,8%{transform:translateX(-50%) scale(0)}11%,100%{transform:translateX(-50%) scale(1)}}
+.swipe{animation:sw 6s cubic-bezier(.33,0,.15,1) infinite}
+@keyframes sw{0%,48%{transform:translateX(0)}52%,100%{transform:translateX(-300px)}}
+.swipe2{animation:sw2 6s cubic-bezier(.33,0,.15,1) infinite}
+@keyframes sw2{0%,48%{transform:translateX(340px)}52%,100%{transform:translateX(0)}}
+/* seat arc */
+.arc{position:absolute;left:21px;top:167px;width:318px;height:207px;border-radius:13px;background:var(--gcard)}
+.seat{position:absolute;width:4px;height:4px;border-radius:50%;background:#CFE6D5;animation:sf 6s infinite;opacity:0}
+@keyframes sf{0%,10%{opacity:0}16%,100%{opacity:1}}
+.av{position:absolute;left:146px;top:137px;width:67px;height:67px;border-radius:50%;background:linear-gradient(160deg,#8A9097,#4B4F55);box-shadow:0 0 0 2px rgba(255,255,255,.6);animation:pinp 6s infinite}
+.fig{position:absolute;left:21px;top:110px;font:700 40px/1 "Space Grotesk";color:#fff}
+.fig small{display:block;font:700 13.3px/1.3 "JetBrains Mono";color:#fff;margin-top:4px}
+/* F-B */
+.room{position:absolute;inset:0;background:linear-gradient(180deg,#3A2A1E 0%,#5A3E28 40%,#2A1E16 100%)}
+.shelf{position:absolute;left:0;right:0;height:5px;background:#1E140E;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.book{position:absolute;bottom:5px;width:8px;border-radius:1px}
+.person{position:absolute;left:50%;bottom:-20px;width:250px;height:470px;margin-left:-125px}
+.person .h{position:absolute;left:78px;top:40px;width:96px;height:118px;border-radius:46% 46% 42% 42%;background:#C99A78}
+.person .hr{position:absolute;left:72px;top:28px;width:108px;height:46px;border-radius:50px 50px 14px 14px;background:#6B4A2E}
+.person .b{position:absolute;left:0;top:160px;width:250px;height:330px;border-radius:120px 120px 0 0;background:#1F2A44}
+.mic{position:absolute;right:40px;top:300px;width:34px;height:90px;border-radius:16px;background:#202020;transform:rotate(-24deg);z-index:3}
+.g .person .hr{background:#2A1A12;height:56px}.g .person .b{background:#2C2622}.g .person .h{background:#D6AE92}
+.cutA{animation:swapA 6s steps(1,end) infinite}.cutB{animation:swapB 6s steps(1,end) infinite}
+.end{position:absolute;inset:0;background:var(--endbg)}
+.tl{position:absolute;left:21px;top:62px;font:800 40px/1 "Montserrat",sans-serif;letter-spacing:-.02em;color:#fff}
+.tl div{opacity:0;animation:tlr 6s cubic-bezier(.22,1,.36,1) infinite}
+.tl div:nth-child(2){animation-delay:.1s}.tl div:nth-child(3){animation-delay:.2s}.tl div:nth-child(4){animation-delay:.3s}
+@keyframes tlr{0%,4%{opacity:0;transform:translateY(8px)}12%,100%{opacity:1;transform:none}}
+.wm{position:absolute;left:21px;top:293px;display:flex;align-items:center;gap:13px}
+.disc{width:80px;height:80px;border-radius:50%;background:var(--blue);color:#fff;font:800 26px/80px "Montserrat";text-align:center;box-shadow:0 0 0 2px #fff}
+.pill{position:relative;height:28px;padding:0 13px;border-radius:14px;font:700 13.3px/28px "Inter Tight";white-space:nowrap}
+.fol{background:#fff;color:var(--ink);animation:fol 6s steps(1,end) infinite}
+.fol2{position:absolute;left:0;top:0;background:#2A2F30;color:#fff;animation:fol2 6s steps(1,end) infinite}
+@keyframes fol{0%,44.9%{opacity:1}45%,100%{opacity:0}}@keyframes fol2{0%,44.9%{opacity:0}45%,100%{opacity:1}}
+.ghost{border:1px solid rgba(255,255,255,.7);color:#fff}
+.qr{position:absolute;inset:0;background:var(--blue)}
+.qt{position:absolute;left:0;right:0;top:150px;text-align:center;font:700 13.3px/1.3 "JetBrains Mono";color:#fff}
+.qt span{background:#fff;color:var(--ink);padding:0 4px}
+.qrc{position:absolute;left:77px;top:253px;width:207px;height:207px;background:#fff;padding:13px;animation:qp 6s infinite}
+@keyframes qp{0%,3%{transform:scale(.94);opacity:0}8%,100%{transform:none;opacity:1}}
+.qrc div{width:100%;height:100%;background:
+  linear-gradient(#000 0 0) 0 0/40px 40px no-repeat,linear-gradient(#000 0 0) 100% 0/40px 40px no-repeat,linear-gradient(#000 0 0) 0 100%/40px 40px no-repeat,
+  repeating-conic-gradient(#000 0 25%,#fff 0 50%) 0 0/14px 14px}
+.noanim *{animation-play-state:running}
+@media (prefers-reduced-motion: reduce){.f *{animation-duration:0s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<h1>Archive Explainer</h1>
+<p class="lead">Inspired by Johnny Harris. F-A turns a voice-over into a documentary short: archive pictures cut on every phrase, receipt cards on a royal-blue canvas with the cited words in lime, maps and figure cards, all under a white mono caption in a black box. F-B cuts your two-camera podcast into calm clips with brand-blue boxed captions. Both end on your branded end card. Every person shown here is a created placeholder.</p>
+
+<h2>F-A Archive explainer</h2>
+<div class="grid">
+  <figure><div class="f" data-card="1">
+    <div class="pa" style="position:absolute;inset:0"><div class="plate kb1"><div class="bust"><div class="h"></div><div class="s"></div></div></div><div class="plt">THE FOUNDER</div></div>
+    <div class="pb" style="position:absolute;inset:0"><div class="plate sepia kb2"><div class="bust" style="top:150px"><div class="h"></div><div class="s"></div></div></div>
+      <div class="conf" style="left:40px;animation-delay:-1s"></div><div class="conf" style="left:110px;animation-delay:-3s"></div><div class="conf" style="left:190px;animation-delay:-2s"></div><div class="conf" style="left:260px;animation-delay:-4s"></div><div class="conf" style="left:320px;animation-delay:-.5s"></div><div class="conf" style="left:75px;animation-delay:-5s"></div><div class="conf" style="left:225px;animation-delay:-2.6s"></div></div>
+    <div class="st st1"></div><div class="st st2"></div><div class="st st3"></div><div class="st st4"></div>
+    <div class="tag"><b>●</b> REPRESENTATIONAL</div>
+    <div class="cap k1">The founder of<br>Northwind</div><div class="cap k2">just launched<br>a new scheme</div><div class="cap k3">to make money,</div><div class="cap k4">and it involves<br>a rival.</div>
+  </div><figcaption>Hook (HA-11): the subject tight with Ken Burns, a re-crop, a topical stinger, the thesis in four boxed chunks by 3 s.</figcaption></figure>
+
+  <figure><div class="f grain" data-card="2">
+    <div class="tag"><b>●</b> REPRESENTATIONAL</div>
+    <div class="rc"><div class="out">The Daily Ledger · 12 Mar 2026</div>
+      <div class="hd"><div class="ln"><span>Northwind plans </span><em>$20bn</em></div><div class="ln"><em>commercial vehicle</em></div><div class="ln"><span>to lure investors</span><i class="dot"></i></div></div>
+      <svg class="lead" viewBox="0 0 340 44"><path d="M330 2 H112 Q100 2 100 14 V30 Q100 42 88 42 H0"/></svg>
+      <div class="body">The plan would sell a <b>20 per cent stake</b> in a new entity to outside investors, people familiar with the talks said, with payments to members rising each year</div>
+      <div class="thumbs"><div class="th"></div><div class="th"></div><div class="th"></div></div></div>
+    <div class="cap k1">According to<br>the Ledger,</div><div class="cap k2">a $20 billion<br>vehicle</div><div class="cap k3">to lure<br>investors.</div><div class="cap k4">One is a<br>billionaire</div>
+  </div><figcaption>Receipt (P-SOURCE-CARD): outlet + date, the headline types on, the key span turns lime on its word, leader line, body copy, thumbs.</figcaption></figure>
+
+  <figure><div class="f grain">
+    <div class="tag"><b>●</b> SCHEMATIC</div>
+    <div class="card rise" style="top:167px;height:207px;background:var(--navy)"><div class="grat"></div><div class="schem">N</div>
+      <svg class="route" viewBox="0 0 318 207"><path d="M90 120 C150 70 200 70 250 105"/></svg>
+      <div class="pin" style="left:85px;top:115px"></div><div class="lab" style="left:58px;top:132px">Harbour</div>
+      <div class="pin" style="left:245px;top:100px;animation-delay:.2s"></div><div class="lab" style="left:212px;top:117px;animation-delay:.2s">Old town</div>
+      <div class="x" style="left:241px;top:62px">×</div></div>
+    <div class="cap k1">The river</div><div class="cap k2">splits the city<br>in two,</div><div class="cap k3">and the bridge</div><div class="cap k4">was never<br>finished.</div>
+  </div><figcaption>Locator card (today's map, tagged SCHEMATIC): pins pop on their names, a dashed route ends in a red × when blocked.</figcaption></figure>
+
+  <figure><div class="f grain">
+    <div class="swipe" style="position:absolute;inset:0"><div class="cmp"><div class="band"></div><div class="frame"></div><div class="chip" style="background:var(--sa);color:#fff"><i style="background:#fff;color:var(--sa)">NW</i>CONSISTENCY</div></div></div>
+    <div class="swipe2" style="position:absolute;inset:0"><div class="cmp"><div class="band"></div><div class="frame" style="background:linear-gradient(170deg,#6A6F86,#2C3046)"></div><div class="chip" style="background:var(--sb);color:var(--ink)"><i style="background:var(--ink);color:#fff">RV</i>POWER</div></div></div>
+    <div class="cap k1">Northwind's teams</div><div class="cap k2">have consistency.</div><div class="cap k3">Their rivals</div><div class="cap k4">rely on power.</div>
+  </div><figcaption>Comparison (P-COMPARE-SWIPE): side A red chip, side B off-white chip, cards swipe on the trait words.</figcaption></figure>
+
+  <figure><div class="f grain" style="background:var(--green)">
+    <div class="arc">
+      <div id="seats"></div><div class="av"></div></div>
+    <div class="plt" style="top:386px">THE CHAIR</div>
+    <div class="cap k2">by winning<br>the support of</div><div class="cap k3">211 member<br>groups</div><div class="cap k4">who vote<br>every year.</div><div class="cap k1">Because she<br>stays in power</div>
+  </div><figcaption>Figure on green (P-SEAT-ARC): one dot per seat from the script's number, the person in the middle.</figcaption></figure>
+
+  <figure><div class="f grain" style="background:var(--endbg)">
+    <div class="tl"><div style="color:rgba(255,255,255,.9)">For more</div><div><span style="color:var(--ea)">business</span> and</div><div><span style="color:var(--eb)">power</span>,</div><div>decoded</div></div>
+    <div class="wm"><div class="disc">YN</div><div style="position:relative"><div class="pill fol">Follow</div><div class="pill fol2">🔔 Following</div></div><div class="pill ghost">@yourhandle</div></div>
+  </div><figcaption>End card (P-END-TAGLINE): the tagline with two accent words, your wordmark, Follow → Following.</figcaption></figure>
+</div>
+
+<h2>F-B Podcast clip</h2>
+<div class="grid">
+  <figure><div class="f" data-card="3">
+    <div class="cutA" style="position:absolute;inset:0"><div class="room"><div class="shelf" style="top:150px"></div><div class="shelf" style="top:260px"></div></div><div class="person"><div class="hr"></div><div class="h"></div><div class="b"></div></div><div class="mic"></div></div>
+    <div class="cutB g" style="position:absolute;inset:0"><div class="room" style="background:linear-gradient(180deg,#2E2620,#4C3A2C 45%,#211A14)"><div class="shelf" style="top:120px"></div></div><div class="person"><div class="hr"></div><div class="h"></div><div class="b"></div></div><div class="mic" style="right:auto;left:40px;transform:rotate(24deg)"></div></div>
+    <div class="capb k1">Most founders think<br>the product</div><div class="capb k2"><i>Right.</i></div><div class="capb k3"><i>is the hard part.</i></div><div class="capb k4"><i>It isn't.</i></div>
+  </div><figcaption>Podcast clip (HA-14): cold open on the speaker single, cut on the handover, brand-blue boxed captions (guest in italic).</figcaption></figure>
+
+  <figure><div class="f">
+    <div style="position:absolute;left:0;right:0;top:0;height:320px;overflow:hidden"><div class="room"></div><div class="person" style="bottom:-200px;transform:scale(.8)"><div class="hr"></div><div class="h"></div><div class="b"></div></div></div>
+    <div class="g" style="position:absolute;left:0;right:0;top:320px;height:320px;overflow:hidden"><div class="room" style="background:linear-gradient(180deg,#2E2620,#4C3A2C 45%,#211A14)"></div><div class="person" style="bottom:-200px;transform:scale(.8)"><div class="hr"></div><div class="h"></div><div class="b"></div></div></div>
+    <div class="capb k1" style="top:320px">So what changed?</div><div class="capb k2" style="top:320px"><i>Distribution.</i></div><div class="capb k3" style="top:320px">For everyone?</div><div class="capb k4" style="top:320px"><i>For us.</i></div>
+  </div><figcaption>Stack exchange (≤ 12 % of a clip): speaker on top, listener below, the caption box on the seam.</figcaption></figure>
+
+  <figure><div class="f">
+    <div class="qr"><div class="qt">Watch the full conversation<br>with your guest<br>at <span>yoursite.com/pod</span></div><div class="qrc"><div></div></div></div>
+  </div><figcaption>End card (P-END-QR): brand-blue field, three mono lines, the URL in a paper box, your QR.</figcaption></figure>
+</div>
+<script>
+// static seat layout (deterministic; no animation loop)
+(function(){const box=document.getElementById("seats");if(!box)return;let h="";const cx=159,cy=190;let k=0;
+for(let r=0;r<5;r++){const R=70+r*20,n=14+r*6;for(let i=0;i<n;i++){const a=Math.PI*(i/(n-1));const x=cx-R*Math.cos(a)-2,y=cy-R*Math.sin(a)-2;
+h+=`<div class="seat" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;animation-delay:${(k++%40)*0.02}s"></div>`;}}box.innerHTML=h;})();
+</script>
+</body>
+</html>

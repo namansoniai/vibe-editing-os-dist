@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "stunt-compression",
+  "tier": "full",
+  "order": 21,
+  "tagline": "Real stunts cut to a new moment every second: a cold open mid-action, glowing green money tags pinned to the cash, loud comic captions, a countdown clock, and an ending on the winner's face.",
+  "inspired_by_display": [
+    "MrBeast"
+  ],
+  "needs": "a real stunt filmed on 2+ cameras: you, the people taking part, and the prize",
+  "readiness": "R4",
+  "readiness_note": "Only works on your own stunt footage: shoot 2+ vertical 4K cameras, real money or prizes on camera, about 10 minutes of footage per minute of reel.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "data_figures",
+    "number_format",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Cold open: the host mid-stride with comic caps already on screen, a hard cut, then the stake",
+      "Money tag: a neon-green amount pinned to the open cash case, then the winner's yellow shout",
+      "Countdown clock: set time jumping down across hard cuts over the money pile"
+    ]
+  }
+}

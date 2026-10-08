@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "illustrated-desk",
+  "tier": "full",
+  "order": 7,
+  "tagline": "Calm, bright desk explainers: every app, book or idea you name drops in as a polished card above your head, with soft word-by-word captions and red hand-drawn circles.",
+  "inspired_by_display": [
+    "Ali Abdaal"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Best with a screenshot or screen recording of each tool you name; without them Claude builds clean labelled mock-ups. The story format needs your own B-roll.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A Desk list hook: count title, tool tiles in an arc, word-by-word pill caption",
+      "F-B Concept cutaway: glow headline on navy, then list rows where one is picked",
+      "F-C Story: a recreated chat thread on a pastel gradient with a red hand-drawn circle"
+    ]
+  }
+}

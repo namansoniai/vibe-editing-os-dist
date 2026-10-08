@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "cinematic-step-demo",
+  "tier": "full",
+  "order": 19,
+  "tagline": "Warm, cinematic how-tos: your hands shot from above, a black STEP label per step, white captions with one gold italic word.",
+  "inspired_by_display": [
+    "Peter McKinnon"
+  ],
+  "needs": "you at a desk + an overhead shot of your hands (step demo), or a recorded two-person conversation (podcast clip)",
+  "readiness": "R4",
+  "readiness_note": "Best for food, craft and photography creators who can film their hands from above; the podcast format needs two cameras or one 4K wide.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "type_floors",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A hook: the finished result in hand, 'This is my morning ritual' with the gold italic word",
+      "F-A step: overhead hands, the STEP 2 label tape printing on, then a tool tape",
+      "F-B podcast clip: speaker cut, host white and guest cream captions with one gold word"
+    ]
+  }
+}

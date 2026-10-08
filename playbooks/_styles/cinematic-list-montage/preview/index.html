@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cinematic List Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 360x640 = 1080x1920 / 3. -->
+<style>
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Regular.ttf");font-weight:400;font-style:normal}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-weight:400;font-style:italic}
+:root{--cobalt:#2B35E8;--violet:#8B3CF0;--red:#D91F2A;--green:#2CFF4E;--ink:#0C0F0E;--paper:#FFFFFF;--off:#F2F2F2;--cream:#ECE8D0;--night:#0B1220;
+  --e:cubic-bezier(.22,1,.36,1);--sans:"Inter Tight",system-ui,sans-serif;--serif:"Instrument Serif",Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#08090B;color:#fff;font-family:var(--sans);padding:32px 16px 60px}
+@media (prefers-color-scheme: light){body{background:#ECECEF;color:#111}}
+h1{font-weight:700;font-size:22px;letter-spacing:-.02em;margin:0 auto 6px;max-width:1160px}
+h2{font-family:var(--serif);font-style:italic;font-weight:400;font-size:24px;margin:34px auto 14px;max-width:1160px}
+p.lead{font-size:13px;opacity:.7;max-width:1160px;margin:0 auto 18px;line-height:1.5}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1160px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12px;opacity:.75;margin-top:8px;line-height:1.4}
+.f{width:360px;height:640px;overflow:hidden;position:relative;isolation:isolate;background:#0E1513}
+/* ---------- the room (illustrated presenter, no real footage) ---------- */
+.room{position:absolute;inset:0;background:radial-gradient(60% 40% at 18% 38%,rgba(70,160,150,.35),transparent 70%),
+  radial-gradient(50% 30% at 85% 30%,rgba(210,170,110,.18),transparent 70%),linear-gradient(180deg,#24302D 0%,#18211F 45%,#0B0F0E 100%)}
+.room:before{content:"";position:absolute;left:14px;top:205px;width:92px;height:58px;border-radius:3px;background:linear-gradient(135deg,#3E8C86,#1C4B48);opacity:.55;filter:blur(1px);
+  box-shadow:250px -30px 0 -6px #2A3A36}
+.room:after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 45%,transparent 55%,rgba(0,0,0,.55))}
+.person{position:absolute;left:50%;top:232px;width:230px;height:460px;margin-left:-115px;animation:sway 6s ease-in-out infinite alternate}
+.person.hi{top:120px}
+@keyframes sway{to{transform:translateX(4px) scale(1.01)}}
+.hair{position:absolute;left:50%;top:0;width:84px;height:40px;margin-left:-42px;border-radius:42px 42px 12px 12px;background:#2A1E16}
+.head{position:absolute;left:50%;top:10px;width:76px;height:94px;margin-left:-38px;border-radius:46% 46% 44% 44%;background:#C89B7B}
+.glasses{position:absolute;left:50%;top:44px;width:62px;height:16px;margin-left:-31px;border:2px solid #2A2420;border-radius:7px;border-top-width:3px}
+.mouth{position:absolute;left:50%;top:80px;width:16px;height:4px;margin-left:-8px;border-radius:4px;background:#7A3E36;animation:talk .34s steps(2) infinite}
+@keyframes talk{50%{height:7px}}
+.torso{position:absolute;left:0;right:0;top:108px;bottom:0;border-radius:90px 90px 0 0;background:linear-gradient(180deg,#121414,#0A0B0B)}
+/* ---------- captions (CS-1 micro / CS-2 duet) ---------- */
+.cap{position:absolute;left:0;right:0;text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.55);white-space:nowrap}
+.cap span{position:absolute;left:0;right:0;opacity:0;animation:w 6s var(--e) infinite}
+.micro{top:390px;font:600 15px/1 var(--sans);letter-spacing:-.02em}
+.duet{top:320px;height:60px}
+.t0{font:600 21px/1 var(--sans);letter-spacing:-.03em;top:20px}
+.t1{font:700 34px/1 var(--sans);letter-spacing:-.035em;top:12px}
+.t2{font:400 italic 54px/1 var(--serif);letter-spacing:-.01em;top:0}
+@keyframes w{0%{opacity:0;filter:blur(4px)}1.5%{opacity:1;filter:blur(0)}9%{opacity:1;filter:blur(0)}10%,100%{opacity:0;filter:blur(3px)}}
+/* ---------- headline chip P-01 ---------- */
+.chip{position:absolute;left:50%;top:111px;transform:translateX(-50%);background:var(--cobalt);border-radius:2px;padding:5px 10px 7px;white-space:nowrap;
+  font:400 35px/1 var(--serif);letter-spacing:-.01em;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.35);animation:chip 6s var(--e) infinite}
+.chip.g{font:700 29px/1 var(--sans);letter-spacing:-.035em}
+@keyframes chip{0%{transform:translateX(calc(-50% - 13px)) rotate(-4deg) scale(1.06)}6%{transform:translateX(-50%)}82%{opacity:1;filter:blur(0);transform:translateX(-50%)}
+  88%,100%{opacity:0;filter:blur(4px);transform:translateX(-50%) translateY(-20px)}}
+.sub{position:absolute;left:0;right:0;top:162px;text-align:center;font:400 19px/1 var(--serif);color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.45)}
+.sub i{font-style:normal;opacity:0;animation:subw 6s var(--e) infinite}
+@keyframes subw{0%{opacity:0;filter:blur(3px)}2%{opacity:1;filter:blur(0)}70%{opacity:1}76%,100%{opacity:0}}
+.behind{position:absolute;left:0;right:0;top:178px;text-align:center;font:400 italic 130px/1 var(--serif);color:rgba(255,255,255,.85);z-index:0;animation:beh 6s var(--e) infinite}
+@keyframes beh{0%{opacity:0;filter:blur(5px)}6%,82%{opacity:.85;filter:blur(0)}88%,100%{opacity:0}}
+.z{position:relative;z-index:2}
+/* ---------- F-A item ritual ---------- */
+.title{position:absolute;left:0;right:0;top:68px;text-align:center;font:400 italic 31px/1 var(--serif);letter-spacing:-.02em;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);
+  opacity:0;animation:tin 6s var(--e) infinite}
+.thumb{position:absolute;left:97px;top:107px;width:166px;height:132px;border-radius:3px;overflow:hidden;box-shadow:0 6px 14px rgba(0,0,0,.45);opacity:0;animation:thin 6s var(--e) infinite}
+@keyframes tin{0%{opacity:0;filter:blur(4px);transform:translateY(5px)}4%,30%{opacity:1;filter:blur(0);transform:none}33%,100%{opacity:0;filter:blur(3px)}}
+@keyframes thin{0%{opacity:0;filter:blur(3px);transform:scale(.94)}4%,30%{opacity:1;filter:blur(0);transform:none}33%,100%{opacity:0}}
+.d1{animation-delay:0s}.d2{animation-delay:2s}.d3{animation-delay:4s}
+.ph1{background:radial-gradient(40% 50% at 50% 55%,#cfd6e6 0 18%,#2a3346 19% 32%,#0d1220 33%),#0d1220}
+.ph1:after{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at 50% 55%,rgba(255,255,255,.08) 0 1px,transparent 1px 3px)}
+.ph2{background:linear-gradient(160deg,#2b2b2b,#111);}
+.ph2:before{content:"";position:absolute;left:18px;top:30px;width:130px;height:80px;border-radius:4px;background:linear-gradient(90deg,#6b3df0 0 18%,#e04a8a 18% 36%,#e8b13c 36% 55%,#3cc28c 55% 75%,#3c8ae8 75%);opacity:.9}
+.ph3{background:#fff;display:flex;align-items:center;justify-content:center;font:800 32px/1 var(--sans);color:var(--ink);letter-spacing:-.04em}
+/* ---------- counter ring P-30 ---------- */
+.ring{position:absolute;left:115px;top:98px;width:130px;height:130px;border-radius:50%;
+  background:conic-gradient(from 200deg,#E03BD8,#8B3CF0,#5B2BE8 320deg,transparent 320deg);-webkit-mask:radial-gradient(circle,transparent 59px,#000 60px);mask:radial-gradient(circle,transparent 59px,#000 60px);
+  animation:ringin 6s var(--e) infinite}
+.ringtxt{position:absolute;left:0;right:0;top:140px;text-align:center}
+.ringtxt b{display:block;font:600 27px/1 var(--sans);letter-spacing:-.02em}
+.ringtxt small{display:block;font:500 15px/1.3 var(--sans);opacity:.9}
+@keyframes ringin{0%{opacity:0;transform:translateY(7px)}5%,90%{opacity:1;transform:none}100%{opacity:0}}
+.roll{animation:roll 6s steps(1) infinite}
+.roll:before{content:"0"}
+@keyframes roll{0%{content:"0"}}
+/* ---------- CTA ---------- */
+.ccard{position:absolute;left:32px;top:97px;width:296px;height:140px;border-radius:9px;background:#fff;color:var(--ink);text-align:center;padding-top:10px;
+  box-shadow:0 6px 16px rgba(0,0,0,.4);animation:cin 6s var(--e) infinite}
+.ccard h4{font:400 21px/1 var(--serif)} .ccard p{font:500 13px/1.4 var(--sans);color:#3A3A3A}
+.ccard .col{position:absolute;left:50%;bottom:10px;width:46px;height:64px;margin-left:-23px;border-radius:5px;background:linear-gradient(160deg,#3A4A47,#121716);box-shadow:-52px 8px 0 -4px #2D2A3E,52px 8px 0 -4px #403226,-100px 16px 0 -10px #1F2F3A,100px 16px 0 -10px #33291F}
+@keyframes cin{0%{opacity:0;transform:translateY(8px);filter:blur(4px)}5%,45%{opacity:1;transform:none;filter:blur(0)}50%,100%{opacity:0}}
+.kw{position:absolute;left:0;right:0;top:108px;text-align:center;font:400 88px/1 var(--serif);letter-spacing:-.02em;
+  background:linear-gradient(180deg,#FFFFFF,#ECE8D0 55%,#CFC79C);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 8px rgba(236,232,208,.45));opacity:0;animation:kw 6s var(--e) infinite}
+@keyframes kw{0%,50%{opacity:0;transform:scale(1.08);filter:blur(5px)}56%,100%{opacity:1;transform:none;filter:drop-shadow(0 0 8px rgba(236,232,208,.45))}}
+/* ---------- F-B plates (illustrated) ---------- */
+.plate{position:absolute;inset:0;opacity:0;animation:pl 6s steps(1) infinite}
+@keyframes pl{0%{opacity:1}100%{opacity:1}}
+.seq{animation:seq 6s steps(1) infinite}
+.p-desk{background:radial-gradient(30% 14% at 50% 30%,#6fd6ff 0,#1b6fa3 40%,transparent 75%),radial-gradient(70% 50% at 50% 34%,rgba(40,110,190,.55),transparent 70%),linear-gradient(180deg,#0b1a2e,#04070c 70%)}
+.p-desk:after{content:"";position:absolute;left:50%;top:330px;width:120px;height:150px;margin-left:-60px;border-radius:60px 60px 10px 10px;background:#05070a;box-shadow:0 120px 0 60px #05070a}
+.p-desk:before{content:"";position:absolute;left:50%;top:168px;width:150px;height:96px;margin-left:-75px;border-radius:4px;background:linear-gradient(180deg,#bfe9ff,#3c8fc6);opacity:.85;box-shadow:0 0 40px rgba(110,200,255,.6)}
+.p-window{background:linear-gradient(180deg,#e8c890 0%,#c99a5a 45%,#3a2a1a 46%,#0d0a07 100%)}
+.p-window:after{content:"";position:absolute;right:40px;top:180px;width:110px;height:170px;border-radius:55px 55px 0 0;background:#0d0a07;box-shadow:0 160px 0 30px #0d0a07}
+.p-hands{background:radial-gradient(40% 25% at 50% 60%,#d9b48c,transparent 70%),linear-gradient(180deg,#1a1410,#2b2018 60%,#0c0907)}
+.p-hands:after{content:"";position:absolute;left:70px;top:330px;width:220px;height:130px;border-radius:8px;background:#efe6d6;transform:rotate(-6deg);box-shadow:inset 0 -2px 0 #c9bba3}
+.p-eye{background:radial-gradient(circle at 50% 48%,#05070a 0 9%,#4b6b5a 10% 22%,#8c7b62 23% 26%,#e9d9c9 27% 45%,#6b4a3a 60%,#2a1a14)}
+.blurin{animation:rack 6s var(--e) infinite}
+@keyframes rack{0%{filter:blur(6px);transform:scale(1.06)}8%,100%{filter:blur(0);transform:none}}
+/* split twin */
+.twin{position:absolute;inset:0}
+.twin .top,.twin .bot{position:absolute;left:0;right:0;height:320px;overflow:hidden}
+.twin .top{top:0;filter:grayscale(1) sepia(1) hue-rotate(175deg) saturate(3) brightness(.85)}
+.twin .bot{top:320px;filter:grayscale(1) sepia(1) hue-rotate(-50deg) saturate(3.2) brightness(.8)}
+.twin .bot .p-desk{top:-320px;height:640px}
+.twin .top .p-desk{height:640px}
+.chipw{display:inline-block;background:var(--cobalt);padding:1px 4px 3px;border-radius:1px;font:600 16px/1 var(--sans)}
+/* type frames */
+.paper{position:absolute;inset:0;background:var(--off)}
+.cobalt{position:absolute;inset:0;background:var(--cobalt)}
+.void{position:absolute;inset:0;background:var(--night)}
+.numeral{position:absolute;left:0;right:0;top:110px;text-align:center;font:400 100px/1 var(--serif);letter-spacing:-.03em;color:var(--cream);text-shadow:0 0 10px rgba(236,232,208,.35);animation:tin2 6s var(--e) infinite}
+.numsub{position:absolute;left:0;right:0;top:232px;text-align:center;font:600 19px/1 var(--sans);letter-spacing:-.03em;animation:tin2 6s var(--e) infinite;animation-delay:.3s}
+@keyframes tin2{0%{opacity:0;filter:blur(5px);transform:scale(1.04)}6%,100%{opacity:1;filter:blur(0);transform:none}}
+.under{position:absolute;left:50%;top:333px;height:2px;width:0;margin-left:-40px;background:#fff;animation:ul 6s var(--e) infinite}
+@keyframes ul{0%,8%{width:0}16%,100%{width:80px}}
+/* montage sequence: each child shown for its slot (6 s loop) */
+.s{position:absolute;inset:0;opacity:0;animation:slot 6s steps(1) infinite}
+@keyframes slot{0%{opacity:1}16.66%,100%{opacity:0}}
+.s1{animation-delay:0s}.s2{animation-delay:1s}.s3{animation-delay:2s}.s4{animation-delay:3s}.s5{animation-delay:4s}.s6{animation-delay:5s}
+.s.last{animation-name:slotlast}
+@keyframes slotlast{0%,100%{opacity:1}}
+.word{position:absolute;left:0;right:0;text-align:center;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;font-size:12px;opacity:.8;margin:6px auto 0;max-width:1160px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-right:4px}
+@media (prefers-reduced-motion: reduce){*{animation-play-state:paused!important}}
+</style>
+</head>
+<body>
+<h1>Cinematic List / Montage</h1>
+<p class="lead">Inspired by ant.lon. One cobalt chip, one word at a time in a heavy grotesk and an italic didone, titles floating above your head. Two formats: <b>F-A list overlay</b> (one take, zero cuts) and <b>F-B cinematic montage</b> (your own B-roll, cut on the word). Illustrated presenter; all graphics engine-made.</p>
+<div class="legend"><span><i class="sw" style="background:#2B35E8"></i>primary cobalt</span><span><i class="sw" style="background:#8B3CF0"></i>accent proof</span><span><i class="sw" style="background:#D91F2A"></i>bad</span><span><i class="sw" style="background:#2CFF4E"></i>good</span><span><i class="sw" style="background:#ECE8D0"></i>cream</span><span><i class="sw" style="background:#F2F2F2"></i>paper world</span></div>
+
+<h2>F-A · List overlay</h2>
+<div class="grid">
+  <figure><div class="f" data-card="1">
+    <div class="room"></div>
+    <div class="behind">10</div>
+    <div class="person z"><div class="torso"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div></div>
+    <div class="chip" style="z-index:3">10 ways to earn money</div>
+    <div class="sub" style="z-index:3"><i style="animation-delay:.2s">as</i> <i style="animation-delay:.45s">a</i> <i style="animation-delay:.7s">freelance</i> <i style="animation-delay:1.1s">designer</i></div>
+    <div class="cap micro" style="z-index:3"><span style="animation-delay:0s">Here</span><span style="animation-delay:.6s">are</span><span style="animation-delay:1.2s">ten</span><span style="animation-delay:1.8s">ways</span><span style="animation-delay:2.4s">each</span><span style="animation-delay:3.0s">one</span><span style="animation-delay:3.6s">better</span><span style="animation-delay:4.2s">than</span><span style="animation-delay:4.8s">the</span><span style="animation-delay:5.4s">last.</span></div>
+  </div><figcaption>F-A hook (HA-05): cobalt chip readable at frame 0, serif sub-line builds, "10" behind the head (E1), micro captions at the chest.</figcaption></figure>
+
+  <figure><div class="f" data-card="2">
+    <div class="room"></div>
+    <div class="person z"><div class="torso"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div></div>
+    <div class="title d1" style="z-index:3">1. One-off gigs</div><div class="thumb ph3 d1" style="z-index:3">gigs.</div>
+    <div class="title d2" style="z-index:3">2. Local studios</div><div class="thumb ph2 d2" style="z-index:3"></div>
+    <div class="title d3" style="z-index:3">3. Edit with purpose</div><div class="thumb ph1 d3" style="z-index:3"></div>
+    <div class="cap micro" style="z-index:3"><span style="animation-delay:.2s">projects</span><span style="animation-delay:.8s">for</span><span style="animation-delay:1.4s">clients</span><span style="animation-delay:2.2s">your</span><span style="animation-delay:2.8s">city</span><span style="animation-delay:3.4s;font:800 37px/1 var(--sans);top:-12px">anything</span><span style="animation-delay:4.2s">show</span><span style="animation-delay:4.8s">others.</span></div>
+  </div><figcaption>F-A item ritual: "n. Title" in italic didone, a photo card hovering on the head (never the face), swapped on the ordinal word.</figcaption></figure>
+
+  <figure><div class="f">
+    <div class="room"></div>
+    <div class="person z"><div class="torso"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div></div>
+    <div class="title" style="z-index:3;animation:none;opacity:1">8. Hold their attention</div>
+    <div class="ring" style="z-index:3"></div>
+    <div class="ringtxt" style="z-index:3"><b>242,409</b><small>views</small></div>
+    <div class="cap micro" style="z-index:3"><span style="animation-delay:.3s">audio</span><span style="animation-delay:1.2s">effects</span><span style="animation-delay:2.1s">keep</span><span style="animation-delay:3s">people</span><span style="animation-delay:3.9s">watching</span></div>
+  </div><figcaption>P-30 counter ring above the head: the creator's own number rolls and lands on the spoken word.</figcaption></figure>
+
+  <figure><div class="f">
+    <div class="room"></div>
+    <div class="person z"><div class="torso"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div></div>
+    <div class="title" style="z-index:3;animation:tin 6s var(--e) infinite">10. Join the studio</div>
+    <div class="ccard" style="z-index:3"><h4>The Studio Community</h4><p>edit, build &amp; earn</p><div class="col"></div></div>
+    <div class="kw" style="z-index:4">‘JOIN’</div>
+    <div class="cap micro" style="z-index:3"><span style="animation-delay:.3s">comment</span><span style="animation-delay:1.3s">on</span><span style="animation-delay:2.3s">this</span><span style="animation-delay:3.3s">video</span></div>
+  </div><figcaption>CTA: the community card as the last item, then the keyword as a cream didone quote with a soft glow.</figcaption></figure>
+</div>
+
+<h2>F-B · Cinematic montage</h2>
+<div class="grid">
+  <figure><div class="f" data-card="3">
+    <div class="s s1"><div class="p-desk plate blurin" style="opacity:1"></div><div class="word" style="top:300px;font:700 32px/1 var(--sans);letter-spacing:-.03em">Picture this</div></div>
+    <div class="s s2"><div class="twin"><div class="top"><div class="p-desk plate" style="opacity:1"></div></div><div class="bot"><div class="p-desk plate" style="opacity:1"></div></div></div><div class="word" style="top:308px"><span class="chipw">2 friends</span></div></div>
+    <div class="s s3"><div class="p-hands plate" style="opacity:1"></div><div class="word" style="top:304px;font:700 34px/1 var(--sans);letter-spacing:-.035em">salary</div></div>
+    <div class="s s4"><div class="p-window plate" style="opacity:1"></div><div class="word" style="top:290px;font:400 italic 54px/1 var(--serif)">6 months</div></div>
+    <div class="s s5"><div class="room"></div><div class="person hi"><div class="torso"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div></div><div class="word" style="top:360px;font:400 italic 54px/1 var(--serif)">why.</div></div>
+    <div class="s s6"><div class="room"></div><div class="person hi"><div class="torso"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div></div><div class="word" style="top:36px;font:400 80px/1 var(--serif);background:linear-gradient(180deg,#fff,#ECE8D0 55%,#CFC79C);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 8px rgba(236,232,208,.45))">‘JOIN’</div><div class="word" style="top:378px;font:600 15px/1 var(--sans)">comment</div></div>
+  </div><figcaption>F-B (HA-19): rack-focus open, split twin with a cobalt chip, cuts on the word, grotesk then italic didone, back to the face, the quoted keyword.</figcaption></figure>
+
+  <figure><div class="f">
+    <div class="p-desk plate" style="opacity:1"></div>
+    <div class="numeral">No.2</div>
+    <div class="numsub">every month felt tight</div>
+  </div><figcaption>SM-2 section numeral: cream upright didone over a fresh plate (the mid-reel re-hook).</figcaption></figure>
+
+  <figure><div class="f">
+    <div class="s s1"><div class="paper"></div><div class="word" style="top:300px;font:700 36px/1 var(--sans);letter-spacing:-.035em;color:var(--cobalt)">comes down</div></div>
+    <div class="s s2"><div class="paper"></div><div class="word" style="top:300px;font:700 36px/1 var(--sans);letter-spacing:-.035em;color:var(--cobalt)">comes down</div></div>
+    <div class="s s3"><div class="paper"></div><div class="word" style="top:286px;font:700 36px/1 var(--sans);letter-spacing:-.035em;color:var(--cobalt)">comes down<br><span style="display:inline-block;margin-top:4px;background:var(--cobalt);color:#fff;padding:1px 6px 4px">to 3 things</span></div></div>
+    <div class="s s4"><div class="cobalt"></div><div class="word" style="top:310px;font:600 21px/1 var(--sans)">payday</div><div class="under"></div></div>
+    <div class="s s5"><div class="paper"></div><div class="word" style="top:290px;font:400 italic 60px/1 var(--serif);color:var(--cobalt)">2 years.</div></div>
+    <div class="s s6"><div class="void"></div><div class="word" style="top:304px;font:700 34px/1 var(--sans)">quietly</div></div>
+  </div><figcaption>Type frames (P-14, P-15, P-16): paper with cobalt words and a cobalt chip, a cobalt beat with an underline, a void beat.</figcaption></figure>
+
+  <figure><div class="f">
+    <div class="p-window plate" style="opacity:1;filter:grayscale(1) contrast(1.15) brightness(.6)"></div>
+    <div style="position:absolute;left:40px;top:180px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%)"></div>
+    <div class="word" style="top:296px;font:700 44px/1 var(--sans);letter-spacing:-.035em;color:var(--red);animation:tin2 6s var(--e) infinite">minimum</div>
+  </div><figcaption>P-24 mono accent: a B&amp;W plate, one red word for the mistake.</figcaption></figure>
+</div>
+
+<h2>Caption profile · the duet (CS-2)</h2>
+<div class="grid">
+  <figure><div class="f">
+    <div class="p-desk plate" style="opacity:1"></div>
+    <div class="cap duet">
+      <span class="t0" style="animation-delay:0s">every</span><span class="t1" style="animation-delay:.6s">month</span><span class="t0" style="animation-delay:1.2s">felt</span><span class="t2" style="animation-delay:1.8s">tight.</span>
+      <span class="t0" style="animation-delay:3s">and</span><span class="t1" style="animation-delay:3.6s">nobody</span><span class="t2" style="animation-delay:4.2s">noticed</span><span class="t0" style="animation-delay:5.2s">it.</span>
+    </div>
+  </div><figcaption>CS-2 duet on a plate: function words small, content words bigger, the feeling word in italic didone.</figcaption></figure>
+</div>
+<p class="lead" style="text-align:center;margin-top:12px">Tier 0 grotesk 64 px · tier 1 grotesk 102 px (1.6×) · tier 2 italic didone 160 px (2.5×) · 4-frame blur-in per word.</p>
+</body>
+</html>

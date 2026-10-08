@@ -1,0 +1,37 @@
+{
+  "package": "veos.template/1",
+  "id": "graphic-first-explainer",
+  "tier": "core",
+  "order": 9,
+  "tagline": "Designed graphics carry the story: one full-screen animated card per idea, numbers that count up, short pill captions, and you as a guest in the frame.",
+  "inspired_by_display": [
+    "100xEngineers"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Editorial explainers can open on a clip you own; without one they open on a live number.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "data_figures",
+    "number_format",
+    "inserts_flow",
+    "citations"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A editorial hook: a live day counter and hourglass over the presenter, title slab sliding in",
+      "F-B ad card: neo-brutalist window card beside a ringed presenter bubble, chips popping",
+      "TH-pinksage: a billing ticker climbing, then the numbered list card"
+    ]
+  }
+}

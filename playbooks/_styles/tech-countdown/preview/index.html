@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tech Countdown Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 360 x 640 = 1080 x 1920 at 1/3.
+     Engine-made graphics and a neutral illustrated presenter only; no real footage, logos or screenshots. -->
+<style>
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-style:italic;font-weight:400}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Regular.ttf");font-style:normal;font-weight:400}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+:root{--lime:#C6F135;--red:#E4151B;--ink:#0A0A0A;--paper:#FFFFFF;--bad:#FF453A;--good:#30D158;--tile:#1C1C1E;--night:#050B06;
+  --e:cubic-bezier(.22,1,.36,1);--x:cubic-bezier(.64,0,.78,0);--bg:#0E0F0C;--fg:#F2F2EC;--muted:#A9AB9F}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#F1F0EA;--fg:#16170F;--muted:#5D5F55}}
+:root[data-theme="light"]{--bg:#F1F0EA;--fg:#16170F;--muted:#5D5F55}
+:root[data-theme="dark"]{--bg:#0E0F0C;--fg:#F2F2EC;--muted:#A9AB9F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:"Inter Tight",system-ui,sans-serif;padding:28px 16px 64px}
+header{max-width:1180px;margin:0 auto 18px}
+h1{font-weight:700;font-size:24px;letter-spacing:-.01em}
+h1 i{font-family:"Instrument Serif",serif;font-weight:400}
+p.lead{font-size:14px;color:var(--muted);margin-top:6px;max-width:760px;line-height:1.45}
+h2{max-width:1180px;margin:30px auto 12px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.grid{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+figcaption b{color:var(--fg)}
+
+/* ---------- a 9:16 frame ---------- */
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:#000;color:#fff;font-family:"Inter Tight",sans-serif}
+.f .lay{position:absolute;inset:0}
+/* the room (W-studio, illustrated) */
+.room{position:absolute;inset:0;background:radial-gradient(60% 40% at 22% 30%,rgba(255,190,110,.45),transparent 70%),linear-gradient(180deg,#3A2A1E 0%,#2B1F16 55%,#1E1610 100%)}
+.room:before{content:"";position:absolute;left:18px;top:70px;width:96px;height:220px;border-radius:4px;
+  background:repeating-linear-gradient(180deg,transparent 0 48px,#5A4330 48px 54px),linear-gradient(90deg,#4A3627,#3D2C20)}
+.room:after{content:"";position:absolute;right:20px;top:110px;width:70px;height:46px;border-radius:6px;background:#C9C3B6;opacity:.55;
+  box-shadow:-6px 70px 0 -4px #6E5A46,0 140px 0 -10px #5A4A3A}
+.lamp{position:absolute;left:250px;top:250px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,#FFE2A8 0%,rgba(255,200,120,.0) 70%)}
+.room.cool{background:radial-gradient(60% 40% at 80% 25%,rgba(220,230,255,.35),transparent 70%),linear-gradient(180deg,#8E9096 0%,#6C6E73 55%,#4C4D52 100%)}
+/* the presenter (neutral illustration) */
+.me{position:absolute;left:0;right:0;top:0;bottom:0}
+.me .body{position:absolute;left:50%;top:252px;width:260px;height:420px;margin-left:-130px;border-radius:120px 120px 0 0;background:linear-gradient(180deg,#23262B,#16181B)}
+.me .neck{position:absolute;left:50%;top:228px;width:46px;height:40px;margin-left:-23px;background:#A86E4E;border-radius:0 0 18px 18px}
+.me .head{position:absolute;left:50%;top:118px;width:96px;height:120px;margin-left:-48px;border-radius:46% 46% 44% 44%;background:#B97C59;animation:nod 3s ease-in-out infinite}
+.me .hair{position:absolute;left:-6px;top:-10px;width:108px;height:52px;border-radius:52px 52px 18px 18px;background:#1B120D}
+.me .beard{position:absolute;left:10px;bottom:-4px;width:76px;height:48px;border-radius:0 0 40px 40px;background:#2A1B13}
+.me .mouth{position:absolute;left:50%;bottom:22px;width:18px;height:4px;margin-left:-9px;border-radius:4px;background:#5B2A20;animation:talk .34s steps(2) infinite}
+.me .eye{position:absolute;top:56px;width:9px;height:6px;border-radius:50%;background:#20140F}
+.me .eye.l{left:24px}.me .eye.r{right:24px}
+@keyframes talk{50%{height:9px}}
+@keyframes nod{50%{transform:translateY(2px) rotate(-1deg)}}
+.dimmed{filter:blur(4px) brightness(.5)}
+/* captions (CS-1 / CS-2) */
+.cap{position:absolute;left:0;right:0;text-align:center;line-height:1.12}
+.pill{display:inline-block;font-weight:500;font-size:14px;padding:2px 6px;border-radius:4px;background:rgba(10,10,10,.82);color:#fff}
+.lime .pill{background:var(--lime);color:var(--ink);font-weight:600}
+.it{display:block;font-family:"Instrument Serif",serif;font-style:italic;font-size:31px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);margin:1px 0}
+.seq{opacity:0;animation:seq 6s var(--e) infinite}
+@keyframes seq{0%{opacity:0;filter:blur(5px)}3%{opacity:1;filter:blur(0)}30%{opacity:1}33%,100%{opacity:0}}
+.s2{animation-delay:2s}.s3{animation-delay:4s}
+/* numerals */
+.chip{position:absolute;left:50%;transform:translateX(-50%);background:#fff;color:var(--ink);font-family:"Instrument Serif",serif;font-style:italic;font-size:18px;
+  padding:1px 6px;border-radius:2px;white-space:nowrap}
+.numA{position:absolute;left:0;right:0;text-align:center;font-weight:900;font-size:100px;letter-spacing:-4px;line-height:1;text-shadow:0 4px 12px rgba(0,0,0,.35)}
+.numA b{color:#fff;font-weight:900}.numA span{color:var(--lime)}
+.numB{position:absolute;left:0;right:0;text-align:center;line-height:1}
+.numB .h{position:absolute;left:0;right:0;font-weight:900;font-size:154px;color:var(--lime);text-shadow:2px 2px 0 #8FB51F;top:0}
+.numB .d{position:absolute;left:0;right:0;top:38px;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:100px;color:#fff}
+/* plate (HA-02) */
+.plate{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:20.6px;padding:2px 6px;border-radius:2px;color:#fff}
+.plate.l1{background:var(--ink);font-weight:600}.plate.l2{background:var(--red);font-weight:700}
+.proof{position:absolute;left:40px;top:361px;width:280px;height:133px;border-radius:6px;background:#fff;box-shadow:0 6px 14px rgba(0,0,0,.35);overflow:hidden;
+  animation:proof 6s var(--e) infinite}
+@keyframes proof{0%{transform:translateY(13px);filter:blur(3px);opacity:.4}5%,100%{transform:none;filter:none;opacity:1}}
+.proof .img{position:absolute;left:0;top:0;bottom:0;width:126px;background:linear-gradient(160deg,#D9D6CF,#B9B4AA)}
+.proof .img:after{content:"";position:absolute;left:30px;top:30px;width:66px;height:90px;border-radius:10px;background:#2A2C30;box-shadow:inset 0 0 0 4px #4A4D52;
+  animation:flip 6s steps(1) infinite}
+@keyframes flip{0%,17%{background:#2A2C30}18%,100%{background:var(--red)}}
+.proof .t{position:absolute;left:138px;top:36px;font-size:17px;font-weight:600;line-height:1.1;color:var(--ink)}
+.proof .t em{font-style:normal;color:var(--red)}
+/* split */
+.top{position:absolute;left:0;top:0;width:360px;height:320px;overflow:hidden}
+.top .fade{position:absolute;left:0;right:0;bottom:0;height:47px;background:linear-gradient(180deg,transparent,#000)}
+.bot{position:absolute;left:0;top:320px;width:360px;height:320px;overflow:hidden}
+.bot .me{top:-90px}
+.ui{position:absolute;left:50%;top:40px;width:150px;height:300px;margin-left:-75px;border-radius:22px;background:#111;box-shadow:0 0 0 4px #2A2A2E,0 10px 30px rgba(0,0,0,.4);overflow:hidden}
+.ui .row{position:absolute;left:12px;right:12px;height:30px;border-radius:8px;background:#26272B;opacity:0;animation:rowin 6s var(--e) infinite}
+.ui .row:nth-child(1){top:40px;animation-delay:.2s}.ui .row:nth-child(2){top:78px;animation-delay:.8s}.ui .row:nth-child(3){top:116px;animation-delay:1.4s}
+.ui .row:nth-child(4){top:154px;animation-delay:2s;background:var(--lime)}
+@keyframes rowin{0%{opacity:0;transform:translateY(8px)}5%,85%{opacity:1;transform:none}95%,100%{opacity:0}}
+.board-warm{background:linear-gradient(180deg,#E9773C,#F6C9A5)}
+.board-cool{background:linear-gradient(180deg,#2F7FD8,#7FD8E6)}
+/* tool card */
+.behind{position:absolute;left:110px;top:50px;width:140px;height:140px;border-radius:27px;background:var(--tile);display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:74px;color:#fff;animation:grow 6s var(--e) infinite}
+@keyframes grow{0%{transform:scale(.8);opacity:0}5%,92%{transform:none;opacity:1}100%{opacity:0}}
+.brand{position:absolute;left:21px;top:220px;display:flex;align-items:center;gap:6px;font-size:16.7px;font-weight:500;animation:brand 6s var(--e) infinite}
+.brand i{display:inline-flex;width:27px;height:27px;border-radius:6px;background:var(--tile);border:1px solid rgba(255,255,255,.25);font-style:normal;font-weight:800;font-size:15px;align-items:center;justify-content:center}
+@keyframes brand{0%{transform:translateX(-7px);opacity:0}4%,92%{transform:none;opacity:1}100%{opacity:0}}
+.win{position:absolute;left:18px;top:247px;width:324px;height:180px;border-radius:9px;background:#111214;border:1px solid rgba(255,255,255,.14);overflow:hidden;animation:win 6s var(--e) infinite}
+.lime .win{background:#fff;border:3px solid #fff}
+@keyframes win{0%{transform:translateY(20px);filter:blur(5px);opacity:0}5%,92%{transform:none;filter:none;opacity:1}100%{opacity:0}}
+.scr{position:absolute;inset:0;padding:14px 16px;opacity:0;animation:scr 6s linear infinite}
+.scr.a{animation-delay:0s}.scr.b{animation-delay:2s}.scr.c{animation-delay:4s}
+@keyframes scr{0%{opacity:0}2%,32%{opacity:1}34%,100%{opacity:0}}
+.scr .bar{height:8px;border-radius:4px;background:#2C2E33;margin:7px 0}
+.lime .scr .bar{background:#E6E8EC}
+.scr .bar.w6{width:60%}.scr .bar.w8{width:82%}.scr .bar.w4{width:42%}
+.scr .btn{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:6px;background:#7C5CFF;color:#fff;font-size:10px;font-weight:600}
+.scr .tag{position:absolute;left:8px;top:6px;font-size:8.7px;font-weight:500;color:rgba(255,255,255,.8);letter-spacing:.02em}
+.lime .scr .tag{color:#333}
+.cursor{position:absolute;border:1.5px solid var(--lime);border-radius:4px;animation:cbox 6s var(--e) infinite}
+@keyframes cbox{0%,18%{opacity:0;clip-path:inset(0 100% 0 0)}24%,30%{opacity:1;clip-path:inset(0 0 0 0)}33%,100%{opacity:0}}
+.arrow{position:absolute;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:18px solid #fff;transform:rotate(-25deg);
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));animation:tap 6s var(--e) infinite}
+@keyframes tap{0%,20%{opacity:0;translate:20px 20px}26%{opacity:1;translate:0 0;scale:1}28%{scale:.9}30%{scale:1;opacity:1}33%,100%{opacity:0}}
+/* price chips */
+.price{position:absolute;display:flex;gap:6px;top:256px;right:26px;animation:pp 6s var(--e) infinite}
+.price span{font-weight:800;font-size:16px;padding:2px 7px;border-radius:5px;color:var(--ink)}
+.price .bad{background:var(--bad);position:relative}
+.price .bad:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;background:var(--ink);transform-origin:left;animation:strike 6s var(--e) infinite}
+.price .good{background:var(--good);animation:freepop 6s var(--e) infinite}
+@keyframes pp{0%,10%{opacity:0;transform:scale(.8)}14%,90%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes strike{0%,28%{transform:scaleX(0)}34%,100%{transform:scaleX(1)}}
+@keyframes freepop{0%,40%{opacity:0;transform:scale(.6)}45%{opacity:1;transform:scale(1.08)}48%,100%{opacity:1;transform:none}}
+/* numeral sequences */
+.numseq{animation:numseq 6s var(--e) infinite}
+@keyframes numseq{0%{opacity:0;transform:scale(.6);filter:blur(4px)}3%{opacity:1;transform:scale(1.06);filter:none}5%,30%{opacity:1;transform:none}33%,100%{opacity:0;transform:scale(.92)}}
+.chipseq{animation:chipseq 6s var(--e) infinite}
+@keyframes chipseq{0%,1%{opacity:0;translate:0 -8px}4%,29%{opacity:1;translate:0 0}31%,100%{opacity:0}}
+.cardphase{animation:cardphase 6s steps(1) infinite}
+@keyframes cardphase{0%,32%{opacity:0}33%,100%{opacity:1}}
+.dimphase{animation:dimphase 6s var(--e) infinite}
+@keyframes dimphase{0%,32%{filter:none}37%,100%{filter:blur(4px) brightness(.5)}}
+/* wash */
+.wash{position:absolute;inset:0;background:linear-gradient(120deg,#FF8A3D,#FF5E7A 55%,#FFC2A8);opacity:0;animation:wash 6s linear infinite}
+@keyframes wash{0%{opacity:0}2.8%{opacity:.85}6.6%,100%{opacity:0}}
+/* series card */
+.series{position:absolute;left:0;right:0;text-align:center;animation:series 6s var(--e) infinite}
+.series .k{font-size:17.3px;font-weight:400}
+.series .n{font-family:"Instrument Serif",serif;font-style:italic;font-size:57px;line-height:1;margin:2px 0}
+.series .s{font-size:16.7px;font-weight:400}
+.series *{text-shadow:0 1px 4px rgba(0,0,0,.5)}
+@keyframes series{0%,6%{opacity:0;filter:blur(5px);transform:translateY(10px)}12%,88%{opacity:1;filter:none;transform:none}96%,100%{opacity:0}}
+/* dots + HUD (F-B) */
+.dotfig{position:absolute;inset:0;background:#F4F7F7}
+.dotfig:before{content:"";position:absolute;left:105px;top:40px;width:150px;height:300px;border-radius:70px 70px 30px 30px;
+  background-image:radial-gradient(circle,#57C3C9 1.2px,transparent 1.6px);background-size:5px 5px;
+  -webkit-mask:radial-gradient(48px 58px at 50% 18%,#000 98%,transparent),linear-gradient(#000,#000) 50% 100%/100% 72% no-repeat;
+          mask:radial-gradient(48px 58px at 50% 18%,#000 98%,transparent),linear-gradient(#000,#000) 50% 100%/100% 72% no-repeat;
+  animation:dots 6s var(--e) infinite}
+@keyframes dots{0%{clip-path:inset(0 0 100% 0)}12%,100%{clip-path:inset(0 0 0 0)}}
+.hud{position:absolute;width:14px;height:14px;border-color:#fff;border-style:solid;opacity:0;animation:hud 6s var(--e) infinite}
+.hud.tl{left:92px;top:34px;border-width:1.5px 0 0 1.5px}.hud.tr{right:92px;top:34px;border-width:1.5px 1.5px 0 0}
+.hud.bl{left:92px;top:250px;border-width:0 0 1.5px 1.5px}.hud.br{right:92px;top:250px;border-width:0 1.5px 1.5px 0}
+.dotfig .hud{border-color:#2B6E73}
+@keyframes hud{0%,36%{opacity:0;transform:scale(1.3)}40%,100%{opacity:1;transform:none}}
+/* framed clip */
+.framed{position:absolute;left:73px;top:180px;width:214px;height:214px;border-radius:15px;overflow:hidden;
+  background:radial-gradient(70% 60% at 50% 70%,#FFB347,#C2410C 55%,#2A0E05);animation:framed 6s var(--e) infinite}
+.framed:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.25) 0 6px,transparent 6px 22px);animation:pan 6s linear infinite}
+@keyframes framed{0%{transform:scale(.94);opacity:.2}6%,100%{transform:none;opacity:1}}
+@keyframes pan{to{background-position:66px 0}}
+/* end stack */
+.save{position:absolute;left:87px;top:47px;width:187px;height:187px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF5A5F,var(--red) 60%,#9E0D12);
+  box-shadow:inset -6px -8px 18px rgba(0,0,0,.25);animation:grow 6s var(--e) infinite}
+.save:after{content:"";position:absolute;left:62px;top:44px;width:62px;height:86px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#fff,#E9E9EE);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.endcard{position:absolute;inset:0;background:radial-gradient(60% 34% at 50% 27%,rgba(198,241,53,.16),transparent 70%),
+  radial-gradient(circle,rgba(198,241,53,.10) .6px,transparent .9px) 0 0/9px 9px,var(--night)}
+.endcard .k{position:absolute;left:0;right:0;top:86px;text-align:center;font-family:"Instrument Serif",serif;font-style:italic;font-size:25px;animation:rise 6s var(--e) infinite}
+.endcard .h{position:absolute;left:0;right:0;top:112px;text-align:center;font-weight:900;font-size:38px;line-height:.98;color:var(--lime);text-shadow:0 0 14px rgba(198,241,53,.45);
+  animation:rise 6s var(--e) infinite;animation-delay:.1s}
+@keyframes rise{0%{opacity:0;transform:translateY(8px)}4%,94%{opacity:1;transform:none}100%{opacity:0}}
+.phone{position:absolute;left:80px;top:205px;width:200px;height:330px;border-radius:26px;background:#fff;box-shadow:0 0 0 5px #1E2A3A,0 0 30px rgba(198,241,53,.25);
+  overflow:hidden;animation:phone 6s var(--e) infinite}
+@keyframes phone{0%,3%{opacity:0;transform:translateY(27px)}10%,94%{opacity:1;transform:none}100%{opacity:0}}
+.phone .av{position:absolute;left:50%;top:30px;width:52px;height:52px;margin-left:-26px;border-radius:50%;background:#B97C59;box-shadow:inset 0 -14px 0 #2A1B13}
+.phone .nm{position:absolute;left:0;right:0;top:92px;text-align:center;font-size:12px;font-weight:600;color:#111}
+.phone .r{position:absolute;left:16px;right:16px;height:16px;border-radius:5px;background:#EDEFF2}
+.linkpill{position:absolute;left:50%;top:466px;transform:translateX(-50%);padding:5px 22px;border-radius:999px;font-weight:600;font-size:21px;white-space:nowrap;
+  border:2px solid var(--lime);color:#fff;background:rgba(10,10,10,.6);animation:linkpill 6s var(--e) infinite}
+@keyframes linkpill{0%,30%{background:rgba(10,10,10,.6);color:#fff}36%,100%{background:var(--lime);color:var(--ink)}}
+.cur3d{position:absolute;left:246px;top:478px;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:34px solid var(--lime);
+  transform:rotate(-30deg);filter:drop-shadow(2px 4px 0 #6E8F12);animation:cur3d 6s var(--e) infinite}
+@keyframes cur3d{0%,18%{translate:30px 30px;opacity:0}28%{translate:0 0;opacity:1;scale:1}31%{scale:.86}35%,100%{scale:1;opacity:1}}
+.bub{position:absolute;width:44px;height:38px;border-radius:14px;background:rgba(198,241,53,.6);animation:bob 3s ease-in-out infinite alternate}
+.bub:after{content:"";position:absolute;left:6px;bottom:-7px;border-left:8px solid transparent;border-top:10px solid rgba(198,241,53,.6)}
+@keyframes bob{to{translate:0 -6px}}
+.label{position:absolute;left:8px;top:8px;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:99px;background:rgba(0,0,0,.55);color:#fff;z-index:20}
+.legal{position:absolute;font-size:8.7px;font-weight:500;color:rgba(255,255,255,.8)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tech Countdown <i>glimpse</i></h1>
+  <p class="lead">A premium tech-news countdown: small pill captions with one italic-serif phrase, big lime-and-white #NN numerals, tool cards over your dimmed shot, a 50/50 split with the caption on the seam, a "Day / Week N" series card and a Save / Follow / Community finish. Each frame is 360 × 640 (1080 × 1920 at 1/3) and loops every 6 s.</p>
+</header>
+
+<h2>F-A Countdown (TH-studio)</h2>
+<div class="grid">
+
+<figure>
+<div class="f" data-card="1">
+  <div class="room cool"></div>
+  <div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div>
+  <div class="plate l1" style="top:308px">The most exciting part</div>
+  <div class="plate l2" style="top:334px">of the launch event</div>
+  <div class="proof"><div class="img"></div><div class="t">This is not the<br><em>exciting part</em></div></div>
+</div>
+<figcaption><b>Hook HA-02, plate + proof.</b> Two-line plate (black / red) readable on frame 0, the proof card under it, the presenter live; the card's one event at 1 s.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="top board-warm"><div class="ui"><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div></div><div class="fade"></div></div>
+  <div class="bot"><div class="room"></div><div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div></div>
+  <div class="cap" style="top:311px"><span class="seq"><span class="pill">They just launched one</span></span></div>
+  <div class="cap" style="top:311px"><span class="seq s2"><span class="pill">that sets itself up</span></span></div>
+  <div class="cap" style="top:311px"><span class="seq s3"><span class="pill">in under a minute</span></span></div>
+</div>
+<figcaption><b>L-split.</b> Recording or B-roll on top (y 0–960), a black fade into the seam, the caption pill centred on the seam, the presenter below.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="room"></div><div class="lamp"></div>
+  <div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div>
+  <div class="chip chipseq" style="top:279px">Personal context</div>
+  <div class="numA numseq" style="top:306px"><b>#</b><span>07</span></div>
+  <div class="cap" style="top:300px"><span class="seq s2"><span class="pill">and it reads</span><span class="it">your whole inbox</span><span class="pill">before you ask</span></span></div>
+  <div class="cap" style="top:300px"><span class="seq s3"><span class="pill">which nobody is</span><span class="it">talking about</span></span></div>
+</div>
+<figcaption><b>Item ritual, SM-NUM-A.</b> White # + lime digits at chest with the italic label chip above; then the pill caption returns with one italic-serif phrase.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="lay dimmed"><div class="room"></div><div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="beard"></div></div></div></div>
+  <div class="behind" style="filter:blur(2px) brightness(.6)">N</div>
+  <div class="brand"><i>N</i>Notes Tool</div>
+  <div class="win">
+    <div class="scr a"><div class="tag">paste a video link</div><div class="bar w8" style="margin-top:20px"></div><div class="bar w6"></div><span class="btn" style="position:relative">Analyse</span></div>
+    <div class="scr b"><div class="tag">transcript</div><div class="bar w8" style="margin-top:20px"></div><div class="bar w6"></div><div class="bar w8"></div><div class="bar w4"></div></div>
+    <div class="scr c"><div class="tag">key takeaways</div><div class="bar w6" style="margin-top:20px"></div><div class="bar w8"></div><div class="bar w4"></div></div>
+    <div class="cursor" style="left:12px;top:65px;width:66px;height:24px"></div>
+    <div class="arrow" style="left:60px;top:84px"></div>
+  </div>
+  <div class="legal" style="left:24px;top:252px;z-index:3">REPRESENTATIONAL</div>
+  <div class="cap" style="top:442px"><span class="seq"><span class="pill">paste any video link</span></span></div>
+  <div class="cap" style="top:442px"><span class="seq s2"><span class="pill">you get the transcript,</span></span></div>
+  <div class="cap" style="top:442px"><span class="seq s3"><span class="pill">and the key takeaways.</span></span></div>
+</div>
+<figcaption><b>P-TOOL-CARD, TH-studio.</b> Presenter dimmed (blur 12, luma −50 %), monogram behind the head, brand row, a dark 16:9 window whose screens swap on each feature, the lime cursor box, the pill under the card. A created UI carries REPRESENTATIONAL.</figcaption>
+</figure>
+
+</div>
+
+<h2>TH-lime skin (tools of the week)</h2>
+<div class="grid">
+
+<figure>
+<div class="f lime" data-card="2">
+  <div class="lay dimphase"><div class="room"></div><div class="lamp"></div><div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div></div>
+  <div class="chip chipseq" style="top:279px">Video to notes</div>
+  <div class="numB numseq" style="top:296px;height:160px"><div class="h">#</div><div class="d">07</div></div>
+  <div class="cardphase">
+    <div class="brand" style="animation:none"><i>N</i>Notes Tool</div>
+    <div class="win" style="animation:none">
+      <div class="scr a" style="animation-delay:2s"><div class="tag">paste a video link</div><div class="bar w8" style="margin-top:20px"></div><div class="bar w6"></div><span class="btn">Analyse</span></div>
+      <div class="scr b" style="animation-delay:4s"><div class="tag">key takeaways</div><div class="bar w6" style="margin-top:20px"></div><div class="bar w8"></div><div class="bar w4"></div></div>
+    </div>
+    <div class="cap" style="top:442px"><span class="pill">turns any video into notes</span></div>
+  </div>
+</div>
+<figcaption><b>SM-NUM-B → tool card.</b> Lime hash with white condensed digits and the chip; on the tool's name the presenter dims and the white-framed card rises; the caption becomes the lime pill (CS-2).</figcaption>
+</figure>
+
+<figure>
+<div class="f lime">
+  <div class="lay dimmed"><div class="room"></div><div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="beard"></div></div></div></div>
+  <div class="behind" style="filter:blur(2px) brightness(.6);animation:none">V</div>
+  <div class="brand" style="animation:none"><i>V</i>Voice Tool</div>
+  <div class="win" style="animation:none">
+    <div class="scr a" style="animation:none;opacity:1"><div class="tag">clone a voice</div><div class="bar w8" style="margin-top:20px"></div><div class="bar w4"></div><div class="bar w6"></div></div>
+  </div>
+  <div class="price"><span class="bad">$22/month</span><span class="good">FREE</span></div>
+  <div class="cap" style="top:442px"><span class="seq"><span class="pill">others charge $22 a month</span></span></div>
+  <div class="cap" style="top:442px"><span class="seq s2"><span class="pill">this one is open source,</span></span></div>
+  <div class="cap" style="top:442px"><span class="seq s3"><span class="pill">free forever</span></span></div>
+</div>
+<figcaption><b>P-PRICE-STRIKE.</b> The spoken price in a red chip, struck on "charges"; FREE pops on "free". Numbers only as spoken (V-NUMFMT).</figcaption>
+</figure>
+
+<figure>
+<div class="f lime">
+  <div class="room"></div>
+  <div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div>
+  <div class="cap" style="top:330px"><span class="seq"><span class="pill">I went through</span><span class="it">100 launches</span><span class="pill">this week</span></span></div>
+  <div class="cap" style="top:330px"><span class="seq s2"><span class="pill">and picked these 10,</span><span class="it">completely free</span></span></div>
+  <div class="cap" style="top:330px"><span class="seq s3"><span class="it">Let's dive into it</span></span></div>
+</div>
+<figcaption><b>CS-2 caption profile.</b> 42 px lime pill, black text; the emphasis phrase is 92 px Instrument Serif Italic in white, the plain words split around it.</figcaption>
+</figure>
+
+</div>
+
+<h2>F-B Daily brief + series card</h2>
+<div class="grid">
+
+<figure>
+<div class="f">
+  <div class="top"><div class="dotfig"><div class="hud tl"></div><div class="hud tr"></div><div class="hud bl"></div><div class="hud br"></div></div><div class="fade"></div></div>
+  <div class="bot"><div class="room"></div><div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div></div>
+  <div class="cap" style="top:308px"><span style="font-size:14px;text-shadow:0 1px 3px #000">One image company just</span><span class="seq" style="animation-delay:.6s;display:block"><span class="it">a full-body scanner</span></span></div>
+</div>
+<figcaption><b>Hook HA-12, split thesis.</b> A dot-matrix reveal (or the creator's B-roll) on top, HUD brackets, the plain line on the seam and the thesis in italic under it.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="room"></div><div class="lamp"></div>
+  <div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div>
+  <div class="series" style="top:322px"><div class="k">Welcome to</div><div class="n">Day 60</div><div class="s">of future tech updates</div></div>
+  <div class="wash"></div>
+</div>
+<figcaption><b>P-SERIES-CARD.</b> After a warm wash: "Welcome to / Day 60 / of …" at 8–15 s, captions hidden, a 4 % drift on the presenter.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="lay" style="background:#000"></div>
+  <div class="cap" style="top:140px"><span class="it" style="font-size:27px">That 60-second scan</span></div>
+  <div class="framed"></div>
+  <div class="cap" style="top:418px"><span class="it" style="font-size:27px">takes twenty minutes today</span></div>
+</div>
+<figcaption><b>P-FRAMED-CLIP.</b> A rounded clip on black with italic serif lines above and below; ≤ 4 s.</figcaption>
+</figure>
+
+</div>
+
+<h2>End stack</h2>
+<div class="grid">
+
+<figure>
+<div class="f">
+  <div class="room"></div>
+  <div class="save"></div>
+  <div class="me"><div class="body"></div><div class="neck"></div><div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="beard"></div><div class="mouth"></div></div></div>
+  <div class="cap" style="top:300px"><span class="pill">Save this now because</span><span class="it">90% of you</span><span class="pill">will forget</span></div>
+</div>
+<figcaption><b>P-SAVE-BADGE.</b> Step 1 of the end stack: a red bookmark badge behind the head (matte), the line in the caption profile.</figcaption>
+</figure>
+
+<figure>
+<div class="f" data-card="3">
+  <div class="endcard">
+    <div class="k">Join the free</div>
+    <div class="h">Builders<br>Community</div>
+    <div class="phone"><div class="av"></div><div class="nm">Builders Community</div>
+      <div class="r" style="top:122px"></div><div class="r" style="top:146px;right:60px"></div><div class="r" style="top:170px"></div><div class="r" style="top:194px;right:80px"></div></div>
+    <div class="linkpill">Link in Bio</div>
+    <div class="cur3d"></div>
+    <div class="bub" style="left:24px;top:250px"></div><div class="bub" style="left:292px;top:330px;animation-delay:-1s"></div><div class="bub" style="left:300px;top:150px;animation-delay:-2s;transform:scale(.7)"></div>
+  </div>
+</div>
+<figcaption><b>P-COMMUNITY-CARD.</b> Dark-green dot grid, "Join the free" in italic serif, the community name in heavy lime with a glow, a phone mock of the group, and the Link in Bio pill tapped by the cursor (≤ 4 s).</figcaption>
+</figure>
+
+</div>
+</body>
+</html>

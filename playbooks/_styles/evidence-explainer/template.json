@@ -1,0 +1,36 @@
+{
+  "package": "veos.template/1",
+  "id": "evidence-explainer",
+  "tier": "core",
+  "order": 6,
+  "tagline": "News and myth-busting explainers: you on a topic-coloured backdrop, every claim proved by a source card with red highlights, dates and names as plates, a stamped verdict.",
+  "inspired_by_display": [
+    "Dhruv Rathee"
+  ],
+  "needs": "you talking (clean background) + your screenshots or clips if you have them",
+  "readiness": "R1",
+  "readiness_note": "without your own screenshots or clips, Claude builds the headline and quote cards itself (labelled REPRESENTATIONAL)",
+  "requires": [
+    "tokens_v3",
+    "layouts_v3",
+    "worlds_v3",
+    "inserts_flow",
+    "citations",
+    "data_figures",
+    "number_format",
+    "type_floors"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: the evidence panel slides down over the presenter on a crimson backdrop, a name plate lands",
+      "Citation card with red highlight bars wiping over the spoken phrase, presenter in a ringed circle",
+      "Gold money theme: the data stage, then a SCAM verdict stamp"
+    ]
+  }
+}

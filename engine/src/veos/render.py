@@ -9,6 +9,7 @@ from __future__ import annotations
 import multiprocessing as mp
 import os
 import subprocess
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -21,7 +22,8 @@ BSF = "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coeffi
 CHROME_ARGS = ["--force-color-profile=srgb", "--font-render-hinting=none", "--hide-scrollbars", "--mute-audio",
                "--allow-file-access-from-files",
                "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
-               "--disable-backgrounding-occluded-windows"]
+               "--disable-backgrounding-occluded-windows",
+               "--enable-unsafe-swiftshader"]  # WebGL (fx.three) on software SwiftShader when there is no GPU; newer Chromium needs the opt-in
 RETRIES = 3
 
 
@@ -36,7 +38,7 @@ def add_args(p, cmd):
     p.add_argument("--frames", type=int, required=True, help="total frame count N (frames 0..N-1)")
     p.add_argument("--test", help="comma list of frames to render as PNG, e.g. 0,30,60")
     p.add_argument("--range", nargs=2, type=int, metavar=("A", "B"), help="render frames A..B-1 into one chunk (patching)")
-    p.add_argument("--workers", type=int, default=None, help="parallel browsers (default min(8, max(1, cpus//2)))")
+    p.add_argument("--workers", type=int, default=None, help="parallel browsers (default min(4, max(1, cpus//4)), or VEOS_WORKERS)")
     p.add_argument("--out", help="output folder (default <project>/work/render or VEOS_HOME/scratch/render)")
     p.add_argument("--size", default="1080x1920", help="viewport WxH")
     p.add_argument("--query", action="append", help="k=v appended to the page URL (repeatable)")
@@ -67,6 +69,35 @@ def _probe(ffprobe: str, path: Path, entries: str, stream: str | None = None) ->
         cmd += ["-select_streams", stream]
     cmd += ["-show_entries", entries, "-of", "default=nw=1:nk=1", str(path)]
     return subprocess.run(cmd, capture_output=True, text=True).stdout.split()
+
+
+def _fresh_tokens(project: Project | None, query: list[str]) -> list[str]:
+    """A reel never renders with stale style settings: when the project's work/tokens.json is stale (tokens.refresh)
+    re-run `veos tokens`, then rebuild every bundle the page loads from inside the project (`bundle=<file url>`) that is
+    older than work/tokens.json. Returns the warning lines (also printed to stderr)."""
+    if not project or not (project.work / "tokens.json").exists():
+        return []
+    from argparse import Namespace
+    from urllib.parse import unquote, urlparse
+    from .prep import _bundle
+    from .tokens import refresh
+    out = [w for w in [refresh(project)] if w]
+    tk = project.work / "tokens.json"
+    for q in query:
+        if not q.startswith("bundle=") or not q[7:].startswith("file:"):
+            continue
+        u = urlparse(q[7:])
+        p = Path(unquote(u.path.lstrip("/") if os.name == "nt" else u.path))
+        root = project.root.resolve()
+        if p.name != "bundle.js" or not p.exists() or root not in p.resolve().parents:
+            continue
+        if p.stat().st_mtime < tk.stat().st_mtime:
+            dflt = (project.work / "render").resolve()
+            _bundle(Namespace(timeline=None, out=None if p.resolve().parent == dflt else str(p.parent)), project)
+            out.append(f"{project.rel(p)} was built with older tokens; re-ran `veos bundle`")
+    for w in out:
+        print(f"veos: warning: {w}", file=sys.stderr)
+    return out
 
 
 # ---------------------------------------------------------------- worker (runs in a spawned process)
@@ -158,8 +189,10 @@ def _render(args, project: Project | None) -> dict:
         log = str(project.root / "logs" / "render.log")
     else:
         log = str(out / "render.log")
+    stale = _fresh_tokens(project, args.query or [])
     query = "&".join(args.query or [])
-    workers = args.workers or min(8, max(1, (os.cpu_count() or 2) // 2))
+    # gentle default so a laptop stays usable while it renders; --workers or VEOS_WORKERS raise it
+    workers = args.workers or int(os.environ.get("VEOS_WORKERS") or 0) or min(4, max(1, (os.cpu_count() or 2) // 4))
     base = {"url": _page_url(str(html), query), "w": w, "h": h, "log": log, "ffmpeg": t.ffmpeg,
             "crf": str(args.crf), "preset": args.preset}
 
@@ -203,6 +236,8 @@ def _render(args, project: Project | None) -> dict:
     summary = {"mode": mode, "frames": done, "workers": len(jobs), "ms_per_frame": r3(1000 * wall / max(done, 1)),
                "effective_fps": r3(done / wall) if wall else 0.0, "retries": sum(r["retries"] for r in results),
                "out": project.rel(out) if project else out.as_posix()}
+    if stale:
+        summary["warnings"] = stale
     if mode == "test":
         summary["pngs"] = len(list(out.glob("t_*.png")))
         if errors:

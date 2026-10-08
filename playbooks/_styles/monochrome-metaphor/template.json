@@ -1,0 +1,33 @@
+{
+  "package": "veos.template/1",
+  "id": "monochrome-metaphor",
+  "tier": "full",
+  "order": 11,
+  "tagline": "Calm black-and-white essays: your voice-over becomes one glowing metaphor that morphs scene to scene, with small quiet captions. A seated-on-camera version is included.",
+  "inspired_by_display": [
+    "Dan Koe"
+  ],
+  "needs": null,
+  "readiness": "R2",
+  "readiness_note": "Morph chains are checked by eye until the continuity validator ships; lit objects (towers, globes, spheres) render as engine 3D objects, one at a time.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-B hook: a row of glowing dots eaten one by one, the last dot left alone",
+      "F-B signature: an eye with a clock for a pupil pushes through into a lighthouse beam",
+      "F-A seated essay: white serif cold-open card, then gold lowercase captions on the chest"
+    ]
+  }
+}

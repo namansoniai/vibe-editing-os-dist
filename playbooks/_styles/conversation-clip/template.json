@@ -1,0 +1,33 @@
+{
+  "package": "veos.template/1",
+  "id": "conversation-clip",
+  "tier": "core",
+  "order": 8,
+  "tagline": "Real conversations cut tight: a red quote pill on the opener, big centre captions in two colours (you in white, the other voice in yellow italic), and nothing else on screen.",
+  "inspired_by_display": [
+    "Alex Hormozi"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Two-person Q&A works best with two cameras (or one 4K wide); Solo answer needs just you talking.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "multi_speaker",
+    "diarisation"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A opener: host on top, asker below, the red question pill, the asker's words in yellow italic on the seam",
+      "F-A body: full-frame host, white word-group captions with one bold word, hard cuts and jump re-crops",
+      "F-B solo answer: you on top, the question card below, the pill carrying the question"
+    ]
+  }
+}

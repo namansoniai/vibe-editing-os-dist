@@ -1,0 +1,35 @@
+{
+  "package": "veos.template/1",
+  "id": "faceless-kinetic-framework",
+  "tier": "core",
+  "order": 10,
+  "tagline": "No face, just your voice: bold and italic lines stack on warm graph paper while a camera glides through your framework, ending on a free-resource card.",
+  "inspired_by_display": [
+    "peter.visuals"
+  ],
+  "needs": null,
+  "readiness": "R2",
+  "readiness_note": "Voice-over only. Your own example clips or screenshots make the proof cards real; without them Claude builds clean created cards.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "vo_only",
+    "canvas_camera",
+    "worlds_v3",
+    "type_floors",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: the title stacks in bold sans and italic serif while the framework hub grows its bars",
+      "The camera pushes into a node and its label types; then a giant initial on the ink world",
+      "Lead-magnet card: the keyword to comment and the free resource"
+    ]
+  }
+}

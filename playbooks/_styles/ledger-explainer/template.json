@@ -1,0 +1,35 @@
+{
+  "package": "veos.template/1",
+  "id": "ledger-explainer",
+  "tier": "core",
+  "order": 1,
+  "tagline": "Calm explainers that do the maths on screen: your face in a framed card, white ledger rows that land on every number, the claim crossed out and the real figure revealed.",
+  "inspired_by_display": [
+    "Ankur Warikoo"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Case-file format needs 15-25 of your own monochrome stills per episode; without them it uses drawn object plates.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "data_figures",
+    "number_format"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Ledger inset hook: the first row builds and its value chip lands on the spoken number",
+      "Face-bottom calculator: two options race on one axis as the year slider moves",
+      "Maroon traps theme: the claimed value is struck and the real figure pops beside it"
+    ]
+  }
+}

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Whiteboard Split Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 360x640 = 1080x1920 / 3.
+     Every animation is a 6 s CSS loop (negative delays keep the phase), so the frames can be stepped deterministically. -->
+<style>
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-style:italic;font-weight:400}
+@font-face{font-family:"JetBrains Mono";src:url("../../../../assets/fonts/JetBrainsMono-VF.ttf");font-weight:100 800}
+:root{--crimson:#B0122A;--accent:#FF2D55;--data:#D61FD0;--hl:#FFE000;--bad:#E0102A;--good:#2BD96B;--mute:#8A8A8A;
+  --ink:#0B0B0B;--paper:#FFFFFF;--canvas:#EEEDEA;--grid:#D4D2CC;--night:#050505;--e:cubic-bezier(.22,1,.36,1);--io:cubic-bezier(.65,0,.35,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#141416;color:#EDEDED;font-family:"Inter Tight",system-ui,sans-serif;padding:32px 16px 60px}
+h1{font-weight:700;font-size:22px;max-width:1180px;margin:0 auto 6px}
+p.lead{font-size:13px;opacity:.72;max-width:1180px;margin:0 auto 24px;line-height:1.5}
+h2{font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;max-width:1180px;margin:26px auto 12px}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px}
+figcaption{font-size:12px;opacity:.75;margin-top:8px;line-height:1.45}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate}
+.paper{background-color:var(--canvas);background-image:linear-gradient(var(--grid) .5px,transparent .5px),linear-gradient(90deg,var(--grid) .5px,transparent .5px);background-size:13.33px 13.33px}
+.stage{background:radial-gradient(300px 300px at 50% 36%,rgba(255,255,255,.05),transparent 70%),radial-gradient(circle,rgba(255,255,255,.06) .6px,transparent .7px) 0 0/12px 12px,var(--night)}
+/* ---------- the face window (L-split): x 64-1016, y 1400 -> /3 ---------- */
+.win{position:absolute;left:21.3px;top:466.7px;width:317.3px;height:190px;border-radius:10px;overflow:hidden;
+  background:linear-gradient(180deg,#1b1d24,#0e0f13);box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.room{position:absolute;inset:0}
+.room:before{content:"";position:absolute;right:26px;top:10px;width:5px;height:150px;border-radius:3px;background:#3FE8E8;box-shadow:0 0 14px #3FE8E8}
+.room:after{content:"";position:absolute;left:14px;top:18px;width:46px;height:34px;border-radius:3px;background:#2A2D36;box-shadow:58px 4px 0 #23262e,0 44px 0 #262932}
+.p{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:150px;height:170px}
+.p .body{position:absolute;left:0;right:0;bottom:0;height:86px;border-radius:70px 70px 0 0;background:#15161a}
+.p .neck{position:absolute;left:62px;bottom:76px;width:26px;height:20px;background:#b88468}
+.p .head{position:absolute;left:47px;top:12px;width:56px;height:66px;border-radius:46% 46% 42% 42%;background:#c99572}
+.p .hair{position:absolute;left:44px;top:6px;width:62px;height:26px;border-radius:30px 30px 10px 10px;background:#2a1d16}
+.p .eye{position:absolute;top:40px;width:6px;height:3px;border-radius:2px;background:#2b1a14}
+.p .mouth{position:absolute;left:69px;top:62px;width:12px;height:3px;border-radius:3px;background:#7a3a30;animation:talk .36s steps(2) infinite}
+.p .hand{position:absolute;width:26px;height:30px;border-radius:12px;background:#c99572;left:100px;bottom:40px;transform-origin:50% 100%;animation:gest 6s var(--io) infinite}
+@keyframes talk{50%{height:7px}}
+@keyframes gest{0%,100%{transform:rotate(-8deg) translateY(0)}30%{transform:rotate(14deg) translateY(-14px)}60%{transform:rotate(-4deg) translateY(-4px)}}
+/* full face (L-full) */
+.full{position:absolute;inset:0;background:radial-gradient(260px 300px at 70% 20%,#25303a,transparent 70%),linear-gradient(180deg,#14161b,#0b0c0f)}
+.full:before{content:"";position:absolute;right:22px;top:40px;width:8px;height:300px;border-radius:4px;background:#3FE8E8;filter:blur(3px);opacity:.75}
+.full .p{width:330px;height:600px;bottom:-40px}
+.full .p .body{height:330px;border-radius:200px 200px 0 0}
+.full .p .neck{left:135px;top:225px;bottom:auto;width:60px;height:80px}
+.full .p .head{left:96px;top:70px;width:138px;height:168px}
+.full .p .hair{left:90px;top:56px;width:150px;height:62px;border-radius:80px 80px 24px 24px}
+.full .p .eye{top:146px;width:14px;height:6px}
+.full .p .mouth{left:153px;top:200px;width:26px;height:6px}
+.full .p .hand{width:60px;height:70px;left:40px;bottom:120px;border-radius:26px}
+/* ---------- lockup (S-HEAD y 150-360 -> 50-120) ---------- */
+.lk{position:absolute;left:21px;right:21px;top:53px;text-align:center;font-weight:800;line-height:1.04;letter-spacing:-.01em}
+.lk .l1{font-size:17px}.lk .l2{font-size:22px}
+.serif{font-family:"Instrument Serif",serif;font-style:italic;font-weight:400;font-size:1.18em;letter-spacing:0}
+.lk.ink{color:var(--ink)}.lk.wt{color:var(--paper)}
+.crim{color:var(--crimson)}
+.ul{position:relative;display:inline-block}
+.ul:after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1.6px;background:var(--crimson);transform-origin:0 50%;animation:draw 6s var(--e) infinite;animation-delay:var(--ud,-5.9s)}
+@keyframes draw{0%{transform:scaleX(0)}4%,100%{transform:scaleX(1)}}
+.build{display:inline-block;animation:bb 6s var(--e) infinite;animation-delay:var(--bd,-6s)}
+@keyframes bb{0%{opacity:0;filter:blur(4px);transform:translateY(3px)}3%,100%{opacity:1;filter:blur(0);transform:none}}
+.slab{background:var(--crimson);color:#fff;padding:0 6px 1px;border-radius:2px}
+/* ---------- captions (CS-1 cy 1245 -> 415; CS-2 cy 1180 -> 393) ---------- */
+.cap{position:absolute;left:0;right:0;text-align:center;font-weight:700;letter-spacing:-.01em;height:30px}
+.cap.c1{top:403px;font-size:18.7px}.cap.c2{top:378px;font-size:22px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.cap.ink{color:var(--ink)}.cap.wt{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.cap span{position:absolute;left:0;right:0;opacity:0;animation:word 6s steps(1,end) infinite;animation-delay:var(--d)}
+.cap span.s{font-family:"Instrument Serif",serif;font-style:italic;font-weight:400;font-size:1.12em}
+@keyframes word{0%{opacity:1}7.5%,100%{opacity:0}}
+/* mode schedule: L-full layer cut in/out (hard) */
+.punch{position:absolute;inset:0;opacity:0;animation:mode 6s steps(1,end) infinite;z-index:5}
+@keyframes mode{0%{opacity:0}53.3%{opacity:1}76.7%,100%{opacity:0}}
+.punch .p{animation:land 6s var(--e) infinite}
+@keyframes land{0%,53.2%{transform:translateX(-50%) scale(1.06)}55%,100%{transform:translateX(-50%) scale(1)}}
+/* card in the band */
+.card{position:absolute;border-radius:9px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.15);animation:cin 6s var(--e) infinite;animation-delay:var(--cd,-6s)}
+@keyframes cin{0%{opacity:0;transform:scale(.92);filter:blur(3px)}2.2%,100%{opacity:1;transform:none;filter:none}}
+.dark{background:#121214;box-shadow:0 0 0 .5px rgba(255,255,255,.35),0 0 14px rgba(255,255,255,.06)}
+svg{position:absolute;overflow:visible}
+.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:dash 6s var(--io) infinite;animation-delay:var(--dd,-6s)}
+@keyframes dash{0%{stroke-dashoffset:var(--len)}12%,100%{stroke-dashoffset:0}}
+.pop{opacity:0;transform-box:fill-box;transform-origin:center;animation:pop 6s var(--e) infinite;animation-delay:var(--pd,-6s)}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}1.6%,100%{opacity:1;transform:scale(1)}}
+.tag{position:absolute;background:#fff;color:var(--ink);font-weight:700;font-size:10px;padding:1px 4px;border-radius:1.5px;white-space:nowrap}
+.chip{position:absolute;left:150px;background:#3A3A3C;color:#fff;font-weight:700;font-size:13.3px;padding:3px 7px;border-radius:2px;box-shadow:inset 0 .7px 0 rgba(255,255,255,.18);opacity:0;animation:rise 6s var(--e) infinite;animation-delay:var(--pd)}
+@keyframes rise{0%{opacity:0;transform:translateY(4px)}2%,100%{opacity:1;transform:none}}
+.num{position:absolute;font-weight:900;font-size:67px;line-height:1;color:#fff}
+.stepname{position:absolute;font-weight:800;font-size:24px;line-height:.98;color:#fff}
+.legal{position:absolute;font-weight:500;font-size:8px;opacity:.7}
+</style>
+</head>
+<body>
+<h1>Whiteboard Split</h1>
+<p class="lead">A card band on top, a one-word caption band, the face in a rounded window below; a hard cut to the full face on every claim. Bold-sans lockups with one italic-serif word and a crimson key phrase. One recurring diagram returns at every step with the active part lit. Inspired by Kallaway. Frames are 1080x1920 at 1/3; captions shown in the default language (English).</p>
+
+<h2>F-A Whiteboard split</h2>
+<div class="grid">
+
+<!-- 1. Hook (HA-06) on paper, with the first punch -->
+<figure>
+<div class="f paper" data-card="1">
+  <div class="lk ink">
+    <div class="l1"><span class="build" style="--bd:-6s">This Is Why Your</span></div>
+    <div class="l2"><span class="build" style="--bd:-5.95s">Plan</span> <span class="build ul crim" style="--bd:-5.9s;--ud:-5.75s"><span class="serif">Never</span> Works</span></div>
+  </div>
+  <div class="card" style="left:110px;top:132px;width:140px;height:250px;--cd:-6s;border-radius:14px">
+    <div style="position:absolute;left:10px;top:9px;font-size:6px;font-weight:700;color:#222">‹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Results</div>
+    <div style="position:absolute;left:52px;top:24px;width:36px;height:52px;border-radius:3px;background:linear-gradient(#2a2d36,#111)"></div>
+    <div style="position:absolute;left:12px;top:92px;right:12px;height:.5px;background:#ddd"></div>
+    <div style="position:absolute;left:12px;top:118px;right:12px;height:.5px;background:#ddd"></div>
+    <svg style="left:12px;top:86px" width="116" height="60" viewBox="0 0 116 60"><path class="draw" style="--len:150;--dd:-5.7s;filter:drop-shadow(0 0 3px #D61FD0)" d="M2 4 C 8 40, 18 50, 40 52 S 90 54, 112 54" fill="none" stroke="#D61FD0" stroke-width="2.2"/></svg>
+    <div style="position:absolute;left:12px;top:162px;width:40px;height:4px;border-radius:2px;background:#e4e4e4;box-shadow:0 10px 0 #ececec,0 20px 0 #ececec"></div>
+    <div class="legal" style="left:10px;bottom:6px;color:#555">example</div>
+  </div>
+  <div class="cap c1 ink">
+    <span style="--d:-6s">This</span><span style="--d:-5.55s">is</span><span style="--d:-5.1s">why</span><span style="--d:-4.65s">your</span><span style="--d:-4.2s">plan</span><span style="--d:-3.4s">never</span>
+  </div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+  <div class="punch">
+    <div class="full"><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:132px"></div><div class="eye" style="left:186px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+    <div class="cap c2 wt"><span style="--d:-2.8s;animation-duration:6s">because</span><span style="--d:-2.35s">you</span><span style="--d:-1.95s">rely</span><span style="--d:-1.6s">on</span></div>
+  </div>
+</div>
+<figcaption><b>Hook (HA-06), W-paper.</b> Lockup readable on frame 0 with the crimson key phrase and underline; the card scales in and its curve drops; one word at a time at cy 1245 in ink; a hard cut to the full face on "because" (CS-2, cy 1180).</figcaption>
+</figure>
+
+<!-- 2. The recurring motif: visit to node 2 -->
+<figure>
+<div class="f stage" data-card="2">
+  <div class="lk wt" style="top:53px"><div class="l2" style="font-size:21px">The Habit <span class="serif ul" style="--ud:-6s">Loop</span></div></div>
+  <div style="position:absolute;left:0;top:110px;width:360px;height:280px;overflow:hidden">
+    <div style="position:absolute;left:0;top:0;width:360px;height:280px;transform-origin:120px 150px;animation:visit 6s var(--io) infinite">
+      <svg style="left:30px;top:60px" width="300" height="160" viewBox="0 0 300 160">
+        <path d="M150 80 C 110 20, 30 20, 30 80 C 30 140, 110 140, 150 80 C 190 20, 270 20, 270 80 C 270 140, 190 140, 150 80 Z" fill="none" stroke="#FF2D55" stroke-width="9" opacity=".95" style="filter:drop-shadow(0 0 6px #FF2D55)"/>
+        <path d="M150 80 C 110 20, 30 20, 30 80 C 30 140, 110 140, 150 80 C 190 20, 270 20, 270 80 C 270 140, 190 140, 150 80 Z" fill="none" stroke="#ffd0da" stroke-width="1.2" stroke-dasharray="2 5" opacity=".7"/>
+        <circle cx="62" cy="34" r="6" fill="#fff" opacity=".35"/><text x="54" y="22" fill="#fff" opacity=".35" font-size="12" font-weight="800">1</text>
+        <circle cx="238" cy="34" r="7" fill="#fff" style="filter:drop-shadow(0 0 8px #FF2D55)"/><text x="246" y="22" fill="#fff" font-size="12" font-weight="800">2</text>
+        <circle cx="238" cy="126" r="6" fill="#fff" opacity=".35"/><text x="246" y="146" fill="#fff" opacity=".35" font-size="12" font-weight="800">3</text>
+      </svg>
+    </div>
+    <div class="num" style="left:28px;top:14px;animation:numin 6s var(--e) infinite">2</div>
+    <div class="stepname" style="left:76px;top:30px;animation:numin 6s var(--e) infinite;animation-delay:.1s">The<br>Effort</div>
+  </div>
+  <div class="cap c1 wt"><span style="--d:-6s">Part</span><span style="--d:-5.55s">two:</span><span style="--d:-5.1s">the</span><span style="--d:-4.6s" class="s">effort.</span><span style="--d:-3.8s">Start</span><span style="--d:-3.3s">smaller</span><span style="--d:-2.8s">than</span><span style="--d:-2.3s">easy.</span></div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+</div>
+<figcaption><b>Recurring diagram (P-MOTIF-VISIT + SM-NUM), W-stage.</b> The loop is pushed so node 2 sits left-centre, lit in the neon accent with the others at 35%; the hero numeral and step name land on the step word.</figcaption>
+</figure>
+
+<!-- 3. Full-face punch with the italic-serif keyword swap -->
+<figure>
+<div class="f" data-card="3" style="background:#0b0c0f">
+  <div class="full" style="animation:none"><div class="p" style="animation:push 6s linear infinite"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:132px"></div><div class="eye" style="left:186px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+  <div class="cap c2 wt"><span style="--d:-6s">Motivation</span><span style="--d:-5.4s">is</span><span style="--d:-5.0s">not</span><span style="--d:-4.55s">the</span><span style="--d:-4.1s" class="s">trigger.</span><span style="--d:-3.2s">Your</span><span style="--d:-2.7s" class="s">environment</span><span style="--d:-2.0s">is.</span></div>
+</div>
+<figcaption><b>Full-face punch (L-full, CS-2).</b> Nothing but the face and one 66 px word on the chest; a rare Instrument Serif italic swap on the topic word; a slow push-drift over the run.</figcaption>
+</figure>
+</div>
+
+<h2>Patterns</h2>
+<div class="grid">
+
+<!-- 4. Old -> new on the same axes -->
+<figure>
+<div class="f stage">
+  <div class="lk wt"><div class="l2" style="font-size:21px">The <span class="serif">Old</span> Funnel <span class="slab" style="font-size:16px">No Longer Works</span></div></div>
+  <svg style="left:30px;top:150px" width="300" height="200" viewBox="0 0 300 200">
+    <path d="M10 10 V190 H295" fill="none" stroke="#fff" stroke-width="1.4"/>
+    <path d="M10 188 C 70 188, 100 30, 150 30 S 230 188, 290 188" fill="none" stroke="#E0102A" stroke-width="2" opacity=".3"/>
+    <path class="draw" style="--len:520;--dd:-4.8s;filter:drop-shadow(0 0 4px #fff)" d="M10 120 C 30 120, 40 40, 60 40 S 80 140, 100 140 S 120 60, 140 60 S 160 150, 180 150 S 200 80, 220 80 S 240 160, 260 160 S 280 120, 290 120" fill="none" stroke="#fff" stroke-width="2"/>
+    <circle cx="60" cy="40" r="4" fill="#fff" class="pop" style="--pd:-4.5s"/><circle cx="140" cy="60" r="4" fill="#fff" class="pop" style="--pd:-4.2s"/><circle cx="220" cy="80" r="4" fill="#fff" class="pop" style="--pd:-3.9s"/>
+  </svg>
+  <div class="tag" style="left:70px;top:178px">Proof</div><div class="tag" style="left:150px;top:198px">Story</div><div class="tag" style="left:232px;top:218px">Offer</div>
+  <div class="cap c1 wt"><span style="--d:-6s">Now</span><span style="--d:-5.5s">it's</span><span style="--d:-5.1s">a</span><span style="--d:-4.7s" class="s">trust</span><span style="--d:-4.1s">curve.</span></div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+</div>
+<figcaption><b>P-ARC-SWAP (FW-2).</b> The old arc drops to 25% red; the new curve draws white on the same axes; callout tags pop on their words. LK-3 key slab names the turn.</figcaption>
+</figure>
+
+<!-- 5. Threshold bars + annotation -->
+<figure>
+<div class="f stage">
+  <div class="lk wt"><div class="l2" style="font-size:21px">The <span class="serif">First</span> Three Seconds</div></div>
+  <svg style="left:40px;top:140px" width="290" height="220" viewBox="0 0 290 220">
+    <path d="M14 0 V180 H290" fill="none" stroke="#fff" stroke-width="1.4"/>
+    <path d="M14 60 C 40 60, 50 64, 70 20 S 100 140, 120 140 S 150 50, 170 50 S 200 150, 220 150 S 250 80, 290 90" fill="none" stroke="#fff" stroke-width="1.6" opacity=".5"/>
+    <path class="draw" style="--len:120;--dd:-5.6s;filter:drop-shadow(0 0 5px #D61FD0)" d="M14 60 C 40 60, 50 64, 70 20" fill="none" stroke="#D61FD0" stroke-width="3"/>
+    <text x="-12" y="64" fill="#fff" font-size="9" font-style="italic">70%</text>
+    <rect x="16" y="186" width="24" height="5" fill="#FFE000" class="pop" style="--pd:-5s"/><rect x="44" y="186" width="24" height="5" fill="#FFE000" class="pop" style="--pd:-4.8s"/>
+    <path class="draw" style="--len:60;--dd:-4.4s" d="M44 196 c 4 10, -6 18, -2 26" fill="none" stroke="#fff" stroke-width="1.3"/>
+  </svg>
+  <div style="position:absolute;left:18px;top:362px;color:#fff;font-family:'Instrument Serif',serif;font-style:italic;font-size:19px" class="build" >Hook</div>
+  <div class="legal" style="left:24px;top:388px;color:#fff">example</div>
+  <div class="cap c1 wt"><span style="--d:-6s">the</span><span style="--d:-5.6s">first</span><span style="--d:-5.2s">three</span><span style="--d:-4.7s">seconds</span><span style="--d:-4.0s">decide</span><span style="--d:-3.4s">everything.</span></div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+</div>
+<figcaption><b>P-THRESHOLD-BAR + P-DIAGRAM-PUSH.</b> Yellow bars under the deciding window, the magenta reading, an italic-serif annotation with a curl arrow; illustrative charts carry the "example" tag.</figcaption>
+</figure>
+
+<!-- 6. Chip stack -->
+<figure>
+<div class="f stage">
+  <div class="lk wt"><div class="l2" style="font-size:21px">What Makes A <span class="serif ul" style="--ud:-6s">Hook</span></div></div>
+  <svg style="left:60px;top:150px" width="100" height="200" viewBox="0 0 100 200"><path class="draw" style="--len:160;--dd:-5.8s" d="M10 0 V100 H80 M80 40 V160" fill="none" stroke="#fff" stroke-width="1"/></svg>
+  <div class="chip" style="top:182px;--pd:-5.4s">Contrast</div>
+  <div class="chip" style="top:222px;--pd:-4.7s">A Number</div>
+  <div class="chip" style="top:262px;--pd:-4.0s">A Question</div>
+  <div class="cap c1 wt"><span style="--d:-5.4s">contrast,</span><span style="--d:-4.9s">a</span><span style="--d:-4.6s">number,</span><span style="--d:-4.0s">or</span><span style="--d:-3.7s">a</span><span style="--d:-3.4s">question.</span></div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+</div>
+<figcaption><b>P-CHIP-STACK.</b> Grey bevel chips rise one per spoken item, joined to the diagram by a bracket line.</figcaption>
+</figure>
+
+<!-- 7. Chat typing on paper -->
+<figure>
+<div class="f paper">
+  <div class="lk ink"><div class="l1">Paste Your Notes And Get</div><div class="l2"><span class="crim">A Whole Week</span> <span class="serif">Planned</span></div></div>
+  <div class="card" style="left:21px;top:200px;width:318px;height:100px;border-radius:8px;--cd:-6s">
+    <div style="position:absolute;left:12px;top:14px;right:12px;font-family:'JetBrains Mono',monospace;font-size:13.3px;color:#1F4FE0;white-space:nowrap;overflow:hidden;width:0;animation:type 6s steps(22,end) infinite">/plan my week by energy</div>
+    <div style="position:absolute;right:10px;bottom:10px;width:16px;height:16px;border-radius:4px;background:var(--crimson);animation:send 6s var(--e) infinite"></div>
+    <div class="legal" style="left:12px;bottom:8px;color:#555">REPRESENTATIONAL</div>
+  </div>
+  <div class="cap c1 ink"><span style="--d:-6s">type</span><span style="--d:-5.5s">slash</span><span style="--d:-5.0s">plan,</span><span style="--d:-4.4s">then</span><span style="--d:-3.9s">hit</span><span style="--d:-3.5s">send.</span></div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+</div>
+<figcaption><b>P-CHAT-TYPE (FW-3), W-paper.</b> A generic chat input, the command typed one character a frame, send pulses on "send"; recreated UI is labelled REPRESENTATIONAL.</figcaption>
+</figure>
+
+<!-- 8. CTA asset -->
+<figure>
+<div class="f paper">
+  <div class="lk ink"><div class="l2">Comment <span class="serif crim">“LOOP”</span></div><div class="l1 crim" style="font-size:19px;margin-top:2px">To Get The Tracker</div></div>
+  <div style="position:absolute;left:52px;top:140px;width:256px;height:250px">
+    <div class="pg" style="left:0;top:0;--pd:-5.9s"></div><div class="pg" style="left:88px;top:0;--pd:-5.75s"></div><div class="pg" style="left:176px;top:0;--pd:-5.6s"></div>
+    <div class="pg" style="left:0;top:110px;--pd:-5.45s"></div><div class="pg" style="left:88px;top:110px;--pd:-5.3s"></div><div class="pg hl" style="left:176px;top:110px;--pd:-5.15s"></div>
+  </div>
+  <div class="cap c1 ink"><span style="--d:-6s">Comment</span><span style="--d:-5.3s">"LOOP"</span><span style="--d:-4.5s">and</span><span style="--d:-4.1s">I'll</span><span style="--d:-3.7s">send</span><span style="--d:-3.3s">it.</span></div>
+  <div class="win"><div class="room"></div><div class="p"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="eye" style="left:61px"></div><div class="eye" style="left:83px"></div><div class="mouth"></div><div class="hand"></div></div></div>
+</div>
+<figcaption><b>P-CTA-ASSET.</b> LK-5 lockup with the keyword in an italic-serif quote; the deliverable's pages pop in reading order, the key line highlighted; the reel ends here, on the split.</figcaption>
+</figure>
+</div>
+
+<style>
+@keyframes visit{0%,8%{transform:scale(1) translate(0,0)}18%,100%{transform:scale(1.55) translate(-70px,8px)}}
+@keyframes numin{0%,16%{opacity:0;transform:translateX(27px);filter:blur(3px)}22%,100%{opacity:1;transform:none;filter:none}}
+@keyframes push{0%{transform:translateX(-50%) scale(1)}100%{transform:translateX(-50%) scale(1.04)}}
+@keyframes type{0%,4%{width:0}40%,100%{width:290px}}
+@keyframes send{0%,44%{transform:scale(1)}46%{transform:scale(1.25)}50%,100%{transform:scale(1)}}
+.pg{position:absolute;width:76px;height:98px;background:#fff;border-radius:2px;box-shadow:0 2px 6px rgba(0,0,0,.12);
+  background-image:repeating-linear-gradient(180deg,transparent 0 8px,#d9d9d9 8px 9px);background-size:60px 100%;background-repeat:no-repeat;background-position:8px 12px;
+  opacity:0;animation:pop2 6s var(--e) infinite;animation-delay:var(--pd)}
+.pg.hl:after{content:"";position:absolute;left:8px;top:54px;width:58px;height:7px;background:#FFE000;opacity:.85}
+@keyframes pop2{0%{opacity:0;transform:scale(.8)}2%,100%{opacity:1;transform:none}}
+</style>
+</body>
+</html>

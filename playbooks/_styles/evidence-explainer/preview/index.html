@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence Explainer preview</title>
+<style>
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Anton";src:url("../../../../assets/fonts/Anton-Regular.ttf")}
+@font-face{font-family:"Source Serif 4";src:url("../../../../assets/fonts/SourceSerif4-VF.ttf");font-weight:200 900}
+@font-face{font-family:"JetBrains Mono";src:url("../../../../assets/fonts/JetBrainsMono-VF.ttf");font-weight:100 800}
+:root{--bg:#f3f1ee;--fg:#141414;--muted:#5d5a55;--crimson:#D40000;--ember:#C84A0C;--gold:#A06A12;--slate:#2F6FD0;--bad:#E0201F;--good:#2BD94A;--accent:#FFD60A;--plate:#121214;--night:#09090B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111113;--fg:#ececec;--muted:#9a978f}}
+:root[data-theme="dark"]{--bg:#111113;--fg:#ececec;--muted:#9a978f}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:Montserrat,system-ui,sans-serif;padding:24px 16px 48px}
+h1{font-size:22px;font-weight:800;margin-bottom:4px}
+p.lead{color:var(--muted);font-size:14px;margin-bottom:18px;max-width:760px}
+h2{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+.strip{display:flex;flex-wrap:wrap;gap:16px}
+figure{width:min(360px,100%)}
+figcaption{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+.f{position:relative;width:360px;height:640px;overflow:hidden;border-radius:6px;background:#000;max-width:100%}
+.f *{position:absolute}
+/* backdrops (W-backdrop per theme) */
+.bd{inset:0}
+.bd.crimson{background:radial-gradient(circle at 50% 36%,#D45A44 0,#B8352A 42%,#7A1C14 100%)}
+.bd.ember{background:radial-gradient(circle at 50% 33%,#F2A12A 0,#D9730E 40%,#8F3605 100%)}
+.bd.gold{background:radial-gradient(circle at 50% 35%,#E8C35A 0,#C49A2A 42%,#7C5A10 100%)}
+.bd.slate{background:radial-gradient(circle at 50% 35%,#4C7099 0,#2C4A6E 42%,#121F33 100%)}
+.bd.room{background:repeating-linear-gradient(90deg,#CDB88A 0 18px,#BFA878 18px 26px,#D6C397 26px 40px)}
+.bd::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 70%,rgba(0,0,0,.18),transparent 30%),radial-gradient(circle at 80% 25%,rgba(255,255,255,.12),transparent 28%),radial-gradient(ellipse 75% 60% at 50% 46%,transparent 45%,rgba(0,0,0,.35) 100%)}
+.ember-dot{width:3px;height:3px;border-radius:50%;background:#FFD60A;opacity:.55;animation:rise 6s linear infinite}
+@keyframes rise{from{transform:translateY(0)}to{transform:translateY(-90px)}}
+/* presenter (neutral illustration) */
+.person{left:0;top:0;width:360px;height:640px}
+.night{inset:0;background:var(--night)}
+.noise{inset:0;background:radial-gradient(ellipse 75% 60% at 50% 46%,transparent 40%,rgba(0,0,0,.45) 100%)}
+/* plates, chips, cards */
+.plate{left:50%;transform:translateX(-50%);background:rgba(18,18,20,.9);color:#fff;font-weight:800;font-size:25px;letter-spacing:.02em;padding:5px 12px 6px;white-space:nowrap;border-bottom:2px solid #fff}
+.name{left:0;right:0;text-align:center;color:#fff;font-weight:800;font-size:22px;text-shadow:0 2px 6px rgba(0,0,0,.8)}
+.legal{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:8px;letter-spacing:.16em;color:#B4B4BE}
+.card{left:23px;width:314px;color:#F4F4F6}
+.mast{position:relative;font-family:"Source Serif 4",serif;font-weight:700;font-size:17px;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:6px;display:flex;justify-content:space-between}
+.mast span{position:relative;font-family:Montserrat;font-weight:600;font-size:13px;color:#B9B9C3}
+.head{position:relative;font-family:"Source Serif 4",serif;font-weight:600;font-size:21px;line-height:1.2;margin-top:10px}
+.hl{position:relative;display:inline;z-index:0}
+.hl i{position:absolute;left:-3px;right:-3px;top:0;bottom:-1px;background:#C8161D;z-index:-1;transform-origin:0 50%;transform:scaleX(0)}
+.skel{position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:8px}
+.stamp{font-family:Anton,sans-serif;font-size:62px;color:#E0201F;border:4px solid #E0201F;border-radius:6px;padding:0 14px;letter-spacing:.02em;transform:rotate(-8deg) scale(1.35);opacity:0;text-shadow:0 0 18px rgba(224,32,31,.5)}
+.chip{background:#FFD60A;color:#0B0B0B;font-weight:800;font-size:20px;padding:4px 9px;border-radius:2px;box-shadow:0 0 10px rgba(255,214,10,.45);white-space:nowrap}
+.val{font-weight:800;font-size:44px;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.35)}
+.unit{font-weight:600;font-size:13px;color:#d0d0d0}
+.year{left:50%;transform:translateX(-50%);background:#121214;color:#fff;font-weight:800;font-size:30px;padding:2px 12px;border-bottom:2px solid #fff}
+.barrel{width:46px;height:58px;border-radius:8px/12px;background:linear-gradient(90deg,#d8c20a,#f5e23c 40%,#b9a307);box-shadow:inset 0 9px 0 -6px #8c7c05,inset 0 -9px 0 -6px #8c7c05}
+.flash{inset:0;background:radial-gradient(circle at 50% 50%,#FFF6B0 0,#FFD400 45%,#FF8A00 100%);mix-blend-mode:screen;opacity:0}
+/* frame 1: H9-A panel slam (crimson) */
+.f1 .stage{inset:0;animation:pull 6s infinite}
+@keyframes pull{0%{filter:blur(8px)}5.5%{filter:blur(0)}100%{filter:blur(0)}}
+.f1 .pres{left:0;top:0;width:360px;height:640px;transform-origin:50% 0;animation:pres1 6s infinite}
+@keyframes pres1{0%,17%{transform:translateY(0) scale(1)}21.5%,78%{transform:translateY(300px) scale(.66)}82.5%,100%{transform:translateY(0) scale(1)}}
+.f1 .panel{left:0;top:0;width:360px;height:317px;background:var(--night);border-bottom:3px solid var(--crimson);transform:translateY(-100%);animation:panel1 6s infinite;overflow:hidden}
+@keyframes panel1{0%,17%{transform:translateY(-100%)}21.5%,78%{transform:translateY(0)}82.5%,100%{transform:translateY(-100%)}}
+.f1 .card{top:40px;animation:blurin 6s infinite}
+@keyframes blurin{0%,20%{filter:blur(8px);opacity:0;transform:scale(1.06)}26%,100%{filter:blur(0);opacity:1;transform:scale(1)}}
+.f1 .hl i{animation:bar1 6s infinite}
+.f1 .hl.b i{animation-name:bar1b}
+@keyframes bar1{0%,26%{transform:scaleX(0)}29%,100%{transform:scaleX(1)}}
+@keyframes bar1b{0%,30%{transform:scaleX(0)}33%,100%{transform:scaleX(1)}}
+.f1 .namep{top:262px;opacity:0;animation:namep 6s infinite}
+@keyframes namep{0%,30%{opacity:0;transform:translateY(8px)}34%,76%{opacity:1;transform:translateY(0)}79%,100%{opacity:0}}
+/* frame 2: ringed PiP over a full-bleed created card */
+.f2 .card{top:78px;animation:blurin2 6s infinite}
+@keyframes blurin2{0%{filter:blur(8px);opacity:0}8%,100%{filter:blur(0);opacity:1}}
+.f2 .hl i{animation:bar2 6s infinite}
+.f2 .hl.b i{animation-name:bar2b}
+.f2 .hl.c i{animation-name:bar2c}
+@keyframes bar2{0%,16%{transform:scaleX(0)}20%,100%{transform:scaleX(1)}}
+@keyframes bar2b{0%,30%{transform:scaleX(0)}34%,100%{transform:scaleX(1)}}
+@keyframes bar2c{0%,46%{transform:scaleX(0)}50%,100%{transform:scaleX(1)}}
+.f2 .pip{left:54px;top:417px;width:147px;height:147px;border-radius:50%;overflow:hidden;border:3px solid var(--crimson);box-shadow:0 8px 22px rgba(0,0,0,.55);animation:pip 6s infinite}
+@keyframes pip{0%{transform:scale(.6);opacity:0}6%{transform:scale(1.02);opacity:1}9%,100%{transform:scale(1)}}
+.f2 .pip .person{left:-106px;top:-12px;transform:scale(.62);transform-origin:50% 0}
+.f2 .body{position:relative;font-family:Montserrat;font-size:15px;line-height:1.42;margin-top:14px;color:#e6e6ea}
+/* frame 3: gold theme, rise split, data stage, SCAM */
+.f3 .top{left:0;top:0;width:360px;height:320px;overflow:hidden}
+.f3 .top .person{top:-30px;transform:scale(.8);transform-origin:50% 0}
+.f3 .bot{left:0;top:320px;width:360px;height:320px;background:#050506;border-top:3px solid var(--gold);overflow:hidden;animation:riseP 6s infinite}
+@keyframes riseP{0%{transform:translateY(100%)}5.5%,100%{transform:translateY(0)}}
+.f3 .y14{top:18px;animation:y14 6s infinite}
+.f3 .y26{top:18px;opacity:0;animation:y26 6s infinite}
+@keyframes y14{0%,40%{opacity:1;filter:blur(0)}44%,100%{opacity:0;filter:blur(4px)}}
+@keyframes y26{0%,45%{opacity:0;filter:blur(4px)}49%,100%{opacity:1;filter:blur(0)}}
+.f3 .r1{left:46px;top:76px}
+.f3 .row{left:110px;width:220px}
+.f3 .ph1{animation:y14 6s infinite}
+.f3 .ph2{opacity:0;animation:y26 6s infinite}
+.f3 .alarm{left:0;top:320px;width:360px;height:320px;background:#E0201F;mix-blend-mode:multiply;opacity:0;animation:alarm 6s infinite}
+@keyframes alarm{0%,64%{opacity:0}70%,94%{opacity:.45}100%{opacity:0}}
+.f3 .stamp{left:66px;top:410px;animation:stamp 6s infinite}
+@keyframes stamp{0%,70%{opacity:0;transform:rotate(-8deg) scale(1.35)}72.5%{opacity:1;transform:rotate(-8deg) scale(1)}73.5%{transform:rotate(-8deg) translate(3px,-2px)}74.5%,93%{opacity:1;transform:rotate(-8deg) scale(1)}96%,100%{opacity:0}}
+/* frame 4: H9-B date plate on ember */
+.f4 .dplate{top:448px;clip-path:inset(0 100% 0 0);animation:wipe 6s infinite}
+@keyframes wipe{0%,4%{clip-path:inset(0 100% 0 0);opacity:1;transform:translate(-50%,0)}8.5%,55%{clip-path:inset(0 0 0 0);opacity:1;transform:translate(-50%,0);filter:blur(0)}60%,100%{clip-path:inset(0 0 0 0);opacity:0;transform:translate(-50%,8px);filter:blur(1.5px)}}
+.f4 .chipk{left:110px;top:440px;background:rgba(42,42,46,.9);color:#fff;font-weight:800;font-size:22px;padding:5px 11px;border-radius:5px;opacity:0;animation:chipk 6s infinite}
+@keyframes chipk{0%,64%{opacity:0;filter:blur(3px)}68%,94%{opacity:1;filter:blur(0)}100%{opacity:0}}
+/* frame 5: route map (slate world) */
+.f5 .map{left:0;top:0;width:360px;height:317px;background:#24262B;overflow:hidden;border-bottom:3px solid var(--crimson)}
+.f5 .land{width:520px;height:340px;left:-60px;top:-10px;animation:pan 6s infinite}
+@keyframes pan{0%,30%{transform:translate(0,0)}60%,100%{transform:translate(-90px,20px)}}
+.f5 path.route{stroke-dasharray:420;stroke-dashoffset:420;animation:draw 6s infinite}
+@keyframes draw{0%,8%{stroke-dashoffset:420}40%,100%{stroke-dashoffset:0}}
+.f5 .pres{left:0;top:0;width:360px;height:640px;transform:translateY(300px) scale(.66);transform-origin:50% 0}
+/* frame 6: post card with yellow marker */
+.f6 .pc{left:24px;top:110px;width:312px;background:#141418;border-radius:13px;padding:17px;color:#F4F4F6;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.f6 .pc *{position:relative}
+.f6 .av{display:inline-block;width:34px;height:34px;border-radius:50%;background:#55555E;vertical-align:middle}
+.f6 .mk i{position:absolute;left:-2px;right:-2px;top:0;bottom:0;background:#FFD60A;z-index:-1;transform-origin:0 50%;transform:scaleX(0);animation:mk 6s infinite}
+.f6 .mk{z-index:0;color:#F4F4F6;animation:mkc 6s infinite}
+@keyframes mk{0%,25%{transform:scaleX(0)}30%,100%{transform:scaleX(1)}}
+@keyframes mkc{0%,27%{color:#F4F4F6}28%,100%{color:#0B0B0B}}
+.f6 .stamp{left:84px;top:330px;font-size:54px;animation:stamp2 6s infinite}
+@keyframes stamp2{0%,55%{opacity:0;transform:rotate(-8deg) scale(1.35)}58%,94%{opacity:1;transform:rotate(-8deg) scale(1)}98%,100%{opacity:0}}
+/* frame 7: flash cut */
+.f7 .a{inset:0;animation:showA 6s infinite}
+.f7 .b{inset:0;opacity:0;animation:showB 6s infinite}
+@keyframes showA{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes showB{0%,49%{opacity:0}50%,100%{opacity:1}}
+.f7 .flash{animation:flash 6s infinite}
+@keyframes flash{0%,46%{opacity:0}49.5%{opacity:1}55%,100%{opacity:0}}
+/* theme strip */
+.mini{width:110px;height:196px;position:relative;border-radius:5px;overflow:hidden}
+.mini .person{transform:scale(.306);transform-origin:0 0}
+.mini .rim{left:0;right:0;bottom:0;height:6px}
+.mini b{left:6px;top:6px;color:#fff;font-size:10px;font-weight:800;text-shadow:0 1px 3px #000}
+@media (prefers-reduced-motion:reduce){.f *{animation-play-state:paused!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="person">
+      <path d="M40 640 C46 520 102 470 180 462 C258 470 314 520 320 640 Z" fill="#1B2440"/>
+      <path d="M150 400 L210 400 L214 470 C200 486 160 486 146 470 Z" fill="#B97E5C"/>
+      <ellipse cx="180" cy="330" rx="66" ry="84" fill="#C98D6A"/>
+      <path d="M112 318 C108 250 150 228 186 230 C226 232 252 262 248 316 C238 284 214 270 184 270 C150 270 124 286 112 318 Z" fill="#1d1712"/>
+      <path d="M156 402 C170 414 192 414 206 402" stroke="#7a4b35" stroke-width="3" fill="none"/>
+      <ellipse cx="156" cy="330" rx="6" ry="4" fill="#2a1d16"/><ellipse cx="204" cy="330" rx="6" ry="4" fill="#2a1d16"/>
+    </g>
+  </defs>
+</svg>
+
+<h1>Evidence Explainer</h1>
+<p class="lead">You on a topic-coloured backdrop, no captions. Every claim is proved on screen: a source card with red bars wiping over the spoken words, a plate for every date, name and number, a stamped verdict. Created cards are labelled REPRESENTATIONAL.</p>
+
+<h2>F-A Evidence explainer</h2>
+<div class="strip">
+  <figure>
+    <div class="f f1" data-card="1">
+      <div class="stage" style="position:absolute;inset:0">
+        <div class="bd crimson"></div>
+        <div class="ember-dot" style="left:60px;top:520px"></div><div class="ember-dot" style="left:300px;top:470px;animation-delay:-2s"></div>
+        <svg class="pres" viewBox="0 0 360 640"><use href="#person"/></svg>
+        <div class="panel">
+          <div class="noise"></div>
+          <div class="card">
+            <div class="mast">City Herald<span>14 JAN 2026</span></div>
+            <div class="head"><span class="hl">Officials <i></i></span><span class="hl b">admit<i></i></span> the numbers were never checked</div>
+            <div class="skel" style="width:94%"></div><div class="skel" style="width:80%"></div>
+            <div class="legal" style="position:relative;margin-top:10px">REPRESENTATIONAL</div>
+          </div>
+          <div class="name namep">ASHA VERMA</div>
+        </div>
+      </div>
+    </div>
+    <figcaption>Hook H9-A: blur-in on the crimson plate, the evidence panel slides down on the source word, red bars, a name plate.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f f2" data-card="2">
+      <div class="night"></div><div class="noise"></div>
+      <div class="legal" style="left:23px;top:46px">REPRESENTATIONAL</div>
+      <div class="card">
+        <div class="mast">The Morning Wire<span>3 AUG 2025</span></div>
+        <div class="head">Report finds most of the claims had no basis</div>
+        <div class="body">The study reviewed <span class="hl">1,240 posts<i></i></span> shared in a week and found that <span class="hl b">nine out of ten<i></i></span> carried no source. <span class="hl c">None of the cures<i></i></span> were approved.</div>
+      </div>
+      <div class="pip"><div class="bd crimson" style="position:absolute"></div><svg style="left:0;top:0" width="147" height="147" viewBox="60 220 240 240"><use href="#person"/></svg></div>
+    </div>
+    <figcaption>Ringed PiP over a full-bleed created citation card; red bars wipe on each spoken phrase.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f f3" data-card="3">
+      <div class="top"><div class="bd gold"></div><svg class="person" viewBox="0 0 360 640"><use href="#person"/></svg></div>
+      <div class="bot">
+        <div class="year y14">2014</div><div class="year y26">2026</div>
+        <div class="barrel" style="left:40px;top:84px"></div>
+        <div class="row ph1" style="top:80px"><div class="val" style="position:relative">$105</div><div class="unit" style="position:relative">(PER BARREL)</div></div>
+        <div class="row ph1" style="top:172px"><div class="val" style="position:relative;color:#2BD94A">₹72</div><div class="unit" style="position:relative;color:#2BD94A">(PER LITRE)</div></div>
+        <div class="row ph2" style="top:80px"><div class="val" style="position:relative">$96</div><div class="unit" style="position:relative">(PER BARREL)</div></div>
+        <div class="row ph2" style="top:172px"><div class="val" style="position:relative;color:#E0201F">₹111</div><div class="unit" style="position:relative;color:#E0201F">(PER LITRE)</div></div>
+        <svg style="left:34px;top:182px" width="60" height="40" viewBox="0 0 60 40"><path d="M4 12 H34 L52 26 L48 30 L32 20 H4 Z" fill="#cfcfcf"/></svg>
+      </div>
+      <div class="alarm"></div>
+      <div class="stamp">SCAM</div>
+    </div>
+    <figcaption>TH-gold money reel: the panel rises from below, the data stage (2014 vs 2026 on one layout), then a SCAM verdict stamp.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f f4">
+      <div class="bd ember"></div>
+      <svg class="person" viewBox="0 0 360 640"><use href="#person"/></svg>
+      <div class="plate dplate">30 SEPT 2026</div>
+      <div class="chipk">HIJACKING</div>
+    </div>
+    <figcaption>H9-B: the date plate wipes in at chest height (rim bar leads), exits drifting down; a keyword chip later.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f f5">
+      <div class="bd room"></div>
+      <svg class="pres" viewBox="0 0 360 640"><use href="#person"/></svg>
+      <div class="map">
+        <svg class="land" viewBox="0 0 520 340"><path d="M40 40 C120 10 220 60 300 30 C380 0 470 50 510 40 L510 340 L250 340 C230 260 160 300 120 230 C80 170 20 180 10 120 Z" fill="#3A3D44"/>
+          <path class="route" d="M120 250 C180 200 250 150 360 90" stroke="#FFD60A" stroke-width="3" fill="none"/>
+          <circle cx="120" cy="250" r="5" fill="#FFD60A"/></svg>
+        <div class="chip" style="left:44px;top:214px;font-size:13px;padding:2px 6px">Mumbai</div>
+        <div class="legal" style="left:12px;top:12px;color:#d0d0d6">MAP NOT TO SCALE</div>
+      </div>
+    </div>
+    <figcaption>Route map (created schematic) in the split; TH-room keeps the real room behind the presenter.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f f6">
+      <div class="night"></div>
+      <div class="pc">
+        <div><span class="av"></span> <b style="font-size:15px">Family group</b></div>
+        <div style="margin-top:12px;font-size:18px;font-weight:600;line-height:1.3">Forward this: drinking hot water <span class="mk">cures dengue<i></i></span> in two days.</div>
+        <div class="legal" style="margin-top:14px">REPRESENTATIONAL</div>
+      </div>
+      <div class="stamp">FALSE</div>
+    </div>
+    <figcaption>HA-18 debunk: a created post card (no platform logo), yellow marker on the spoken words, then the verdict.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f f7">
+      <div class="a"><div class="bd slate"></div><svg class="person" viewBox="0 0 360 640"><use href="#person"/></svg></div>
+      <div class="b"><div class="bd slate"></div><svg class="person" viewBox="0 0 360 640" style="transform:scale(1.25);transform-origin:50% 40%"><use href="#person"/></svg><div class="chip" style="left:96px;top:450px">₹32.98 PER LITRE</div></div>
+      <div class="flash"></div>
+    </div>
+    <figcaption>T-06 flash cut between sections (5 frames), landing on a jump re-crop and a number chip.</figcaption>
+  </figure>
+</div>
+
+<h2>Theme packs (one per reel, by topic)</h2>
+<div class="strip">
+  <div class="mini"><div class="bd crimson" style="position:absolute"></div><svg class="person" style="position:absolute" viewBox="0 0 360 640" width="360" height="640"><use href="#person"/></svg><div class="rim" style="position:absolute;background:#D40000"></div><b style="position:absolute">TH-crimson · rights, law</b></div>
+  <div class="mini"><div class="bd ember" style="position:absolute"></div><svg class="person" style="position:absolute" viewBox="0 0 360 640" width="360" height="640"><use href="#person"/></svg><div class="rim" style="position:absolute;background:#C84A0C"></div><b style="position:absolute">TH-ember · war, media</b></div>
+  <div class="mini"><div class="bd gold" style="position:absolute"></div><svg class="person" style="position:absolute" viewBox="0 0 360 640" width="360" height="640"><use href="#person"/></svg><div class="rim" style="position:absolute;background:#A06A12"></div><b style="position:absolute">TH-gold · money</b></div>
+  <div class="mini"><div class="bd slate" style="position:absolute"></div><svg class="person" style="position:absolute" viewBox="0 0 360 640" width="360" height="640"><use href="#person"/></svg><div class="rim" style="position:absolute;background:#2F6FD0"></div><b style="position:absolute">TH-slate · tech, health</b></div>
+  <div class="mini"><div class="bd room" style="position:absolute"></div><svg class="person" style="position:absolute" viewBox="0 0 360 640" width="360" height="640"><use href="#person"/></svg><div class="rim" style="position:absolute;background:#D40000"></div><b style="position:absolute">TH-room · incidents</b></div>
+</div>
+</body>
+</html>

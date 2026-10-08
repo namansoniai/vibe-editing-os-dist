@@ -336,7 +336,12 @@ def main(args, project) -> dict:
         if not sj.exists():
             raise VeosError("NO_SOURCES", "work/sources.json not found",
                             "Run `veos ingest` and `veos conform` first (or pass --audio FILE --id X).")
-        ids = [s["id"] for s in read_json(sj)["sources"] if s.get("kind") in (None, "talking-head", "audio-only")]
+        sdoc = read_json(sj)
+        ids = [s["id"] for s in sdoc["sources"] if s.get("kind") in (None, "talking-head", "audio-only", "voiceover")]
+        if script_text is None and sdoc.get("script"):  # the script stored by `veos ingest --script` (voice-over reels)
+            sp = Path(sdoc["script"])
+            if sp.exists():
+                script_text = sp.read_text(encoding="utf-8")
         if args.id:
             ids = [i for i in ids if i == args.id] or [args.id]
         for sid in ids:

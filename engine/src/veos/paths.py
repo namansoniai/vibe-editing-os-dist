@@ -37,6 +37,13 @@ def playbook_template() -> Path:
     return app_root() / "playbooks" / "_template"
 
 
+def styles_dir() -> Path:
+    """The shipped style templates (path A): <app_root>/playbooks/_styles/<template-id>/ (read-only, updated with the
+    app; TEMPLATE-PACKAGE.md). Env VEOS_STYLES overrides it (tests, fixture runs)."""
+    env = os.environ.get("VEOS_STYLES")
+    return Path(env) if env else app_root() / "playbooks" / "_styles"
+
+
 def reference_playbook() -> Path:
     """The read-only quality reference for the playbook builder: `_reference` in the distribution, else Naman's (dev repo)."""
     for name in ("_reference", "naman"):
@@ -74,7 +81,7 @@ def add_args(p, cmd):
 def resolve() -> dict:
     root = app_root()
     return {"repo_root": root.as_posix(), "installed": is_installed(), "playbooks": playbooks_dir().as_posix(),
-            "playbook_template": playbook_template().as_posix(),
+            "playbook_template": playbook_template().as_posix(), "style_templates": styles_dir().as_posix(),
             "reference_playbook": reference_playbook().as_posix(),
             "renderer_player": (root / "renderer" / "player.html").as_posix(),
             "renderer_core": (root / "renderer" / "core.js").as_posix(), "veos_home": veos_home().as_posix(),

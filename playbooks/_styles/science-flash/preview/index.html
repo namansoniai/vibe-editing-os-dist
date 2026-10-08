@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Science Flash Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 360x640 = 1080x1920 at 1/3. 6 s CSS loops. -->
+<style>
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-SemiBold.ttf");font-weight:600}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Source Serif 4";src:url("../../../../assets/fonts/SourceSerif4-VF.ttf");font-weight:200 900}
+:root{--lime:#C6F000;--edge:#17454A;--blue:#2F6BFF;--red:#FF3B30;--paper:#FFFFFF;--ink:#0A0A0A;--night:#060A2C;--grid:#2A2B34;--gridline:#4A4D5E;
+  --e:cubic-bezier(.22,1,.36,1);--bk:cubic-bezier(.34,1.56,.64,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#101114;color:#fff;font-family:"Inter Tight",system-ui,sans-serif;padding:32px 16px 60px}
+h1{font:700 22px/1.2 "Inter Tight",sans-serif;margin:0 auto 6px;max-width:1180px}
+p.lead{font-size:13px;opacity:.72;max-width:1180px;margin:0 auto 22px;line-height:1.5}
+h2{font:600 14px/1.2 "Inter Tight",sans-serif;opacity:.8;max-width:1180px;margin:26px auto 12px;text-transform:uppercase;letter-spacing:.08em}
+.grid{display:flex;flex-wrap:wrap;gap:26px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px}
+figcaption{font-size:12px;opacity:.75;margin-top:8px;line-height:1.45}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:#000}
+.L{position:absolute;inset:0}
+/* --------- shared type --------- */
+.cap{position:absolute;left:21px;right:21px;top:473px;height:24px;text-align:center;font:600 20px/24px "Barlow Condensed",sans-serif;
+  text-transform:uppercase;letter-spacing:.01em;color:#fff;-webkit-text-stroke:1px #000;paint-order:stroke fill;text-shadow:0 1px 0 rgba(0,0,0,.55);white-space:nowrap;z-index:7}
+.credit{position:absolute;left:21px;top:47px;font:600 8px/10px "Inter Tight",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.78);z-index:6;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.credit:before{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--lime);margin-right:4px;vertical-align:1px}
+.chip{position:absolute;font:800 25px/1 "Montserrat",sans-serif;text-transform:uppercase;color:var(--edge);background:var(--lime);border:2px solid var(--edge);
+  border-radius:5px;padding:3px 8px;box-shadow:0 2px 0 var(--edge);white-space:nowrap;z-index:5}
+.word{position:absolute;font:900 32px/1 "Montserrat",sans-serif;color:var(--lime);-webkit-text-stroke:2px var(--edge);paint-order:stroke fill;text-shadow:0 2px 0 var(--edge);white-space:nowrap;z-index:5}
+.sticker{position:absolute;z-index:8;left:107px;top:420px;width:147px;height:40px;border-radius:5px;background:var(--lime);border:2px solid var(--edge);box-shadow:0 3px 0 var(--edge);
+  font:800 19px/36px "Montserrat",sans-serif;color:var(--edge);text-align:center;letter-spacing:.01em;z-index:8}
+.cursor{position:absolute;width:22px;height:22px;z-index:9}
+.spark{position:absolute;width:10px;height:2px;background:var(--lime);border-radius:2px;z-index:9}
+/* hard-cut helpers: a layer visible only inside its window (6 s loop) */
+@keyframes win1{0%,9.9%{opacity:1}10%,100%{opacity:0}}
+@keyframes win2{0%,9.9%{opacity:0}10%,53.2%{opacity:1}53.3%,100%{opacity:0}}
+@keyframes win3{0%,53.2%{opacity:0}53.3%,100%{opacity:1}}
+.w1{animation:win1 6s infinite steps(1,end)}.w2{animation:win2 6s infinite steps(1,end)}.w3{animation:win3 6s infinite steps(1,end)}
+/* --------- illustrated host (neutral, not a real person) --------- */
+.room{background:linear-gradient(180deg,#d9cbb6 0%,#cdbda5 60%,#b9a68b 100%)}
+.shelf{position:absolute;left:0;top:70px;width:110px;height:200px;background:linear-gradient(180deg,#6b4a32,#5a3c28);box-shadow:inset 0 -2px 0 #3d281a}
+.shelf i{position:absolute;left:8px;width:94px;height:3px;background:#3d281a}
+.book{position:absolute;bottom:0;width:9px;border-radius:1px}
+.plant{position:absolute;right:16px;top:120px;width:80px;height:150px}
+.plant b{position:absolute;width:46px;height:22px;border-radius:50% 50% 50% 0;background:#3f7a3a;transform-origin:0 100%}
+.host{position:absolute;left:84px;top:96px;width:190px;height:560px;animation:sway 1.2s ease-in-out infinite alternate}
+@keyframes sway{to{transform:translate(4px,-3px) rotate(.8deg)}}
+.hair{position:absolute;left:32px;top:0;width:126px;height:200px;border-radius:60px 60px 40px 40px;background:#3a2a22}
+.face{position:absolute;left:46px;top:26px;width:98px;height:124px;border-radius:46px 46px 50px 50px;background:#e8b896}
+.eye{position:absolute;top:66px;width:10px;height:6px;border-radius:50%;background:#2a1d17}
+.mouth{position:absolute;left:38px;top:100px;width:24px;height:10px;border-radius:0 0 14px 14px;background:#8a3a3a}
+.torso{position:absolute;left:0;top:168px;width:190px;height:260px;border-radius:70px 70px 0 0;background:#2754C5}
+.hand{position:absolute;left:150px;top:160px;width:58px;height:70px;border-radius:26px 26px 22px 22px;background:#e8b896;transform-origin:50% 100%;animation:wave .5s ease-in-out infinite alternate}
+@keyframes wave{from{transform:rotate(-14deg) translateX(-4px)}to{transform:rotate(12deg) translateX(6px)}}
+/* --------- frame 1: scale reveal --------- */
+.sky{background:linear-gradient(180deg,#9cc4e6 0%,#d7e7f2 60%,#c9d9b0 61%,#7d9a58 100%)}
+.tree{position:absolute;left:150px;top:70px;width:90px;height:470px}
+.trunk{position:absolute;left:36px;top:150px;width:22px;height:320px;background:linear-gradient(90deg,#5d3b25,#8a5a38,#5d3b25)}
+.canopy{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 35%,#4f8f3a,#2c5e22)}
+.person{position:absolute;left:258px;top:505px;width:10px;height:30px}
+.person:before{content:"";position:absolute;left:2px;top:0;width:6px;height:6px;border-radius:50%;background:#222}
+.person:after{content:"";position:absolute;left:1px;top:7px;width:8px;height:23px;border-radius:3px 3px 1px 1px;background:#222}
+.bracket{position:absolute;left:290px;width:3px;background:#fff;box-shadow:0 0 2px rgba(0,0,0,.6);bottom:105px;height:0;z-index:5}
+.bracket:before,.bracket:after{content:"";position:absolute;left:-8px;width:19px;height:3px;background:#fff}
+.bracket:before{top:0}.bracket:after{bottom:0}
+@keyframes grow{0%,11%{height:0}24%,100%{height:445px}}
+.f1 .bracket{animation:grow 6s var(--e) infinite}
+.closeup{background:radial-gradient(circle at 60% 40%,#5c9a44 0 18%,#2f6326 19% 40%,#1d3f19 41% 100%)}
+.branch{position:absolute;left:40px;top:280px;width:260px;height:14px;border-radius:7px;background:#6b4429;transform:rotate(-18deg)}
+.arrow{position:absolute;width:58px;height:44px;z-index:6}
+@keyframes bob1{0%,57%{transform:translate(18px,-14px) rotate(-30deg);opacity:0}61%{opacity:1;transform:translate(0,0) rotate(-30deg)}
+  70%{transform:translate(-3px,2px) rotate(-30deg)}79%{transform:translate(0,0) rotate(-30deg)}88%{transform:translate(-3px,2px) rotate(-30deg)}100%{transform:translate(0,0) rotate(-30deg)}}
+.f1 .arrow{left:196px;top:212px;animation:bob1 6s var(--e) infinite}
+/* captions with hard swaps */
+.c{position:absolute;inset:0}
+@keyframes c1a{0%,9.9%{opacity:1}10%,100%{opacity:0}}
+@keyframes c1b{0%,9.9%{opacity:0}10%,31.9%{opacity:1}32%,100%{opacity:0}}
+@keyframes c1c{0%,31.9%{opacity:0}32%,53.2%{opacity:1}53.3%,100%{opacity:0}}
+@keyframes c1d{0%,53.2%{opacity:0}53.3%,76.9%{opacity:1}77%,100%{opacity:0}}
+@keyframes c1e{0%,76.9%{opacity:0}77%,100%{opacity:1}}
+/* --------- frame 2: annotation --------- */
+.relief{background:radial-gradient(ellipse at 30% 30%,#f6e7da 0 22%,transparent 23%),radial-gradient(ellipse at 75% 70%,#f3d9c8 0 18%,transparent 19%),
+  linear-gradient(135deg,#d24f8c 0%,#ef8e7a 30%,#f5d9c9 50%,#e9a07c 70%,#b9407a 100%)}
+.glyph{position:absolute;border:3px solid rgba(90,40,30,.55);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.06)}}
+.pushy{animation:push 6s ease-in-out infinite alternate;transform-origin:50% 45%}
+@keyframes hop{0%,8%{transform:translate(150px,-30px) rotate(20deg);opacity:0}14%{transform:translate(0,0) rotate(20deg);opacity:1}
+  20%{transform:translate(-3px,-2px) rotate(20deg)}26%{transform:translate(0,0) rotate(20deg)}32%{transform:translate(-3px,-2px) rotate(20deg)}
+  40%{transform:translate(0,0) rotate(20deg)}48%{transform:translate(86px,170px) rotate(-150deg)}54%{transform:translate(83px,168px) rotate(-150deg)}
+  60%{transform:translate(86px,170px) rotate(-150deg)}66%{transform:translate(83px,168px) rotate(-150deg)}100%{transform:translate(86px,170px) rotate(-150deg)}}
+.f2 .arrow{left:70px;top:205px;animation:hop 6s var(--e) infinite}
+@keyframes type9{0%,20%{clip-path:inset(0 100% 0 0)}35%,100%{clip-path:inset(0 0 0 0)}}
+.f2 .word{left:76px;top:120px;animation:type9 6s steps(9,end) infinite}
+@keyframes c2a{0%,32.9%{opacity:1}33%,100%{opacity:0}}
+@keyframes c2b{0%,32.9%{opacity:0}33%,66.9%{opacity:1}67%,100%{opacity:0}}
+@keyframes c2c{0%,66.9%{opacity:0}67%,100%{opacity:1}}
+/* --------- frame 3: cliffhanger --------- */
+.void{background:radial-gradient(ellipse at 50% 42%,#1c2340 0%,#05060c 70%)}
+.sil{position:absolute;left:70px;top:120px;width:220px;height:300px;background:#0d0f18;border-radius:40% 45% 20% 20%;box-shadow:0 0 40px rgba(47,107,255,.25)}
+.q{position:absolute;font:900 34px/1 "Montserrat",sans-serif;color:var(--lime);-webkit-text-stroke:2px var(--edge);paint-order:stroke fill;z-index:6}
+@keyframes qpop{0%,6%{transform:scale(0) rotate(0)}12%{transform:scale(1.15) rotate(-6deg)}16%{transform:scale(1) rotate(0)}
+  40%{transform:rotate(6deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(6deg)}100%{transform:rotate(0)}}
+.q{animation:qpop 6s var(--bk) infinite}
+@keyframes stk{0%,44%{transform:scale(0);opacity:0}48%{transform:scale(1.08);opacity:1}50%,59%{transform:scale(1)}60%{transform:scale(.94)}62%,100%{transform:scale(1);opacity:1}}
+@keyframes cur{0%,48%{transform:translate(50px,30px);opacity:0}54%{transform:translate(0,0);opacity:1}59%{transform:translate(0,0) scale(1)}60%{transform:scale(.85)}63%,100%{transform:scale(1);opacity:1}}
+@keyframes spk{0%,59.5%{opacity:0;transform:scaleX(.2)}61%{opacity:1;transform:scaleX(1)}66%,100%{opacity:0}}
+.f3 .sticker{animation:stk 6s var(--bk) infinite}
+.f3 .cursor{left:236px;top:446px;animation:cur 6s var(--e) infinite}
+.f3 .spark{animation:spk 6s linear infinite}
+@keyframes c3a{0%,32.9%{opacity:1}33%,100%{opacity:0}}
+@keyframes c3b{0%,32.9%{opacity:0}33%,66.9%{opacity:1}67%,100%{opacity:0}}
+@keyframes c3c{0%,66.9%{opacity:0}67%,100%{opacity:1}}
+@keyframes hostin{0%,66.9%{opacity:0}67%,100%{opacity:1}}
+/* --------- frame 4: vs stack -> x-ray --------- */
+.gridw{background-color:var(--grid);background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);background-size:40px 40px;background-position:-1px -1px}
+.gridw:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(0,0,0,.35))}
+.gloww{background:radial-gradient(circle at 50% 45%,#16207A,#060A2C 70%)}
+@keyframes xray{0%,45%{opacity:0}50%,100%{opacity:1}}
+.f4 .gloww{animation:xray 6s linear infinite}
+.spec{position:absolute;left:90px;width:180px;height:64px;border-radius:50% 60% 30% 70%/60% 50% 50% 40%}
+.lab{position:absolute;left:0;right:0;text-align:center;font:800 26px/1 "Montserrat",sans-serif;color:var(--lime);letter-spacing:.01em}
+.neon{position:absolute;left:90px;width:180px;height:64px;border-radius:50% 60% 30% 70%/60% 50% 50% 40%;border:3px solid #6f9bff;box-shadow:0 0 10px var(--blue),inset 0 0 10px var(--blue)}
+@keyframes focus{0%,62%{transform:scale(1)}68%,100%{transform:scale(1.25)}}
+@keyframes dimout{0%,62%{transform:scale(1);opacity:1}68%,100%{transform:scale(.85);opacity:.6}}
+.f4 .act{animation:focus 6s var(--e) infinite}.f4 .dim{animation:dimout 6s var(--e) infinite}
+/* --------- frame 5: split reveal --------- */
+.blurry{position:absolute;left:0;right:0;top:87px;height:166px;background:radial-gradient(ellipse at 50% 100%,#d8e200 0%,#9aa800 45%,#2a2d00 75%,#000 76%);filter:blur(5px)}
+.crisp{position:absolute;left:0;right:0;top:253px;height:160px;overflow:hidden}
+.crisp i{position:absolute;width:3px;height:3px;border-radius:50%;background:#e8f23a;box-shadow:0 0 3px #c6d600}
+@keyframes wipe{0%,21%{clip-path:inset(0 0 100% 0)}26%,100%{clip-path:inset(0 0 0 0)}}
+.f5 .crisp{animation:wipe 6s linear infinite}
+@keyframes snap{0%,40%{transform:scale(1)}43%,100%{transform:scale(1.35)}}
+.f5 .stage{animation:snap 6s var(--e) infinite;transform-origin:50% 40%}
+.harrow{position:absolute;left:150px;top:150px;width:60px;height:150px;z-index:6}
+.harrow path{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 6s linear infinite}
+@keyframes draw{0%,62%{stroke-dashoffset:200}70%,100%{stroke-dashoffset:0}}
+@keyframes c5a{0%,21.9%{opacity:1}22%,100%{opacity:0}}
+@keyframes c5b{0%,21.9%{opacity:0}22%,39.9%{opacity:1}40%,100%{opacity:0}}
+@keyframes c5c{0%,39.9%{opacity:0}40%,59.9%{opacity:1}60%,100%{opacity:0}}
+@keyframes c5d{0%,59.9%{opacity:0}60%,100%{opacity:1}}
+/* --------- frame 6: paper highlight --------- */
+.paperw{background:#fff}
+.pg{position:absolute;left:24px;right:24px;top:70px;color:#111;font:400 13px/1.55 "Source Serif 4",serif}
+.pg .mast{font:700 26px/1 "Source Serif 4",serif;letter-spacing:-.02em;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:12px}
+.pg h3{font:700 19px/1.25 "Source Serif 4",serif;margin:8px 0 12px}
+.hl{background:linear-gradient(var(--lime),var(--lime)) no-repeat 0 60%/0% 82%;animation:hl 6s var(--e) infinite;padding:0 1px}
+@keyframes hl{0%,25%{background-size:0% 82%}40%,100%{background-size:100% 82%}}
+@keyframes zoomp{from{transform:scale(1)}to{transform:scale(1.08)}}
+.f6 .pg{animation:zoomp 6s ease-in-out infinite alternate;transform-origin:30% 20%}
+/* --------- frame 7: map pin --------- */
+.map{background:radial-gradient(ellipse at 45% 45%,#3d6b2e 0 34%,#2a4f22 35% 46%,#c9b48a 47% 52%,#1d4a6e 53% 100%)}
+@keyframes dolly{0%{transform:scale(1)}55%,100%{transform:scale(1.5)}}
+.f7 .stage{animation:dolly 6s ease-in-out infinite;transform-origin:52% 48%}
+.place{position:absolute;left:96px;top:205px;font:800 24px/1 "Montserrat",sans-serif;color:rgba(255,255,255,.62);transform:perspective(300px) rotateX(38deg) rotateZ(-10deg);letter-spacing:.04em;text-align:center}
+.pin{position:absolute;left:170px;top:262px;width:22px;height:30px;z-index:6}
+@keyframes drop{0%,16%{transform:translateY(-20px);opacity:0}20%{transform:translateY(0) scale(1.2,.8);opacity:1}24%,100%{transform:translateY(0) scale(1)}}
+.f7 .pin{animation:drop 6s var(--e) infinite;transform-origin:50% 100%}
+.ripple{position:absolute;left:181px;top:291px;width:0;height:0;border-radius:50%;border:2px solid var(--lime);transform:translate(-50%,-50%);z-index:5}
+@keyframes rip{0%,20%{width:0;height:0;opacity:1}32%{width:60px;height:24px;opacity:0}100%{opacity:0}}
+.f7 .ripple{animation:rip 6s ease-out infinite}
+/* --------- frame 8: hero number --------- */
+.hero{position:absolute;left:0;right:0;top:150px;text-align:center;font:900 34px/1 "Montserrat",sans-serif;color:var(--lime);-webkit-text-stroke:2px var(--edge);paint-order:stroke fill;text-shadow:0 2px 0 var(--edge);z-index:5}
+.unit{position:absolute;left:0;right:0;top:192px;text-align:center;font:600 15px/1 "Inter Tight",sans-serif;color:#fff;-webkit-text-stroke:.6px #000;paint-order:stroke fill;z-index:5}
+.hb{position:absolute;left:60px;right:60px;top:222px;height:3px;background:#fff;z-index:5}
+.hb:before,.hb:after{content:"";position:absolute;top:0;width:3px;height:12px;background:#fff}.hb:before{left:0}.hb:after{right:0}
+@keyframes reveal{0%,18%{opacity:0;transform:translateY(6px)}26%,100%{opacity:1;transform:none}}
+@keyframes reveal2{0%,28%{opacity:0}34%,100%{opacity:1}}
+@keyframes hbgrow{0%,30%{transform:scaleX(0)}38%,100%{transform:scaleX(1)}}
+.f8 .hero{animation:reveal 6s var(--e) infinite}.f8 .unit{animation:reveal2 6s var(--e) infinite}.f8 .hb{animation:hbgrow 6s var(--e) infinite}
+.dusk{background:linear-gradient(180deg,#5e86b8 0%,#a9bdd6 55%,#6c5a66 56%,#3f3440 100%)}
+.cube{position:absolute;width:26px;height:26px;background:#f4f4f0;border:1px solid #cfcfc8;box-shadow:inset -3px -3px 0 rgba(0,0,0,.08)}
+/* --------- frame 9: caption profile --------- */
+.street{background:linear-gradient(180deg,#0b1424 0%,#1c2c45 50%,#38475c 51%,#20262e 100%)}
+.lamp{position:absolute;width:6px;height:6px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 18px 8px rgba(255,220,140,.45)}
+.spec9{position:absolute;left:24px;right:24px;top:96px;font:600 11px/1.6 "Inter Tight",sans-serif;color:rgba(255,255,255,.85);background:rgba(0,0,0,.45);padding:10px 12px;border-radius:6px}
+.spec9 b{color:var(--lime);font-weight:700}
+@keyframes c9a{0%,24.9%{opacity:1}25%,100%{opacity:0}}
+@keyframes c9b{0%,24.9%{opacity:0}25%,49.9%{opacity:1}50%,100%{opacity:0}}
+@keyframes c9c{0%,49.9%{opacity:0}50%,74.9%{opacity:1}75%,100%{opacity:0}}
+@keyframes c9d{0%,74.9%{opacity:0}75%,100%{opacity:1}}
+/* --------- frame 10: scale lineup --------- */
+.floor{position:absolute;left:0;right:0;top:400px;height:3px;background:#fff;opacity:.8}
+.obj{position:absolute;bottom:240px;border-radius:4px 4px 0 0}
+.tag{position:absolute;font:700 11px/1.2 "Inter Tight",sans-serif;color:#fff;text-transform:uppercase;text-align:center;width:90px;-webkit-text-stroke:.3px #000}
+.tag b{display:block;color:var(--edge);background:var(--lime);border:1px solid var(--edge);border-radius:3px;font:800 12px/1.3 "Montserrat",sans-serif;margin:0 auto 2px;width:max-content;padding:0 4px}
+@keyframes rise{0%,8%{transform:translateY(24px);opacity:0}16%,100%{transform:none;opacity:1}}
+.r1{animation:rise 6s var(--e) infinite}.r2{animation:rise 6s var(--e) .27s infinite}.r3{animation:rise 6s var(--e) .53s infinite}
+.f3 .c{z-index:8}
+@media (prefers-reduced-motion:reduce){*{animation-play-state:paused!important}}
+</style>
+</head>
+<body>
+<h1>Science Flash <span style="opacity:.6;font-weight:500">· inspired by Cleo Abram</span></h1>
+<p class="lead">You flash on screen for half a second, then every sentence gets its own picture. A lime arrow, bracket, pin or chip points at the exact thing being named; one line of bold ALL CAPS captions sits low; borrowed footage carries a tiny credit line; the reel ends on the next question with a subscribe tap. All frames below are built from shapes (no real footage); 360 × 640 = 1080 × 1920 at one third.</p>
+
+<h2>Hook and signature moves</h2>
+<div class="grid">
+
+<figure>
+<div class="f f1" data-card="1">
+  <div class="L room w1">
+    <div class="shelf"><i style="top:60px"></i><i style="top:130px"></i>
+      <span class="book" style="left:10px;height:40px;bottom:auto;top:20px;background:#b33"></span><span class="book" style="left:22px;height:36px;bottom:auto;top:24px;background:#eee"></span>
+      <span class="book" style="left:34px;height:40px;bottom:auto;top:20px;background:#2b5"></span><span class="book" style="left:20px;height:40px;bottom:auto;top:90px;background:#ddd"></span></div>
+    <div class="plant"><b style="left:30px;top:20px;transform:rotate(-40deg)"></b><b style="left:34px;top:50px;transform:rotate(20deg)"></b><b style="left:20px;top:80px;transform:rotate(-70deg)"></b></div>
+    <div class="host"><div class="torso"></div><div class="hair"></div><div class="face"><span class="eye" style="left:24px"></span><span class="eye" style="left:62px"></span><span class="mouth"></span></div><div class="hand"></div></div>
+  </div>
+  <div class="L w2"><div class="L sky pushy">
+    <div class="tree"><div class="trunk"></div>
+      <div class="canopy" style="left:-30px;top:20px;width:150px;height:140px"></div><div class="canopy" style="left:-10px;top:-20px;width:110px;height:110px"></div><div class="canopy" style="left:-50px;top:90px;width:190px;height:110px"></div></div>
+    <div class="person"></div>
+  </div></div>
+  <div class="L w2" style="z-index:5"><div class="bracket"></div></div>
+  <div class="L w3"><div class="L closeup pushy"><div class="branch"></div><div class="branch" style="top:400px;left:60px;transform:rotate(12deg)"></div></div></div>
+  <div class="credit w3">SOURCE: [YOUR SOURCE]</div>
+  <div class="L w3" style="z-index:6"><svg class="arrow" viewBox="0 0 58 44"><g style="animation:none"><path d="M2 14 H30 V2 L56 22 L30 42 V30 H2 Z" fill="#C6F000" stroke="#17454A" stroke-width="3" stroke-linejoin="round"/></g></svg></div>
+  <div class="c" style="animation:c1a 6s infinite steps(1,end)"><div class="cap">THIS GIANT</div></div>
+  <div class="c" style="animation:c1b 6s infinite steps(1,end)"><div class="cap">WAS TALLER THAN A 30-STOREY BUILDING,</div></div>
+  <div class="c" style="animation:c1c 6s infinite steps(1,end)"><div class="cap">AND IT'S STILL GROWING,</div></div>
+  <div class="c" style="animation:c1d 6s infinite steps(1,end)"><div class="cap">FROM THESE TINY BRANCHES</div></div>
+  <div class="c" style="animation:c1e 6s infinite steps(1,end)"><div class="cap">AT THE VERY TOP!</div></div>
+</div>
+<figcaption>Hook (HA-10.S): 0.6 s host flash mid-gesture, hard cut to the subject, a white measure bracket grows beside a person, then a lime arrow lands on the part being named. Captions swap hard, one line, cy 1456.</figcaption>
+</figure>
+
+<figure>
+<div class="f f2" data-card="2">
+  <div class="L relief pushy">
+    <div class="glyph" style="left:150px;top:150px;width:110px;height:110px;transform:rotate(18deg)"></div>
+    <div class="glyph" style="left:70px;top:330px;width:70px;height:70px;border-radius:50%"></div>
+    <div class="glyph" style="left:230px;top:340px;width:60px;height:60px;transform:rotate(-12deg)"></div>
+  </div>
+  <div class="credit">SOURCE: [YOUR SOURCE]</div>
+  <div class="word">GEOGLYPHS</div>
+  <svg class="arrow" viewBox="0 0 58 44"><path d="M2 14 H30 V2 L56 22 L30 42 V30 H2 Z" fill="#C6F000" stroke="#17454A" stroke-width="3" stroke-linejoin="round"/></svg>
+  <div class="c" style="animation:c2a 6s infinite steps(1,end)"><div class="cap">HUNDREDS OF ANCIENT SHAPES</div></div>
+  <div class="c" style="animation:c2b 6s infinite steps(1,end)"><div class="cap">CALLED GEOGLYPHS,</div></div>
+  <div class="c" style="animation:c2c 6s infinite steps(1,end)"><div class="cap">THIS ONE IS A PERFECT CIRCLE!</div></div>
+</div>
+<figcaption>Annotation layer: a lime block arrow bobs on the first shape, then hops to the next one as it is named; the keyword types on letter by letter; "• SOURCE" credit top-left on borrowed footage.</figcaption>
+</figure>
+
+<figure>
+<div class="f f3" data-card="3">
+  <div class="L void"><div class="sil"></div></div>
+  <div class="q" style="left:110px;top:170px">?</div><div class="q" style="left:210px;top:140px;animation-delay:.1s">?</div><div class="q" style="left:170px;top:250px;animation-delay:.2s;font-size:46px">?</div><div class="q" style="left:240px;top:300px;animation-delay:.3s">?</div>
+  <div class="L room" style="z-index:7;animation:hostin 6s infinite steps(1,end)">
+    <div class="shelf"><i style="top:60px"></i><i style="top:130px"></i></div>
+    <div class="host"><div class="torso"></div><div class="hair"></div><div class="face"><span class="eye" style="left:24px"></span><span class="eye" style="left:62px"></span><span class="mouth"></span></div><div class="hand" style="left:120px;top:250px"></div></div>
+  </div>
+  <div class="sticker">SUBSCRIBE</div>
+  <svg class="cursor" viewBox="0 0 22 22"><path d="M5 2 V15 L8 12 L11 19 L13.5 18 L10.5 11 H15 Z" fill="#fff" stroke="#17454A" stroke-width="1.4" stroke-linejoin="round"/></svg>
+  <div class="spark" style="left:96px;top:414px;transform:rotate(30deg)"></div><div class="spark" style="left:92px;top:424px"></div><div class="spark" style="left:96px;top:434px;transform:rotate(-30deg)"></div>
+  <div class="c" style="animation:c3a 6s infinite steps(1,end)"><div class="cap">BUT WHAT IS THE SMALLEST…</div></div>
+  <div class="c" style="animation:c3b 6s infinite steps(1,end)"><div class="cap">TO SEE THAT,</div></div>
+  <div class="c" style="animation:c3c 6s infinite steps(1,end)"><div class="cap">SUBSCRIBE!</div></div>
+</div>
+<figcaption>Cliffhanger: the next question over a dark silhouette and a lime ? swarm; the scheduled sticker pops, the cursor taps with sparks; the host's closing flash on "SUBSCRIBE!" (FOLLOW on Instagram).</figcaption>
+</figure>
+
+<figure>
+<div class="f f4">
+  <div class="L gridw"></div>
+  <div class="L gloww"></div>
+  <div class="dim" style="position:absolute;left:0;right:0;top:80px;height:120px"><div class="lab" style="top:0">BIRD</div><div class="spec" style="top:36px;background:linear-gradient(90deg,#6b4a2a,#b58a5a)"></div><div class="neon" style="top:36px;animation:xray 6s linear infinite"></div></div>
+  <div class="act" style="position:absolute;left:0;right:0;top:220px;height:120px"><div class="lab" style="top:0">SUBJECT</div><div class="spec" style="top:36px;background:linear-gradient(90deg,#1f6b3a,#3fa35a)"></div><div class="neon" style="top:36px;animation:xray 6s linear infinite"></div></div>
+  <div class="dim" style="position:absolute;left:0;right:0;top:360px;height:120px"><div class="lab" style="top:0">BAT</div><div class="spec" style="top:36px;background:linear-gradient(90deg,#8a3a3a,#d06a6a)"></div><div class="neon" style="top:36px;animation:xray 6s linear infinite"></div></div>
+  <div class="cap">BUT THIS ONE IS DIFFERENT!</div>
+</div>
+<figcaption>COMPARE: P-VS-STACK on the charcoal grid world, then P-XRAY-SWAP to the navy glow world (neon-blue outlines) and P-VS-FOCUS on the active row.</figcaption>
+</figure>
+
+<figure>
+<div class="f f5">
+  <div class="L stage">
+    <div class="blurry"></div>
+    <div class="crisp" id="dots"></div>
+  </div>
+  <div class="credit">SOURCE: [AUTHOR] ET AL. / [JOURNAL] [YEAR]</div>
+  <svg class="harrow" viewBox="0 0 60 150"><path d="M30 6 C 22 50, 26 90, 32 132 M18 116 L32 138 L46 114" fill="none" stroke="#2F6BFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="c" style="animation:c5a 6s infinite steps(1,end)"><div class="cap">BETWEEN THIS…</div></div>
+  <div class="c" style="animation:c5b 6s infinite steps(1,end)"><div class="cap">AND THIS!</div></div>
+  <div class="c" style="animation:c5c 6s infinite steps(1,end)"><div class="cap">BOTH IMAGES</div></div>
+  <div class="c" style="animation:c5d 6s infinite steps(1,end)"><div class="cap">BUT THIS ONE WAS TAKEN WITH A</div></div>
+</div>
+<figcaption>HA-10.D difference: image A top, image B wipes in from the seam, a ×1.35 snap push, then the blue hand-drawn arrow (the accent's only job besides the glow world).</figcaption>
+</figure>
+
+<figure>
+<div class="f f6">
+  <div class="L paperw"></div>
+  <div class="pg">
+    <div class="mast">[Outlet]</div>
+    <div style="font-size:11px;opacity:.7">Article · Published: [date]</div>
+    <h3><span class="hl">Over [N]</span> previously unknown structures found under the forest</h3>
+    <div style="opacity:.75">Numerous geometric earthworks have been found in the region, evidence of a monument-building culture. This knowledge has contributed to the discussion about the deep history of the area and its population size, estimates of which have remained weak because detection has been limited.</div>
+  </div>
+  <div class="credit" style="color:rgba(0,0,0,.6);text-shadow:none">SOURCE: [OUTLET]</div>
+  <div class="cap">AND WE NOW KNOW ABOUT</div>
+</div>
+<figcaption>P-PAPER-HILITE: the creator's own screenshot (or a created headline card with the exact headline, labelled REPRESENTATIONAL) with a lime highlighter wiping across the spoken phrase.</figcaption>
+</figure>
+
+<figure>
+<div class="f f7">
+  <div class="L stage">
+    <div class="L map"></div>
+    <div class="place">[REGION]<br>[NAME]</div>
+  </div>
+  <div class="ripple"></div>
+  <svg class="pin" viewBox="0 0 22 30"><path d="M11 29 C 11 29, 2 17, 2 10 A9 9 0 0 1 20 10 C 20 17, 11 29, 11 29 Z" fill="#C6F000" stroke="#17454A" stroke-width="2"/><circle cx="11" cy="10" r="3.5" fill="#17454A"/></svg>
+  <div class="cap">HIDDEN IN THE RAINFOREST…</div>
+</div>
+<figcaption>HA-10.P place: the map dollies in (×1.5 over 33 f), the place name is set in type on the ground plane, a lime pin drops with a ripple on the exact site.</figcaption>
+</figure>
+
+<figure>
+<div class="f f8">
+  <div class="L dusk"></div>
+  <div style="position:absolute;left:150px;top:340px;width:60px;height:100px">
+    <div class="cube" style="left:0;top:74px"></div><div class="cube" style="left:28px;top:74px"></div><div class="cube" style="left:14px;top:48px"></div><div class="cube" style="left:0;top:22px"></div><div class="cube" style="left:28px;top:22px"></div><div class="cube" style="left:14px;top:-4px"></div>
+  </div>
+  <div class="hero">130,000 – 150,000 KG</div>
+  <div class="unit">287,000 – 330,700 LB</div>
+  <div class="hb"></div>
+  <div class="cap">THAT'S EVER LIVED,</div>
+</div>
+<figcaption>P-HERO-NUMBER: the spoken number in lime with both unit systems (metric first, imperial beneath, written by ctx.fmtNum) and a white bracket. Dual units are DNA.</figcaption>
+</figure>
+
+<figure>
+<div class="f f9">
+  <div class="L street"><span class="lamp" style="left:60px;top:200px"></span><span class="lamp" style="left:180px;top:230px"></span><span class="lamp" style="left:290px;top:190px"></span></div>
+  <div class="spec9"><b>CS-1 captions</b> · Barlow Condensed 600 · <b>60 px</b> · ALL CAPS · white + 3 px black stroke · <b>one line</b>, 1–7 words, ≤ 28 characters · hard swaps · centre y <b>1456</b> · never coloured (keywords go into lime chips)</div>
+  <div class="c" style="animation:c9a 6s infinite steps(1,end)"><div class="cap">SAME PHONE, SAME STREET,</div></div>
+  <div class="c" style="animation:c9b 6s infinite steps(1,end)"><div class="cap">SAME SECOND.</div></div>
+  <div class="c" style="animation:c9c 6s infinite steps(1,end)"><div class="cap">THE TRICK IS THAT IT NEVER</div></div>
+  <div class="c" style="animation:c9d 6s infinite steps(1,end)"><div class="cap">TAKES JUST ONE PHOTO,</div></div>
+</div>
+<figcaption>Caption profile CS-1 in the default language (English): one line, hard swaps on the clause, low on the frame and lifted clear of Instagram's bottom UI.</figcaption>
+</figure>
+
+<figure>
+<div class="f f10">
+  <div class="L gridw"></div>
+  <div class="floor"></div>
+  <div class="obj r1" style="left:50px;width:40px;height:40px;background:#e6e6e6"></div>
+  <div class="obj r2" style="left:150px;width:60px;height:110px;background:var(--lime);border:2px solid var(--edge)"></div>
+  <div class="obj r3" style="left:250px;width:56px;height:150px;background:#bbb;border-radius:28px 28px 4px 4px"></div>
+  <div class="tag r1" style="left:25px;top:412px"><b>6.5 NM</b>[OBJECT A]</div>
+  <div class="tag r2" style="left:135px;top:412px"><b>65 NM</b>[OBJECT B]</div>
+  <div class="tag r3" style="left:233px;top:412px"><b>100 NM</b>[OBJECT C]</div>
+  <div class="cap">BUT WHAT IS THE SMALLEST</div>
+</div>
+<figcaption>P-SCALE-LINEUP: objects in size order on one ground line, one scale, a lime tag each. Sub-millimetre units stay metric only (§5.5).</figcaption>
+</figure>
+
+</div>
+<script>
+/* static scatter for the crisp half (deterministic, built once; no animation loop) */
+(function(){var d=document.getElementById("dots");if(!d)return;var s=7;function r(){s=(s*9301+49297)%233280;return s/233280;}
+var h="";for(var i=0;i<420;i++){var x=r(),y=r();var cx=0.5,cy=0;var dx=(x-cx)/0.5,dy=y/0.95;if(dx*dx+dy*dy>1)continue;h+='<i style="left:'+(x*360).toFixed(1)+'px;top:'+(y*160).toFixed(1)+'px"></i>';}
+d.innerHTML=h;})();
+</script>
+</body>
+</html>

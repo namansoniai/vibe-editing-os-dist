@@ -15,13 +15,24 @@ from .core import Project, emit, fail
 # command -> module (in veos/). Modules not yet built are reported as NOT_BUILT.
 COMMANDS = {
     "doctor": "doctor", "ingest": "ingest", "conform": "conform", "transcribe": "transcribe",
-    "cut": "cut", "matte": "matte", "capture": "capture", "render": "render", "assemble": "render",
+    "cut": "cut", "matte": "matte", "faces": "matte", "capture": "capture", "render": "render", "assemble": "render",
     "sheet": "sheet", "storyboard": "storyboard", "sfx": "audio", "mix": "audio", "qa": "qa", "validate": "validate",
     "tokens": "tokens", "prep-frames": "prep", "bundle": "prep",
     "project": "project", "voice": "voice", "context": "context", "captions": "captions", "paths": "paths",
     "scenes-meta": "scenes", "measure": "scenes",
-    "workspace": "workspace", "playbook": "workspace", "learn": "learn", "asset": "asset",
+    "workspace": "workspace", "playbook": "workspace", "learn": "learn", "asset": "asset", "inserts": "inserts",
+    "templates": "templates",
+    "figures": "figures",
 }
+# multi-speaker / multi-camera (E-13, E-13b): session sync, speaker labels, angle registry, shots + compositor
+COMMANDS.update({"sync": "sync", "speakers": "speakers", "angles": "angles", "shots": "shots"})
+COMMANDS.update({"licence": "licence", "license": "licence"})
+COMMANDS.update({"track": "track"})  # Package E: object / point tracking -> plan/tracks/<id>.json
+COMMANDS.update({"look": "look"})  # see the cut before planning: frames by meaning -> review/look/ (+ --at close looks)
+COMMANDS.update({"roughcut-candidates": "roughcut"})  # sentence-level take / false-start / pause list for the rough cut
+COMMANDS.update({"stills": "stills"})  # review stills at every scene's declared moments -> review/stills/
+# commands that run without an activated licence (licence.py); every other command needs one (LICENCE_REQUIRED)
+UNGATED = {"doctor", "licence", "license", "paths"}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -47,6 +58,9 @@ def main(argv: list[str] | None = None) -> int:
     args.cmd = cmd
     proj = Project(args.project) if args.project else None
     try:
+        if cmd not in UNGATED:
+            from .licence import require
+            require()
         summary = mod.main(args, proj)
     except Exception as e:  # noqa: BLE001 - every failure becomes one JSON line
         if proj:

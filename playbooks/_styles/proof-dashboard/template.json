@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "proof-dashboard",
+  "tier": "full",
+  "order": 12,
+  "tagline": "Hype explainers that prove every claim: you on a swapped night-city set, a glowing two-line banner at your chest, and real app screens with a glowing cursor tapping through them.",
+  "inspired_by_display": [
+    "Devin Jatho"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Best with screen recordings of the app you teach and your own results screens; without them Claude builds labelled generic screens.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "data_figures",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: two-line glow banner at the chest, loser card turns red, winner card flashes gold with its counter",
+      "UI proof: a screen recording with the cyan cursor orb tapping a setting on",
+      "Meaning axis: a wrong line in red, the fix in green, glowing-keyword captions"
+    ]
+  }
+}

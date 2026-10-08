@@ -1,0 +1,33 @@
+{
+  "package": "veos.template/1",
+  "id": "cinematic-list-montage",
+  "tier": "full",
+  "order": 17,
+  "tagline": "Premium, minimal reels: one cobalt title chip, one word at a time in a bold sans and an italic serif, list titles with photos floating above your head, or a moody montage of your own B-roll.",
+  "inspired_by_display": [
+    "ant.lon"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "The list format needs only you talking. The montage format needs 25-40 of your own cinematic B-roll clips; with fewer than 12, reels are edited as lists.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "type_floors"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A list overlay: cobalt title chip at frame 0, one-word captions at the chest",
+      "F-A item ritual: italic-serif numbered title with a photo card floating above the head",
+      "F-B cinematic montage: own B-roll plate, one word in heavy grotesk then italic didone, ending on the 'KEYWORD' quote"
+    ]
+  }
+}

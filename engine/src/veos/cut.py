@@ -1,4 +1,10 @@
-"""veos cut: EDL (source time) -> cutmap.json, words.edit.json and a 540x960 review proxy."""
+"""veos cut: EDL (source time) -> cutmap.json, words.edit.json and a 540x960 review proxy.
+
+Voice-over reels (E-12): `veos cut --identity [--tighten]` writes the EDL itself. The cut map is the identity over the
+voice-over (edit time = VO time), with the silence before the first word and after the last one trimmed (`--no-trim`
+keeps the file exactly). `--tighten` also shortens every pause longer than `--max-pause` (0.35 s) to about 0.12 s, the
+same rule the talking-head rough cut uses. The proxy shows a plain dark frame when there is no picture.
+"""
 from __future__ import annotations
 
 import re
@@ -8,11 +14,57 @@ from .core import FPS, VeosError, need_project, r3, read_json, run, tools, write
 
 PROXY_W, PROXY_H = 540, 960
 GAP_S = 0.150
+LEAD_S, TAIL_S = 0.04, 0.08          # cut points: start 0.04 s before a word, end 0.08 s after one (reel-roughcut rule)
+VO_KINDS = ("voiceover", "audio-only")
 
 
 def add_args(p, cmd):
-    p.add_argument("edl", help="path to edl.json")
+    p.add_argument("edl", nargs="?", default=None, help="path to edl.json (omit with --identity)")
     p.add_argument("--no-proxy", action="store_true", help="skip rendering cut_proxy.mp4")
+    p.add_argument("--identity", action="store_true",
+                   help="voice-over reels: build the EDL from the voice-over itself (edit time = VO time); writes work/edl.json")
+    p.add_argument("--tighten", action="store_true", help="with --identity: shorten pauses longer than --max-pause to ~0.12 s")
+    p.add_argument("--max-pause", type=float, default=0.35, help="with --tighten: longest pause kept as is (s, default 0.35)")
+    p.add_argument("--no-trim", action="store_true", help="with --identity: keep the silence before the first and after the last word")
+    p.add_argument("--end-hold", type=float, default=0.4, help="with --identity: seconds kept after the last word (default 0.4)")
+
+
+# ---------------------------------------------------------------- identity EDL (voice-over reels)
+def identity_edl(sources: list[dict], words: dict[str, list[dict]], *, tighten: bool = False, max_pause: float = 0.35,
+                 trim: bool = True, end_hold: float = 0.4) -> dict:
+    """EDL covering each voice-over source in order (V, V2, ...). Words are source-time {s, e} per source id.
+
+    Without words (or with trim off and no tighten) a source is kept whole. Leading silence is cut to LEAD_S before the
+    first word, trailing silence to `end_hold` after the last word of the last source (TAIL_S for earlier parts).
+    """
+    vos = [s for s in sources if s.get("kind") in VO_KINDS]
+    if not vos:
+        raise VeosError("NO_VOICEOVER", "no voice-over source in sources.json",
+                        "Run `veos ingest --audio <voice-over>` first (or write the EDL yourself for talking-head clips).")
+    segs: list[dict] = []
+    for k, s in enumerate(vos):
+        dur = float(s.get("duration") or 0.0)
+        ws = sorted((w for w in words.get(s["id"], []) if w.get("e", 0) > w.get("s", 0)), key=lambda w: w["s"])
+        last_part = k == len(vos) - 1
+        if not ws or (not trim and not tighten):
+            if tighten and not ws:
+                raise VeosError("NO_WORDS", f"--tighten needs the words of {s['id']}", "Run `veos transcribe` first.")
+            segs.append({"src": s["id"], "in": 0.0, "out": r3(dur), "note": "voice-over (identity)"})
+            continue
+        a = max(0.0, ws[0]["s"] - LEAD_S) if trim else 0.0
+        b = min(dur, ws[-1]["e"] + (end_hold if last_part else TAIL_S)) if trim else dur
+        if not tighten:
+            segs.append({"src": s["id"], "in": r3(a), "out": r3(b), "note": "voice-over (identity, ends trimmed)"})
+            continue
+        cur = a
+        for w0, w1 in zip(ws, ws[1:]):
+            if w1["s"] - w0["e"] > max_pause:
+                end, nxt = w0["e"] + TAIL_S, w1["s"] - LEAD_S
+                if end - cur >= 1.0 / FPS and nxt > end:
+                    segs.append({"src": s["id"], "in": r3(cur), "out": r3(end), "note": f"pause {w1['s'] - w0['e']:.2f}s tightened"})
+                    cur = nxt
+        segs.append({"src": s["id"], "in": r3(cur), "out": r3(b), "note": "voice-over"})
+    return {"version": 1, "fps": FPS, "auto": "identity" + ("+tighten" if tighten else ""), "segments": segs}
 
 
 # ---------------------------------------------------------------- cutmap
@@ -103,12 +155,18 @@ def render_proxy(cutmap: dict, sources: dict, proj, out: Path) -> None:
     for sg in cutmap["segments"]:
         if sg["src"] not in ids:
             ids.append(sg["src"])
-    inputs, has_audio = [], {}
+    inputs, has_audio, picture = [], {}, {}
     for sid in ids:
         c = (sources[sid].get("conformed") or {})
-        vp = proj.abs(c["video"]) if c.get("video") else proj.work / "src" / f"{sid}.mp4"
-        if not vp.exists():
-            raise VeosError("NOT_CONFORMED", f"work/src/{sid}.mp4 is missing", "Run `veos conform` first.")
+        picture[sid] = sources[sid].get("kind") not in VO_KINDS
+        if picture[sid]:
+            vp = proj.abs(c["video"]) if c.get("video") else proj.work / "src" / f"{sid}.mp4"
+            if not vp.exists():
+                raise VeosError("NOT_CONFORMED", f"work/src/{sid}.mp4 is missing", "Run `veos conform` first.")
+        else:  # a voice-over has no picture: its conformed audio is the input, the proxy frame is plain
+            vp = proj.abs(c["audio"]) if c.get("audio") else proj.work / "audio" / f"{sid}.wav"
+            if not vp.exists():
+                raise VeosError("NOT_CONFORMED", f"work/audio/{sid}.wav is missing", "Run `veos conform` first.")
         inputs.append(vp)
         has_audio[sid] = bool(sources[sid].get("audio"))
     parts, labels = [], []
@@ -116,9 +174,13 @@ def render_proxy(cutmap: dict, sources: dict, proj, out: Path) -> None:
         j = ids.index(sg["src"])
         a, n = sg["in_frame"], sg["f1"] - sg["f0"]
         d = n / FPS
-        parts.append(f"[{j}:v]trim=start_frame={a}:end_frame={a + n},setpts=PTS-STARTPTS,fps={FPS},"
-                     f"scale={PROXY_W}:{PROXY_H}:force_original_aspect_ratio=decrease,"
-                     f"pad={PROXY_W}:{PROXY_H}:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p[v{k}]")
+        if picture[sg["src"]]:
+            parts.append(f"[{j}:v]trim=start_frame={a}:end_frame={a + n},setpts=PTS-STARTPTS,fps={FPS},"
+                         f"scale={PROXY_W}:{PROXY_H}:force_original_aspect_ratio=decrease,"
+                         f"pad={PROXY_W}:{PROXY_H}:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p[v{k}]")
+        else:
+            parts.append(f"color=c=0x16161c:s={PROXY_W}x{PROXY_H}:r={FPS},trim=end_frame={n},setpts=PTS-STARTPTS,"
+                         f"setsar=1,format=yuv420p[v{k}]")
         if has_audio[sg["src"]]:
             parts.append(f"[{j}:a]atrim=start={a / FPS:.6f}:duration={d:.6f},asetpts=PTS-STARTPTS,"
                          f"aresample=48000,aformat=channel_layouts=stereo,apad=whole_dur={d:.6f},"
@@ -160,13 +222,26 @@ def main(args, project) -> dict:
     sp = proj.work / "sources.json"
     if not sp.exists():
         raise VeosError("NO_SOURCES", "work/sources.json not found", "Run `veos ingest` and `veos conform` first.")
-    edl_path = Path(args.edl)
-    if not edl_path.is_absolute() and not edl_path.exists() and (proj.root / args.edl).exists():
-        edl_path = proj.root / args.edl
-    if not edl_path.exists():
-        raise VeosError("EDL_MISSING", f"EDL not found: {args.edl}", "Pass the path to edl.json.")
-    edl = read_json(edl_path)
-    sources = {s["id"]: s for s in read_json(sp)["sources"]}
+    src_list = read_json(sp)["sources"]
+    if getattr(args, "identity", False):
+        wd = {}
+        for s in src_list:
+            wp = proj.work / "words" / f"{s['id']}.json"
+            if wp.exists():
+                wd[s["id"]] = read_json(wp).get("words", [])
+        edl = identity_edl(src_list, wd, tighten=args.tighten, max_pause=args.max_pause, trim=not args.no_trim,
+                           end_hold=args.end_hold)
+        write_json(proj.path("work", "edl.json"), edl)
+    else:
+        if not args.edl:
+            raise VeosError("EDL_MISSING", "no EDL given", "Pass the path to edl.json, or --identity for a voice-over reel.")
+        edl_path = Path(args.edl)
+        if not edl_path.is_absolute() and not edl_path.exists() and (proj.root / args.edl).exists():
+            edl_path = proj.root / args.edl
+        if not edl_path.exists():
+            raise VeosError("EDL_MISSING", f"EDL not found: {args.edl}", "Pass the path to edl.json.")
+        edl = read_json(edl_path)
+    sources = {s["id"]: s for s in src_list}
     cutmap, warnings = build_cutmap(edl, sources, proj)
     write_json(proj.path("work", "cutmap.json"), cutmap)
     words = remap_words(cutmap, proj)
@@ -178,6 +253,8 @@ def main(args, project) -> dict:
         removed += max(0.0, sources[sid]["duration"] - used)
     summary = {"duration": cutmap["duration"], "frames": cutmap["frames"], "segments": len(cutmap["segments"]),
                "removed_s": r3(removed), "words_remapped": None if words is None else len(words["words"])}
+    if edl.get("auto"):
+        summary["edl"] = {"auto": edl["auto"], "file": "work/edl.json"}
     if not args.no_proxy:
         proxy = proj.path("work", "cut_proxy.mp4")
         render_proxy(cutmap, sources, proj, proxy)

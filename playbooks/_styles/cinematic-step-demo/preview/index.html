@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cinematic Step Demo</title>
+<!-- Glimpse of the Cinematic Step Demo template. Frames are 360x640 (1080x1920 at 1/3). data-card="1..3" = gallery card frames. Illustrations only: no real footage. -->
+<style>
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-style:italic;font-weight:400}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Regular.ttf");font-style:normal;font-weight:400}
+@font-face{font-family:"JetBrains Mono";src:url("../../../../assets/fonts/JetBrainsMono-VF.ttf");font-weight:100 900}
+:root{--gold:#E8B21C;--tape:#0B0B0B;--paper:#FFFFFF;--cream:#EFE4CC;--night:#0D0A08;--rug:#8C1C22;--navy:#233A5E;--skin:#C99A78;--skin2:#B7845F;
+  --e:cubic-bezier(.22,1,.36,1);--x:cubic-bezier(.64,0,.78,0)}
+:root{--bg:#0F0C0A;--fg:#F3ECE2;--muted:#B9AE9F}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#F4EFE7;--fg:#1B1714;--muted:#5E554B}}
+:root[data-theme="dark"]{--bg:#0F0C0A;--fg:#F3ECE2;--muted:#B9AE9F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:"Inter Tight",system-ui,sans-serif;padding:32px 16px 64px}
+header{max-width:1180px;margin:0 auto 22px}
+h1{font-weight:600;font-size:24px;letter-spacing:-.01em}
+h1 em{font-family:"Instrument Serif";font-weight:400;color:var(--gold);font-size:30px}
+p.lead{font-size:14px;color:var(--muted);margin-top:6px;max-width:760px;line-height:1.5}
+h2{max-width:1180px;margin:30px auto 12px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:var(--night)}
+/* footage group + grade (GR-tungsten) */
+.foot{position:absolute;inset:0;filter:contrast(1.08) saturate(.9) sepia(.14) brightness(.96)}
+.vig{position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(ellipse 75% 62% at 50% 46%,rgba(0,0,0,0) 55%,rgba(0,0,0,.34) 100%)}
+/* rug */
+.rug{position:absolute;inset:-40px;background:
+  repeating-linear-gradient(45deg,transparent 0 22px,rgba(237,227,200,.5) 22px 26px,transparent 26px 48px),
+  repeating-linear-gradient(-45deg,transparent 0 22px,rgba(35,58,94,.85) 22px 34px,transparent 34px 48px),
+  linear-gradient(180deg,#7A1820,#8C1C22 40%,#701519)}
+.rug:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0 2px,transparent 2px 5px)}
+.walnut{position:absolute;inset:0;background:repeating-linear-gradient(92deg,#3B2617 0 7px,#432C1B 7px 15px,#35210F 15px 19px),#3B2617}
+/* captions (CS-1 at 1/3: 20px, cy 473; CS-2: 22.7px, cy 453) */
+.cap{position:absolute;left:30px;right:30px;z-index:7;text-align:center;font-weight:500;letter-spacing:-.02em;color:var(--paper);
+  text-shadow:0 .7px 3.3px rgba(0,0,0,.62);line-height:1.08}
+.cap.a{top:461px;font-size:20px}
+.cap.b{top:440px;font-size:22.7px}
+.cap .w{opacity:0;animation:wordin 6s linear infinite}
+.cap .g{font-family:"Instrument Serif";font-style:italic;font-weight:400;color:var(--gold);font-size:1.3em;letter-spacing:0;line-height:.9}
+.cap.guest{color:var(--cream)}
+@keyframes wordin{0%{opacity:0}1.2%{opacity:1}96%{opacity:1}100%{opacity:0}}
+/* label tape (TX-1 at 1/3: top 58.7, h 24, 14.7px, tracking .35em) */
+.tape{position:absolute;left:50%;top:58.7px;height:24px;transform:translateX(-50%);z-index:6;background:var(--tape);color:var(--paper);
+  font-family:"JetBrains Mono";font-weight:600;font-size:14.7px;letter-spacing:.35em;line-height:24px;padding:0 6.5px 0 11.3px;border-radius:1px;
+  box-shadow:inset 0 .4px 0 rgba(255,255,255,.08),0 1px 2.7px rgba(0,0,0,.35);text-shadow:0 .4px 0 rgba(0,0,0,.55);white-space:nowrap;
+  clip-path:inset(0 100% 0 0);animation:feed 6s var(--e) infinite}
+.tape i{font-style:normal;opacity:0;animation:wordin 6s steps(1) infinite}
+@keyframes feed{0%{clip-path:inset(0 100% 0 0);opacity:1}3.3%{clip-path:inset(0 0 0 0)}41%{clip-path:inset(0 0 0 0);opacity:1;transform:translate(-50%,0)}44%,100%{clip-path:inset(0 0 0 0);opacity:0;transform:translate(-50%,-2px)}}
+.tape.small{font-size:13.3px;height:21.3px;line-height:21.3px;letter-spacing:.25em;padding:0 6px 0 9px}
+/* hands */
+.hand{position:absolute;width:86px;height:150px;background:linear-gradient(180deg,var(--skin),var(--skin2));border-radius:40px 40px 18px 18px;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+.hand:before{content:"";position:absolute;left:8px;top:-34px;width:16px;height:52px;border-radius:9px;background:var(--skin);box-shadow:20px -8px 0 var(--skin),40px -6px 0 var(--skin),60px 2px 0 var(--skin)}
+.hand:after{content:"";position:absolute;left:18px;top:30px;width:44px;height:30px;border-radius:50%;border:2px solid rgba(40,30,25,.35)}
+/* frame 1: cup */
+.cup{position:absolute;left:96px;top:150px;width:168px;height:168px;border-radius:50%;background:#EDE3C8;box-shadow:0 14px 30px rgba(0,0,0,.5);animation:setdown 6s var(--e) infinite}
+.cup:before{content:"";position:absolute;inset:16px;border-radius:50%;background:radial-gradient(circle at 46% 44%,#C08A52 0 14%,#7A4A22 30%,#3A2010 62%,#24130A 100%)}
+.cup:after{content:"";position:absolute;inset:34px;border-radius:50%;border:3px solid rgba(214,166,104,.55);border-left-color:transparent;border-bottom-color:transparent;animation:swirl 1.4s linear infinite}
+.cup .handle{position:absolute;right:-30px;top:62px;width:42px;height:42px;border-radius:50%;border:10px solid #EDE3C8}
+@keyframes setdown{0%{transform:translate(18px,-28px) rotate(-14deg) scale(1.06)}12%{transform:none}100%{transform:none}}
+@keyframes swirl{to{transform:rotate(360deg)}}
+.saucer{position:absolute;left:66px;top:120px;width:228px;height:228px;border-radius:50%;background:#2A1C12;opacity:.55;filter:blur(2px)}
+/* frame 2: notebook grid */
+.book{position:absolute;left:46px;top:96px;width:268px;height:300px;background:#EDE3C8;border-radius:4px;box-shadow:0 12px 26px rgba(0,0,0,.45)}
+.book:before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(0,0,0,.18)}
+.gridp{position:absolute;top:26px;width:104px;height:200px;background:
+  repeating-linear-gradient(0deg,rgba(30,30,30,.55) 0 1px,transparent 1px 12.5px),repeating-linear-gradient(90deg,rgba(30,30,30,.55) 0 1px,transparent 1px 13px);
+  border:1px solid rgba(30,30,30,.7)}
+.gridp.l{left:16px}.gridp.r{left:148px}
+.fill{position:absolute;width:12px;height:11.5px;background:#1E1E1E;opacity:0;animation:fillin 6s steps(1) infinite}
+@keyframes fillin{0%{opacity:0}1%,96%{opacity:.9}100%{opacity:0}}
+.pen{position:absolute;width:10px;height:150px;background:linear-gradient(90deg,#111,#3a3a3a,#111);border-radius:5px;transform-origin:50% 100%;z-index:3;animation:penmove 6s ease-in-out infinite}
+@keyframes penmove{0%{transform:translate(0,0) rotate(28deg)}25%{transform:translate(-26px,14px) rotate(24deg)}50%{transform:translate(-8px,30px) rotate(30deg)}75%{transform:translate(-30px,46px) rotate(25deg)}100%{transform:translate(0,0) rotate(28deg)}}
+.handmove{animation:handmove 6s ease-in-out infinite}
+@keyframes handmove{0%{transform:translate(0,0) rotate(-18deg)}25%{transform:translate(-26px,14px) rotate(-20deg)}50%{transform:translate(-8px,30px) rotate(-16deg)}75%{transform:translate(-30px,46px) rotate(-19deg)}100%{transform:translate(0,0) rotate(-18deg)}}
+/* desk A-roll */
+.shelf{position:absolute;inset:0;background:
+  repeating-linear-gradient(90deg,rgba(0,0,0,0) 0 13px,rgba(0,0,0,.35) 13px 15px),
+  repeating-linear-gradient(0deg,#1A120C 0 8px,transparent 8px 70px),
+  linear-gradient(90deg,#6B3E22 0 8%,#8C5A2E 8% 14%,#4E3320 14% 22%,#A0703F 22% 27%,#5A2D1E 27% 36%,#7E5530 36% 45%,#3F2A1C 45% 55%,#9B6B3A 55% 62%,#5C3A22 62% 72%,#80502A 72% 80%,#4A2E1D 80% 90%,#8F6236 90%)}
+.shelf:after{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 30% 20%,rgba(255,180,90,.18),transparent 70%),linear-gradient(180deg,rgba(13,10,8,.35),rgba(13,10,8,.75));filter:blur(.5px)}
+.lamp{position:absolute;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(255,196,110,.55),rgba(255,160,70,0) 70%)}
+.person{position:absolute;left:50%;top:74px;width:240px;height:566px;transform:translateX(-50%);animation:breathe 6s ease-in-out infinite alternate}
+.person .hair{position:absolute;left:46px;top:0;width:148px;height:230px;border-radius:70px 70px 40px 40px;background:linear-gradient(180deg,#4A3324,#2E2017)}
+.person .head{position:absolute;left:70px;top:16px;width:100px;height:132px;border-radius:48% 48% 44% 44%;background:linear-gradient(180deg,#D3A27E,#B98461)}
+.person .beard{position:absolute;left:78px;top:100px;width:84px;height:66px;border-radius:30px 30px 44px 44px;background:#5A3A27;opacity:.9}
+.person .mouth{position:absolute;left:111px;top:116px;width:18px;height:4px;border-radius:4px;background:#2A170F;animation:talk .34s steps(2) infinite}
+.person .body{position:absolute;left:0;top:176px;width:240px;height:400px;border-radius:110px 110px 0 0;background:linear-gradient(180deg,#1B1A1D,#111014)}
+@keyframes talk{50%{height:8px}}
+@keyframes breathe{to{transform:translateX(-50%) scale(1.03)}}
+.table{position:absolute;left:0;right:0;top:520px;bottom:0;background:linear-gradient(180deg,#4A2E1C,#2A1A10)}
+.note{position:absolute;left:150px;top:500px;width:70px;height:52px;background:#E8574A;transform:rotate(-8deg);box-shadow:0 4px 8px rgba(0,0,0,.4);z-index:2}
+/* recap */
+.rk{position:absolute;inset:0;opacity:0;animation:rk 6s steps(1) infinite}
+@keyframes rk{0%{opacity:1}25%,100%{opacity:0}}
+.rk.k2{animation-delay:1.5s}.rk.k3{animation-delay:3s}.rk.k4{animation-delay:4.5s}
+.slot{position:absolute;left:50%;top:58.7px;transform:translateX(-50%);width:110px;height:24px;background:var(--tape);z-index:6;border-radius:1px;
+  box-shadow:inset 0 .4px 0 rgba(255,255,255,.08),0 1px 2.7px rgba(0,0,0,.35)}
+.slot b{position:absolute;inset:0;font-family:"JetBrains Mono";font-weight:600;font-size:14.7px;letter-spacing:.35em;line-height:24px;color:var(--paper);text-align:center;padding-left:5px;opacity:0;animation:rk 6s steps(1) infinite}
+.slot b:nth-child(2){animation-delay:1.5s}.slot b:nth-child(3){animation-delay:3s}.slot b:nth-child(4){animation-delay:4.5s}
+.cap .rc{opacity:0;animation:rk 6s steps(1) infinite}
+.obj{position:absolute;border-radius:6px;box-shadow:0 12px 26px rgba(0,0,0,.5)}
+/* angled hero + rack */
+.rack{animation:rack 6s var(--e) infinite}
+@keyframes rack{0%{filter:blur(6px)}4.4%,100%{filter:blur(0)}}
+.angled{position:absolute;left:70px;top:210px;width:220px;height:140px;background:#EDE3C8;transform:perspective(500px) rotateX(48deg) rotateZ(-12deg);box-shadow:0 30px 40px rgba(0,0,0,.6)}
+.steam{position:absolute;width:6px;height:70px;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.18),rgba(255,255,255,0));animation:steam 3s ease-in-out infinite}
+@keyframes steam{0%{transform:translateY(10px) scaleX(1);opacity:0}40%{opacity:1}100%{transform:translateY(-40px) scaleX(2.2);opacity:0}}
+/* podcast */
+.pod{position:absolute;inset:0}
+.pod .bg{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#3B2414 0 10px,#5A3820 10px 18px,#2A1A0E 18px 22px,#6E4526 22px 30px);filter:blur(3px) brightness(.55)}
+.spk{position:absolute;left:50%;top:110px;width:250px;height:560px;transform:translateX(-50%)}
+.spk .hair{position:absolute;left:30px;top:0;width:190px;height:300px;border-radius:90px 90px 50px 50px;background:linear-gradient(180deg,#5C3E2A,#382518)}
+.spk .head{position:absolute;left:62px;top:40px;width:126px;height:168px;border-radius:48% 48% 44% 44%;background:linear-gradient(180deg,#D8A884,#BE8A66)}
+.spk .beard{position:absolute;left:70px;top:132px;width:110px;height:84px;border-radius:30px 30px 50px 50px;background:#7A4A2E;opacity:.9}
+.spk .mouth{position:absolute;left:112px;top:160px;width:24px;height:5px;border-radius:4px;background:#2A170F;animation:talk .3s steps(2) infinite}
+.spk .body{position:absolute;left:-10px;top:220px;width:270px;height:400px;border-radius:120px 120px 0 0;background:linear-gradient(180deg,#3E5672,#24344A)}
+.spk.g .hair{left:52px;top:4px;width:146px;height:92px;border-radius:70px 70px 20px 20px;background:#1F3326}
+.spk.g .beard{height:40px;top:166px;background:#5C4636;opacity:.7}
+.spk.g .body{background:repeating-linear-gradient(90deg,#3A3631 0 16px,#25221F 16px 30px)}
+.mic{position:absolute;right:24px;top:300px;width:46px;height:110px;border-radius:24px;background:linear-gradient(90deg,#121212,#2b2b2b);transform:rotate(-24deg);z-index:2}
+.mic.l{right:auto;left:20px;transform:rotate(24deg)}
+.shotA{animation:shotA 6s steps(1) infinite}.shotB{animation:shotB 6s steps(1) infinite}
+@keyframes shotA{0%{opacity:1}50%,100%{opacity:0}}
+@keyframes shotB{0%{opacity:0}50%,100%{opacity:1}}
+.nod{animation:nod 1.2s ease-in-out infinite}
+@keyframes nod{50%{transform:translateX(-50%) translateY(6px) rotate(1.5deg)}}
+/* CTA tape */
+.cta{font-size:16px;height:26px;line-height:26px;letter-spacing:.3em;font-weight:700}
+.anat{position:absolute;inset:0;background:var(--night);padding:26px 24px;color:#E8DCCB}
+.anat h3{font-family:"JetBrains Mono";font-weight:600;font-size:11px;letter-spacing:.25em;color:#B9AE9F;margin:16px 0 8px}
+.anat .demo{font-weight:500;font-size:20px;letter-spacing:-.02em;color:#fff;text-shadow:0 .7px 3.3px rgba(0,0,0,.62)}
+.anat .demo .g{font-family:"Instrument Serif";font-style:italic;color:var(--gold);font-size:26px}
+.anat p{font-size:12px;line-height:1.5;color:#CFC3B2}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px;border:1px solid rgba(255,255,255,.2)}
+@media (prefers-reduced-motion: reduce){*{animation-play-state:paused!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cinematic Step Demo <em>glimpse</em></h1>
+  <p class="lead">Warm, cinematic how-tos inspired by Peter McKinnon. F-A step demo: your hands from above, one black STEP label per step, white captions where one word turns gold italic, a recap at the end. F-B podcast clip: tight singles, cuts on every handover. All frames are illustrations at 1/3 scale (360 × 640 = 1080 × 1920).</p>
+</header>
+
+<h2>F-A Step demo</h2>
+<div class="grid">
+  <figure>
+    <div class="f" data-card="1">
+      <div class="foot"><div class="walnut"></div><div class="saucer"></div><div class="cup"><div class="handle"></div></div>
+        <div class="hand" style="left:230px;top:300px;transform:rotate(-30deg)"></div>
+        <div class="steam" style="left:170px;top:120px"></div><div class="steam" style="left:190px;top:110px;animation-delay:1.2s"></div></div>
+      <div class="vig"></div>
+      <div class="cap a"><span class="w" style="animation-delay:.1s">This</span> <span class="w" style="animation-delay:.35s">is</span> <span class="w" style="animation-delay:.5s">my</span> <span class="w" style="animation-delay:.75s">morning</span> <span class="w g" style="animation-delay:1s">ritual.</span></div>
+    </div>
+    <figcaption>Hook (HA-14 "Result in hand"): f0 is the finished result moving in the hands; the first word lands by 0.1 s, the gold italic word names the result by 1 s.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f" data-card="2">
+      <div class="foot"><div class="rug"></div>
+        <div class="book"><div class="gridp l"></div><div class="gridp r"></div>
+          <div class="fill" style="left:30px;top:52px;animation-delay:.6s"></div><div class="fill" style="left:43px;top:64px;animation-delay:1.1s"></div>
+          <div class="fill" style="left:30px;top:77px;animation-delay:1.6s"></div><div class="fill" style="left:56px;top:52px;animation-delay:2.1s"></div>
+          <div class="fill" style="left:69px;top:89px;animation-delay:2.6s"></div><div class="fill" style="left:43px;top:102px;animation-delay:3.1s"></div>
+          <div class="fill" style="left:82px;top:64px;animation-delay:3.6s"></div><div class="fill" style="left:56px;top:127px;animation-delay:4.1s"></div></div>
+        <div class="handmove" style="position:absolute;left:150px;top:300px"><div class="hand"></div></div>
+        <div class="pen" style="left:190px;top:200px"></div></div>
+      <div class="vig"></div>
+      <div class="tape"><i style="animation-delay:.07s">S</i><i style="animation-delay:.1s">T</i><i style="animation-delay:.13s">E</i><i style="animation-delay:.17s">P</i><i style="animation-delay:.2s">&nbsp;</i><i style="animation-delay:.23s">2</i></div>
+      <div class="tape small" style="left:262px;top:330px;transform:translateX(-50%) rotate(-2deg);animation-name:feed2;animation-delay:3s"><i style="animation-delay:3.05s">0.5</i><i style="animation-delay:3.1s">&nbsp;MM</i><i style="animation-delay:3.15s">&nbsp;NIB</i></div>
+      <div class="cap a"><span class="w" style="animation-delay:.2s">and</span> <span class="w" style="animation-delay:.45s">I</span> <span class="w" style="animation-delay:.6s">add</span> <span class="w" style="animation-delay:.8s">my</span> <span class="w" style="animation-delay:1s">two</span> <span class="w g" style="animation-delay:1.3s">trackers.</span></div>
+    </div>
+    <figcaption>Step ritual: cut to overhead on the ordinal word, the STEP tape feeds out and types on (6 f), holds 2.5 s and fades; one tool tape later in the step.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f">
+      <div class="foot"><div class="shelf"></div><div class="lamp" style="left:20px;top:60px"></div><div class="lamp" style="left:280px;top:110px"></div>
+        <div class="person"><div class="hair"></div><div class="head"></div><div class="beard"></div><div class="mouth"></div><div class="body"></div></div>
+        <div class="table"></div><div class="note"></div></div>
+      <div class="vig"></div>
+      <div class="cap a"><span class="w" style="animation-delay:.1s">I</span> <span class="w" style="animation-delay:.3s">peel</span> <span class="w" style="animation-delay:.5s">it</span> <span class="w" style="animation-delay:.7s">off</span> <span class="w" style="animation-delay:.9s">and</span> <span class="w" style="animation-delay:1.1s">start</span> <span class="w" style="animation-delay:1.3s">a</span> <span class="w g" style="animation-delay:1.5s">fresh</span> <span class="w" style="animation-delay:1.8s">one.</span></div>
+    </div>
+    <figcaption>Desk return (L-desk): the "why" sentence, slow push 1.00 → 1.05, no tape over the face, captions at chest height (cy 1420).</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f">
+      <div class="foot"><div class="walnut" style="filter:brightness(.6)"></div>
+        <div class="rack"><div class="angled"></div><div class="steam" style="left:180px;top:150px"></div></div></div>
+      <div class="vig"></div>
+      <div class="cap a"><span class="w" style="animation-delay:.3s">same</span> <span class="w" style="animation-delay:.5s">cup</span> <span class="w" style="animation-delay:.7s">every</span> <span class="w g" style="animation-delay:.9s">day.</span></div>
+    </div>
+    <figcaption>Angled hero insert with a rack-in (blur 6 → 0 over 8 f): the hook's second angle, hidden behind a flip cut.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f">
+      <div class="foot"><div class="rug"></div>
+        <div class="rk"><div class="obj" style="left:70px;top:120px;width:220px;height:270px;background:#EDE3C8"></div></div>
+        <div class="rk k2"><div class="obj" style="left:60px;top:140px;width:240px;height:220px;background:#E4D7BA"></div><div class="obj" style="left:120px;top:170px;width:120px;height:20px;background:#3B2617"></div></div>
+        <div class="rk k3"><div class="obj" style="left:80px;top:110px;width:200px;height:290px;background:#D9CBA8"></div><div class="obj" style="left:180px;top:120px;width:90px;height:80px;background:#E8574A"></div></div>
+        <div class="rk k4"><div class="obj" style="left:70px;top:150px;width:220px;height:230px;background:#C8A36A"></div></div></div>
+      <div class="vig"></div>
+      <div class="slot"><b>STEP 1</b><b>STEP 2</b><b>STEP 3</b><b>STEP 4</b></div>
+      <div class="cap a"><span class="rc">You've got your <span class="g">tracker,</span></span></div>
+      <div class="cap a"><span class="rc" style="animation-delay:1.5s">your <span class="g">index</span> page,</span></div>
+      <div class="cap a"><span class="rc" style="animation-delay:3s">the <span class="g">sticky</span> note,</span></div>
+      <div class="cap a"><span class="rc" style="animation-delay:4.5s">and your <span class="g">bookmark.</span></span></div>
+    </div>
+    <figcaption>Recap strip: one finished-state shot per step, 1.2-2.0 s each; the tape label swaps on the cut frame inside a fixed container (E6).</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f">
+      <div class="foot"><div class="walnut"></div><div class="saucer"></div><div class="cup" style="animation:none"><div class="handle"></div></div>
+        <div class="hand" style="left:40px;top:330px;transform:rotate(24deg)"></div></div>
+      <div class="vig"></div>
+      <div class="tape cta" style="animation-name:feedhold"><i style="animation-delay:.07s">COMMENT</i><i style="animation-delay:.2s">&nbsp;·&nbsp;</i><i style="animation-delay:.27s">BREW</i></div>
+      <div class="cap a"><span class="w" style="animation-delay:.3s">Comment</span> <span class="w g" style="animation-delay:.6s">brew</span> <span class="w" style="animation-delay:.9s">for</span> <span class="w" style="animation-delay:1.1s">my</span> <span class="w" style="animation-delay:1.3s">ratios.</span></div>
+    </div>
+    <figcaption>Optional CTA (comment keyword): the same label tape, held ≥ 1.5 s on the final result; the keyword is also the gold word. Default is no CTA.</figcaption>
+  </figure>
+</div>
+
+<h2>F-B Podcast clip</h2>
+<div class="grid">
+  <figure>
+    <div class="f" data-card="3">
+      <div class="foot">
+        <div class="pod shotA"><div class="bg"></div><div class="spk"><div class="hair"></div><div class="head"></div><div class="beard"></div><div class="mouth"></div><div class="body"></div></div><div class="mic"></div></div>
+        <div class="pod shotB"><div class="bg" style="filter:blur(3px) brightness(.4) hue-rotate(-10deg)"></div><div class="spk g"><div class="hair"></div><div class="head"></div><div class="beard"></div><div class="mouth"></div><div class="body"></div></div><div class="mic l"></div></div>
+      </div>
+      <div class="vig"></div>
+      <div class="cap b shotA"><span class="w" style="animation-delay:.1s">like,</span> <span class="w g" style="animation-delay:.5s">printing</span> <span class="w" style="animation-delay:.9s">your</span> <span class="w" style="animation-delay:1.2s">photos</span></div>
+      <div class="cap b guest shotB"><span class="w" style="animation-delay:3.05s">Is</span> <span class="w" style="animation-delay:3.3s">your</span> <span class="w g" style="animation-delay:3.6s">work</span> <span class="w" style="animation-delay:3.9s">gone?</span></div>
+    </div>
+    <figcaption>Cold open mid-sentence, cut on the handover at 3 s: host captions white, guest captions cream; one gold italic word each.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f">
+      <div class="foot"><div class="pod"><div class="bg" style="filter:blur(3px) brightness(.4)"></div><div class="spk g nod"><div class="hair"></div><div class="head"></div><div class="beard"></div><div class="body"></div></div><div class="mic l"></div></div></div>
+      <div class="vig"></div>
+      <div class="cap b"><span class="w" style="animation-delay:.1s">I've</span> <span class="w" style="animation-delay:.3s">been</span> <span class="w" style="animation-delay:.5s">blaming</span> <span class="w" style="animation-delay:.8s">my</span> <span class="w g" style="animation-delay:1.1s">starter</span></div>
+    </div>
+    <figcaption>Reaction cutaway (1.0-2.6 s): the listener on screen, the captions stay with the speaker. The clip ends on a reaction.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="f">
+      <div class="anat">
+        <h3>CAPTION · CS-1</h3>
+        <div class="demo">This is my <span class="g">system</span></div>
+        <p>Inter Tight 500 · 60 px · white · word-by-word reveal · cy 1420 (F-A) / 68 px · cy 1360 (F-B)</p>
+        <h3>THE GOLD WORD</h3>
+        <p>Instrument Serif italic · 1.3× · ≤ 1 per chunk, ≤ 1 per 4 s · the noun you'd search for.</p>
+        <h3>LABEL TAPE</h3>
+        <div style="position:relative;height:30px"><div class="tape" style="animation:none;clip-path:none;top:2px;left:0;transform:none">STEP 1</div></div>
+        <p>JetBrains Mono 600 · 44 px · tracking .35 em · black tape · top y 176 · 2.5 s per step.</p>
+        <h3>COLOUR + GRADE</h3>
+        <p><span class="sw" style="background:#E8B21C"></span>gold #E8B21C <span class="sw" style="background:#0B0B0B;margin-left:10px"></span>tape #0B0B0B <span class="sw" style="background:#EFE4CC;margin-left:10px"></span>guest #EFE4CC</p>
+        <p style="margin-top:8px">GR-tungsten: contrast 1.08 · saturation 0.90 · sepia 0.14 · vignette 0.34 on every footage frame.</p>
+      </div>
+    </div>
+    <figcaption>Type and colour at a glance.</figcaption>
+  </figure>
+</div>
+<style>
+@keyframes feed2{0%,49.9%{clip-path:inset(0 100% 0 0);opacity:1}53%{clip-path:inset(0 0 0 0)}83%{clip-path:inset(0 0 0 0);opacity:1}86%,100%{clip-path:inset(0 0 0 0);opacity:0}}
+@keyframes feedhold{0%{clip-path:inset(0 100% 0 0)}3.3%,100%{clip-path:inset(0 0 0 0)}}
+</style>
+</body>
+</html>

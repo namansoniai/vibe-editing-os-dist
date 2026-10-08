@@ -6,6 +6,8 @@ except `render`) -> plan/scenes.meta.json (a list). Registration errors are repo
 measure: render sampled frames headless (no screenshots) and record, per active scene, the union bounding rect
 (1080x1920 px, resting position: enter/exit presets neutralised) of its painted DOM -> plan/measure.json
 {"every": N, "frames": {"<n>": {"<scene id>": [x0, y0, x1, y1]}}}. Canvas-only scenes fall back to their declared box.
+Then the text pass (E-06, textmeasure.py) -> plan/measure.text.json: every text element's rendered size, weight, class
+markers, contrast against the sampled background, clipping, and the E1 occlusion of behind text (`--no-text` skips it).
 """
 from __future__ import annotations
 
@@ -14,7 +16,7 @@ import time
 from pathlib import Path
 
 from .core import FPS, VeosError, need_project, read_json, write_json
-from .prep import check_scenes_js, ensure_bundle
+from .prep import check_scenes_js, ensure_bundle, graphics_passthrough
 
 REPO = Path(__file__).resolve().parents[3]
 PLAYER = REPO / "renderer" / "player.html"
@@ -26,6 +28,10 @@ def add_args(p, cmd):
         p.add_argument("--range", nargs=2, type=int, metavar=("A", "B"), help="only frames A..B-1")
         p.add_argument("--motion", action="store_true",
                        help="every frame where a z3-10 scene is active -> plan/measure.motion.json (what validate's G3 smooth-motion check reads)")
+        p.add_argument("--no-text", action="store_true",
+                       help="skip the text pass (plan/measure.text.json: sizes, classes, contrast, clipping for V-TYPE / V-EXC)")
+        p.add_argument("--no-pixels", action="store_true",
+                       help="text pass without screenshots (no contrast / no E1 occlusion; layout only)")
 
 
 def _chrome_args() -> list[str]:
@@ -43,8 +49,14 @@ def _open(url_bundle: str, extra: str = ""):
     logs: list[str] = []
     pg.on("console", lambda m: logs.append(m.text) if m.type in ("error", "warning") else None)
     pg.on("pageerror", lambda e: logs.append(f"pageerror: {e}"))
-    pg.goto(PLAYER.resolve().as_uri() + "?bundle=" + url_bundle + extra)
-    pg.wait_for_function("window.READY===true || !!window.VEOS_BOOT_ERROR", timeout=90000)
+    try:
+        pg.goto(PLAYER.resolve().as_uri() + "?bundle=" + url_bundle + extra)
+        pg.wait_for_function("window.READY===true || !!window.VEOS_BOOT_ERROR", timeout=90000)
+    except BaseException:
+        # a boot timeout must not leak Chromium: it keeps handles on the project folder (Windows then cannot delete it)
+        br.close()
+        pw.stop()
+        raise
     return pw, br, pg, logs
 
 
@@ -65,11 +77,14 @@ def scenes_meta(pr) -> dict:
     if errs:
         raise VeosError("SCENES_INVALID", "scenes.js has problems: " + " | ".join(errs)[:1500],
                         "Fix the listed scene(s) in plan/scenes.js (each message starts with the scene id).")
-    if not meta:
+    if not meta and not graphics_passthrough(pr):
         raise VeosError("NO_SCENES", "plan/scenes.js registered no scenes", "Call VEOS.scene({...}) at least once.")
     dest = pr.path("plan", "scenes.meta.json")
     write_json(dest, meta)
-    return {"file": pr.rel(dest), "scenes": len(meta), "ids": [m.get("id") for m in meta]}
+    res = {"file": pr.rel(dest), "scenes": len(meta), "ids": [m.get("id") for m in meta]}
+    if not meta:
+        res["warnings"] = ["no scenes: allowed, the style's graphics profile is passthrough (the reel draws nothing)"]
+    return res
 
 
 def load_scenes_meta(pr, auto: bool = True) -> list[dict]:
@@ -87,9 +102,21 @@ def load_scenes_meta(pr, auto: bool = True) -> list[dict]:
 
 
 MOTION_CAP = 2700  # max frames measured for the smooth-motion check (90 s at 30 fps)
+MEASURE_BATCH = 60  # frames measured per page.evaluate call
+# One evaluate per frame hands control back to the browser between frames, so Chromium paints every frame (a full-frame
+# gradient backdrop costs ~0.6 s per paint on the capped cores: `validate` ran > 5 min on such reels). Measuring a batch
+# of frames inside one evaluate never yields to a rendering step: no paint, ~10x faster.
+_BATCH_JS = """async (ns) => {
+  const out = {};
+  for (const n of ns) {
+    try { out[n] = await window.measureFrame(n); }
+    catch (e) { return { __error: { n, msg: String((e && e.message) || e) } }; }
+  }
+  return out;
+}"""
 
 
-def _measure_frames(pr, url: str, ns: list[int]) -> dict[str, dict]:
+def _measure_frames(pr, url: str, ns: list[int], batch: int = MEASURE_BATCH) -> dict[str, dict]:
     out: dict[str, dict] = {}
     pw, br, pg, logs = _open(url)
     try:
@@ -97,12 +124,19 @@ def _measure_frames(pr, url: str, ns: list[int]) -> dict[str, dict]:
         if boot:
             raise VeosError("SCENES_BOOT", "player failed to load: " + str(boot)[:1200],
                             "Fix plan/scenes.js (run `veos scenes-meta` for per-scene errors).")
-        for n in ns:
+        for k in range(0, len(ns), max(1, batch)):
+            part = ns[k:k + max(1, batch)]
             try:
-                out[str(n)] = pg.evaluate("n => window.measureFrame(n)", n)
+                got = pg.evaluate(_BATCH_JS, part)
             except Exception as e:  # noqa: BLE001
                 msg = str(e).splitlines()[0][:400]
-                raise VeosError("SCENE_RENDER_FAILED", f"frame {n}: {msg}", "Fix the scene named in the message.") from None
+                raise VeosError("SCENE_RENDER_FAILED", f"frames {part[0]}-{part[-1]}: {msg}",
+                                "Fix the scene named in the message.") from None
+            err = (got or {}).get("__error")
+            if err:
+                msg = str(err.get("msg", "")).splitlines()[0][:400]
+                raise VeosError("SCENE_RENDER_FAILED", f"frame {err.get('n')}: {msg}", "Fix the scene named in the message.")
+            out.update({str(n): v for n, v in (got or {}).items()})
     finally:
         br.close()
         pw.stop()
@@ -141,7 +175,7 @@ def measure_motion(pr, scenes: list[dict], cap: int = MOTION_CAP) -> dict:
     return {"frames": len(ns), "seconds": round(dt, 1), "truncated": truncated}
 
 
-def measure(pr, every: int, rng: tuple[int, int] | None, motion: bool = False) -> dict:
+def measure(pr, every: int, rng: tuple[int, int] | None, motion: bool = False, text: bool = True, pixels: bool = True) -> dict:
     check_scenes_js(pr)
     if motion:
         r = measure_motion(pr, load_scenes_meta(pr))
@@ -156,13 +190,18 @@ def measure(pr, every: int, rng: tuple[int, int] | None, motion: bool = False) -
     out = _measure_frames(pr, url, ns)
     data = {"version": 1, "every": every, "size": [1080, 1920], "fps": FPS, "frames": out}
     write_json(pr.path("plan", "measure.json"), data, indent=None)
-    seen = sorted({sid for f in out.values() for sid in f})
-    return {"file": "plan/measure.json", "frames_sampled": len(ns), "scenes_seen": seen,
-            "ms_per_frame": round(1000 * (time.perf_counter() - t0) / max(len(ns), 1), 1)}
+    seen = sorted({sid for f in out.values() for sid in f if sid != "__world"})
+    res = {"file": "plan/measure.json", "frames_sampled": len(ns), "scenes_seen": seen,
+           "ms_per_frame": round(1000 * (time.perf_counter() - t0) / max(len(ns), 1), 1)}
+    if text and not rng:
+        from .textmeasure import measure_text
+        res.update(measure_text(pr, url, load_scenes_meta(pr), frames, pixels=pixels))
+    return res
 
 
 def main(args, project):
     pr = need_project(project)
     if args.cmd == "scenes-meta":
         return scenes_meta(pr)
-    return measure(pr, args.every, tuple(args.range) if args.range else None, getattr(args, "motion", False))
+    return measure(pr, args.every, tuple(args.range) if args.range else None, getattr(args, "motion", False),
+                   text=not getattr(args, "no_text", False), pixels=not getattr(args, "no_pixels", False))

@@ -1,0 +1,36 @@
+{
+  "package": "veos.template/1",
+  "id": "archive-explainer",
+  "tier": "full",
+  "order": 16,
+  "tagline": "Documentary-style explainers: archive pictures cut on every phrase, receipt cards with the key words in lime on a royal-blue canvas, and white mono captions in black boxes. Also cuts your two-camera podcast into calm, boxed-caption clips.",
+  "inspired_by_display": [
+    "Johnny Harris"
+  ],
+  "needs": "a voice-over (+ your own archive photos, optional)",
+  "readiness": "R4",
+  "readiness_note": "Best with your own photos of the people and places you name; without them every picture is a created plate. Map cards are schematic until the geo-map bundle ships.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "data_figures",
+    "number_format",
+    "inserts_flow",
+    "citations"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A hook: archive subject, Ken Burns, boxed mono caption",
+      "F-A receipt: the headline types on, the key figure turns lime, leader line and thumbs",
+      "F-B podcast clip: speaker single with brand-blue boxed captions, then the QR end card"
+    ]
+  }
+}

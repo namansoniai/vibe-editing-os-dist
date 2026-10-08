@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cinematic Vlog Type</title>
+<!-- Template glimpse. Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py).
+     Every picture is drawn with CSS/SVG (no real footage). All motion is Web Animations built at load (6 s loops). -->
+<style>
+@font-face{font-family:"Anton";src:url("../../../../assets/fonts/Anton-Regular.ttf")}
+@font-face{font-family:"Pinyon Script";src:url("../../../../assets/fonts/PinyonScript-Regular.ttf")}
+@font-face{font-family:"EB Garamond";src:url("../../../../assets/fonts/EBGaramond-VF.ttf");font-weight:400 800}
+@font-face{font-family:"EB Garamond";src:url("../../../../assets/fonts/EBGaramond-Italic-VF.ttf");font-weight:400 800;font-style:italic}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Jost";src:url("../../../../assets/fonts/Jost-VF.ttf");font-weight:100 900}
+:root{
+  --yellow:#FFE400;--sun:#E8401C;--sub:#F3E6C4;--ink:#0B0B0B;--shade:#1A1208;--cream:#FCFBE6;--greige:#E5E1D3;--grid:#CFCBB6;
+  --frame:#F6F4EC;--gold:#9A6E0A;--night:#050505;
+  --page:#15120E;--text:#F3EEE4;--muted:#B9B0A2;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--page:#F4F1EA;--text:#1A1612;--muted:#5E564B}}
+:root[data-theme="light"]{--page:#F4F1EA;--text:#1A1612;--muted:#5E564B}
+:root[data-theme="dark"]{--page:#15120E;--text:#F3EEE4;--muted:#B9B0A2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--text);font-family:Jost,system-ui,sans-serif;padding:28px 16px 56px}
+header{max-width:1180px;margin:0 auto 18px}
+h1{font:600 24px/1.2 Jost,system-ui,sans-serif;margin-bottom:6px}
+h2{font:600 15px/1.3 Jost,system-ui,sans-serif;max-width:1180px;margin:26px auto 12px;letter-spacing:.02em;color:var(--muted);text-transform:uppercase}
+p.lead{font-size:14px;line-height:1.5;color:var(--muted);max-width:780px}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px;max-width:100%}
+figcaption{font-size:12.5px;line-height:1.45;color:var(--muted);margin-top:8px}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:#000}
+.L{position:absolute;inset:0}
+.abs{position:absolute}
+/* type */
+.blk{position:absolute;font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:-.01em;line-height:.92;color:var(--yellow);white-space:nowrap;text-shadow:0 2px 8px rgba(0,0,0,.30)}
+.scr{position:absolute;font-family:"Pinyon Script",cursive;color:#fff;white-space:nowrap;line-height:1.1;-webkit-text-stroke:.5px var(--shade);paint-order:stroke fill;text-shadow:0 1px 4px rgba(0,0,0,.55)}
+.sub{position:absolute;left:0;right:0;top:486px;text-align:center;font:500 18px/1.15 "EB Garamond",Georgia,serif;color:var(--sub);-webkit-text-stroke:.7px var(--shade);paint-order:stroke fill;text-shadow:0 1px 1px rgba(0,0,0,.65);white-space:nowrap}
+.wide{position:absolute;font-family:Montserrat,sans-serif;font-weight:900;text-transform:uppercase;color:var(--yellow);line-height:.95;letter-spacing:-.02em;white-space:nowrap;-webkit-text-stroke:.7px var(--shade);paint-order:stroke fill}
+.ink .blk,.ink .scr{color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
+.legal{position:absolute;left:21px;top:43px;font:500 8px/1 Jost,sans-serif;color:rgba(255,255,255,.85);letter-spacing:.02em}
+.legal.dark{color:rgba(11,11,11,.7)}
+/* worlds */
+.paper{background:var(--cream)}
+.gridw{background:
+  radial-gradient(ellipse 75% 60% at 50% 46%,rgba(0,0,0,0) 45%,rgba(0,0,0,.42) 100%),
+  repeating-linear-gradient(0deg,transparent 0 20.33px,var(--grid) 20.33px 21.33px),
+  repeating-linear-gradient(90deg,transparent 0 20.33px,var(--grid) 20.33px 21.33px),var(--greige)}
+.void{background:radial-gradient(ellipse 80% 70% at 50% 45%,#141414 0,#050505 70%)}
+/* illustrated places */
+.sky{background:linear-gradient(180deg,#2F78BE 0%,#6FAEE0 38%,#E9C38D 62%,#C9874E 64%,#5B4A35 100%)}
+.wood{background:linear-gradient(115deg,#E8CDA2 0,#D9B98B 30%,#E8CDA2 31%,#D3B283 62%,#E8CDA2 63%,#CFAD7D 100%)}
+.warmset{background:radial-gradient(circle at 78% 30%,rgba(255,196,110,.55) 0,rgba(255,196,110,0) 90px),linear-gradient(180deg,#4A2A18 0%,#6E3B1F 40%,#2B1A10 100%)}
+.water{background:linear-gradient(180deg,#123E66 0%,#1B5683 55%,#1E5E8E 56%,#8A8A86 74%,#6F6E69 100%)}
+.asphalt{background:repeating-linear-gradient(28deg,rgba(255,255,255,.0) 0 64px,rgba(255,255,255,.55) 64px 68px,rgba(255,255,255,0) 68px 140px),linear-gradient(180deg,#4B4B4B,#3A3A3A)}
+.grass{background:repeating-linear-gradient(95deg,#3E7A2A 0 3px,#4F9234 3px 6px,#2F6420 6px 9px),#3E7A2A}
+.studio{background:radial-gradient(ellipse at 50% 40%,#F3F3F1 0,#CFCFCB 80%)}
+.poster{background:radial-gradient(circle at 50% 36%,#FF8A2A 0,#E8401C 26%,#7A0F06 46%,#2A0503 70%)}
+.field{background:linear-gradient(180deg,#3B8FE0 0%,#8CC6F2 42%,#3D7A33 43%,#5E9B44 62%,#B8653C 63%,#9C5232 100%)}
+.card{position:absolute;overflow:hidden;box-shadow:0 6px 13px rgba(0,0,0,.18)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cinematic Vlog Type</h1>
+  <p class="lead">Your own cinematic footage, cut every second or so. One hot yellow: keyword blocks that blur in on their word, white script for the words in between, a quiet cream serif subtitle at the bottom, examples on cream paper cards and polaroids, and an ending that loops back to the first frame. Two formats: a vlog/story and a tutorial with paper cards. All pictures below are drawn placeholders for your footage.</p>
+</header>
+
+<!-- ======================================================================= F-A -->
+<h2>F-A · Vlog / story</h2>
+<div class="grid">
+
+<figure>
+  <div class="f" data-card="1">
+    <div class="L wood" data-a="push"></div>
+    <svg class="L" viewBox="0 0 360 640" data-a="push">
+      <rect x="0" y="250" width="360" height="12" fill="#F7F1E6" opacity=".8"/><rect x="0" y="420" width="360" height="10" fill="#F7F1E6" opacity=".7"/>
+      <circle cx="190" cy="330" r="92" fill="#E8EEF2" stroke="#F4EFE6" stroke-width="7"/>
+      <circle cx="190" cy="330" r="86" fill="#9FB3C2"/>
+      <g transform="translate(190 330)"><circle cx="0" cy="-22" r="16" fill="#8A5A3C"/><path d="M-16 -30 Q0 -48 16 -30 L20 -27 L-16 -27Z" fill="#111"/><path d="M-34 60 Q-30 0 0 -4 Q30 0 34 60Z" fill="#1E1E22"/></g>
+    </svg>
+    <div class="L" data-a="cut" data-in="4.8" data-out="6"><div class="L sky"></div>
+      <svg class="L" viewBox="0 0 360 640"><path d="M0 400 L70 330 L140 380 L220 300 L300 370 L360 330 L360 640 L0 640Z" fill="#3E4B2E"/><rect x="120" y="230" width="120" height="250" rx="4" fill="#2C2620"/><rect x="132" y="244" width="96" height="236" fill="#F0E2C2"/><g transform="translate(180 430)"><circle cx="0" cy="-58" r="11" fill="#8A5A3C"/><path d="M-22 40 Q-20 -40 0 -46 Q20 -40 22 40Z" fill="#1E1E22"/></g></svg>
+    </div>
+    <div class="scr" style="left:24px;top:62px;font-size:23px" data-a="script" data-in="0" data-out="1.2">When it comes to what</div>
+    <div class="blk" style="left:21px;top:104px;font-size:66px" data-a="block" data-in="0.45" data-out="1.2">You</div>
+    <div class="blk" style="left:116px;top:104px;font-size:66px" data-a="block" data-in="0.8" data-out="1.2">Wear</div>
+    <div class="blk" style="left:21px;top:96px;font-size:66px" data-a="block" data-in="1.45" data-out="2.75">Shopping</div>
+    <div class="blk" style="left:21px;top:158px;font-size:66px" data-a="block" data-in="1.8" data-out="2.75">In person</div>
+    <div class="blk" style="left:21px;top:96px;font-size:66px" data-a="block" data-in="3.0" data-out="4.6">Is way</div>
+    <div class="blk" style="left:21px;top:158px;font-size:66px" data-a="block" data-in="3.4" data-out="4.6">Better</div>
+    <div class="scr" style="left:178px;top:224px;font-size:23px" data-a="script" data-in="3.8" data-out="4.6">than online</div>
+    <div class="sub" data-a="cut" data-in="4.85" data-out="6">So I'm here today</div>
+  </div>
+  <figcaption><b>Card 1 · HA-12 hook.</b> A moving opener (a mirror here), white script connectors written on, yellow Anton keywords blur-sliding in on their words; the thesis is complete by 3 s, then a cut on motion and the subtitle starts.</figcaption>
+</figure>
+
+<figure>
+  <div class="f">
+    <div class="L water"></div>
+    <svg class="L" viewBox="0 0 360 640"><g stroke="#E9ECEE" stroke-width="3" fill="none"><path d="M0 352 H360"/><path d="M0 384 H360"/></g><g stroke="#E9ECEE" stroke-width="2">
+      <path d="M12 352 V384 M36 352 V384 M60 352 V384 M84 352 V384 M108 352 V384 M132 352 V384 M156 352 V384 M180 352 V384 M204 352 V384 M228 352 V384 M252 352 V384 M276 352 V384 M300 352 V384 M324 352 V384 M348 352 V384"/></g>
+      <g transform="translate(160 330)"><circle cx="0" cy="-10" r="10" fill="#111"/><path d="M-16 60 L-14 2 Q0 -6 14 2 L16 60Z" fill="#141414"/></g>
+      <g transform="translate(196 332)"><circle cx="0" cy="-10" r="9" fill="#2B1A12"/><path d="M-13 55 L-11 2 Q0 -5 11 2 L13 55Z" fill="#EDE8DF"/></g></svg>
+    <div class="L" data-a="cut" data-in="4.6" data-out="6"><div class="L" style="background:linear-gradient(180deg,#CDBB9E 0,#A88E6E 60%,#6B5A47 100%)"></div>
+      <svg class="L" viewBox="0 0 360 640"><g transform="translate(150 380)"><circle cx="0" cy="-30" r="16" fill="#8A5A3C"/><path d="M-30 120 Q-28 -10 0 -12 Q28 -10 30 120Z" fill="#141414"/></g><g transform="translate(215 390)"><circle cx="0" cy="-28" r="14" fill="#3A2416"/><path d="M-26 110 Q-24 -8 0 -10 Q24 -8 26 110Z" fill="#EDE8DF"/></g></svg></div>
+    <div class="scr" style="left:26px;top:60px;font-size:24px" data-a="script" data-in="0" data-out="2.2">Is</div>
+    <div class="scr" style="right:26px;top:60px;font-size:24px" data-a="script" data-in="0.17" data-out="2.2">your</div>
+    <div class="blk" style="left:0;right:0;text-align:center;top:96px;font-size:72px" data-a="block" data-in="0.35" data-out="2.2">Phone</div>
+    <div class="scr" style="left:40px;top:168px;font-size:24px" data-a="script" data-in="0.9" data-out="2.2">still</div>
+    <div class="scr" style="right:40px;top:168px;font-size:24px" data-a="script" data-in="1.1" data-out="2.2">taking</div>
+    <div class="blk" style="left:0;right:0;text-align:center;top:72px;font-size:76px" data-a="block" data-in="2.5" data-out="4.4">Boring</div>
+    <div class="blk" style="left:0;right:0;text-align:center;top:142px;font-size:52px" data-a="block" data-in="2.9" data-out="4.4">travel photos</div>
+    <div class="scr" style="left:0;right:0;text-align:center;top:198px;font-size:24px" data-a="script" data-in="3.4" data-out="4.4">of your trip?</div>
+    <div class="sub" data-a="cut" data-in="4.7" data-out="6">So what do you think?</div>
+  </div>
+  <figcaption><b>P-DUO-CORNERS.</b> A question hook over an overhead shot: script words pinned to the corners, the keyword block centred, a stacked second beat.</figcaption>
+</figure>
+
+<figure>
+  <div class="f" data-card="2">
+    <div class="L warmset"></div>
+    <svg class="L" viewBox="0 0 360 640"><rect x="262" y="160" width="40" height="44" rx="6" fill="#F3D9A8"/><rect x="279" y="204" width="6" height="90" fill="#C9A24E"/><rect x="0" y="470" width="360" height="170" fill="#3A2416"/></svg>
+    <div class="blk" style="left:0;right:0;text-align:center;top:150px;font-size:118px;z-index:1" data-a="behind" data-in="0.9" data-out="5.2">Story</div>
+    <svg class="L" viewBox="0 0 360 640" style="z-index:2">
+      <g transform="translate(176 300)"><path d="M-23 -66 Q0 -96 25 -66 L34 -60 L-24 -60Z" fill="#111"/><ellipse cx="0" cy="-48" rx="23" ry="28" fill="#8A5A3C"/><rect x="-12" y="-22" width="24" height="18" fill="#7A4E33"/>
+      <path d="M-78 190 Q-74 10 0 0 Q74 10 78 190Z" fill="#3B5878"/><path d="M-16 4 L0 40 L16 4Z" fill="#EDEDED"/></g></svg>
+    <div class="scr" style="left:22px;top:112px;font-size:24px;z-index:3" data-a="script" data-in="0.5" data-out="5.2">They care about</div>
+    <div class="sub" style="z-index:4" data-a="cut" data-in="0.1" data-out="1.9">Your audience doesn't care</div>
+    <div class="sub" style="z-index:4" data-a="cut" data-in="1.9" data-out="3.3">about megapixels.</div>
+    <div class="sub" style="z-index:4" data-a="cut" data-in="3.3" data-out="5.7">They care about story.</div>
+  </div>
+  <figcaption><b>Card 2 · P-BEHIND-LOCKUP (E1).</b> The keyword sits behind the head on a matted take, at least 65% visible, while the cream serif subtitle (EB Garamond, y 1490) keeps running.</figcaption>
+</figure>
+
+<figure>
+  <div class="f">
+    <div class="L" data-a="grade">
+      <div class="L" style="background:linear-gradient(180deg,#5E4A3A 0,#8C6B52 55%,#3A2A1F 100%)"></div>
+      <svg class="L" viewBox="0 0 360 640"><rect x="40" y="400" width="280" height="14" fill="#2A1C12"/><rect x="120" y="340" width="120" height="62" rx="6" fill="#222" /><rect x="128" y="346" width="104" height="50" fill="#5BA0D8"/>
+        <g transform="translate(180 300)"><path d="M-20 -60 Q0 -86 22 -60 L30 -55 L-21 -55Z" fill="#B3262B"/><ellipse cx="0" cy="-42" rx="20" ry="25" fill="#8A5A3C"/><path d="M-70 110 Q-66 0 0 -6 Q66 0 70 110Z" fill="#C0392B"/></g></svg>
+    </div>
+    <div class="scr" style="left:30px;top:70px;font-size:24px" data-a="script" data-in="0.25" data-out="1.8">The</div>
+    <div class="blk" style="left:28px;top:98px;font-size:58px" data-a="block" data-in="0.4" data-out="1.8">Overthinker</div>
+    <div class="scr" style="left:30px;top:70px;font-size:24px" data-a="script" data-in="2.25" data-out="3.8">The</div>
+    <div class="blk" style="left:28px;top:98px;font-size:58px" data-a="block" data-in="2.4" data-out="3.8">Gear hoarder</div>
+    <div class="scr" style="left:30px;top:70px;font-size:24px" data-a="script" data-in="4.25" data-out="5.8">The</div>
+    <div class="blk" style="left:28px;top:98px;font-size:58px" data-a="block" data-in="4.4" data-out="5.8">Trend chaser</div>
+    <div class="sub" data-a="cut" data-in="0" data-out="0.5">#1.</div>
+    <div class="sub" data-a="cut" data-in="2.0" data-out="2.5">#2.</div>
+    <div class="sub" data-a="cut" data-in="4.0" data-out="4.5">#3.</div>
+  </div>
+  <figcaption><b>P-PERSONA-GRADE.</b> One persona per grade: GR-mono, GR-amber, GR-teal, each with a label duo and a "#N." marker in the caption band.</figcaption>
+</figure>
+
+<figure>
+  <div class="f">
+    <div class="L" style="filter:grayscale(1) contrast(1.18) brightness(.92)">
+      <div class="L warmset"></div>
+      <svg class="L" viewBox="0 0 360 640" data-a="push"><g transform="translate(200 330)"><path d="M-23 -66 Q0 -96 25 -66 L34 -60 L-24 -60Z" fill="#111"/><ellipse cx="0" cy="-48" rx="23" ry="28" fill="#8A5A3C"/><path d="M-90 220 Q-80 10 0 0 Q80 10 90 220Z" fill="#2D2D2D"/></g></svg>
+    </div>
+    <div class="abs" style="left:24px;top:110px;font:500 17px Jost,sans-serif;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.6)" data-a="pop" data-in="0.4" data-out="1.9">[Close Up]</div>
+    <div class="abs" style="left:230px;top:96px;font:500 16px Jost,sans-serif;color:rgba(255,255,255,.85)" data-a="pop" data-in="0.55" data-out="1.9">[Wide]</div>
+    <div class="abs" style="left:28px;top:190px;font:italic 500 22px 'EB Garamond',serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)" data-a="pop" data-in="0.7" data-out="1.9">am I doing it wrong</div>
+    <div class="abs" style="left:250px;top:420px;font:500 17px Jost,sans-serif;color:rgba(255,255,255,.85)" data-a="pop" data-in="0.85" data-out="1.9">[Medium]</div>
+    <div class="abs" style="left:26px;top:400px;font:italic 500 24px 'EB Garamond',serif;color:#fff" data-a="pop" data-in="1.0" data-out="1.9">too many tabs</div>
+    <div class="sub" data-a="cut" data-in="2.2" data-out="5.6">We want our work to feel right.</div>
+  </div>
+  <figcaption><b>P-CHAOS-BURST (E2).</b> Once per reel, at most 1.5 s: GR-mono footage, up to 6 snippets around (never on) the face, subtitles hidden, then a clean second.</figcaption>
+</figure>
+
+<figure>
+  <div class="f">
+    <div class="L sky" data-a="push"></div>
+    <svg class="L" viewBox="0 0 360 640"><path d="M0 410 L60 360 L120 395 L200 330 L270 385 L360 350 L360 640 L0 640Z" fill="#46502E"/><path d="M0 470 L360 440 L360 640 L0 640Z" fill="#3B3A36"/>
+      <g transform="translate(120 470)"><ellipse cx="0" cy="-92" rx="12" ry="14" fill="#8A5A3C"/><path d="M-14 -104 Q0 -118 14 -104Z" fill="#EEE"/><path d="M-24 40 Q-22 -70 0 -76 Q22 -70 24 40Z" fill="#3B302A"/></g>
+      <rect x="170" y="420" width="170" height="60" rx="18" fill="#B9BCC0"/></svg>
+    <div class="wide" style="left:60px;top:58px;font-size:110px;-webkit-text-stroke:0" data-a="block" data-in="0.5" data-out="5.3">3</div>
+    <div class="wide" style="left:128px;top:58px;font-size:110px;-webkit-text-stroke:0" data-a="block" data-in="1.3" data-out="5.3">6</div>
+    <div class="wide" style="left:196px;top:58px;font-size:110px;-webkit-text-stroke:0" data-a="block" data-in="2.1" data-out="5.3">5</div>
+    <div class="wide" style="left:60px;top:170px;font-size:36px;-webkit-text-stroke:0" data-a="block" data-in="2.8" data-out="5.3">Days</div>
+    <div class="wide" style="left:60px;top:204px;font-size:36px;-webkit-text-stroke:0" data-a="block" data-in="3.1" data-out="5.3">Straight</div>
+    <div class="sub" data-a="cut" data-in="0.3" data-out="2.6">I posted every day,</div>
+    <div class="sub" data-a="cut" data-in="2.6" data-out="5.6">days straight this year.</div>
+  </div>
+  <figcaption><b>P-COUNT-UP.</b> Digits append left to right on the spoken beats (3 → 36 → 365), then the unit stacks under.</figcaption>
+</figure>
+
+<figure>
+  <div class="f">
+    <div class="L poster"></div>
+    <div class="blk" style="left:0;right:0;text-align:center;top:100px;font-size:120px;background:linear-gradient(180deg,#FFE400,#FFB21C 55%,#F26A12);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;z-index:1" data-a="behind" data-in="3.6" data-out="5.7">Soon</div>
+    <svg class="L" viewBox="0 0 360 640" style="z-index:2"><g transform="translate(190 260)"><path d="M-8 -52 Q14 -74 34 -50 L50 -44 L-8 -42Z" fill="#0C0605"/><path d="M-10 -40 Q22 -46 26 -14 L22 6 L30 18 L18 22 Q6 36 -10 30Z" fill="#160A07"/><path d="M-70 380 Q-80 120 -20 34 Q40 40 50 120 L60 380Z" fill="#120806"/></g></svg>
+    <div class="scr" style="left:24px;top:66px;font-size:24px;z-index:3" data-a="script" data-in="0.3" data-out="3.0">Just comment</div>
+    <div class="blk" style="left:22px;top:96px;font-size:74px;z-index:3" data-a="block" data-in="0.7" data-out="3.0">Keyword</div>
+    <div class="scr" style="left:170px;top:166px;font-size:24px;z-index:3" data-a="script" data-in="1.1" data-out="3.0">to get it</div>
+    <div class="scr" style="left:0;right:0;text-align:center;top:72px;font-size:26px;color:#FFD9A0;z-index:3" data-a="script" data-in="3.3" data-out="5.7">See you in there</div>
+  </div>
+  <figcaption><b>P-CTA-KEYWORD on P-POSTER-BACKDROP, then P-SIGNOFF-SUN.</b> The keyword holds 2 s; the sign-off word rises behind the silhouette.</figcaption>
+</figure>
+</div>
+
+<!-- ======================================================================= F-B -->
+<h2>F-B · Tutorial with paper cards</h2>
+<div class="grid">
+
+<figure>
+  <div class="f">
+    <div class="L asphalt" data-a="push"></div>
+    <svg class="L" viewBox="0 0 360 640"><g transform="rotate(-24 230 260)"><rect x="170" y="150" width="130" height="250" rx="34" fill="#E7E2D6"/><rect x="186" y="190" width="98" height="60" rx="10" fill="#C9C3B5"/><rect x="186" y="310" width="98" height="70" rx="10" fill="#D4CFC2"/></g>
+      <g data-a="walk"><circle cx="0" cy="0" r="13" fill="#C0272D"/><path d="M-20 34 Q0 8 20 34 Q0 60 -20 34Z" fill="#161616"/></g></svg>
+    <svg class="abs" style="left:13px;top:57px" width="334" height="4"><line x1="0" y1="2" x2="334" y2="2" stroke="#FFE400" stroke-width="1.6" stroke-dasharray="6 5" pathLength="1" data-a="draw" data-in="0.33" data-out="5.0"/></svg>
+    <div class="wide" style="left:21px;top:68px;font-size:25px" data-a="wipe" data-in="0.45" data-out="5.0">Shoot better</div>
+    <div class="wide" style="left:21px;top:93px;font-size:25px" data-a="wipe" data-in="0.55" data-out="5.0">travel photos</div>
+    <div class="sub" data-a="cut" data-in="0.8" data-out="2.0">Today we're gonna</div>
+    <div class="sub" data-a="cut" data-in="2.0" data-out="3.4">talk about framing.</div>
+    <div class="sub" data-a="cut" data-in="3.4" data-out="5.2">Let's break it down.</div>
+  </div>
+  <figcaption><b>HA-05 title lockup (F-B default).</b> A dashed rule draws, two lines of wide heavy caps wipe up by 0.7 s over an overhead walk-in; the subtitle runs underneath.</figcaption>
+</figure>
+
+<figure>
+  <div class="f paper" data-card="3">
+    <div class="card" style="left:59px;top:40px;width:242px;height:431px;border-radius:13px" data-a="pop" data-in="0" data-out="6">
+      <div class="L field"></div>
+      <svg class="L" viewBox="0 0 242 431"><g transform="translate(121 300)"><circle cx="0" cy="-60" r="9" fill="#B3262B"/><path d="M-13 30 L-11 -48 Q0 -54 11 -48 L13 30Z" fill="#1E2A44"/><path d="M-11 30 L-9 70 M11 30 L9 70" stroke="#C9B48A" stroke-width="7"/></g></svg>
+      <svg class="L" viewBox="0 0 242 431"><line x1="121" y1="0" x2="121" y2="431" stroke="rgba(255,255,255,.8)" stroke-width="1.2" pathLength="1" data-a="draw" data-in="1.0" data-out="6"/></svg>
+      <div class="wide" style="left:13px;top:16px;font-size:21px" data-a="block" data-in="0.3" data-out="6">The centre</div>
+      <div class="wide" style="left:13px;top:37px;font-size:21px" data-a="block" data-in="0.45" data-out="6">line</div>
+    </div>
+    <svg class="L" viewBox="0 0 360 640" fill="none" stroke="#FFE400" stroke-width="2.2" stroke-linecap="round">
+      <path d="M96 150 Q140 170 166 222" pathLength="1" data-a="draw" data-in="2.0" data-out="6"/><path d="M158 214 L166 222 L168 210" pathLength="1" data-a="draw" data-in="2.25" data-out="6"/>
+      <path d="M268 210 Q232 230 196 260" pathLength="1" data-a="draw" data-in="2.15" data-out="6"/><path d="M206 258 L196 260 L200 250" pathLength="1" data-a="draw" data-in="2.4" data-out="6"/>
+      <ellipse cx="180" cy="262" rx="30" ry="46" transform="rotate(-6 180 262)" pathLength="1" data-a="draw" data-in="3.4" data-out="6"/></svg>
+    <div class="sub" data-a="cut" data-in="0.2" data-out="2.0">My golden guide</div>
+    <div class="sub" data-a="cut" data-in="2.0" data-out="3.6">is this line right here.</div>
+    <div class="sub" data-a="cut" data-in="3.6" data-out="5.8">Keep your subject on it.</div>
+  </div>
+  <figcaption><b>Card 3 · P-PAPER-CARD + ink.</b> A 9:16 example on the cream paper world with its burned yellow title, a white guide line, yellow hand-drawn arrows and an oval.</figcaption>
+</figure>
+
+<figure>
+  <div class="f gridw">
+    <div class="legal dark">Paid partnership</div>
+    <div class="abs" style="left:55px;top:133px;width:250px;height:308px;background:var(--frame);padding:8px;box-shadow:0 5px 10px rgba(0,0,0,.35)" data-a="drop" data-in="0.2" data-out="6">
+      <div style="position:relative;width:234px;height:292px;overflow:hidden">
+        <div class="L" style="background:linear-gradient(180deg,#9AA3A8 0,#A7A39A 50%,#6F6B64 100%);filter:saturate(.45) brightness(.82)"></div>
+        <div class="L" style="background:linear-gradient(180deg,#5FA7E6 0,#F2C48A 52%,#B9774A 100%)" data-a="cut" data-in="3.0" data-out="6"></div>
+        <svg class="L" viewBox="0 0 234 292"><rect x="0" y="200" width="234" height="92" fill="rgba(0,0,0,.25)"/><g transform="translate(117 220)"><circle cx="0" cy="-70" r="10" fill="#3A2416"/><path d="M-14 40 L-12 -56 Q0 -62 12 -56 L14 40Z" fill="#F1ECE2"/></g>
+          <g data-a="cut" data-in="0" data-out="3.0"><rect x="160" y="170" width="60" height="40" rx="6" fill="#EFEFEF"/><circle cx="40" cy="200" r="14" fill="#2B2B2B"/></g></svg>
+      </div>
+    </div>
+    <div class="sub" data-a="cut" data-in="0.3" data-out="2.95">Before.</div>
+    <div class="sub" data-a="cut" data-in="3.0" data-out="5.7">After.</div>
+  </div>
+  <figcaption><b>P-BEFORE-AFTER-POLAROID on W-grid.</b> A white-bordered polaroid drops onto vignetted grid paper; the after photo swaps in on the word. The TC-legal disclosure sits top-left.</figcaption>
+</figure>
+
+<figure>
+  <div class="f gridw">
+    <div class="abs" style="left:50px;top:57px;width:260px;height:423px;border-radius:21px;background:#0E0E0E;padding:7px;box-shadow:0 10px 20px rgba(0,0,0,.45);transform-origin:50% 88%" data-a="zoom">
+      <div style="position:relative;width:246px;height:409px;border-radius:15px;overflow:hidden;background:#111">
+        <div class="abs" style="left:10px;top:24px;width:226px;height:270px;background:linear-gradient(180deg,#6E5A44 0,#2E2620 100%)" data-a="lift"></div>
+        <svg class="abs" style="left:10px;top:24px" width="226" height="270"><g transform="translate(113 200)"><circle cx="0" cy="-70" r="10" fill="#3A2416"/><path d="M-14 40 L-12 -56 Q0 -62 12 -56 L14 40Z" fill="#E9E3D7"/></g></svg>
+        <div class="abs" style="left:0;right:0;top:318px;text-align:center;font:600 11px Jost,sans-serif;color:#E8E8E8">Shadows</div>
+        <div class="abs" style="left:24px;right:24px;top:345px;height:2px;background:#555"></div>
+        <div class="abs" style="left:24px;top:338px;width:3px;height:16px;background:#7FA8FF;border-radius:2px" data-a="slide"></div>
+      </div>
+    </div>
+    <div class="sub" data-a="cut" data-in="0.2" data-out="2.0">Then hit Tools,</div>
+    <div class="sub" data-a="cut" data-in="2.0" data-out="3.8">bring up the shadows</div>
+    <div class="sub" data-a="cut" data-in="3.8" data-out="5.8">making it brighter overall.</div>
+  </div>
+  <figcaption><b>P-APP-DEVICE.</b> The creator's screen recording in a dark device frame on grid paper; the scene zooms into the control being named (created, generic UI shown here).</figcaption>
+</figure>
+
+<figure>
+  <div class="f paper">
+    <div class="card" style="left:59px;top:40px;width:242px;height:431px;border-radius:13px">
+      <div class="L" style="background:linear-gradient(180deg,#F6A04D,#7A3B8F)"></div>
+      <div class="L" style="background:linear-gradient(180deg,#59B3E8,#2F6E3A)" data-a="cut" data-in="1.0" data-out="6"></div>
+      <div class="L" style="background:linear-gradient(180deg,#2C2C54,#D46A6A)" data-a="cut" data-in="2.0" data-out="6"></div>
+      <div class="L" style="background:linear-gradient(180deg,#F2D16B,#B5542F)" data-a="cut" data-in="3.0" data-out="6"></div>
+      <div class="L" style="background:linear-gradient(180deg,#7FC8C0,#1F4E5F)" data-a="cut" data-in="4.0" data-out="6"></div>
+      <div class="wide" style="left:13px;top:16px;font-size:21px" data-a="cut" data-in="0" data-out="1.0">My first 5K</div>
+      <div class="wide" style="left:13px;top:16px;font-size:21px" data-a="cut" data-in="1.0" data-out="2.0">Hike at sunrise</div>
+      <div class="wide" style="left:13px;top:16px;font-size:21px" data-a="cut" data-in="2.0" data-out="3.0">Tokyo in 3 days</div>
+      <div class="wide" style="left:13px;top:16px;font-size:21px" data-a="cut" data-in="3.0" data-out="4.0">Street food tour</div>
+      <div class="wide" style="left:13px;top:16px;font-size:21px" data-a="cut" data-in="4.0" data-out="5.4">Home workout</div>
+    </div>
+    <div class="sub" data-a="cut" data-in="0.1" data-out="2.6">It's been one hell</div>
+    <div class="sub" data-a="cut" data-in="2.6" data-out="5.5">of an incredible year.</div>
+  </div>
+  <figcaption><b>P-RECAP-RIFFLE.</b> One titled 9:16 card per second on cream: past posts and episodes, each swap counted as a cut.</figcaption>
+</figure>
+
+<figure>
+  <div class="f">
+    <div class="L grass" data-a="push"></div>
+    <div class="L" data-a="cut" data-in="4.6" data-out="6"><div class="L asphalt"></div>
+      <svg class="L" viewBox="0 0 360 640"><g transform="rotate(-24 230 260)"><rect x="170" y="150" width="130" height="250" rx="34" fill="#E7E2D6"/><rect x="186" y="190" width="98" height="60" rx="10" fill="#C9C3B5"/></g></svg></div>
+    <div class="wide" style="left:21px;top:74px;font-size:56px;-webkit-text-stroke:0" data-a="block" data-in="0.2" data-out="4.5">This was</div>
+    <div class="wide" style="left:21px;top:128px;font-size:80px;-webkit-text-stroke:0" data-a="block" data-in="0.3" data-out="4.5">Part 1</div>
+    <div class="wide" style="left:21px;top:204px;font-size:56px;-webkit-text-stroke:0" data-a="block" data-in="0.4" data-out="4.5">Follow</div>
+    <div class="wide" style="left:21px;top:256px;font-size:36px;-webkit-text-stroke:0" data-a="block" data-in="0.5" data-out="4.5">for part 2 +</div>
+    <div class="wide" style="left:21px;top:290px;font-size:36px;-webkit-text-stroke:0" data-a="block" data-in="0.6" data-out="4.5">link in bio</div>
+    <div class="sub" data-a="cut" data-in="4.75" data-out="5.8">Go shoot.</div>
+  </div>
+  <figcaption><b>P-END-BLOCK, then the bookend.</b> The end block fills the width over a texture close-up; the last 1.0–1.5 s replays the opening shot so the final frame equals frame 0 and the reel loops.</figcaption>
+</figure>
+</div>
+
+<script>
+/* Every [data-a] element gets one Web Animation over a 6 s loop (stepped by tools/template_frames.py). */
+(function () {
+  const D = 6000, F = 1000 / 30, E = "cubic-bezier(.22,1,.36,1)";
+  const o = t => Math.min(1, Math.max(0, (t * 1000) / D));
+  const sorted = list => { let last = 0; return list.map(k => { k.offset = Math.max(last, k.offset); last = k.offset; return k; }); };
+  const H = { opacity: 0, transform: "translateY(13px)", filter: "blur(8px)" }, S = { opacity: 1, transform: "translateY(0px)", filter: "blur(0px)" },
+        X = { opacity: 0, transform: "translateY(-13px)", filter: "blur(8px)" };
+  const run = (el, kf) => el.animate(sorted(kf), { duration: D, iterations: Infinity, fill: "both" });
+  document.querySelectorAll("[data-a]").forEach(el => {
+    const a = el.dataset.a, tin = parseFloat(el.dataset.in || "0"), tout = parseFloat(el.dataset.out || "6");
+    const outEnd = Math.min(6, tout + 4 * F / 1000);
+    if (a === "block" || a === "pop" || a === "behind") {
+      const ti = Math.max(0, tin - 2 * F / 1000);
+      run(el, [{ offset: 0, ...H }, { offset: o(ti), ...H, easing: E }, { offset: o(ti + 4 * F / 1000), ...S }, { offset: o(tout), ...S },
+               { offset: o(outEnd), ...(tout >= 6 ? S : X) }, { offset: 1, ...(tout >= 6 ? S : X) }]);
+    } else if (a === "script") {
+      const W0 = { clipPath: "inset(0 100% 0 0)", opacity: 1, transform: "translateY(0px)", filter: "blur(0px)" },
+            W1 = { clipPath: "inset(0 0% 0 0)", opacity: 1, transform: "translateY(0px)", filter: "blur(0px)" },
+            WX = { clipPath: "inset(0 0% 0 0)", opacity: 0, transform: "translateY(-13px)", filter: "blur(8px)" };
+      run(el, [{ offset: 0, ...W0 }, { offset: o(tin), ...W0 }, { offset: o(tin + 8 * F / 1000), ...W1 }, { offset: o(tout), ...W1 },
+               { offset: o(outEnd), ...(tout >= 6 ? W1 : WX) }, { offset: 1, ...(tout >= 6 ? W1 : WX) }]);
+    } else if (a === "cut") {
+      run(el, [{ offset: 0, opacity: 0 }, { offset: o(tin), opacity: 0 }, { offset: o(tin), opacity: 1 }, { offset: o(tout), opacity: 1 },
+               { offset: o(tout), opacity: tout >= 6 ? 1 : 0 }, { offset: 1, opacity: tout >= 6 ? 1 : 0 }]);
+    } else if (a === "wipe") {
+      const A = { clipPath: "inset(100% 0 0 0)", transform: "translateY(10px)", opacity: 1 }, B = { clipPath: "inset(0% 0 0 0)", transform: "translateY(0px)", opacity: 1 };
+      run(el, [{ offset: 0, ...A }, { offset: o(tin), ...A, easing: E }, { offset: o(tin + 8 * F / 1000), ...B }, { offset: o(tout), ...B },
+               { offset: o(outEnd), clipPath: "inset(0% 0 0 0)", transform: "translateY(-13px)", opacity: 0 }, { offset: 1, clipPath: "inset(0% 0 0 0)", transform: "translateY(-13px)", opacity: 0 }]);
+    } else if (a === "draw") {
+      el.setAttribute("stroke-dasharray", "1 1");
+      run(el, [{ offset: 0, strokeDashoffset: 1, opacity: 1 }, { offset: o(tin), strokeDashoffset: 1, opacity: 1 },
+               { offset: o(tin + 10 * F / 1000), strokeDashoffset: 0, opacity: 1 }, { offset: o(tout), strokeDashoffset: 0, opacity: 1 },
+               { offset: o(outEnd), strokeDashoffset: 0, opacity: tout >= 6 ? 1 : 0 }, { offset: 1, strokeDashoffset: 0, opacity: tout >= 6 ? 1 : 0 }]);
+    } else if (a === "drop") {
+      run(el, [{ offset: 0, opacity: 0, transform: "translateY(-20px) rotate(-3deg)" }, { offset: o(tin), opacity: 0, transform: "translateY(-20px) rotate(-3deg)", easing: E },
+               { offset: o(tin + 10 * F / 1000), opacity: 1, transform: "translateY(0px) rotate(-1.5deg)" },
+               { offset: 1, opacity: 1, transform: "translateY(0px) rotate(-1.5deg) scale(1.03)" }]);
+    } else if (a === "push") {
+      run(el, [{ offset: 0, transform: "scale(1)" }, { offset: 1, transform: "scale(1.06)" }]);
+    } else if (a === "walk") {
+      run(el, [{ offset: 0, transform: "translate(40px,620px)" }, { offset: 0.5, transform: "translate(150px,330px)", easing: "ease-out" }, { offset: 1, transform: "translate(160px,310px)" }]);
+    } else if (a === "grade") {
+      const m = "grayscale(1) contrast(1.18) brightness(.92)", am = "sepia(.45) saturate(1.35) hue-rotate(-10deg) contrast(1.06) brightness(.96)",
+            te = "sepia(.35) hue-rotate(140deg) saturate(1.25) contrast(1.05)";
+      run(el, [{ offset: 0, filter: m }, { offset: o(2), filter: m }, { offset: o(2), filter: am }, { offset: o(4), filter: am },
+               { offset: o(4), filter: te }, { offset: 1, filter: te }]);
+    } else if (a === "zoom") {
+      run(el, [{ offset: 0, transform: "scale(1)" }, { offset: o(2.0), transform: "scale(1)", easing: "ease-in-out" }, { offset: o(2.4), transform: "scale(1.45)" },
+               { offset: o(4.6), transform: "scale(1.45)", easing: "ease-in-out" }, { offset: o(5.0), transform: "scale(1)" }, { offset: 1, transform: "scale(1)" }]);
+    } else if (a === "slide") {
+      run(el, [{ offset: 0, transform: "translateX(98px)" }, { offset: o(2.3), transform: "translateX(98px)", easing: "ease-in-out" }, { offset: o(3.6), transform: "translateX(150px)" }, { offset: 1, transform: "translateX(150px)" }]);
+    } else if (a === "lift") {
+      run(el, [{ offset: 0, filter: "brightness(.7)" }, { offset: o(2.3), filter: "brightness(.7)" }, { offset: o(3.6), filter: "brightness(1.15)" }, { offset: 1, filter: "brightness(1.15)" }]);
+    }
+  });
+})();
+</script>
+</body>
+</html>

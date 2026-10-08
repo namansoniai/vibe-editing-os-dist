@@ -8,6 +8,8 @@
 #   --ref NAME         branch/tag (default main).                                        env VEOS_REF
 #   --update           pull a new app version and reinstall the engine if it changed
 #   --skip-models      skip the ~1.7 GB model downloads
+#   env VEOS_LICENCE_KEY  activate this licence key right after the engine step (before the big downloads); a rejected
+#                         key stops the install with step "licence" and licence_error = the engine's code
 # Output: one progress line per step, final line JSON {"ok":true|false,...}. Log: VEOS_HOME/install.log
 set -u
 
@@ -16,6 +18,11 @@ RVM_URL="https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0
 YUNET_URL="https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
 YUNET_SHA="8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
 FACE_URL="https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite"
+# speaker labels for multi-speaker reels (no account/token): pyannote segmentation-3.0 (MIT) + CAM++ (Apache-2.0)
+SPKSEG_URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2"
+SPKSEG_SHA="24615ee884c897d9d2ba09bb4d30da6bb1b15e685065962db5b02e76e4996488"
+SPKEMB_URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_en_voxceleb_16k.onnx"
+SPKEMB_SHA="357a834f702b80161e5b981182c038e18553c1f2ca752ed6cec2052365d4129b"
 WHISPER_REPO="mobiuslabsgmbh/faster-whisper-large-v3-turbo"
 TOTAL=10
 
@@ -141,7 +148,7 @@ if [ "$DRY_RUN" = 1 ]; then
   UVT="$(uv_target)" || { echo "unsupported platform"; exit 1; }
   check "$UV_BASE/uv-$UVT.tar.gz"; check "$UV_BASE/uv-$UVT.tar.gz.sha256"
   for b in ffmpeg ffprobe; do check "$(ffmpeg_url $b)"; check "$(ffmpeg_url $b).sha256"; done
-  check "$RVM_URL"; check "$FACE_URL"; check "$YUNET_URL"
+  check "$RVM_URL"; check "$FACE_URL"; check "$YUNET_URL"; check "$SPKSEG_URL"; check "$SPKEMB_URL"
   check "https://huggingface.co/$WHISPER_REPO/resolve/main/config.json"
   if command -v git >/dev/null 2>&1; then
     if GIT_TERMINAL_PROMPT=0 git ls-remote --exit-code "$REPO.git" HEAD >/dev/null 2>&1; then echo "ok git access to $REPO"; else echo "NOTE: git cannot read $REPO yet (private repo: sign in once with gh auth login)"; fi
@@ -246,6 +253,23 @@ retry "package sync" "$UV" pip sync --python "$VENVPY" "$DL/requirements.txt" ||
 retry "engine install" "$UV" pip install --python "$VENVPY" --no-deps -e "$APP/engine" || fail "engine install failed"
 rm -f "$DL/requirements.txt"; echo "$AFTER" > "$STATE/engine.sha"
 
+# licence: activate as soon as the engine exists, before the big downloads (key from the setup skill, env only)
+if [ -n "${VEOS_LICENCE_KEY:-}" ]; then
+  STEP=licence
+  info "activating your licence"
+  LIC="$("$VENVPY" -m veos licence activate --key "$VEOS_LICENCE_KEY" 2>/dev/null | tail -n 1 || true)"
+  LICOK="$(printf '%s' "$LIC" | "$VENVPY" -c 'import sys,json; print(str(bool(json.load(sys.stdin).get("ok"))).lower())' 2>/dev/null || echo false)"
+  if [ "$LICOK" != true ]; then
+    LICERR="$(printf '%s' "$LIC" | "$VENVPY" -c 'import sys,json; e=json.load(sys.stdin).get("error") or {}; print(json.dumps({"licence_error":e.get("code","UNEXPECTED"),"error":e.get("message","licence activation gave no answer"),"hint":e.get("hint","Re-run setup.")})[1:-1])' 2>/dev/null || echo '"licence_error":"UNEXPECTED","error":"licence activation gave no answer","hint":"Re-run setup."')"
+    log "licence activation failed"; echo "FAILED at step 'licence'"
+    printf '{"ok":false,"step":"licence",%s,"home":"%s","seconds":%d,"log":"%s"}\n' \
+      "$LICERR" "$(json_escape "$HOME_DIR")" $(( $(date +%s) - T0 )) "$(json_escape "$LOG")"
+    exit 1
+  fi
+  info "$(printf '%s' "$LIC" | "$VENVPY" -c 'import sys,json; print(json.load(sys.stdin).get("message",""))' 2>/dev/null || true)"
+  STEP=engine
+fi
+
 # ---- 6 ffmpeg
 step ffmpeg "ffmpeg + ffprobe (static build, checksum-verified)"
 FF="$TOOLS/ffmpeg/bin"
@@ -268,7 +292,7 @@ step browser "Chromium for rendering (Playwright, ~350 MB)"
 retry "chromium download" "$VENVPY" -m playwright install chromium || fail "playwright install failed"
 
 # ---- 8 models
-step models "AI models: background matte (~14 MB), face detector (~1 MB), whisper turbo (~1.6 GB)"
+step models "AI models: background matte (~14 MB), face detector (~1 MB), speaker labels (~34 MB), whisper turbo (~1.6 GB)"
 if [ "$SKIP_MODELS" = 1 ]; then info "skipped (--skip-models)"; else
   RVM="$HOME_DIR/models/rvm/rvm_mobilenetv3_fp32.onnx"
   if [ ! -f "$RVM" ]; then download "$RVM_URL" "$RVM.part"; mv "$RVM.part" "$RVM"; else info "RVM already present"; fi
@@ -277,6 +301,16 @@ if [ "$SKIP_MODELS" = 1 ]; then info "skipped (--skip-models)"; else
   YUNET="$HOME_DIR/models/yunet/face_detection_yunet_2023mar.onnx"
   if [ -f "$YUNET" ] && [ "$(sha256_of "$YUNET")" != "$YUNET_SHA" ]; then rm -f "$YUNET"; fi
   if [ ! -f "$YUNET" ]; then download "$YUNET_URL" "$YUNET.part" "$YUNET_SHA"; mv "$YUNET.part" "$YUNET"; else info "YuNet face model already present"; fi
+  SPK="$HOME_DIR/models/diarize"; mkdir -p "$SPK"
+  if [ ! -f "$SPK/pyannote-segmentation-3.0.onnx" ]; then
+    download "$SPKSEG_URL" "$DL/spk-seg.tar.bz2" "$SPKSEG_SHA"
+    rm -rf "$DL/spk-seg"; mkdir -p "$DL/spk-seg"; tar -xjf "$DL/spk-seg.tar.bz2" -C "$DL/spk-seg" || fail "could not unpack the speaker segmentation model"
+    SD="$(dirname "$(find "$DL/spk-seg" -name model.onnx | head -1)")"
+    cp "$SD/model.onnx" "$SPK/pyannote-segmentation-3.0.onnx"; cp "$SD/LICENSE" "$SPK/pyannote-segmentation-3.0.LICENSE.txt" 2>/dev/null || true
+    rm -rf "$DL/spk-seg" "$DL/spk-seg.tar.bz2"
+  else info "speaker segmentation model already present"; fi
+  EMB="$SPK/campplus_sv_en_voxceleb_16k.onnx"
+  if [ ! -f "$EMB" ]; then download "$SPKEMB_URL" "$EMB.part" "$SPKEMB_SHA"; mv "$EMB.part" "$EMB"; else info "speaker embedding model already present"; fi
   info "whisper turbo: downloading (resumes if interrupted; this is the long one)"
   cat > "$DL/prefetch_whisper.py" <<PYEOF
 from huggingface_hub import snapshot_download

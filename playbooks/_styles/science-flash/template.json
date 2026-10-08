@@ -1,0 +1,36 @@
+{
+  "package": "veos.template/1",
+  "id": "science-flash",
+  "tier": "full",
+  "order": 18,
+  "tagline": "Curious explainers told over real footage: you flash on screen for half a second, then every sentence gets its own clip, a lime arrow points at the thing, and bold caps captions carry the story.",
+  "inspired_by_display": [
+    "Cleo Abram"
+  ],
+  "needs": "you (selfie narration) + your own B-roll",
+  "readiness": "R4",
+  "readiness_note": "Best with 12-25 short clips you own per minute of reel; missing clips become built diagrams and scale scenes.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "inserts_flow",
+    "citations",
+    "number_format"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Hook: host flash, then the subject with a measure bracket growing beside a person",
+      "Annotation: lime arrow hops to the part being named, keyword chip, credit line top-left",
+      "Cliffhanger: the next question with ? marks and the subscribe tap"
+    ]
+  }
+}

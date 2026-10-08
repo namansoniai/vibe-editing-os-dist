@@ -1,0 +1,1075 @@
+{
+  "_comment": "Caption profile library (E-05): one CS profile per analysed short-form style (STYLE-COVERAGE §2), values measured from the evidence frame sheets (1080x1920). A template uses one with \"extends\": \"lib:<id>\" and overrides what it needs. `slot` may name a playbook font slot or a bundled family (assets/fonts/fonts.json). Colours are hex or role names.",
+  "profiles": {
+    "100x": {
+      "style": "100xEngineers",
+      "unit": "group",
+      "words": [
+        1,
+        4
+      ],
+      "max_chars_line": 26,
+      "lines": 1,
+      "reveal": "word",
+      "lead_frames": 2,
+      "swap": {
+        "type": "fade",
+        "frames": 2
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 600,
+        "size": 44,
+        "case": "sentence",
+        "colour": "#FFFFFF",
+        "shadow": "none",
+        "container": {
+          "type": "pill",
+          "fill": "#000000",
+          "opacity": 0.55,
+          "radius": 22,
+          "padding": [
+            10,
+            22
+          ]
+        }
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1415
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "hormozi": {
+      "style": "Alex Hormozi",
+      "unit": "group",
+      "words": [
+        1,
+        4
+      ],
+      "max_chars_line": 22,
+      "lines": 1,
+      "lead_frames": 1,
+      "punct": "strip_end",
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Montserrat",
+        "weight": 600,
+        "size": 60,
+        "case": "as_spoken",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 3 rgba(0,0,0,.85), 0 0 12 rgba(0,0,0,.35)"
+      },
+      "position": {
+        "anchor": "chest",
+        "offset": 36,
+        "cy": 1180,
+        "by_layout": {
+          "panel": {
+            "anchor": "seam"
+          },
+          "stack": {
+            "anchor": "seam"
+          }
+        }
+      },
+      "emphasis": {
+        "mechanism": "bold",
+        "weight": 900,
+        "select": [
+          "number",
+          "name",
+          "glossary",
+          "topic_noun"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.6
+      },
+      "speakers_hint": {
+        "host": {
+          "colour": "#FFFFFF",
+          "style": "upright"
+        },
+        "guest": {
+          "colour": "#FFE600",
+          "style": "italic"
+        }
+      }
+    },
+    "ali": {
+      "style": "Ali Abdaal",
+      "unit": "group",
+      "words": [
+        2,
+        5
+      ],
+      "max_chars_line": 30,
+      "lines": 1,
+      "lead_frames": 2,
+      "swap": {
+        "type": "fade",
+        "frames": 4,
+        "out_frames": 3
+      },
+      "skin": {
+        "slot": "Poppins",
+        "weight": 600,
+        "size": 50,
+        "case": "sentence",
+        "colour": "#111111",
+        "shadow": "none",
+        "container": {
+          "type": "pill",
+          "fill": "#F3F3F3",
+          "opacity": 0.9,
+          "radius": 14,
+          "padding": [
+            12,
+            26
+          ],
+          "shadow": "0 4 12 rgba(0,0,0,.18)"
+        }
+      },
+      "karaoke": {
+        "active": "#111111",
+        "queued": "#9B9B9B",
+        "frames": 3,
+        "mode": "cumulative"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1400
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "warikoo": {
+      "style": "Ankur Warikoo",
+      "unit": "sentence",
+      "words": [
+        4,
+        9
+      ],
+      "max_chars_line": 32,
+      "lines": 2,
+      "lead_frames": 2,
+      "tail_s": 0.25,
+      "swap": {
+        "type": "fade",
+        "frames": 2
+      },
+      "skin": {
+        "slot": "Poppins",
+        "weight": 400,
+        "size": 36,
+        "case": "sentence",
+        "colour": "#FFFFFF",
+        "shadow": "0 1 4 rgba(0,0,0,.65)",
+        "line_height": 1.25
+      },
+      "position": {
+        "anchor": "inside_footage",
+        "offset": 18,
+        "cy": 1460
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "antlon": {
+      "style": "ant.lon",
+      "unit": "word",
+      "words": [
+        1,
+        1
+      ],
+      "max_chars_line": 16,
+      "lines": 1,
+      "lead_frames": 1,
+      "swap": {
+        "type": "blur",
+        "frames": 4,
+        "blur_px": 12
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 700,
+        "size": 70,
+        "case": "as_spoken",
+        "tracking": -0.03,
+        "colour": "#FFFFFF",
+        "shadow": "0 2 12 rgba(0,0,0,.35)",
+        "line_height": 1.0
+      },
+      "duet": {
+        "keyword_slot": "Instrument Serif",
+        "keyword_style": "italic",
+        "keyword_weight": 400,
+        "mid_slot": "Inter Tight",
+        "mid_weight": 700,
+        "connector_slot": "Inter Tight",
+        "connector_weight": 600,
+        "size_jump": [
+          0.55,
+          1.0,
+          1.75
+        ],
+        "mid_score": 1.45,
+        "tier0_container": {
+          "fill": "#2D3CF0",
+          "radius": 3,
+          "padding": [
+            2,
+            9
+          ]
+        }
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 960
+      },
+      "emphasis": {
+        "mechanism": "size_tier",
+        "select": [
+          "number",
+          "topic_noun",
+          "name"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.25,
+        "min_score": 1.6
+      }
+    },
+    "cleo": {
+      "style": "Cleo Abram",
+      "unit": "line",
+      "words": [
+        3,
+        7
+      ],
+      "max_chars_line": 28,
+      "lines": 1,
+      "lead_frames": 2,
+      "punct": "strip_end",
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Barlow Condensed",
+        "weight": 600,
+        "size": 64,
+        "case": "upper",
+        "tracking": 0.01,
+        "colour": "#FFFFFF",
+        "stroke": 3,
+        "stroke_colour": "#000000",
+        "shadow": "0 3 0 rgba(0,0,0,.55)"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1470
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "dankoe_a": {
+      "style": "Dan Koe (F-A seated)",
+      "unit": "group",
+      "words": [
+        3,
+        5
+      ],
+      "max_chars_line": 28,
+      "lines": 1,
+      "punct": "strip_end",
+      "swap": {
+        "type": "fade",
+        "frames": 3
+      },
+      "skin": {
+        "slot": "EB Garamond",
+        "weight": 400,
+        "size": 48,
+        "case": "lower",
+        "colour": "#E8A83C",
+        "shadow": "none"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1365
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "dankoe_b": {
+      "style": "Dan Koe (F-B metaphor animation)",
+      "unit": "group",
+      "words": [
+        1,
+        4
+      ],
+      "max_chars_line": 24,
+      "lines": 1,
+      "reveal": "word",
+      "swap": {
+        "type": "blur",
+        "frames": 6,
+        "blur_px": 10
+      },
+      "skin": {
+        "slot": "Poppins",
+        "weight": 300,
+        "size": 38,
+        "case": "sentence",
+        "colour": "rgba(255,255,255,.88)",
+        "shadow": "none"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1480
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "devin": {
+      "style": "Devin Jatho",
+      "unit": "group",
+      "words": [
+        1,
+        4
+      ],
+      "max_chars_line": 20,
+      "lines": 1,
+      "lead_frames": 1,
+      "punct": "strip_end",
+      "swap": {
+        "type": "pop",
+        "frames": 3
+      },
+      "skin": {
+        "slot": "Montserrat",
+        "weight": 800,
+        "size": 68,
+        "case": "upper",
+        "colour": "#FFFFFF",
+        "shadow": "0 3 10 rgba(0,0,0,.6)"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1180
+      },
+      "emphasis": {
+        "mechanism": "glow",
+        "colour": "#F5F000",
+        "glow_px": 16,
+        "select": [
+          "number",
+          "name",
+          "glossary",
+          "topic_noun"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.4
+      },
+      "language": {
+        "profanity_mask": "vowel"
+      }
+    },
+    "editing_explained": {
+      "style": "Editing Explained",
+      "unit": "group",
+      "words": [
+        2,
+        4
+      ],
+      "max_chars_line": 22,
+      "lines": 1,
+      "lead_frames": 1,
+      "punct": "strip",
+      "min_hold_s_per_word": 0.15,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Space Grotesk",
+        "weight": 500,
+        "size": 46,
+        "case": "upper",
+        "tracking": 0.1,
+        "colour": "#FFFFFF",
+        "shadow": "none",
+        "line_height": 1.1,
+        "container": {
+          "type": "box",
+          "fill": "#000000",
+          "opacity": 1,
+          "radius": 0,
+          "padding": [
+            4,
+            10
+          ]
+        }
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1165,
+        "by_layout": {
+          "inset": {
+            "anchor": "below_card",
+            "offset": 26
+          },
+          "card": {
+            "anchor": "below_card",
+            "offset": 26
+          }
+        }
+      },
+      "emphasis": {
+        "mechanism": "none"
+      },
+      "language": {
+        "transliteration": "keep_english_terms",
+        "normalise_spelling": false
+      }
+    },
+    "chamberlain": {
+      "style": "Chamberlain Coffee ads",
+      "unit": "phrase",
+      "words": [
+        3,
+        5
+      ],
+      "max_chars_line": 18,
+      "lines": 2,
+      "swap": {
+        "type": "fade",
+        "frames": 2
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 400,
+        "size": 64,
+        "case": "sentence",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 8 rgba(0,0,0,.45)",
+        "line_height": 1.12
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1430
+      },
+      "emphasis": {
+        "mechanism": "none"
+      },
+      "language": {
+        "profanity_mask": "inner"
+      }
+    },
+    "johnny_a": {
+      "style": "Johnny Harris (F-A archive)",
+      "unit": "phrase",
+      "words": [
+        2,
+        5
+      ],
+      "max_chars_line": 20,
+      "lines": 2,
+      "lead_frames": 1,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "JetBrains Mono",
+        "weight": 700,
+        "size": 40,
+        "case": "as_spoken",
+        "colour": "#FFFFFF",
+        "shadow": "none",
+        "line_height": 1.32,
+        "container": {
+          "type": "box_per_line",
+          "fill": "#0E1A3A",
+          "opacity": 0.94,
+          "radius": 0,
+          "padding": [
+            4,
+            10
+          ]
+        }
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1385
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "johnny_b": {
+      "style": "Johnny Harris (F-B podcast)",
+      "unit": "phrase",
+      "words": [
+        2,
+        5
+      ],
+      "max_chars_line": 20,
+      "lines": 2,
+      "lead_frames": 1,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 800,
+        "size": 44,
+        "case": "as_spoken",
+        "colour": "#FFFFFF",
+        "shadow": "none",
+        "line_height": 1.3,
+        "container": {
+          "type": "box_per_line",
+          "fill": "#2740E0",
+          "opacity": 1,
+          "radius": 0,
+          "padding": [
+            4,
+            12
+          ]
+        }
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1385
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "joseph": {
+      "style": "Joseph's Work",
+      "unit": "phrase",
+      "words": [
+        2,
+        5
+      ],
+      "max_chars_line": 16,
+      "lines": 3,
+      "reveal": "word",
+      "lead_frames": 1,
+      "swap": {
+        "type": "blur",
+        "frames": 5,
+        "blur_px": 10
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 600,
+        "size": 58,
+        "case": "as_spoken",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 12 rgba(0,0,0,.45)",
+        "line_height": 1.02
+      },
+      "duet": {
+        "keyword_slot": "Inter Tight",
+        "keyword_weight": 800,
+        "mid_slot": "Inter Tight",
+        "mid_weight": 700,
+        "connector_slot": "Pinyon Script",
+        "connector_weight": 400,
+        "size_jump": [
+          1.35,
+          0.95,
+          1.65
+        ],
+        "mid_score": 1.3
+      },
+      "position": {
+        "anchor": "chest",
+        "offset": 34,
+        "cy": 1180
+      },
+      "emphasis": {
+        "mechanism": "size_tier",
+        "select": [
+          "number",
+          "topic_noun",
+          "name"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.35,
+        "min_score": 1.5
+      }
+    },
+    "kallaway": {
+      "style": "Kallaway",
+      "unit": "word",
+      "words": [
+        1,
+        1
+      ],
+      "max_chars_line": 18,
+      "lines": 1,
+      "lead_frames": 1,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 700,
+        "size": 52,
+        "case": "lower",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 6 rgba(0,0,0,.35)"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1165,
+        "colour_by_bg": {
+          "light": "#0B0B0B",
+          "dark": "#FFFFFF"
+        },
+        "by_layout": {
+          "panel": {
+            "cy": 1060
+          },
+          "inset": {
+            "cy": 920
+          },
+          "L-split": {
+            "cy": 1245
+          }
+        }
+      },
+      "emphasis": {
+        "mechanism": "font_swap",
+        "slot": "Instrument Serif",
+        "style": "italic",
+        "weight": 400,
+        "ratio": 1.12,
+        "select": [
+          "topic_noun",
+          "name",
+          "glossary"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.2,
+        "min_score": 1.45
+      }
+    },
+    "mrbeast_neutral": {
+      "style": "MrBeast (neutral beats)",
+      "unit": "word",
+      "words": [
+        1,
+        1
+      ],
+      "max_chars_line": 16,
+      "lines": 1,
+      "punct": "strip_end",
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 600,
+        "size": 56,
+        "case": "lower",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 8 rgba(0,0,0,.6)"
+      },
+      "position": {
+        "anchor": "chest",
+        "cy": 940,
+        "offset": 30
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "mrbeast_comic": {
+      "style": "MrBeast (comic beats)",
+      "unit": "group",
+      "words": [
+        1,
+        3
+      ],
+      "max_chars_line": 14,
+      "lines": 1,
+      "punct": "keep",
+      "swap": {
+        "type": "pop",
+        "frames": 4
+      },
+      "skin": {
+        "slot": "Bangers",
+        "weight": 400,
+        "size": 104,
+        "case": "upper",
+        "tracking": 0.02,
+        "colour": "#FFFFFF",
+        "stroke": 7,
+        "stroke_colour": "#000000",
+        "shadow": "0 7 0 rgba(0,0,0,.9)",
+        "rotate": -3,
+        "line_height": 1.0
+      },
+      "position": {
+        "anchor": "chest",
+        "cy": 1000,
+        "offset": 30
+      },
+      "emphasis": {
+        "mechanism": "colour",
+        "colour": "#FFE600",
+        "select": [
+          "number",
+          "topic_noun",
+          "name"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.5
+      }
+    },
+    "mrwhose": {
+      "style": "Mrwhosetheboss",
+      "unit": "line",
+      "words": [
+        3,
+        6
+      ],
+      "max_chars_line": 22,
+      "lines": 2,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 500,
+        "size": 66,
+        "case": "sentence",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 10 rgba(0,0,0,.55)",
+        "line_height": 1.12
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1350
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "omgadrian": {
+      "style": "OMGAdrian",
+      "unit": "phrase",
+      "words": [
+        3,
+        6
+      ],
+      "max_chars_line": 26,
+      "lines": 1,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "skin": {
+        "slot": "EB Garamond",
+        "weight": 500,
+        "size": 52,
+        "case": "sentence",
+        "colour": "#F3E6C4",
+        "shadow": "0 2 2 rgba(0,0,0,.6)"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1480
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "mckinnon": {
+      "style": "Peter McKinnon",
+      "unit": "phrase",
+      "words": [
+        3,
+        5
+      ],
+      "max_chars_line": 22,
+      "lines": 1,
+      "reveal": "word",
+      "lead_frames": 1,
+      "swap": {
+        "type": "fade",
+        "frames": 2
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 500,
+        "size": 60,
+        "case": "sentence",
+        "tracking": -0.02,
+        "colour": "#FFFFFF",
+        "shadow": "0 2 8 rgba(0,0,0,.45)"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1460
+      },
+      "emphasis": {
+        "mechanism": "font_swap",
+        "slot": "Instrument Serif",
+        "style": "italic",
+        "weight": 400,
+        "colour": "#D9A441",
+        "ratio": 1.12,
+        "select": [
+          "topic_noun",
+          "name",
+          "glossary",
+          "number"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.25
+      }
+    },
+    "peter_visuals": {
+      "style": "peter.visuals",
+      "unit": "phrase",
+      "words": [
+        1,
+        4
+      ],
+      "max_chars_line": 20,
+      "lines": 1,
+      "lead_frames": 1,
+      "swap": {
+        "type": "rise",
+        "frames": 9,
+        "rise_px": 60,
+        "blur_px": 6
+      },
+      "skin": {
+        "slot": "Poppins",
+        "weight": 600,
+        "size": 62,
+        "case": "as_spoken",
+        "tracking": -0.02,
+        "colour": "#141414",
+        "shadow": "none",
+        "line_height": 1.18
+      },
+      "stack": {
+        "rise_px": [
+          40,
+          80
+        ],
+        "blur_px": 6,
+        "frames": 9,
+        "max_lines": 5,
+        "clear_frames": 6,
+        "clear_gap_s": 0.8,
+        "top": 880,
+        "gap_px": 4,
+        "alternate": [
+          {
+            "slot": "Poppins",
+            "weight": 600,
+            "size": 62
+          },
+          {
+            "slot": "Instrument Serif",
+            "style": "italic",
+            "weight": 400,
+            "size": 76
+          }
+        ]
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1000,
+        "colour_by_bg": {
+          "light": "#141414",
+          "dark": "#FFFFFF"
+        }
+      },
+      "emphasis": {
+        "mechanism": "none"
+      }
+    },
+    "tharun": {
+      "style": "Tharun Speaks",
+      "unit": "group",
+      "words": [
+        1,
+        4
+      ],
+      "max_chars_line": 18,
+      "lines": 3,
+      "reveal": "word",
+      "lead_frames": 1,
+      "punct": "strip",
+      "swap": {
+        "type": "pop",
+        "frames": 3
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 800,
+        "size": 62,
+        "case": "lower",
+        "tracking": -0.04,
+        "colour": "#FFFFFF",
+        "shadow": "0 3 14 rgba(0,0,0,.45)",
+        "line_height": 0.92
+      },
+      "tiers": {
+        "connector_px": 50,
+        "keyword_px": 124,
+        "min_ratio": 2.2,
+        "stack": "split",
+        "plain_px": 62,
+        "keyword_weight": 800,
+        "connector_weight": 700,
+        "min_score": 1.3
+      },
+      "position": {
+        "anchor": "chest",
+        "offset": 26,
+        "cy": 1180
+      },
+      "emphasis": {
+        "mechanism": "size_tier",
+        "select": [
+          "number",
+          "topic_noun",
+          "name",
+          "glossary"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 1.2
+      }
+    },
+    "vaibhav": {
+      "style": "Vaibhav Sisinty",
+      "unit": "phrase",
+      "words": [
+        2,
+        6
+      ],
+      "max_chars_line": 30,
+      "lines": 3,
+      "swap": {
+        "type": "fade",
+        "frames": 3
+      },
+      "skin": {
+        "slot": "Inter Tight",
+        "weight": 500,
+        "size": 36,
+        "case": "sentence",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 8 rgba(0,0,0,.5)",
+        "line_height": 1.12
+      },
+      "tiers": {
+        "connector_px": 36,
+        "keyword_px": 62,
+        "min_ratio": 1.6,
+        "stack": "below",
+        "plain_px": 36,
+        "keyword_slot": "Instrument Serif",
+        "keyword_style": "italic",
+        "keyword_weight": 400,
+        "min_score": 9,
+        "connector_container": {
+          "fill": "#000000",
+          "opacity": 0.62,
+          "radius": 16,
+          "padding": [
+            6,
+            16
+          ]
+        }
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1000,
+        "by_layout": {
+          "panel": {
+            "anchor": "seam"
+          }
+        }
+      },
+      "emphasis": {
+        "mechanism": "size_tier",
+        "span": "phrase",
+        "select": [
+          "number",
+          "topic_noun",
+          "name",
+          "glossary"
+        ],
+        "max_per_chunk": 1,
+        "max_per_s": 0.2,
+        "min_score": 1.5
+      }
+    },
+    "veritasium": {
+      "style": "Veritasium",
+      "unit": "group",
+      "words": [
+        2,
+        3
+      ],
+      "max_chars_line": 22,
+      "lines": 1,
+      "lead_frames": 1,
+      "swap": {
+        "type": "hard",
+        "frames": 0
+      },
+      "pause_hold_s": 0,
+      "skin": {
+        "slot": "Source Serif 4",
+        "weight": 600,
+        "size": 62,
+        "case": "as_spoken",
+        "colour": "#FFFFFF",
+        "shadow": "0 2 6 rgba(0,0,0,.7)"
+      },
+      "position": {
+        "anchor": "fixed_y",
+        "cy": 1380
+      },
+      "emphasis": {
+        "mechanism": "none"
+      },
+      "speakers_hint": {
+        "host": {
+          "colour": "#FFFFFF"
+        },
+        "guest": {
+          "colour": "#F2C14E"
+        }
+      }
+    }
+  }
+}

@@ -41,6 +41,7 @@ def _change_frames(tl: dict) -> list[int]:
             continue
         out.append(f_of(s["t"]))
     out += [f_of(c["t"]) for c in tl.get("camera") or []]
+    out += [f_of(c.get("t", 0)) for c in tl.get("canvas_camera") or []]
     return out
 
 
@@ -86,11 +87,20 @@ def pick_strips(tl: dict, nframes: int) -> list[dict]:
             _rng(a, a + 35, 3))
     seen = set()
     for c in tl.get("camera") or []:
-        if c["preset"] in seen:
+        pr = c.get("preset") or f"crop {c.get('crop', (c.get('p') or {}).get('crop'))}"  # camera v2: preset-less crop
+        if pr in seen:
             continue
-        seen.add(c["preset"])
+        seen.add(pr)
         a = f_of(c["t"])
-        add(f"Camera: {c['preset']}", f"{c['t']:.2f} s: first use of the {c['preset']} camera move, frames -2 to +8.", _rng(a - 2, a + 8))
+        add(f"Camera: {pr}", f"{c['t']:.2f} s: first use of the {pr} camera move, frames -2 to +8.", _rng(a - 2, a + 8))
+    for c in tl.get("canvas_camera") or []:  # E-14: the first use of each canvas-camera move, every 2nd frame
+        name = str(c.get("move"))
+        if ("cc", name) in seen:
+            continue
+        seen.add(("cc", name))
+        a, d = f_of(c.get("t", 0)), f_of(c.get("dur") or 0.8)
+        add(f"Canvas camera: {name}", f"{c.get('t', 0):.2f} s: the {name} move across the canvas, every 2nd frame.",
+            _rng(a - 2, a + d + 4, 2))
     out, used = [], []
     for s in cand:
         fs = set(s["frames"])
@@ -360,9 +370,10 @@ def main(args, project):
 
     html_path = Path(args.html) if args.html else REPO / "renderer" / "player.html"
     query = list(args.query or [])
+    warnings: list[str] = []  # a stale work/tokens.json rebuilt on the way (tokens.refresh)
     if not any(q.startswith(("bundle=", "timeline=")) for q in query) and not args.html:
         from .prep import ensure_bundle
-        query.append("bundle=" + ensure_bundle(project))
+        query.append("bundle=" + ensure_bundle(project, warnings))
     scenes = load_scenes(project)
     scratch = tools().scratch / "sb" / hashlib.sha1(str(project.root).encode("utf-8")).hexdigest()[:12]
     shutil.rmtree(scratch, ignore_errors=True)
@@ -381,7 +392,7 @@ def main(args, project):
     mb = sum(f.stat().st_size for f in (review / "mockup").rglob("*") if f.is_file()) + res["page"].stat().st_size
     return {"beats": len(tl["beats"]), "strips": len(C["strips"]), "strip_frames": res["strip_frames"],
             "animatic_frames": res["anim"], "page": project.rel(res["page"]), "mb": r3(mb / 1e6),
-            "config": "plan/storyboard.config.json"}
+            "config": "plan/storyboard.config.json", **({"warnings": warnings} if warnings else {})}
 
 
 TEMPLATE = r'''<!doctype html>

@@ -1,0 +1,33 @@
+{
+  "package": "veos.template/1",
+  "id": "lesson-frame",
+  "tier": "core",
+  "order": 2,
+  "tagline": "Lessons printed on a page: a fixed two-line title, one rounded card that cuts between your face, big term cards and your settings screen, and tracked caps captions underneath.",
+  "inspired_by_display": [
+    "Editing Explained"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": null,
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "type_floors"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A Lesson Frame: the title lockup builds over the face card while the caps captions tick",
+      "Term card and dialog card: the orange box lands on the field being named",
+      "F-B Screen Walkthrough on the light grid page"
+    ]
+  }
+}

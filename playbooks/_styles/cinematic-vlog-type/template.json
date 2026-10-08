@@ -1,0 +1,34 @@
+{
+  "package": "veos.template/1",
+  "id": "cinematic-vlog-type",
+  "tier": "full",
+  "order": 20,
+  "tagline": "Cinematic location vlogs: your own footage cut fast, big yellow keywords with handwritten connector words, a quiet pale-lemon serif subtitle, and paper-card examples that loop back to the first frame.",
+  "inspired_by_display": [
+    "OMGAdrian"
+  ],
+  "needs": "you talking in a few places + lots of your own B-roll (a drone or overhead shot helps)",
+  "readiness": "R4",
+  "readiness_note": "Best with 20-40 of your own B-roll clips per minute (places, details, hands, a drone or overhead shot); with fewer, it falls back to re-crops and paper cards.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "type_floors",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A hook: script connectors and yellow keyword blocks slide in over a moving location shot",
+      "Behind-the-head keyword and the cream serif subtitle on a talking piece",
+      "F-B paper card on cream with yellow ink arrows and a guide line"
+    ]
+  }
+}

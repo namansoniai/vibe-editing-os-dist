@@ -1,0 +1,35 @@
+{
+  "package": "veos.template/1",
+  "id": "brand-stop-motion-ad",
+  "tier": "full",
+  "section": "brands",
+  "order": 22,
+  "tagline": "Short handmade-world ads for brands that already have stop-motion or animated shots: the characters act first with no text, small pale-yellow captions only when they talk, the product shows up inside the world, and the wordmark closes on black.",
+  "inspired_by_display": [
+    "Chamberlain Coffee ads"
+  ],
+  "needs": "your brand's own stop-motion or animated shots (9:16), your wordmark file, and pack shots for the on-screen product spot",
+  "readiness": "R4",
+  "readiness_note": "For brands and agencies only: the engine edits, captions and closes your animation, it cannot make the stop-motion itself.",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "type_floors",
+    "layouts_v3",
+    "worlds_v3",
+    "inserts_flow"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "Frame 0: a felt character already mid-action in a miniature forest, no text; a white two-line caption fades in on the first word",
+      "Product broadcast: label words and a pack shot take turns on an in-world TV screen, with static between channels",
+      "The close: a soft iris shrinks on the characters, then the wordmark sits alone on black"
+    ]
+  }
+}

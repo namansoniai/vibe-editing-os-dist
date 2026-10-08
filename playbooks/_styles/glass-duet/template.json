@@ -1,0 +1,33 @@
+{
+  "package": "veos.template/1",
+  "id": "glass-duet",
+  "tier": "full",
+  "order": 15,
+  "tagline": "Premium teaching reels: captions that mix an elegant script with bold words at chest height, glowing glass cards and numbered diamonds in your studio colour, and your face gliding into a floating card.",
+  "inspired_by_display": [
+    "Joseph's Work"
+  ],
+  "needs": null,
+  "readiness": "R1",
+  "readiness_note": "Best with a coloured-light set; screenshots or exports of what you teach make the tutorial cards real (otherwise they are built as examples).",
+  "requires": [
+    "tokens_v3",
+    "caption_profiles",
+    "layouts_v3",
+    "worlds_v3",
+    "type_floors"
+  ],
+  "preview": {
+    "page": "preview/index.html",
+    "frames": [
+      "preview/frames/01.webp",
+      "preview/frames/02.webp",
+      "preview/frames/03.webp"
+    ],
+    "captions": [
+      "F-A hook: duet caption builds at chest while a row of glowing cards slides in",
+      "F-A step: a glass diamond marker, then the full-screen tutorial card with sparkle bullets",
+      "F-B course sales: chrome title, numbered glass tiles, DM-or-comment keyword chip"
+    ]
+  }
+}

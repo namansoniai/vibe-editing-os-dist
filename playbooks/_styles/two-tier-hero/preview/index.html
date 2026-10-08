@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Two-Tier Hero Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). 360x640 = 1080x1920 / 3. -->
+<style>
+@font-face{font-family:"Anton";src:url("../../../../assets/fonts/Anton-Regular.ttf")}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-Bold.ttf");font-weight:700}
+@font-face{font-family:"Barlow Condensed";src:url("../../../../assets/fonts/BarlowCondensed-SemiBold.ttf");font-weight:600}
+@font-face{font-family:"Inter Tight";src:url("../../../../assets/fonts/InterTight-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Permanent Marker";src:url("../../../../assets/fonts/PermanentMarker-Regular.ttf")}
+:root{--ink:#0B0B0B;--paper:#FFFFFF;--bad:#FF2A1A;--good:#2BFF6E;--accent:#4363F2;--neon:#C6FF1A;--e:cubic-bezier(.22,1,.36,1)}
+.lime{--neon:#C6FF1A}.mint{--neon:#4DFFC4}.yellow{--neon:#FFF01F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0a08;color:#fff;font-family:"Inter Tight",system-ui,sans-serif;padding:32px 16px 60px}
+h1{font-weight:700;font-size:22px;margin:0 auto 6px;max-width:1160px}
+h2{font-weight:600;font-size:15px;margin:26px auto 12px;max-width:1160px;opacity:.85}
+p.lead{font-size:13px;opacity:.7;max-width:1160px;margin:0 auto 18px;line-height:1.5}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1160px;margin:0 auto}
+figure{width:360px}
+figcaption{font-size:12px;opacity:.75;margin-top:8px;line-height:1.4}
+.f{width:360px;height:640px;overflow:hidden;position:relative;isolation:isolate;background:#1a120c}
+/* ---------- room + illustrated presenter ---------- */
+.room{position:absolute;inset:0;background:radial-gradient(60px 60px at 52px 210px,rgba(255,196,120,.55),transparent 70%),radial-gradient(90px 90px at 310px 150px,rgba(255,170,90,.35),transparent 70%),linear-gradient(180deg,#3b2a1d 0%,#2a1c14 55%,#1c130d 100%)}
+.room:before{content:"";position:absolute;left:20px;top:250px;width:110px;height:8px;background:#4a3624;box-shadow:0 46px 0 #4a3624,0 92px 0 #4a3624}
+.room:after{content:"";position:absolute;right:26px;top:270px;width:70px;height:120px;border-radius:6px;background:#22170f}
+.person{position:absolute;inset:0;z-index:3}
+.body{position:absolute;left:58px;top:222px;width:244px;height:460px;border-radius:110px 110px 0 0;background:linear-gradient(180deg,#2b2622,#1d1916)}
+.neck{position:absolute;left:162px;top:196px;width:36px;height:40px;background:#b7845f;border-radius:0 0 14px 14px}
+.head{position:absolute;left:142px;top:118px;width:76px;height:94px;border-radius:44% 44% 46% 46%;background:#c99a78}
+.hair{position:absolute;left:134px;top:100px;width:92px;height:48px;border-radius:46px 50px 18px 22px;background:#22160f}
+.hair:after{content:"";position:absolute;left:10px;top:-10px;width:60px;height:26px;border-radius:30px;background:#22160f;transform:rotate(-8deg)}
+.glasses{position:absolute;left:148px;top:150px;width:64px;height:16px;border:3px solid #111;border-radius:5px;border-top-width:4px}
+.glasses:after{content:"";position:absolute;left:27px;top:-3px;width:4px;height:16px;background:#1d1916}
+.desk{position:absolute;left:0;right:0;bottom:0;height:120px;z-index:4;background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 1px,transparent 1px 22px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 22px),linear-gradient(180deg,#151a14,#0c0f0b)}
+.desk.green{background:repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 1px,transparent 1px 22px),repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 1px,transparent 1px 22px),linear-gradient(180deg,#0f5a44,#0a3c2e)}
+.scene{position:absolute;inset:0;animation:whip 6s infinite}
+@keyframes whip{0%{filter:blur(5px);transform:scale(1.04)}3%{filter:blur(0);transform:scale(1)}40%{transform:scale(1)}41%{transform:scale(1.09)}70%{transform:scale(1.09)}71%,100%{transform:scale(1)}}
+/* ---------- hero behind the head ---------- */
+.hero{position:absolute;left:0;right:0;z-index:2;text-align:center;white-space:nowrap}
+.grit{font-family:Anton,sans-serif;text-transform:uppercase;letter-spacing:-.5px;line-height:.86;color:transparent;
+  background:repeating-radial-gradient(circle at 17% 31%,#f4f4f2 0 2px,#c9c9c4 2.4px 3px),linear-gradient(#f4f4f2,#e4e4e0);
+  -webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+.neon{font-family:"Barlow Condensed",sans-serif;font-weight:700;line-height:.9;letter-spacing:-1px}
+.conn{position:absolute;z-index:5;font:700 17px/1 "Inter Tight";color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.5);white-space:nowrap}
+/* ---------- two-tier captions ---------- */
+.cap{position:absolute;left:0;right:0;z-index:6;text-align:center;color:#fff;font-family:"Inter Tight";text-shadow:0 1px 5px rgba(0,0,0,.5);opacity:0;letter-spacing:-.8px}
+.cap .c{display:block;font-weight:700;font-size:19px;line-height:1}
+.cap .k{display:block;font-weight:800;font-size:45px;line-height:.95}
+.cap .p{display:block;font-weight:700;font-size:24px;line-height:1}
+.cap.ink{color:var(--ink);text-shadow:none}
+/* ---------- frame 1: 3 SKILLS ---------- */
+.f1 .conn{left:0;right:0;text-align:center;top:34px;animation:fadein 6s infinite}
+.f1 .hero{top:52px;font-size:92px;animation:slam 6s infinite}
+@keyframes fadein{0%{opacity:0;transform:translateY(8px)}6%{opacity:1;transform:none}88%{opacity:1}92%,100%{opacity:0}}
+@keyframes slam{0%,3%{opacity:0;transform:translateX(60px);filter:blur(4px)}6%{opacity:1;transform:translateX(-3px);filter:blur(0)}8%{transform:scale(1.03)}10%{transform:none}88%{opacity:1}92%,100%{opacity:0}}
+.f1 .c1{top:350px;animation:cap1 6s infinite}.f1 .c2{top:350px;animation:cap2 6s infinite}.f1 .c3{top:340px;animation:cap3 6s infinite}
+@keyframes cap1{0%,12%{opacity:0;transform:scale(.9)}14%{opacity:1;transform:none}42%{opacity:1}44%,100%{opacity:0}}
+@keyframes cap2{0%,44%{opacity:0;transform:scale(.9)}46%{opacity:1;transform:none}68%{opacity:1}70%,100%{opacity:0}}
+@keyframes cap3{0%,70%{opacity:0;transform:scale(.9)}72%{opacity:1;transform:none}92%{opacity:1}94%,100%{opacity:0}}
+.tiles{position:absolute;top:420px;left:0;right:0;z-index:6;display:flex;justify-content:center;gap:30px}
+.tile{width:50px;height:50px;border-radius:11px;background:linear-gradient(160deg,#fff,#cfd2d8);box-shadow:0 6px 14px rgba(0,0,0,.4);opacity:0;display:grid;place-items:center}
+.tile i{display:block;width:20px;height:20px;border:3px solid #444;border-radius:50%}
+.tile:nth-child(2) i{border-radius:3px;transform:rotate(45deg)}.tile:nth-child(3) i{border-radius:0;border-width:3px 3px 0 0;transform:rotate(-45deg) translate(-3px,3px)}
+.tile:nth-child(1){animation:tile 6s infinite}.tile:nth-child(2){animation:tile 6s infinite;animation-delay:.1s}.tile:nth-child(3){animation:tile 6s infinite;animation-delay:.2s}
+@keyframes tile{0%,48%{opacity:0;transform:scale(.4) translateY(0)}51%{opacity:1;transform:scale(1.08)}53%{transform:scale(1)}68%{opacity:1;transform:translateY(-12px)}70%,100%{opacity:0}}
+/* ---------- frame 2: odometer ---------- */
+.f2 .hero{top:72px;font-size:84px;color:#fff;display:flex;justify-content:center;animation:glow 6s infinite}
+.slot{display:inline-block;height:86px;overflow:hidden;vertical-align:top}
+.strip{display:flex;flex-direction:column;animation:roll 6s infinite var(--e)}
+.strip span{height:86px;line-height:86px}
+@keyframes roll{0%,10%{transform:translateY(0);filter:blur(2px)}26%{transform:translateY(var(--to));filter:blur(0)}100%{transform:translateY(var(--to))}}
+@keyframes glow{0%,26%{color:#fff;text-shadow:none}30%{color:var(--neon);text-shadow:0 0 10px var(--neon),0 0 22px color-mix(in srgb,var(--neon) 55%,transparent)}88%{color:var(--neon);opacity:1}93%,100%{opacity:0}}
+.f2 .c1{top:300px;animation:cap1 6s infinite}.f2 .c2{top:316px;animation:cap4 6s infinite}
+@keyframes cap4{0%,32%{opacity:0;transform:scale(.9)}34%{opacity:1;transform:none}90%{opacity:1}93%,100%{opacity:0}}
+.f2 .c1{animation:capA 6s infinite}
+@keyframes capA{0%,2%{opacity:0}4%{opacity:1}31%{opacity:1}33%,100%{opacity:0}}
+.card{position:absolute;z-index:5;left:30px;top:408px;width:118px;height:62px;background:#f5f2ea;border-radius:4px;transform:rotate(-7deg);display:grid;place-items:center;font:400 22px/1 "Permanent Marker";color:#111;box-shadow:0 6px 14px rgba(0,0,0,.45);opacity:0;animation:cardpop 6s infinite}
+@keyframes cardpop{0%,55%{opacity:0;transform:rotate(-7deg) scale(.6)}58%{opacity:1;transform:rotate(-5deg) scale(1.05)}61%{transform:rotate(-7deg)}88%{opacity:1}92%,100%{opacity:0}}
+/* ---------- frame 3: result pair ---------- */
+.glass{position:absolute;z-index:4;bottom:52px;width:92px;height:128px;border:2px solid rgba(255,255,255,.55);border-top:none;border-radius:6px 6px 16px 16px;overflow:hidden;background:rgba(255,255,255,.06)}
+.glass i{position:absolute;left:0;right:0;bottom:0}
+.g-red{left:208px}.g-red i{height:62%;background:linear-gradient(180deg,#ff4a33,#a3100a);box-shadow:0 0 30px #ff2a1a}
+.g-green{left:62px}.g-green i{height:72%;background:linear-gradient(180deg,#9bff7a,#2bbf4a);box-shadow:0 0 30px var(--good)}
+.tag{position:absolute;z-index:6;font:700 34px/1 "Barlow Condensed";opacity:0}
+.tag.bad{left:226px;top:420px;color:var(--bad);text-shadow:0 0 12px var(--bad);animation:tagA 6s infinite}
+@keyframes tagA{0%,10%{opacity:0;transform:scale(.6)}13%{opacity:1;transform:scale(1.06)}15%{transform:none}90%{opacity:1}94%,100%{opacity:0}}
+.tag.good{left:44px;top:420px;color:var(--good);text-shadow:0 0 12px var(--good);width:140px}
+.tag.good span{position:absolute;left:0;opacity:0}
+.tag.good{opacity:1}
+.tag.good span:nth-child(1){animation:v1 6s infinite}.tag.good span:nth-child(2){animation:v2 6s infinite}.tag.good span:nth-child(3){animation:v3 6s infinite}.tag.good span:nth-child(4){animation:v4 6s infinite}
+@keyframes v1{0%,30%{opacity:0}31%,34%{opacity:1}35%,100%{opacity:0}}
+@keyframes v2{0%,34%{opacity:0}35%,38%{opacity:1}39%,100%{opacity:0}}
+@keyframes v3{0%,38%{opacity:0}39%,42%{opacity:1}43%,100%{opacity:0}}
+@keyframes v4{0%,42%{opacity:0}43%,90%{opacity:1}94%,100%{opacity:0}}
+.f3 .c1{top:330px;animation:cap1 6s infinite}.f3 .c2{top:316px;animation:cap4 6s infinite}
+/* ---------- frame 4: tier showcase ---------- */
+.f4 .cap{top:322px}
+.f4 .c1{animation:q1 6s infinite}.f4 .c2{animation:q2 6s infinite}.f4 .c3{animation:q3 6s infinite}.f4 .c4{animation:q4 6s infinite}
+@keyframes q1{0%{opacity:0;transform:scale(.9)}2%{opacity:1;transform:none}23%{opacity:1}25%,100%{opacity:0}}
+@keyframes q2{0%,25%{opacity:0;transform:scale(.9)}27%{opacity:1;transform:none}48%{opacity:1}50%,100%{opacity:0}}
+@keyframes q3{0%,50%{opacity:0;transform:scale(.9)}52%{opacity:1;transform:none}73%{opacity:1}75%,100%{opacity:0}}
+@keyframes q4{0%,75%{opacity:0;transform:scale(.9)}77%{opacity:1;transform:none}98%{opacity:1}100%{opacity:0}}
+.f4 .scene{animation:punch 6s infinite}
+@keyframes punch{0%,24%{transform:scale(1)}25%,49%{transform:scale(1.09) translateY(8px)}50%,74%{transform:scale(1)}75%,100%{transform:scale(1.09) translateY(8px)}}
+/* ---------- frame 5: hub ---------- */
+.space{position:absolute;inset:0;background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.08),transparent 55%),radial-gradient(1px 1px at 20px 30px,#fff,transparent),#040406;background-size:auto,32px 32px,auto}
+.space:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.06) 45%,transparent 60%)}
+.sphere{position:absolute;left:66px;top:322px;width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#aaa 45%,#555 80%);box-shadow:0 0 18px rgba(255,255,255,.5)}
+.hub svg{position:absolute;inset:0}
+.node{position:absolute;width:15px;height:15px;border-radius:50%;background:#fff}
+.nl{position:absolute;font:600 19px/1 "Barlow Condensed";letter-spacing:.3px;color:#fff;text-transform:uppercase}
+.n1{left:250px;top:250px;animation:lit 6s infinite}.n2{left:110px;top:520px;animation:lit 6s infinite 2s}.n3{left:40px;top:205px;animation:lit 6s infinite 4s}
+@keyframes lit{0%{transform:scale(1);background:#fff;box-shadow:none}4%,30%{transform:scale(1.5);background:var(--neon);box-shadow:0 0 14px var(--neon)}34%,100%{transform:scale(1);background:#fff;box-shadow:none}}
+.f5 .hero{top:60px;font-size:60px}
+.f5 .conn{left:0;right:0;text-align:center;top:42px}
+/* ---------- frame 6: spotlight ---------- */
+.navy{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(67,99,242,.28),transparent 60%),linear-gradient(180deg,#0e1a44,#050713)}
+.cone{position:absolute;left:80px;top:0;width:200px;height:440px;background:linear-gradient(180deg,rgba(255,236,190,.55),rgba(255,236,190,.08));clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);filter:blur(4px)}
+.sheet{position:absolute;width:118px;height:150px;background:linear-gradient(180deg,#fbf6e8,#e9e0c8);border-radius:3px;box-shadow:0 8px 20px rgba(0,0,0,.5);padding:12px 9px;color:#222}
+.sheet b{display:block;font:600 13px/1 "Barlow Condensed";opacity:.6}
+.sheet strong{display:block;font:600 19px/1 "Barlow Condensed";text-transform:uppercase;margin-top:4px}
+.sheet i{display:block;height:3px;background:#d7cdb3;margin-top:8px}
+.s-main{left:121px;top:150px;animation:float 6s infinite}
+@keyframes float{0%{transform:translateY(-120px) rotate(-8deg);opacity:0}20%{transform:translateY(0) rotate(-3deg);opacity:1}90%{opacity:1;transform:translateY(6px) rotate(-2deg)}100%{opacity:0}}
+.s-old{top:470px;transform:rotate(8deg) scale(.7)}
+.deskn{position:absolute;left:0;right:0;bottom:0;height:150px;background:linear-gradient(180deg,#0b1430,#03060f)}
+/* ---------- frame 7: glass cards ---------- */
+.gcard{position:absolute;left:84px;top:230px;width:192px;height:134px;border-radius:12px;background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.05));border:1.5px solid rgba(120,150,255,.55);box-shadow:inset 0 0 22px rgba(120,150,255,.25),0 16px 40px rgba(0,0,0,.5);padding:14px;opacity:0}
+.gcard .dots{width:36px;height:8px;background:radial-gradient(circle at 4px 4px,#ff5f57 3px,transparent 3.5px),radial-gradient(circle at 16px 4px,#febc2e 3px,transparent 3.5px),radial-gradient(circle at 28px 4px,#28c840 3px,transparent 3.5px)}
+.gcard h3{font:700 22px/1.1 "Inter Tight";margin-top:22px}
+.gcard.b{background:linear-gradient(160deg,rgba(120,255,190,.25),rgba(255,255,255,.05))}.gcard.c{background:linear-gradient(160deg,rgba(150,110,255,.45),rgba(255,255,255,.06))}
+.gcard.a{animation:ga 6s infinite}.gcard.b{animation:gb 6s infinite}.gcard.c{animation:gc 6s infinite}
+@keyframes ga{0%{opacity:0;transform:translateY(20px)}5%{opacity:1;transform:none}30%{opacity:1;transform:none}34%,100%{opacity:0;transform:translateY(-60px)}}
+@keyframes gb{0%,31%{opacity:0;transform:translateY(20px)}36%{opacity:1;transform:none}63%{opacity:1;transform:none}67%,100%{opacity:0;transform:translateY(-60px)}}
+@keyframes gc{0%,64%{opacity:0;transform:translateY(20px)}69%{opacity:1;transform:none}96%{opacity:1}100%{opacity:0}}
+.f7 .cap{top:450px;opacity:1}
+/* ---------- frame 8: ruler + count ---------- */
+.f8 .room{background:radial-gradient(70px 70px at 70px 120px,rgba(255,240,200,.6),transparent 70%),radial-gradient(70px 70px at 290px 90px,rgba(255,240,200,.5),transparent 70%),linear-gradient(180deg,#8d8a7f,#5f6158 50%,#3c3d37)}
+.f8 .body{background:linear-gradient(180deg,#121212,#0a0a0a)}
+.ruler{position:absolute;z-index:6;top:360px;left:0;width:720px;height:40px;animation:slide 6s infinite var(--e)}
+.ruler:before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.8) 0 1.5px,transparent 1.5px 6px)}
+.ruler span{position:absolute;top:16px;font:600 14px/1 "Inter Tight";color:#fff;width:60px;margin-left:-30px;text-align:center}
+.ruler span.now{animation:nowc 6s infinite}
+@keyframes nowc{0%,14%{color:#fff}17%,100%{color:var(--neon)}}
+@keyframes slide{0%{transform:translateX(200px);opacity:0}12%{transform:translateX(-180px);opacity:1}88%{transform:translateX(-195px);opacity:1}94%,100%{opacity:0}}
+.f8 .hero{top:48px;font-size:84px;word-spacing:118px;color:var(--neon);text-shadow:0 0 10px var(--neon),0 0 24px color-mix(in srgb,var(--neon) 50%,transparent)}
+.f8 .hero span{position:absolute;left:0;right:0;opacity:0}
+.f8 .hero span:nth-child(1){animation:st1 6s infinite}.f8 .hero span:nth-child(2){animation:st2 6s infinite}.f8 .hero span:nth-child(3){animation:st3 6s infinite}
+@keyframes st1{0%,18%{opacity:0}19%,22%{opacity:1}23%,100%{opacity:0}}
+@keyframes st2{0%,22%{opacity:0}23%,26%{opacity:1}27%,100%{opacity:0}}
+@keyframes st3{0%,26%{opacity:0;transform:scale(.92)}27%{opacity:1;transform:none}90%{opacity:1}94%,100%{opacity:0}}
+.f8 .hero small{font-size:60px}
+/* ---------- frame 9: stack ---------- */
+.top{position:absolute;left:0;right:0;top:0;height:320px;background:radial-gradient(circle at 50% 30%,#1b1b1f,#050506);z-index:7;overflow:hidden}
+.top h4{font:400 32px/1 Anton;text-align:center;margin-top:44px;color:#f2f2f0;text-transform:uppercase}
+.row{display:flex;gap:8px;margin:7px 26px 0;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.18);font:500 13.5px/1.2 "Inter Tight";opacity:0}
+.row b{width:16px;font-weight:700}
+.row:nth-of-type(1){animation:row 6s infinite}.row:nth-of-type(2){animation:row 6s infinite .9s}.row:nth-of-type(3){animation:row 6s infinite 1.8s}.row:nth-of-type(4){animation:row 6s infinite 2.7s}
+@keyframes row{0%{opacity:0;transform:translateX(10px)}4%{opacity:1;transform:none}60%{opacity:1}66%,100%{opacity:.35}}
+.f9 .person{transform:translateY(250px) scale(.95);transform-origin:50% 0}
+.f9 .cap{top:300px;opacity:1;z-index:8}
+/* ---------- frame 10: QR ---------- */
+.white{position:absolute;inset:0;background:#fff;animation:flash 6s infinite}
+@keyframes flash{0%{filter:brightness(1.6)}2%{filter:brightness(1)}100%{filter:brightness(1)}}
+.qr{position:absolute;left:87px;top:173px;width:186px;height:186px;border:3px dashed #222;border-radius:8px;display:grid;place-items:center;font:700 22px/1.2 "Inter Tight";color:#222;text-align:center}
+.f10 .cap{opacity:1}
+/* theme strip */
+.mini .hero{top:96px;font-size:110px}
+</style>
+</head>
+<body>
+<h1>Two-Tier Hero <span style="font-weight:500;opacity:.6;font-size:15px">· inspired by Tharun Speaks</span></h1>
+<p class="lead">Desk talking head. Every word pops on the chest in two tiers (small connector, giant keyword); one hero word or neon number stands behind the head; whip cuts and wide/tight punches every 1–2 s; short stylised inserts on the noun. One neon accent per reel: lime, mint or yellow.</p>
+
+<h2>F-A · Two-tier hero talking head</h2>
+<div class="grid">
+
+<figure><div class="f lime f1" data-card="1">
+  <div class="scene"><div class="room"></div>
+    <div class="conn">Don't Ignore These</div>
+    <div class="hero grit">3 SKILLS</div>
+    <div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div></div>
+    <div class="desk"></div></div>
+  <div class="cap c1"><span class="p">16-20 years old</span></div>
+  <div class="cap c2"><span class="p">these are the</span></div>
+  <div class="cap c3"><span class="c">these are the</span><span class="k">3 skills</span></div>
+  <div class="tiles"><div class="tile"><i></i></div><div class="tile"><i></i></div><div class="tile"><i></i></div></div>
+</div><figcaption>HA-05 hook: the connector fades in, the grit hero slams in behind the head (E1), two-tier captions build on the chest, three icon tiles pop.</figcaption></figure>
+
+<figure><div class="f mint f2" data-card="2">
+  <div class="scene"><div class="room"></div>
+    <div class="hero neon">₹<span class="slot"><span class="strip" style="--to:-946px"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span></span></span>,<span class="slot"><span class="strip" style="--to:-1032px;animation-duration:6s"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span></span></span><span class="slot"><span class="strip" style="--to:-860px"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></span></span>,<span class="slot"><span class="strip" style="--to:-860px"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></span></span><span class="slot"><span class="strip" style="--to:-860px"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></span></span><span class="slot"><span class="strip" style="--to:-860px"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></span></span></div>
+    <div class="person"><div class="body" style="background:linear-gradient(180deg,#3a2419,#24160f)"></div><div class="neck"></div><div class="head"></div><div class="hair"></div></div>
+    <div class="desk green"></div></div>
+  <div class="cap c1"><span class="p">you can make up to</span></div>
+  <div class="cap c2"><span class="k">rupees</span><span class="c">per&nbsp;&nbsp;&nbsp;&nbsp;month</span></div>
+  <div class="card">DEGREE</div>
+</div><figcaption>Signature P-03: the odometer rolls behind the head, lands and ignites in the reel's neon (TH-mint); the caption tiers "rupees / per month"; a handwritten card prop.</figcaption></figure>
+
+<figure><div class="f lime f3">
+  <div class="scene"><div class="room"></div>
+    <div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div></div>
+    <div class="desk"></div>
+    <div class="glass g-green"><i></i></div><div class="glass g-red"><i></i></div></div>
+  <div class="tag bad">₹0</div>
+  <div class="tag good"><span>₹18,420</span><span>₹46,900</span><span>₹73,150</span><span>₹1,00,000</span></div>
+  <div class="cap c1"><span class="p">from making</span></div>
+  <div class="cap c2"><span class="c">to one lakh</span><span class="k">a month</span></div>
+</div><figcaption>HA-01 result pair: red glass tagged ₹0, the green glass's counter rolls to ₹1,00,000 (red/green only; no neon in this frame).</figcaption></figure>
+
+<figure><div class="f yellow f4">
+  <div class="scene"><div class="room"></div>
+    <div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div></div>
+    <div class="desk"></div></div>
+  <div class="cap c1"><span class="c">you're</span><span class="k">seriously</span><span class="c">missing out.</span></div>
+  <div class="cap c2"><span class="c">without a</span><span class="k">degree</span></div>
+  <div class="cap c3"><span class="p">but here's the thing</span></div>
+  <div class="cap c4"><span class="c">multiple</span><span class="k">tools</span></div>
+</div><figcaption>CS-1 two-tier captions: connector 56 px + keyword 136 px (shown at 1/3), split stack; a plain chunk has no keyword. Wide/tight punch alternates on each cut.</figcaption></figure>
+
+<figure><div class="f lime f5">
+  <div class="space"></div>
+  <div class="conn">LEARN THESE</div>
+  <div class="hero grit">3 SKILLS</div>
+  <div class="hub"><svg viewBox="0 0 360 640"><g stroke="rgba(255,255,255,.55)" stroke-width="1"><line x1="97" y1="353" x2="257" y2="257"/><line x1="97" y1="353" x2="117" y2="527"/><line x1="97" y1="353" x2="47" y2="212"/><line x1="97" y1="353" x2="190" y2="420"/><line x1="97" y1="353" x2="20" y2="430"/><line x1="97" y1="353" x2="160" y2="300"/></g></svg>
+    <div class="sphere"></div>
+    <div class="node n1"></div><div class="nl" style="left:200px;top:224px">Communication</div>
+    <div class="node n2"></div><div class="nl" style="left:135px;top:520px">Side hustle</div>
+    <div class="node n3"></div><div class="nl" style="left:62px;top:180px">Deep work</div></div>
+</div><figcaption>SM-1 constellation hub (P-17): the same diagram returns at every item with the active node lit in the neon.</figcaption></figure>
+
+<figure><div class="f lime f6">
+  <div class="navy"></div><div class="cone"></div><div class="deskn"></div>
+  <div class="sheet s-old" style="left:30px"><b>STEP 1</b><strong>Outlier skill</strong><i></i><i></i></div>
+  <div class="sheet s-main"><b>STEP 2</b><strong>Solid portfolio</strong><i></i><i></i><i></i><i></i></div>
+  <div class="cap" style="top:470px;opacity:1"><span class="c">step two</span><span class="k">portfolio</span></div>
+</div><figcaption>SM-2 spotlight stack (P-18): each step's sheet floats into the light; earlier steps rest below. Captions switch to CS-4.</figcaption></figure>
+
+<figure><div class="f lime f7">
+  <div class="navy"></div>
+  <div class="gcard a"><div class="dots"></div><h3>Building</h3></div>
+  <div class="gcard b"><div class="dots"></div><h3>Video Editing</h3></div>
+  <div class="gcard c"><div class="dots"></div><h3>AI Automation</h3></div>
+  <div class="cap"><span class="c">pick just</span><span class="k">one skill</span></div>
+</div><figcaption>P-24 glass app cards on the navy glass world, pushed one by one on their nouns (T-10).</figcaption></figure>
+
+<figure><div class="f yellow f8" data-card="3">
+  <div class="scene"><div class="room"></div>
+    <div class="hero neon"><span>1</span><span>4 <small>YEARS</small></span><span>5 <small>YEARS</small></span></div>
+    <div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div></div>
+    <div class="desk" style="background:linear-gradient(180deg,#b9b9b4,#8b8b86)"></div></div>
+  <div class="ruler"><span style="left:180px">2022</span><span style="left:270px">2023</span><span style="left:360px">2024</span><span style="left:450px">2025</span><span class="now" style="left:540px">2026</span><span style="left:630px">2027</span></div>
+</div><figcaption>HA-07 in TH-yellow: the year ruler slides across the chest (current year lit), "1 → 4 → 5 YEARS" steps behind the head.</figcaption></figure>
+
+<figure><div class="f lime f9">
+  <div class="scene"><div class="room"></div>
+    <div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div></div></div>
+  <div class="top"><h4>5 Simple Steps</h4>
+    <div class="row"><b>1</b>Write 500 words every day</div><div class="row"><b>2</b>Speak into the mirror, 5 mins</div><div class="row"><b>3</b>Watch stand-up comedy</div><div class="row"><b>4</b>Talk to yourself in English</div></div>
+  <div class="cap"><span class="c">and you'll</span><span class="k">improve</span></div>
+</div><figcaption>L-stack (P-26): a step table in the top band, the presenter below, CS-3 captions on the seam. Used when an explanation runs past 5 s.</figcaption></figure>
+
+<figure><div class="f lime f10">
+  <div class="white"></div>
+  <div class="cap ink" style="top:92px"><span class="c">scan this</span><span class="k">QR Code</span></div>
+  <div class="qr">YOUR<br>QR</div>
+  <div class="cap ink" style="top:390px"><span class="c">for the</span><span class="k">entire guide</span></div>
+</div><figcaption>P-40 QR card: the buyer's own QR image on white, captions flip to ink. Shown mid-reel (flash) and at the end.</figcaption></figure>
+
+</div>
+
+<h2>Theme strip · one neon per reel (TH-lime → TH-mint → TH-yellow)</h2>
+<div class="grid">
+<figure><div class="f lime f8 mini"><div class="scene"><div class="room"></div><div class="hero neon" style="color:var(--neon);text-shadow:0 0 10px var(--neon)">30 MINS</div><div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div></div><div class="desk"></div></div></div><figcaption>TH-lime #C6FF1A</figcaption></figure>
+<figure><div class="f mint f8 mini"><div class="scene"><div class="room"></div><div class="hero neon" style="color:var(--neon);text-shadow:0 0 10px var(--neon)">30 MINS</div><div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div></div><div class="desk"></div></div></div><figcaption>TH-mint #4DFFC4</figcaption></figure>
+<figure><div class="f yellow f8 mini"><div class="scene"><div class="room"></div><div class="hero neon" style="color:var(--neon);text-shadow:0 0 10px var(--neon)">30 MINS</div><div class="person"><div class="body"></div><div class="neck"></div><div class="head"></div><div class="hair"></div></div><div class="desk"></div></div></div><figcaption>TH-yellow #FFF01F</figcaption></figure>
+</div>
+</body>
+</html>

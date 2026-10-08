@@ -56,6 +56,11 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]  # engine/src/veos -> repo root
 
 
+# fx.three (renderer/fx3d.js) needs a WebGL2 context; headless Chromium provides one on SwiftShader (software) without a GPU
+WEBGL_PROBE = """() => { const g = document.createElement('canvas').getContext('webgl2'); if (!g) return null;
+  const d = g.getExtension('WEBGL_debug_renderer_info'); return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER); }"""
+
+
 def main(args, project) -> dict:
     home = veos_home()
     checks: list[dict] = []
@@ -77,6 +82,11 @@ def main(args, project) -> dict:
     add("VEOS_HOME", home.exists(), str(home), "Run /reel-setup to create the tools folder.")
     add("python", sys.version_info >= (3, 11), platform.python_version(), "Use Python 3.11 or newer.")
 
+    # licence (local file only, no network): one line
+    from . import licence
+    lic_ok, lic_line, lic_hint = licence.doctor_check()
+    add("licence", lic_ok, lic_line, lic_hint)
+
     # ffmpeg
     ff, fp = _find("ffmpeg", home), _find("ffprobe", home)
     fv, pv = _version(ff), _version(fp)
@@ -94,11 +104,15 @@ def main(args, project) -> dict:
             os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(br))
             from playwright.sync_api import sync_playwright
             with sync_playwright() as pw:
-                b = pw.chromium.launch(headless=True)
+                from .render import CHROME_ARGS
+                b = pw.chromium.launch(headless=True, args=CHROME_ARGS)
                 pg = b.new_page()
                 pg.set_content("<p>ok</p>")
+                webgl = pg.evaluate(WEBGL_PROBE)
                 b.close()
             add("chromium launch", True, f"headless launch ok in {time.time() - t0:.1f} s")
+            add("webgl (3D scenes)", bool(webgl), webgl or "no WebGL2 context",
+                "fx.three scenes need WebGL; headless Chromium uses SwiftShader (software). Re-run /reel-setup to reinstall the browser.")
         except Exception as e:  # noqa: BLE001
             add("chromium launch", False, f"{type(e).__name__}: {str(e)[:120]}",
                 "The browser is installed but will not start; re-run /reel-setup or restart the PC.")
@@ -128,6 +142,16 @@ def main(args, project) -> dict:
     add("model: speech-to-text (whisper turbo)", wok, wh[0].name if wok else "missing",
         "Run /reel-setup to download the transcription model (about 1.6 GB).")
 
+    # speaker labels for multi-speaker reels (E-13): local ONNX models, no account or token
+    from . import diarize
+    dp = diarize.model_paths(fetch=False)
+    have = [k for k, v in dp.items() if v.exists()]
+    add("model: speaker labels (diarisation)", len(have) == 2,
+        f"pyannote segmentation-3.0 + CAM++ ({sum(diarize.MODELS_MB.values()):.0f} MB) in {dp['embedding'].parent}"
+        if len(have) == 2 else f"missing: {', '.join(k for k in dp if k not in have)}",
+        "Run /vibe-editing-os:setup update to download the speaker-label models (~34 MB; needed for conversation "
+        "clips with two or more people).")
+
     # fonts
     fdir = Path(os.environ.get("VEOS_FONTS", _repo_root() / "assets" / "fonts"))
     fj = fdir / "fonts.json"
@@ -147,7 +171,8 @@ def main(args, project) -> dict:
         status = f"veos: {len(problems)} problem(s): " + "; ".join(c["name"] for c in checks if not c["ok"]) + " (run `veos doctor`)"
     else:
         status = f"veos: ready (ffmpeg {fv.split()[0] if fv else '?'}, {len(checks)} checks ok)"
-    return {"status": status, "ready": not problems, "machine": machine, "home": str(home), "checks": checks,
+    return {"status": status, "ready": not problems, "licence": f"licence: {lic_line}", "licence_ok": lic_ok,
+            "machine_ready": all(c["ok"] for c in checks if c["name"] != "licence"), "machine": machine, "home": str(home), "checks": checks,
             "problems": problems, "quick": bool(args.quick)}
 
 

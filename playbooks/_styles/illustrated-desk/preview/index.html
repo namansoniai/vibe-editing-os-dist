@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Illustrated Desk Glimpse</title>
+<!-- Frames marked data-card="1..3" become the gallery card frames (tools/template_frames.py). Each frame is 360x640 = 1080x1920 at 1/3. -->
+<style>
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Medium.ttf");font-weight:500}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-SemiBold.ttf");font-weight:600}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-Bold.ttf");font-weight:700}
+@font-face{font-family:"Poppins";src:url("../../../../assets/fonts/Poppins-ExtraBold.ttf");font-weight:800}
+@font-face{font-family:"Anton";src:url("../../../../assets/fonts/Anton-Regular.ttf")}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Regular.ttf")}
+@font-face{font-family:"Instrument Serif";src:url("../../../../assets/fonts/InstrumentSerif-Italic.ttf");font-style:italic}
+@font-face{font-family:"EB Garamond";src:url("../../../../assets/fonts/EBGaramond-Italic-VF.ttf");font-style:italic;font-weight:400 800}
+@font-face{font-family:"Permanent Marker";src:url("../../../../assets/fonts/PermanentMarker-Regular.ttf")}
+@font-face{font-family:"Montserrat";src:url("../../../../assets/fonts/Montserrat-VF.ttf");font-weight:100 900}
+@font-face{font-family:"Lilita One";src:url("../../../../assets/fonts/LilitaOne-Regular.ttf")}
+@font-face{font-family:"Noto Color Emoji";src:url("../../../../assets/fonts/NotoColorEmoji-Regular.ttf")}
+:root{--ink:#111;--paper:#fff;--primary:#FFD21F;--accent:#3FCFC6;--concept:#F2C14E;--data:#2F6BDB;--violet:#9B6CF0;--marker:#D92D3A;--good:#7ED68A;
+  --warm:#E8C170;--rose:#E58F8F;--night:#0A1220;--e:cubic-bezier(.22,1,.36,1);--io:cubic-bezier(.65,0,.35,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#14171c;color:#eee;font-family:Poppins,system-ui,sans-serif;padding:28px 16px 60px}
+h1{font-weight:600;font-size:22px;margin:0 auto 4px;max-width:1180px}
+p.lead{font-size:13px;opacity:.7;max-width:1180px;margin:0 auto 18px}
+h2{font-weight:600;font-size:15px;margin:26px auto 10px;max-width:1180px;opacity:.9}
+.grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;max-width:1180px;margin:0 auto}
+figure{width:360px}
+figcaption{font-size:12px;opacity:.75;margin-top:8px;line-height:1.45}
+.f{width:360px;height:640px;position:relative;overflow:hidden;isolation:isolate;background:#2a2622}
+/* ---------- desk footage (neutral illustrated presenter) ---------- */
+.room{position:absolute;inset:0;background:radial-gradient(90% 60% at 30% 25%,#6f6457 0%,#4a423a 55%,#2e2924 100%)}
+.shelf{position:absolute;right:-10px;top:150px;width:110px;height:260px;filter:blur(2.5px);opacity:.8;
+  background:repeating-linear-gradient(180deg,transparent 0 46px,#2a231d 46px 52px),linear-gradient(90deg,#b8574a 0 14%,#d9b25a 14% 26%,#4c7a8a 26% 40%,#e6dcc8 40% 52%,#7a5a8a 52% 66%,#c9783e 66% 80%,#3e5a46 80%)}
+.desk{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(180deg,#9a6b42,#6d4a2c)}
+.person{position:absolute;left:50%;width:240px;height:520px;margin-left:-120px;top:100px}
+.person .torso{position:absolute;left:-10px;right:-10px;top:230px;height:320px;border-radius:120px 120px 30px 30px;background:linear-gradient(180deg,#e7eaee,#cfd4da)}
+.person .neck{position:absolute;left:100px;width:44px;top:196px;height:50px;background:#b88563;border-radius:10px}
+.person .head{position:absolute;left:66px;top:60px;width:112px;height:148px;border-radius:48% 48% 44% 44%;background:#c9946f}
+.person .hair{position:absolute;left:60px;top:46px;width:124px;height:62px;border-radius:60px 60px 18px 18px;background:#2a1d16}
+.person .glasses{position:absolute;left:78px;top:118px;width:90px;height:26px;border:4px solid #1d1714;border-radius:14px;
+  background:linear-gradient(90deg,transparent 44%,#1d1714 44% 56%,transparent 56%)}
+.person .mouth{position:absolute;left:110px;top:178px;width:24px;height:6px;border-radius:6px;background:#7a3e36;animation:talk .36s steps(2) infinite}
+@keyframes talk{50%{height:10px;top:176px}}
+.person .hand{position:absolute;width:62px;height:70px;border-radius:30px;background:#c48f6a;left:-24px;top:300px;animation:gest 2.4s var(--io) infinite alternate}
+@keyframes gest{to{transform:translate(18px,-26px) rotate(-14deg)}}
+/* make-room: the take lowers ~93 px (280 px at full size) */
+.lower{animation:lower 6s var(--io) infinite}
+@keyframes lower{0%,2%{transform:translateY(0)}7%,86%{transform:translateY(93px)}92%,100%{transform:translateY(0)}}
+.band{position:absolute;left:0;right:0;top:0;height:0;background:linear-gradient(180deg,rgba(20,18,16,.75),rgba(30,27,24,.5));backdrop-filter:blur(6px);animation:band 6s var(--io) infinite}
+@keyframes band{0%,2%{height:0}7%,86%{height:93px}92%,100%{height:0}}
+/* ---------- the karaoke pill ---------- */
+.pill{position:absolute;left:50%;transform:translateX(-50%);top:454px;white-space:nowrap;background:rgba(243,243,243,.97);border-radius:6px;
+  padding:4px 9px;font:600 16.7px/1.2 Poppins;box-shadow:0 1px 4px rgba(0,0,0,.18);opacity:0}
+.pill i{font-style:normal;color:#666;animation:kar 6s steps(1) infinite}
+.pill.y1240{top:401px}
+@keyframes kar{0%{color:#666}100%{color:#666}}
+/* each chunk: opacity window per 6 s loop (set via --a / --b) */
+.chunk{animation:chunk 6s linear infinite}
+@keyframes chunk{0%{opacity:0}}
+/* ---------- F-A hook ---------- */
+.tile{position:absolute;width:37px;height:37px;border-radius:9px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;
+  font:800 18px Poppins;color:#111;opacity:0;animation:tile 6s var(--e) infinite}
+@keyframes tile{0%{opacity:0;transform:scale(0) rotate(var(--r))}5%{opacity:1;transform:scale(1.06) rotate(var(--r))}7%,80%{opacity:1;transform:scale(1) rotate(var(--r))}85%,100%{opacity:0;transform:translateY(-14px) rotate(var(--r))}}
+.t1{left:44px;top:150px;--r:-12deg;animation-name:tile1}
+@keyframes tile1{0%{opacity:0;transform:translateX(-80px) rotate(-90deg)}5%{opacity:1;transform:translateX(0) rotate(-12deg)}80%{opacity:1;transform:rotate(-12deg)}85%,100%{opacity:0}}
+.ctitle{position:absolute;left:0;right:0;top:46px;text-align:center;white-space:nowrap;font:400 29px/1 Anton;letter-spacing:.2px;
+  background:linear-gradient(90deg,#F2A7C3,#FBE8C8);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 1px 4px rgba(0,0,0,.45));opacity:0;animation:ctitle 6s var(--e) infinite}
+.ctitle b{font-weight:400;font-size:50px;vertical-align:-6px;margin-right:6px}
+@keyframes ctitle{0%,8%{opacity:0;transform:translateX(-14px)}14%,80%{opacity:1;transform:none}85%,100%{opacity:0;transform:translateY(-14px)}}
+.csub{position:absolute;left:0;right:0;top:110px;text-align:center;font:italic 400 17px/1 "Instrument Serif";color:#F6EBDD;text-shadow:0 1px 4px rgba(0,0,0,.6);
+  clip-path:inset(0 100% 0 0);animation:type 6s steps(24) infinite}
+@keyframes type{0%,18%{clip-path:inset(0 100% 0 0);opacity:1}40%,80%{clip-path:inset(0 0 0 0);opacity:1}85%,100%{opacity:0}}
+/* ---------- F-A tool drop + window ---------- */
+.drop{position:absolute;left:0;right:0;top:66px;display:flex;justify-content:center;align-items:center;gap:12px;opacity:0;animation:drop 6s var(--e) infinite}
+.drop .tl{width:44px;height:44px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font:800 20px Poppins;color:#111;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.drop .nm{font:700 30px/1 Poppins;color:#fff;letter-spacing:-.5px;text-shadow:0 1px 5px rgba(0,0,0,.45);position:relative}
+.drop .nm:after{content:"";position:absolute;left:0;bottom:-7px;height:3px;border-radius:2px;background:var(--accent);width:0;animation:bar 6s var(--e) infinite}
+@keyframes bar{0%,8%{width:0}16%,100%{width:100%}}
+@keyframes drop{0%,6%{opacity:0;transform:scale(.6)}10%,36%{opacity:1;transform:none}40%,100%{opacity:0;transform:translateY(-10px)}}
+.win{position:absolute;left:53px;top:44px;width:254px;height:143px;border-radius:7px;background:#F7F8F6;border:1px solid var(--accent);
+  box-shadow:0 0 6px 1px rgba(63,207,198,.45);overflow:hidden;opacity:0;animation:win 6s var(--e) infinite}
+@keyframes win{0%,40%{opacity:0;transform:translateY(10px) scale(.96)}46%,84%{opacity:1;transform:none}88%,100%{opacity:0;transform:translateY(-10px)}}
+.win .side{position:absolute;left:0;top:0;bottom:0;width:58px;background:#eef0ec}
+.win .ln{position:absolute;left:70px;height:6px;border-radius:3px;background:#d8dbd6}
+.win .hd{position:absolute;left:70px;top:14px;font:700 11px Poppins;color:#222}
+.win .due{position:absolute;right:16px;top:40px;width:62px;height:38px;border-radius:6px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);text-align:center;font:400 22px/30px Anton;color:#111}
+.win .due small{display:block;font:600 7px/1 Poppins;color:#666;margin-top:-4px}
+.ink{position:absolute;overflow:visible}
+.ink path{fill:none;stroke:var(--marker);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:400;stroke-dashoffset:400;animation:draw 6s var(--e) infinite}
+@keyframes draw{0%,56%{stroke-dashoffset:400;opacity:1}62%,84%{stroke-dashoffset:0;opacity:1}88%,100%{opacity:0;stroke-dashoffset:0}}
+/* dashed link */
+.plate{position:absolute;top:70px;display:flex;align-items:center;gap:8px;opacity:0;animation:plate 6s var(--e) infinite}
+.plate .tl{width:34px;height:34px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font:800 15px Poppins;color:#111}
+.plate .nm{font:400 25px/1 "Instrument Serif";color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.plate.b .nm{font:300 15px/1 Montserrat;letter-spacing:4px;text-transform:uppercase}
+@keyframes plate{0%,6%{opacity:0;transform:scale(.7)}12%,84%{opacity:1;transform:none}90%,100%{opacity:0}}
+.plate.b{animation-delay:.6s}
+.arc{position:absolute;left:60px;top:28px;overflow:visible}
+.arc path{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 5;animation:flow 1s linear infinite,arcin 6s var(--e) infinite}
+@keyframes flow{to{stroke-dashoffset:-11}}
+@keyframes arcin{0%,24%{opacity:0}32%,84%{opacity:1}90%,100%{opacity:0}}
+/* ---------- F-B navy cutaway ---------- */
+.navy{background:radial-gradient(80% 50% at 50% 42%,#14213A,#0A1220)}
+.grain:after{content:"";position:absolute;inset:0;opacity:.07;background-image:repeating-radial-gradient(circle at 30% 20%,#fff 0 1px,transparent 1px 3px);mix-blend-mode:overlay;pointer-events:none}
+.vig:before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 45%,transparent 55%,rgba(0,0,0,.45));pointer-events:none;z-index:5}
+.glow{position:absolute;left:0;right:0;top:86px;text-align:center;font:400 63px/.95 Anton;color:var(--primary);
+  text-shadow:0 0 7px rgba(255,210,31,.9),0 0 18px rgba(255,210,31,.55);animation:breathe 2s ease-in-out infinite alternate}
+@keyframes breathe{to{text-shadow:0 0 7px rgba(255,210,31,.9),0 0 26px rgba(255,210,31,.7)}}
+.hand{position:absolute;left:0;right:0;top:218px;text-align:center;font:400 19px/1 "Permanent Marker";color:#fff;clip-path:inset(0 100% 0 0);animation:wipe 6s var(--e) infinite}
+@keyframes wipe{0%,6%{clip-path:inset(0 100% 0 0)}20%,100%{clip-path:inset(0 0 0 0)}}
+.dome{position:absolute;left:-75px;right:-75px;top:460px;height:350px;border-radius:50%;background:radial-gradient(60% 60% at 50% 20%,#F2F4F6,#C9CED6)}
+.obj{position:absolute;font-size:56px;line-height:1;font-family:"Noto Color Emoji";animation:tumble 6s var(--e) infinite}
+@keyframes tumble{0%{transform:translate(160px,-40px) rotate(-30deg);opacity:0}12%,100%{transform:none;opacity:1}}
+.obj.hero{left:150px;top:330px;animation:rise 6s var(--e) infinite}
+@keyframes rise{0%,10%{transform:translateY(60px);opacity:0}24%,100%{transform:none;opacity:1}}
+/* stage 2 of card 2: list rows */
+.scene2{position:absolute;inset:0;opacity:0;animation:s2 6s steps(1) infinite}
+.scene1{position:absolute;inset:0;animation:s1 6s steps(1) infinite}
+@keyframes s1{0%{opacity:1}42%{opacity:0}100%{opacity:0}}
+@keyframes s2{0%{opacity:0}42%{opacity:1}100%{opacity:1}}
+.row{position:absolute;left:43px;width:274px;height:45px;border-radius:9px;background:#F6F6F4;display:flex;align-items:center;gap:8px;overflow:hidden;
+  font:700 19px Poppins;color:#111;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.3);opacity:0;animation:rowin 6s var(--e) infinite}
+.row .tab{width:40px;height:100%;background:var(--warm)}
+.row .tab.r{background:var(--rose)}
+.row .em{font-family:"Noto Color Emoji";font-size:17px}
+@keyframes rowin{0%,42%{opacity:0;transform:translateY(8px)}47%,100%{opacity:1;transform:none}}
+.row.pick{animation:rowin 6s var(--e) infinite,pick 6s var(--e) infinite}
+@keyframes pick{0%,62%{background:#F6F6F4;transform:none;box-shadow:0 2px 6px rgba(0,0,0,.3)}67%,100%{background:var(--good);transform:scale(1.04);box-shadow:0 0 0 1.5px var(--primary),0 4px 10px rgba(0,0,0,.35)}}
+.row.dim{animation:rowin 6s var(--e) infinite,dimr 6s var(--e) infinite}
+@keyframes dimr{0%,62%{filter:none}67%,100%{filter:grayscale(1) opacity(.55)}}
+/* question card on paper */
+.paper{background:#F2F2F0}
+.qcard{position:absolute;left:53px;top:213px;width:254px;padding:22px 16px;border-radius:13px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.14);
+  text-align:center;font:600 18px/1.35 Poppins;color:#111;animation:qin 6s var(--e) infinite}
+
+@keyframes qin{0%{opacity:0;transform:translateY(10px)}8%,100%{opacity:1;transform:none}}
+.qtab{position:absolute;left:-10px;top:-24px;width:34px;height:34px;border-radius:8px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transform:rotate(-8deg);
+  font:20px/34px "Noto Color Emoji";text-align:center}
+.qtext{display:block;color:#111;-webkit-mask-image:linear-gradient(90deg,#000 50%,transparent 50%);mask-image:linear-gradient(90deg,#000 50%,transparent 50%);-webkit-mask-size:200% 100%;mask-size:200% 100%;-webkit-mask-position:100% 0;mask-position:100% 0;animation:reveal 6s steps(30) infinite}
+@keyframes reveal{0%,6%{-webkit-mask-position:100% 0;mask-position:100% 0}50%,100%{-webkit-mask-position:0 0;mask-position:0 0}}
+/* calendar */
+.cal{position:absolute;left:30px;top:60px;width:300px;height:433px;border-radius:12px;background:#fff;transform:rotate(-2deg);box-shadow:0 8px 24px rgba(0,0,0,.14);overflow:hidden;animation:drift 6s linear infinite}
+@keyframes drift{from{transform:rotate(-2deg) scale(1)}to{transform:rotate(-2deg) scale(1.03)}}
+.cal .hr{position:absolute;left:12px;font:500 10px Poppins;color:#8A8A8A}
+.cal .hl{position:absolute;left:46px;right:10px;height:1px;background:#E6E6E6}
+.blk{position:absolute;left:52px;width:236px;border-radius:7px;padding:6px 9px;font:600 14.7px/1.2 Poppins;opacity:0;animation:blk 6s var(--e) infinite}
+@keyframes blk{0%{opacity:0;transform:translateY(-14px)}6%,100%{opacity:1;transform:none}}
+/* ---------- F-C ---------- */
+.office{background:radial-gradient(90% 60% at 60% 25%,#cfd3cf,#8e958f 70%,#5d635f)}
+.plant{position:absolute;left:-40px;bottom:-20px;width:190px;height:300px;background:radial-gradient(40% 60% at 40% 40%,#3c7a3a,#1f4d22 70%,transparent 72%);filter:blur(1px);transform:rotate(-12deg);z-index:3}
+.blob{position:absolute;left:45px;top:38px;width:270px;height:100px;border-radius:52% 48% 46% 54%/58% 52% 48% 42%;background:rgba(17,17,17,.92);
+  animation:blob 6s var(--e) infinite;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+@keyframes blob{0%{transform:scale(.6);opacity:0}5%{transform:scale(1.04);opacity:1}8%,84%{transform:scale(1);opacity:1}90%,100%{transform:scale(.92);opacity:0}}
+.blob .fr{font:400 15px/1 "Instrument Serif";color:#fff}
+.blob .fr em{font-style:normal;color:var(--good)}
+.blob .wm{font:400 30px/1 "Lilita One";color:#fff;animation:pop 6s var(--e) infinite}
+@keyframes pop{0%,8%{transform:scale(0)}12%{transform:scale(1.06)}14%,100%{transform:scale(1)}}
+.outline{position:absolute;left:64px;top:32px;overflow:visible}
+.outline path{fill:none;stroke:#fff;stroke-width:1;stroke-dasharray:640;stroke-dashoffset:640;animation:oline 6s var(--e) infinite}
+@keyframes oline{0%,10%{stroke-dashoffset:640}22%,84%{stroke-dashoffset:0;opacity:1}90%,100%{opacity:0}}
+.spk{position:absolute;color:var(--concept);font-size:15px;animation:tw 1.2s ease-in-out infinite alternate}
+@keyframes tw{to{transform:scale(1.15)}}
+.broll{background:linear-gradient(180deg,#3a2c26 0%,#5a4637 40%,#1e1a18 100%)}
+.broll .shelves{position:absolute;left:0;right:0;top:40px;height:260px;background:repeating-linear-gradient(90deg,#4d3a2c 0 22px,#3a2b20 22px 26px),#3a2b20;opacity:.7;filter:blur(1.5px)}
+.broll .table{position:absolute;left:-20px;right:-20px;bottom:0;height:200px;background:linear-gradient(180deg,#151515,#0b0b0b);transform:perspective(300px) rotateX(30deg)}
+.broll .lap{position:absolute;bottom:90px;width:90px;height:58px;border-radius:5px;background:linear-gradient(135deg,#cfe3f5,#7fa9d6);transform:skewX(-10deg)}
+.broll .dark{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 70%)}
+.stmt{position:absolute;left:37px;top:100px;width:290px}
+.stmt div{opacity:0;transform:translateY(8px);animation:line 6s var(--e) infinite}
+.stmt .p{font:400 29px/1.18 Poppins;color:#fff}
+.stmt .k{font:italic 700 31px/1.18 "EB Garamond";color:var(--concept);position:relative;display:inline-block}
+@keyframes line{0%{opacity:0;transform:translateY(8px)}6%,88%{opacity:1;transform:none}94%,100%{opacity:0}}
+.uline{position:absolute;left:0;top:34px;overflow:visible}
+.uline path{fill:none;stroke:var(--marker);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:300;stroke-dashoffset:300;animation:ul 6s var(--e) infinite}
+@keyframes ul{0%,30%{stroke-dashoffset:300}40%,100%{stroke-dashoffset:0}}
+.pastel{background:linear-gradient(180deg,#F4E3A0,#A9E6A3)}
+.msg{position:absolute;left:30px;width:300px;border-radius:9px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.12);padding:9px 11px 10px 44px;opacity:0;animation:msg 6s var(--e) infinite}
+.msg .av{position:absolute;left:10px;top:10px;width:24px;height:24px;border-radius:50%;background:#e9e4dc;font:700 9px/24px Poppins;text-align:center;color:#555}
+.msg .av.app{background:var(--violet);color:#111;border-radius:7px}
+.msg .nm{font:700 13.4px/1.1 Poppins;color:#111}.msg .nm small{font:500 8.7px Poppins;color:#8A8A8A;margin-left:5px}
+.msg .tx{font:500 13.4px/1.35 Poppins;color:#111;margin-top:3px}
+.msg .tx b{color:var(--data);font-weight:600}
+.msg .st{font:500 13.4px/1.5 Poppins;color:#111}
+@keyframes msg{0%{opacity:0;transform:translateY(13px)}6%,100%{opacity:1;transform:none}}
+.tag{position:absolute;right:30px;top:190px;font:400 21px/1 "Permanent Marker";color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);clip-path:inset(0 100% 0 0);animation:wipe 6s var(--e) infinite}
+.caplabel{position:absolute;left:10px;bottom:10px;font:500 8px Poppins;color:rgba(255,255,255,.75);letter-spacing:.06em}
+.caplabel.dk{color:#555}
+</style>
+</head>
+<body>
+<h1>Illustrated Desk — glimpse</h1>
+<p class="lead">Inspired by Ali Abdaal. A calm, bright desk talker: every thing you name drops in as a polished card above your head or on a quiet cutaway, under a soft word-by-word caption pill, with red hand-drawn circles. Frames are 1080×1920 at 1/3. The presenter is a neutral illustration.</p>
+
+<h2>F-A Desk list — one take, one insert per named thing</h2>
+<div class="grid">
+
+<figure>
+<div class="f" data-card="1">
+  <div class="room"></div><div class="shelf"></div>
+  <div class="lower" style="position:absolute;inset:0"><div class="person"><div class="torso"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div><div class="hand"></div></div><div class="desk"></div></div>
+  <div class="band"></div>
+  <div class="ctitle"><b>5</b>STUDY APPS</div>
+  <div class="csub">that run my whole week</div>
+  <div class="tile t1" style="animation-delay:0s">FL</div>
+  <div class="tile" style="left:96px;top:136px;--r:8deg;animation-delay:.3s">NO</div>
+  <div class="tile" style="left:161px;top:128px;--r:-6deg;animation-delay:.4s">TI</div>
+  <div class="tile" style="left:226px;top:136px;--r:10deg;animation-delay:.5s">RE</div>
+  <div class="tile" style="left:280px;top:152px;--r:14deg;animation-delay:.6s">CA</div>
+  <div class="pill chunk" style="animation-name:c1a"><i style="color:#111">These are five</i> <i>study</i></div>
+  <div class="pill chunk" style="animation-name:c1b"><i style="color:#111">apps that</i> <i>run my</i></div>
+  <div class="pill chunk" style="animation-name:c1c"><i style="color:#111">whole week.</i></div>
+  <style>@keyframes c1a{0%,1%{opacity:0}3%,30%{opacity:1}32%,100%{opacity:0}}@keyframes c1b{0%,32%{opacity:0}34%,58%{opacity:1}60%,100%{opacity:0}}@keyframes c1c{0%,60%{opacity:0}62%,90%{opacity:1}93%,100%{opacity:0}}</style>
+</div>
+<figcaption><b>Hook (HA-04 topic build).</b> Tiles pop into an arc, the count title builds by 1.0 s, a serif subline types on, while the face lowers to make room.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="room"></div><div class="shelf"></div>
+  <div class="lower" style="position:absolute;inset:0"><div class="person"><div class="torso"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div><div class="hand"></div></div><div class="desk"></div></div>
+  <div class="band"></div>
+  <div class="drop"><div class="tl" style="font-family:'Lilita One';font-weight:400">FL</div><div class="nm" style="font:400 30px/1 'Lilita One'">Flashcards</div></div>
+  <div class="win"><div class="side"></div><div class="hd">Today's review</div>
+    <div class="ln" style="top:40px;width:90px"></div><div class="ln" style="top:56px;width:110px"></div><div class="ln" style="top:72px;width:70px"></div><div class="ln" style="top:88px;width:100px"></div><div class="ln" style="top:104px;width:84px"></div>
+    <div class="due">40<small>due today</small></div></div>
+  <svg class="ink" style="left:220px;top:72px" width="90" height="60"><path d="M8 30 C8 8, 78 4, 82 28 C86 52, 14 58, 6 34 C4 26, 14 14, 30 10"/></svg>
+  <div class="pill chunk" style="animation-name:c2a"><i style="color:#111">it shows me</i> <i>40 cards</i></div>
+  <div class="pill chunk" style="animation-name:c2b"><i style="color:#111">due every</i> <i>morning</i></div>
+  <style>@keyframes c2a{0%,2%{opacity:0}4%,50%{opacity:1}52%,100%{opacity:0}}@keyframes c2b{0%,52%{opacity:0}54%,92%{opacity:1}95%,100%{opacity:0}}</style>
+  <span class="caplabel">tool name in type · your own screen recording in a glow-rim window</span>
+</div>
+<figcaption><b>Item ritual.</b> The tool drops in its own type voice, then your screen slides into the top band; a red circle lands on the number you say.</figcaption>
+</figure>
+
+<figure>
+<div class="f">
+  <div class="room"></div><div class="shelf"></div>
+  <div class="lower" style="position:absolute;inset:0"><div class="person"><div class="torso"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div><div class="hand"></div></div><div class="desk"></div></div>
+  <div class="band"></div>
+  <div class="plate" style="left:40px"><div class="tl" style="font-family:'Instrument Serif';font-weight:400;font-size:20px">R</div><div class="nm">Reader</div></div>
+  <div class="plate b" style="left:200px"><div class="tl">NO</div><div class="nm">Notes</div></div>
+  <svg class="arc" width="240" height="60"><path d="M10 40 C 60 -4, 170 -4, 225 40"/></svg>
+  <div class="pill chunk" style="animation-name:c3a"><i style="color:#111">sends my highlights</i></div>
+  <div class="pill chunk" style="animation-name:c3b"><i style="color:#111">straight into</i> <i>my notes</i></div>
+  <style>@keyframes c3a{0%,2%{opacity:0}4%,45%{opacity:1}47%,100%{opacity:0}}@keyframes c3b{0%,47%{opacity:0}49%,90%{opacity:1}93%,100%{opacity:0}}</style>
+</div>
+<figcaption><b>Dashed link.</b> Two tools set in different type voices, joined by a flowing dashed arc.</figcaption>
+</figure>
+</div>
+
+<h2>F-B Concept cutaways — navy and paper worlds</h2>
+<div class="grid">
+<figure>
+<div class="f navy grain vig" data-card="2">
+  <div class="scene1">
+    <div class="glow">ONE<br>LIFT</div>
+    <div class="hand">for the next 12 weeks</div>
+    <div class="dome"></div>
+    <div class="obj hero">🏋️</div>
+    <div class="obj" style="left:230px;top:300px;font-size:40px">📅</div>
+    <div class="pill y1240" style="opacity:1"><i style="color:#111">for the next</i> <i>twelve weeks?</i></div>
+  </div>
+  <div class="scene2">
+    <div class="row dim" style="top:63px;animation-delay:0s,0s"><div class="tab"></div><span class="em">🏃</span>Cardio</div>
+    <div class="row dim" style="top:117px"><div class="tab r"></div><span class="em">🧘</span>Mobility</div>
+    <div class="row pick" style="top:171px"><div class="tab"></div><span class="em">🏋️</span>Strength</div>
+    <div class="row dim" style="top:225px"><div class="tab r"></div><span class="em">🥗</span>Diet</div>
+    <div class="row dim" style="top:279px"><div class="tab"></div><span class="em">😴</span>Sleep</div>
+    <div class="pill y1240" style="opacity:1"><i style="color:#111">So pick</i> <i>one.</i></div>
+  </div>
+</div>
+<figcaption><b>Glow headline → list rows.</b> One yellow glow headline per reel on deep navy, then the many goals stack up and one is picked in green.</figcaption>
+</figure>
+
+<figure>
+<div class="f paper">
+  <div class="qcard"><div class="qtab">💡</div><span class="qtext">What's the one lift that would change your training the most in 12 weeks?</span></div>
+  <span class="caplabel dk">the pill hides while a card spells the spoken words</span>
+</div>
+<figcaption><b>Question card.</b> A white card with an emoji tab reveals the spoken question letter by letter.</figcaption>
+</figure>
+
+<figure>
+<div class="f paper">
+  <div class="cal">
+    <div class="hr" style="top:30px">06:00</div><div class="hl" style="top:36px"></div>
+    <div class="hr" style="top:100px">07:00</div><div class="hl" style="top:106px"></div>
+    <div class="hr" style="top:170px">08:00</div><div class="hl" style="top:176px"></div>
+    <div class="hr" style="top:240px">09:00</div><div class="hl" style="top:246px"></div>
+    <div class="hr" style="top:310px">10:00</div><div class="hl" style="top:316px"></div>
+    <div class="blk" style="top:48px;height:84px;background:var(--data);color:#fff">Deadlift · 6:30</div>
+    <div class="blk" style="top:140px;height:32px;background:var(--warm);color:#111;animation-delay:.8s">Mobility · 10 min</div>
+    <div class="blk" style="top:190px;height:110px;background:#E4E4E4;color:#111;animation-delay:1.6s">Everything else</div>
+    <svg class="ink" style="left:40px;top:38px" width="260" height="110"><path d="M10 50 C10 6, 250 2, 252 48 C254 98, 20 104, 8 58 C6 44, 30 22, 70 14" style="stroke-dasharray:640;stroke-dashoffset:640;animation:drawc 6s var(--e) infinite"/></svg>
+  </div>
+  <style>@keyframes drawc{0%,10%{stroke-dashoffset:640}22%,100%{stroke-dashoffset:0}}</style>
+  <div class="pill y1240" style="opacity:1"><i style="color:#111">put it in your</i> <i>calendar first</i></div>
+</div>
+<figcaption><b>Calendar day.</b> A generic, unbranded day view; the focus block drops in on its word and gets a red circle.</figcaption>
+</figure>
+</div>
+
+<h2>F-C Story with B-roll — ink bubble, hero statement, chat UIs</h2>
+<div class="grid">
+<figure>
+<div class="f office">
+  <div class="person" style="top:150px"><div class="torso"></div><div class="neck"></div><div class="head"></div><div class="hair"></div><div class="glasses"></div><div class="mouth"></div><div class="hand"></div></div>
+  <div class="plant"></div>
+  <div class="blob"><div class="fr">When I <em>tried</em></div><div class="wm">TIMEBLOCKING</div><div class="fr">for a month</div></div>
+  <svg class="outline" style="left:36px;top:30px" width="290" height="118"><path d="M145 2 C 236 0, 288 32, 284 60 C 280 100, 212 116, 140 114 C 52 112, 2 96, 4 58 C 6 20, 62 4, 145 2"/></svg>
+  <span class="spk" style="left:58px;top:78px">✦</span><span class="spk" style="left:290px;top:78px">✦</span>
+</div>
+<figcaption><b>Ink bubble (F-C hook).</b> A black blob names the story's subject; sparkles pop and a white outline draws round it. The pill waits.</figcaption>
+</figure>
+
+<figure>
+<div class="f broll">
+  <div class="shelves"></div><div class="table"></div><div class="lap" style="left:40px"></div><div class="lap" style="left:220px"></div><div class="dark"></div>
+  <div class="stmt">
+    <div class="p" style="animation-delay:0s">I genuinely</div>
+    <div style="animation-delay:.6s"><span class="k">didn't expect<svg class="uline" width="200" height="16"><path d="M2 8 C 30 0, 60 14, 100 6 S 170 2, 196 8"/></svg></span></div>
+    <div class="p" style="animation-delay:1.3s">how much</div>
+    <div class="p" style="animation-delay:1.9s">I'd get done</div>
+  </div>
+</div>
+<figcaption><b>Hero statement over your B-roll.</b> Plain sans lines, the key phrase in gold serif italic with a red scribble underline.</figcaption>
+</figure>
+
+<figure>
+<div class="f pastel" data-card="3">
+  <div class="msg" style="top:80px"><div class="av">ME</div><div class="nm">You<small>9:02 AM</small></div><div class="tx">Blocking <b>9 to 11</b> for physics, every day</div></div>
+  <div class="msg" style="top:166px;animation-delay:.7s"><div class="av">RI</div><div class="nm">Riya<small>9:03 AM</small></div><div class="tx">I'm in 🙌</div></div>
+  <div class="msg" style="top:236px;animation-delay:1.4s"><div class="av app">P</div><div class="nm">Planner<small>9:15 AM</small></div><div class="st">Week 1 summary 👇<br>Focused hours: <b style="font-weight:700">38</b></div></div>
+  <svg class="ink" style="left:176px;top:276px" width="44" height="32"><path d="M4 16 C4 2, 40 0, 41 15 C42 31, 6 32, 3 18 C2 12, 8 6, 18 4" style="stroke-dasharray:420;stroke-dashoffset:420;animation:drawd 6s var(--e) infinite"/></svg>
+  <style>@keyframes drawd{0%,40%{stroke-dashoffset:420}50%,100%{stroke-dashoffset:0}}</style>
+  <div class="pill" style="opacity:1"><i style="color:#111">I logged</i> <i>38 hours</i></div>
+  <span class="caplabel dk" style="color:#3a3a3a">REPRESENTATIONAL</span>
+</div>
+<figcaption><b>Chat thread on the pastel gradient.</b> A generic, labelled recreation built from the script's words; the red circle lands on the number you say.</figcaption>
+</figure>
+</div>
+</body>
+</html>

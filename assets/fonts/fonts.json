@@ -2,9 +2,10 @@
   "_comment": "Product font assets. Variable fonts (VF) cover the listed weight range; sourced from github.com/google/fonts main.",
   "Inter Tight": {
     "files": [
-      "InterTight-VF.ttf"
+      "InterTight-VF.ttf",
+      "InterTight-Italic-VF.ttf"
     ],
-    "weights": "variable 100-900 (use 500-900)",
+    "weights": "variable 100-900 (use 500-900; upright + italic files)",
     "license": "OFL-1.1",
     "license_file": "assets/LICENSES/fonts/inter-tight.txt"
   },
@@ -43,9 +44,10 @@
   },
   "Montserrat": {
     "files": [
-      "Montserrat-Italic-VF.ttf"
+      "Montserrat-Italic-VF.ttf",
+      "Montserrat-VF.ttf"
     ],
-    "weights": "variable italic 100-900 (use 900 italic)",
+    "weights": "variable 100-900 (italic file + upright file)",
     "license": "OFL-1.1",
     "license_file": "assets/LICENSES/fonts/montserrat.txt"
   },
@@ -81,6 +83,143 @@
     "license": "OFL-1.1",
     "license_file": "assets/LICENSES/fonts/jetbrains-mono.txt"
   },
+  "Poppins": {
+    "files": [
+      "Poppins-Light.ttf",
+      "Poppins-Regular.ttf",
+      "Poppins-Medium.ttf",
+      "Poppins-SemiBold.ttf",
+      "Poppins-Bold.ttf",
+      "Poppins-ExtraBold.ttf"
+    ],
+    "file_weights": {
+      "Poppins-Light.ttf": "300",
+      "Poppins-Regular.ttf": "400",
+      "Poppins-Medium.ttf": "500",
+      "Poppins-SemiBold.ttf": "600",
+      "Poppins-Bold.ttf": "700",
+      "Poppins-ExtraBold.ttf": "800"
+    },
+    "weights": "static 300/400/500/600/700/800",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/poppins.txt"
+  },
+  "EB Garamond": {
+    "files": [
+      "EBGaramond-VF.ttf",
+      "EBGaramond-Italic-VF.ttf"
+    ],
+    "weights": "variable 400-800 regular+italic",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/eb-garamond.txt"
+  },
+  "Source Serif 4": {
+    "files": [
+      "SourceSerif4-VF.ttf"
+    ],
+    "weights": "variable 200-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/source-serif-4.txt"
+  },
+  "Space Grotesk": {
+    "files": [
+      "SpaceGrotesk-VF.ttf"
+    ],
+    "weights": "variable 300-700",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/space-grotesk.txt"
+  },
+  "Pinyon Script": {
+    "files": [
+      "PinyonScript-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/pinyon-script.txt"
+  },
+  "Barlow Condensed": {
+    "files": [
+      "BarlowCondensed-SemiBold.ttf",
+      "BarlowCondensed-Bold.ttf"
+    ],
+    "file_weights": {
+      "BarlowCondensed-SemiBold.ttf": "600",
+      "BarlowCondensed-Bold.ttf": "700"
+    },
+    "weights": "static 600/700",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/barlow-condensed.txt"
+  },
+  "Bangers": {
+    "files": [
+      "Bangers-Regular.ttf"
+    ],
+    "weights": "400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/bangers.txt"
+  },
+  "Noto Sans Devanagari": {
+    "files": [
+      "NotoSansDevanagari-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-devanagari.txt",
+    "note": "caption fallback for Devanagari words (any slot); loaded by renderer/captions.js"
+  },
+  "Archivo Black": {
+    "files": [
+      "ArchivoBlack-Regular.ttf"
+    ],
+    "weights": "400-900 (one black design: every requested weight maps to it, no faux bold)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/archivo-black.txt"
+  },
+  "Caveat": {
+    "files": [
+      "Caveat-VF.ttf"
+    ],
+    "weights": "variable 400-700",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/caveat.txt",
+    "note": "light handwriting (lesson-frame credit, illustrated-desk ink)"
+  },
+  "Nanum Pen Script": {
+    "files": [
+      "NanumPenScript-Regular.ttf"
+    ],
+    "weights": "400-700 (one design: every requested weight maps to it, no faux bold)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/nanum-pen-script.txt",
+    "note": "pen handwriting; 3.2 MB (Hangul included); internal name 'Nanum Pen'"
+  },
+  "Unbounded": {
+    "files": [
+      "Unbounded-VF.ttf"
+    ],
+    "weights": "variable 200-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/unbounded.txt",
+    "note": "extended heavy display (proof-dashboard banner)"
+  },
+  "Bodoni Moda": {
+    "files": [
+      "BodoniModa-VF.ttf",
+      "BodoniModa-Italic-VF.ttf"
+    ],
+    "weights": "variable 400-900 regular+italic (opsz 6-96)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/bodoni-moda.txt"
+  },
+  "Noto Serif Devanagari": {
+    "files": [
+      "NotoSerifDevanagari-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-serif-devanagari.txt",
+    "note": "serif Devanagari (long-form-recut Hindi captions)"
+  },
   "Noto Color Emoji": {
     "files": [
       "NotoColorEmoji-Regular.ttf"
@@ -89,5 +228,55 @@
     "license": "OFL-1.1",
     "license_file": "assets/LICENSES/fonts/noto-color-emoji.txt",
     "note": "COLRv1 (+SVG tables), 25 MB; source google/fonts ofl/notocoloremoji"
+  },
+  "Barlow Semi Condensed": {
+    "files": [
+      "BarlowSemiCondensed-SemiBold.ttf",
+      "BarlowSemiCondensed-Bold.ttf",
+      "BarlowSemiCondensed-ExtraBold.ttf"
+    ],
+    "file_weights": {
+      "BarlowSemiCondensed-SemiBold.ttf": "600",
+      "BarlowSemiCondensed-Bold.ttf": "700",
+      "BarlowSemiCondensed-ExtraBold.ttf": "800"
+    },
+    "weights": "static 600/700/800",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/barlow-semi-condensed.txt",
+    "note": "semi-condensed DIN-like grotesk: science-flash captions (A6), graphic-first-explainer F-B section header (A26)"
+  },
+  "Courier Prime": {
+    "files": [
+      "CourierPrime-Regular.ttf",
+      "CourierPrime-Bold.ttf",
+      "CourierPrime-Italic.ttf"
+    ],
+    "file_weights": {
+      "CourierPrime-Regular.ttf": "400",
+      "CourierPrime-Bold.ttf": "700",
+      "CourierPrime-Italic.ttf": "400"
+    },
+    "weights": "static 400/700 + italic 400",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/courier-prime.txt",
+    "note": "typewriter slab for tapes and labels (cinematic-step-demo STEP tape, A9); Special Elite is Apache-2.0, not bundled"
+  },
+  "Fraunces": {
+    "files": [
+      "Fraunces-VF.ttf"
+    ],
+    "weights": "variable 100-900 (axes SOFT, WONK, opsz; use 700-900)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/fraunces.txt",
+    "note": "soft chunky serif for stand-in wordmarks (brand-stop-motion-ad, A15)"
+  },
+  "Fraunces Soft": {
+    "files": [
+      "FrauncesSoft-VF.ttf"
+    ],
+    "weights": "variable 100-900 (static instance of Fraunces: SOFT 100, WONK 0, opsz 9 pinned; canvas and HTML text both get the soft chunky shapes)",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/fraunces.txt",
+    "note": "made with fontTools varLib.instancer from Fraunces-VF.ttf (canvas fillText cannot apply font-variation-settings)"
   }
 }
