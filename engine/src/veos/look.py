@@ -35,8 +35,9 @@ LOOK FORMAT (version 1; one frame / sentence / cut per line)
   `motion_level` still < 1.5 <= low < 4 <= medium < 8 <= high.
 
 Close looks (`--at`) write review/look/at_<span>.jpg (edit time, from the cut proxy) or review/look/<src>_at_<span>.jpg
-(a raw clip: work/src/<id>.mp4 for a source id, else the file), each tile labelled with its time, frame and the word
-spoken there. Ranges are capped at 2 s (AT_MAX_S); lists at 30 moments.
+(a raw clip: for a source id the original clip read on the conform grid, so frame numbers match the cut map; else the
+file), each tile labelled with its time, frame and the word spoken there. Ranges are capped at 2 s (AT_MAX_S); lists at
+30 moments.
 """
 from __future__ import annotations
 
@@ -433,9 +434,11 @@ def _dims_of(path: Path) -> tuple[int, int]:
 CHUNK_N = 400        # frames per select expression (keeps the ffmpeg command line short on any cut length)
 
 
-def _decode(path: Path, pre: list[str], sel: str, want: int, tw: int, th: int, threads: int) -> list[np.ndarray]:
+def _decode(path: Path, pre: list[str], sel: str, want: int, tw: int, th: int, threads: int,
+            vf_pre: str = "") -> list[np.ndarray]:
+    vf = f"select='{sel}',scale={tw}:{th}:flags=area"
     cmd = [tools().ffmpeg, "-v", "error", "-threads", str(threads), *pre, "-i", str(path), "-an", "-sn",
-           "-vf", f"select='{sel}',scale={tw}:{th}:flags=area", "-fps_mode", "passthrough",
+           "-vf", f"{vf_pre},{vf}" if vf_pre else vf, "-fps_mode", "passthrough",
            "-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     size, out = tw * th * 3, []
@@ -478,6 +481,18 @@ def grab_frames(path: Path, targets: list, tw: int, th: int, threads: int, by: s
 
 
 SPLIT_S = 10.0       # targets further apart than this are decoded by separate seeks (never decode a long stretch for nothing)
+
+
+def grab_grid(g, targets: list[int], tw: int, th: int, threads: int) -> list[np.ndarray]:
+    """Frames of an original clip by their conform-grid index (rawsrc: the frames work/src/<id>.mp4 has or would have),
+    one short seek-and-decode per cluster of targets."""
+    from . import rawsrc
+    out: list[np.ndarray] = []
+    for part in _clusters(sorted({int(n) for n in targets}), SPLIT_S * FPS):
+        pre, ch = rawsrc.chain(g, part[0], part[-1] - part[0] + 1, rawsrc.AS_CONFORMED)
+        sel = "+".join(f"eq(n\\,{n - part[0]})" for n in part)
+        out += _decode(g.path, pre, sel, len(part), tw, th, threads, vf_pre=ch)
+    return out
 
 
 def _clusters(xs: list, gap: float) -> list[list]:
@@ -707,20 +722,31 @@ def close_look(pr, args) -> dict:
     by_id = _sources(pr)
     words: list[dict] = []
     face_of = None
+    grid_src = None
     if args.src:
         sid = args.src
         if sid in by_id:
             s = by_id[sid]
             if s.get("kind") in ("voiceover", "audio-only"):
                 raise VeosError("NO_PICTURE", f"source {sid} is a voice-over (no picture)", "Pass a clip with picture.")
-            video = pr.work / "src" / f"{sid}.mp4"
-            cfr = video.exists()
-            if not cfr:
-                video = Path(s.get("path") or "")
+            # the original clip on the conform grid (frame-exact, nothing converted first); a full conform if the
+            # original is gone. A kept-range conform is black outside the cut, so retake looks never read it.
+            from .conform import video_mode
+            raw = pr.abs(s["path"]) if s.get("path") else None
+            cfr = True
+            if raw is not None and raw.is_file():
+                from . import rawsrc
+                grid_src = rawsrc.grid(raw)
+                video = raw
+            elif video_mode(s, pr) == "full":
+                video = pr.abs((s.get("conformed") or {})["video"])
+            else:
+                raise VeosError("SOURCE_MISSING", f"the original clip of {sid} is gone ({s.get('path')})",
+                                "Move it back, or re-run `veos ingest`.")
             wp = pr.work / "words" / f"{sid}.json"
             words = (read_json(wp).get("words") or []) if wp.exists() else []
             fp = pr.work / "face" / f"{sid}.json"
-            fb = (read_json(fp).get("boxes") or []) if fp.exists() and cfr else []
+            fb = (read_json(fp).get("boxes") or []) if fp.exists() else []
             dur = float(s.get("duration") or 0.0)
             name = re.sub(r"[^A-Za-z0-9_-]+", "_", sid)
         else:
@@ -772,7 +798,8 @@ def close_look(pr, args) -> dict:
     fnums = [int(round(t * FPS)) for t in times]
     if cfr:
         uniq = sorted(set(fnums))
-        imgs = grab_frames(video, uniq, tw, th, threads, by="n")
+        imgs = (grab_grid(grid_src, uniq, tw, th, threads) if grid_src is not None
+                else grab_frames(video, uniq, tw, th, threads, by="n"))
         times, fnums = [f / FPS for f in uniq[:len(imgs)]], uniq[:len(imgs)]
     else:
         imgs = grab_frames(video, times, tw, th, threads, by="t")

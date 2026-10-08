@@ -10,9 +10,15 @@ copy <id> --name N [--handle @h] [--colors ...] [--language english|hinglish|hin
                            applied (buyers can change anything; only the never-bendable core is refused), a silent
                            contrast nudge, `kind: style_copy`, `lineage`, profile.md. Link it to a folder afterwards
                            with `veos workspace set --playbook <id>`.
-gallery [--out F] [--faceless-first]
+gallery [--out F] [--faceless-first] [--only A,B,C] [--focus X]
                            writes the picker page (default `<styles>/index.html`): a card per visible template;
-                           `section: brands` templates go in a "For brands & agencies" section at the end.
+                           `section: brands` templates go in a "For brands & agencies" section at the end. Every card
+                           plays the style's real creator loop. A style is never picked without being seen:
+                           --focus X   the style(s) X names first, highlighted, then every other style (the buyer named a
+                                       style or a creator: "Kallaway" -> Whiteboard Split);
+                           --only A,B  just these styles (a 2-3 style shortlist for a vague request).
+                           X / A / B are ids, style names or the creators a style is inspired by (case and spaces
+                           ignored). Default output for either: `<styles>/shortlist.html`.
 check [ID ...]             validates template packages against TEMPLATE-PACKAGE.md (for template authors).
 
 engine/SPEC.md section 8; playbooks/_styles/TEMPLATE-PACKAGE.md; structure Part D.
@@ -105,6 +111,9 @@ def add_args(p, cmd):
     p.add_argument("--id", dest="new_id", help="copy: the new playbook id (default: a unique id from the name)")
     p.add_argument("--out", help="gallery: output file (default <styles>/index.html)")
     p.add_argument("--faceless-first", action="store_true", help="gallery: faceless (voice-over) templates first")
+    p.add_argument("--only", help="gallery: only these styles (comma-separated ids, style names or creator names)")
+    p.add_argument("--focus", help="gallery: this style (an id, a style name or the creator it's inspired by) first, "
+                                   "highlighted, then the rest")
 
 
 # ------------------------------------------------------------------ engine capabilities
@@ -801,7 +810,7 @@ def _fonts_css(out_dir: Path) -> str:
                    for n, f, extra in faces if (fd / f).exists())
 
 
-def _card(rec: dict, out_dir: Path) -> str:
+def _card(rec: dict, out_dir: Path, focus: bool = False) -> str:
     e = html.escape
     frames = [Path(f) for f in rec["preview"]["frames"]][:3]
     n = max(1, len(frames))
@@ -827,6 +836,8 @@ def _card(rec: dict, out_dir: Path) -> str:
         pills.append(f'<span class="pill draft">{e(rec["status"])}</span>')
     if rec.get("locked"):
         pills.insert(0, f'<span class="pill lock">Upgrade to {e(rec["unlock_with"])} to unlock</span>')
+    if focus:
+        pills.insert(0, '<span class="pill asked">You asked for this</span>')
     insp = "Naman's own style" if rec["own_style"] else "inspired by " + ", ".join(rec["inspired_by"])
     needs = e(rec["needs"])
     if rec["needs_by_format"]:
@@ -843,38 +854,86 @@ def _card(rec: dict, out_dir: Path) -> str:
     full = f' · <a href="{e(_rel(Path(page), out_dir))}" target="_blank">Full preview →</a>' if page else ""
     pick = (f'<p class="pick">Not in your plan: upgrade to {e(rec["unlock_with"])} to unlock this style{full}</p>'
             if rec.get("locked") else f'<p class="pick">To use it, tell Claude <code>{e(rec["name"])}</code>{full}</p>')
-    return (f'<article class="card{" locked" if rec.get("locked") else ""}" id="{e(rec["id"])}"><div class="frames n{n}">{inner}{loop}'
+    cls = "card" + (" locked" if rec.get("locked") else "") + (" focus" if focus else "")
+    return (f'<article class="{cls}" id="{e(rec["id"])}"><div class="frames n{n}">{inner}{loop}'
             f'<div class="dots">{dots}</div></div>'
             f'<div class="pills">{"".join(pills)}</div><h2>{e(rec["name"])}</h2><p class="insp">{e(insp)}</p>'
             + (f'<p class="tagline">{e(rec["tagline"])}</p>' if rec["tagline"] else "")
             + f'<p class="needs"><b>needs:</b> {needs}</p><p class="meta">{"<br>".join(meta)}</p>{pick}</article>')
 
 
-def gallery(out: str | None = None, faceless_first: bool = False) -> dict:
+def _key(s) -> str:
+    return re.sub(r"[^a-z0-9]+", "", str(s or "").lower())
+
+
+def match_styles(query: str, recs: list[dict]) -> list[dict]:
+    """The templates a buyer's words name: an id, a style name, or a creator a style is inspired by ("Kallaway" ->
+    Whiteboard Split). Exact (case, spaces and punctuation ignored) first; else a part of 4+ letters ("abdaal")."""
+    q = _key(query)
+    if not q:
+        return []
+    names = lambda r: [_key(r["id"]), _key(r["name"])] + [_key(n) for n in r.get("inspired_by") or []]  # noqa: E731
+    exact = [r for r in recs if q in names(r)]
+    if exact or len(q) < 4:
+        return exact
+    return [r for r in recs if any(q in n for n in names(r) if n)]
+
+
+def _pick(spec: str, recs: list[dict]) -> list[dict]:
+    got: list[dict] = []
+    for part in [x.strip() for x in str(spec).split(",") if x.strip()]:
+        hits = match_styles(part, recs)
+        if not hits:
+            known = "; ".join(r["name"] + f" ({r['id']}" + (f", inspired by {', '.join(r['inspired_by'])})"
+                                                           if r["inspired_by"] else ")") for r in recs)
+            raise VeosError("NO_STYLE_MATCH", f"no editing style matches '{part}'",
+                            f"Pick 2-3 close styles and open them with --only (ids, names or creators). Styles: {known}.")
+        got += [r for r in hits if r not in got]
+    return got
+
+
+def gallery(out: str | None = None, faceless_first: bool = False, only: str | None = None,
+            focus: str | None = None) -> dict:
     data = list_templates(_locked_recs=True)
     recs = data["templates"]
     locked = data["locked"]
     if faceless_first:
         recs = sorted(recs, key=lambda r: (not (r["faceless"] or r["faceless_formats"]), r["order"], r["name"].lower()))
-    dest = Path(out) if out else paths.styles_dir() / "index.html"
+    pool = recs + locked
+    focused = _pick(focus, pool) if focus else []
+    if only:
+        chosen = _pick(only, pool)
+        chosen = focused + [r for r in chosen if r not in focused]
+        recs = [r for r in chosen if not r.get("locked")]
+        locked = [r for r in chosen if r.get("locked")]
+    elif focused:
+        recs = [r for r in focused if not r.get("locked")] + [r for r in recs if r not in focused]
+        locked = [r for r in focused if r.get("locked")] + [r for r in locked if r not in focused]
+    fids = {r["id"] for r in focused}
+    default = "shortlist.html" if (only or focus) else "index.html"
+    dest = Path(out) if out else paths.styles_dir() / default
     if dest.suffix.lower() != ".html":
-        dest = dest / "index.html"
+        dest = dest / default
     out_dir = dest.parent
     out_dir.mkdir(parents=True, exist_ok=True)
-    main = [r for r in recs if r.get("section") != "brands"]
-    brands = [r for r in recs if r.get("section") == "brands"]
-    cards = "\n".join(_card(r, out_dir) for r in main)
+    card = lambda r: _card(r, out_dir, r["id"] in fids)  # noqa: E731
+    # a focused style leads the page, whatever its section (a locked one shows its "upgrade to unlock" pill there)
+    focus_locked = [r for r in locked if r["id"] in fids]
+    locked = [r for r in locked if r["id"] not in fids]
+    main = [r for r in recs if r.get("section") != "brands" or r["id"] in fids]
+    brands = [r for r in recs if r.get("section") == "brands" and r["id"] not in fids]
+    cards = "\n".join(card(r) for r in focus_locked + main)
     extra = ""
     if brands:
         extra = ('<section class="brands"><h2 class="sec">For brands &amp; agencies</h2>'
                  '<p class="sec-note">Made for product and brand ads rather than a creator\'s own channel.</p>'
-                 f'<div class="grid">{"".join(_card(r, out_dir) for r in brands)}</div></section>')
+                 f'<div class="grid">{"".join(card(r) for r in brands)}</div></section>')
     if locked:  # tier-locked styles stay visible, marked "upgrade to unlock" (licence.TEMPLATE_ACCESS)
         extra += ('<section class="brands locked-sec"><h2 class="sec">Unlock with an upgrade</h2>'
                   f'<p class="sec-note">Your {html.escape(data["plan"] or "current")} plan doesn\'t include these styles. '
                   'Upgrade your plan to use them.</p>'
-                  f'<div class="grid">{"".join(_card(r, out_dir) for r in locked)}</div></section>')
-    body = (f'<main class="grid">{cards}</main>{extra}' if recs else
+                  f'<div class="grid">{"".join(card(r) for r in locked)}</div></section>')
+    body = (f'<main class="grid">{cards}</main>{extra}' if recs or focus_locked else
             '<p class="empty">Your plan includes building your own editing style: run /vibe-editing-os:playbook. '
             'Ready-made styles come with an upgrade (below).</p>' + extra if locked else
             '<p class="empty">No editing styles are installed yet. They arrive with an app update '
@@ -890,10 +949,10 @@ def gallery(out: str | None = None, faceless_first: bool = False) -> dict:
 </head>
 <body>
 <header>
-<h1>Pick an editing style</h1>
-<p>Each style is a complete, ready-to-use editing playbook. Pick the one you like for this folder. Claude then asks
-four quick branding questions (name, colours, language, call to action) and you can edit your first reel right away.
-You can change anything in your copy any time.</p>
+<h1>{html.escape(_heading(focused, bool(only)))}</h1>
+<p>Each style is a complete, ready-to-use editing playbook, and each card plays it on the creator's own reel. Pick the
+one you like for this folder. Claude then asks four quick branding questions (name, colours, language, call to action)
+and you can edit your first reel right away. You can change anything in your copy any time.</p>
 <div class="how"><span class="tag">{len(recs)} style{'s' if len(recs) != 1 else ''}</span><span class="tag">"needs" = what you shoot</span>
 <span class="tag">Faceless styles work from a voice-over</span></div>
 </header>
@@ -904,16 +963,31 @@ editing; they're not affiliated with or endorsed by them.</footer>
 </html>
 """
     dest.write_text(page, encoding="utf-8", newline="\n")
-    return {"out": dest.as_posix(), "cards": len(recs), "ids": [r["id"] for r in main + brands],
-            "brands": [r["id"] for r in brands], "hidden": data["hidden"],
-            "locked": [{"id": r["id"], "name": r["name"], "unlock_with": r["unlock_with"]} for r in locked],
-            "plan": data["plan"]}
+    res = {"out": dest.as_posix(), "cards": len(recs), "ids": [r["id"] for r in main + brands],
+           "brands": [r["id"] for r in brands], "hidden": data["hidden"],
+           "locked": [{"id": r["id"], "name": r["name"], "unlock_with": r["unlock_with"]} for r in focus_locked + locked],
+           "plan": data["plan"]}
+    if focus:
+        res["focus"] = [{"id": r["id"], "name": r["name"], "inspired_by": r["inspired_by"], "locked": bool(r.get("locked")),
+                         "unlock_with": r.get("unlock_with")} for r in focused]
+    if only:
+        res["only"] = [r["id"] for r in focus_locked + main + brands + locked]
+    return res
+
+
+def _heading(focused: list[dict], only: bool) -> str:
+    if focused:
+        r = focused[0]
+        return r["name"] + (f", inspired by {', '.join(r['inspired_by'])}" if r["inspired_by"] else "")
+    return "Your shortlist" if only else "Pick an editing style"
 
 
 LOCK_CSS = """
 .card.locked{opacity:.62;filter:grayscale(.85)}
 .card.locked:hover{opacity:.85}
 .pill.lock{background:#2a2a2a;color:#fff}
+.card.focus{outline:3px solid var(--draft);outline-offset:3px}
+.pill.asked{background:var(--draft);color:#fff}
 """
 
 
@@ -1002,7 +1076,7 @@ def main(args, project) -> dict:
     if a == "list":
         return list_templates(include_hidden=args.all)
     if a == "gallery":
-        return gallery(args.out, args.faceless_first)
+        return gallery(args.out, args.faceless_first, getattr(args, "only", None), getattr(args, "focus", None))
     if a == "check":
         base = paths.styles_dir()
         dirs = [base / t for t in args.template] if args.template else _template_dirs(base)

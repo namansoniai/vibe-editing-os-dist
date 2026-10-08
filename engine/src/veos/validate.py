@@ -11,7 +11,8 @@ Scene meta fields the rules use: id, t_in, t_out, z, behind, in, box, roles, eve
 changes), cuts, text (carries text), may_overlap_face, kind ("banner" | "cta-keyword" | "meme" | a headline kind |
 hook-archetype kinds, see hookrules.py), satisfies, payoff, text_content, chips, lines, opaque / covers_presenter,
 continuous / ambient / motion, exception, text_class, figure / figures / lands / scale (V-DATA, E-08), onword_lead
-(V-ONWORD declared early start), smear / handoff (G2 push overlap).
+(V-ONWORD declared early start), smear / handoff (G2 push overlap), depicts (V-DEPICT / V-POINT: what the scene
+pictures), illustrative (made-up numbers: V-DATA / V-NUMFMT skip the scene).
 
 Output (summary dict; cli prints it as one JSON line and `plan/validate.json` gets the same content):
   ok       always true when the command itself ran (a failed *rule* is not a failed command)
@@ -24,7 +25,8 @@ Two levels (Naman, 8 Oct 2026: directions, not limits). `failures` are facts and
 promise count (V-PROMISE from meta.count), the code not matching the plan (V-PLAN), a malformed effect or anchor field,
 an unknown sound id (S6), a missing person cut-out (V-CUTOUT). Everything else is `advice`: direction for the
 Director while it plans, never a fix loop, never a block (BLOCKING below; a rule marks a finding advice with
-vcommon.advice()).
+vcommon.advice()). V-DEPICT (a beat showing only words) and V-POINT (the speaker points with words, no picture on
+screen) are advice on every reel, plan and code (depictrules.py).
 `rule` is the stable registry id (V-...; G1-G3; S1-S6). `playbook_rule` is the playbook's own id when it cites the rule:
 the v1 alias (M1, M7, M12...) for reference playbooks, or the H-id a v3 playbook's §2 maps to the V-id.
 Expected errors (missing timeline/scenes/playbook, unparsable JSON, invalid v3 tokens) raise VeosError -> ok=false, exit 1.
@@ -973,8 +975,9 @@ PENDING = {"V-CHROME": "E-07",
            "V-GRADE": "E-16"}
 # built rules that run from their own hook in main() whenever the plan uses the feature (not from the registry), so a
 # playbook listing them is neither pending nor unknown: V-CANVAS (timeline.canvas_camera), V-FX (built-in transitions,
-# blur, end fade), V-ANCHOR (a scene `anchor`). V-FLASH is retired (no flash limit) but stays accepted in old registries.
-HOOKED = ("V-CANVAS", "V-FX", "V-FLASH", "V-ANCHOR", "V-PLAN", "V-CUTOUT")
+# blur, end fade), V-ANCHOR (a scene `anchor`), V-DEPICT / V-POINT (every reel: advice, depictrules.py). V-FLASH is
+# retired (no flash limit) but stays accepted in old registries.
+HOOKED = ("V-CANVAS", "V-FX", "V-FLASH", "V-ANCHOR", "V-PLAN", "V-CUTOUT", "V-DEPICT", "V-POINT")
 # rules a v3 style switches off by its profile
 OFF_BY_PRESENCE_NONE = ("V-PRESENCE", "V-FACE")
 # never-bendable core (structure C.1 NC-4 legibility; C.3 the exception registry): run for every playbook, even when the
@@ -1302,6 +1305,10 @@ def main(args, project):
     if need["needed"] or need.get("unavailable"):
         gstats["V-CUTOUT"] = len(vc)
         failures.extend(vc)
+    # show the thing, not the word (depictrules.py): text-only beats and unshown pointing moments, advice only
+    # (counts in stats.depict: text_only_beats, pointers, pointers_shown)
+    from .depictrules import rule_depict, rule_point
+    failures.extend(rule_depict(ctx) + rule_point(ctx))
     failures.sort(key=lambda f: (f["t"], f["rule"]))
     failures, adv = split_levels(failures)
 

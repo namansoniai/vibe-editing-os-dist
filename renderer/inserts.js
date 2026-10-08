@@ -124,7 +124,7 @@ function insMeta(o, recipe, origin, extra) {
 }
 function reg(o, d) {
   const s = Object.assign({}, d, o.extra || {});
-  for (const k of ["id", "t_in", "t_out", "z", "in", "out", "behind", "follow_footage", "parallax", "may_overlap_face", "overlaps", "cuts", "kind", "roles", "figure"]) if (o[k] !== undefined) s[k] = o[k];
+  for (const k of ["id", "t_in", "t_out", "z", "in", "out", "behind", "follow_footage", "parallax", "may_overlap_face", "overlaps", "cuts", "kind", "roles", "figure", "depicts", "illustrative"]) if (o[k] !== undefined) s[k] = o[k];
   if (o.events) s.events = [...new Set([...(s.events || []), ...o.events])].sort((a, b) => a - b);
   for (const k of Object.keys(s)) if (s[k] === undefined) delete s[k];
   return VEOS.scene(s);

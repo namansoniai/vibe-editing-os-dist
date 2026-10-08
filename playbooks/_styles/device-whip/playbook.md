@@ -161,8 +161,10 @@ The craft step of this style is **P5b shot pairing**: deciding, sentence by sent
 ## §2 Hard rules `[REQ] [DNA]`
 
 ### 2.1 Editing rules (every style)
-The nine editing rules in `playbooks/_global/GLOBAL-RULES.md` apply. They are directions, not limits: smooth, seamless motion; nothing overlaps by accident; keep the face clear (behind the speaker is fair game, text included); readable at a glance; one idea at a time; show what's being said; never fake facts; pace like the style, not like a timer; the style decides the look.
+The ten editing rules in `playbooks/_global/GLOBAL-RULES.md` apply. They are directions, not limits: smooth, seamless motion; nothing overlaps by accident; keep the face clear (behind the speaker is fair game, text included); readable at a glance; one idea at a time; show the thing, not the word; say what was said; hook titles hook; pace like the style, not like a timer; the style decides the look.
 - **Facts the engine checks:** accidental overlaps, jumps, the face covered, unreadable text, numbers and quotes that don't match what was said, the promised count. Every count, timing and budget this playbook gives is direction for the edit, not a limit.
+- **Picture first, in this style's own look:** every key beat shows the thing being said (an object, a screen or app, a diagram, numbers in motion), not just its word; text supports the picture and never replaces it. When the speaker points with words ("this, this and this", "from this to this", "ye dekho"), show what they mean. Illustrations may use made-up but realistic numbers and names ("212 views", "1.2M views"), with no label; a number or quote the speaker says is shown as said. This overrides any rule below that bans made-up numbers or asks for an example tag: those rules now cover claims (the creator's results, prices, benchmarks, testimonials), not illustrations.
+- **Hook titles hook:** the on-screen title promises the viewer something (an outcome, a curiosity gap, who it's for) and is true to what the reel delivers; it need not repeat the spoken words. This playbook sets its shape (§5.2, §6.5: lines, sizes, word limits, case), never its voice (§6).
 - **Retired (8 Oct 2026), whatever this playbook says below:** no REPRESENTATIONAL or example labels on made-up cards, no credit lines, no flash limit (flash as often as this style calls for; any "NC-11" cap below no longer applies), and text may sit behind the speaker without an exception.
 
 ### 2.2 Declared exceptions
@@ -383,7 +385,7 @@ Kind `lockup` (one line at a time), lifetime `hook`.
 
 | Property | Spec |
 |---|---|
-| Text | The spoken hook line **verbatim**, ALL CAPS, split into **2–3 phrases of ≤ 3 words**, ≤ 9 words total, 0 emoji. Digits for numbers |
+| Text | The hook title (a promise the reel keeps; it may repeat the spoken hook line or say it better), ALL CAPS, split into **2–3 phrases of ≤ 3 words**, ≤ 9 words total, 0 emoji. Digits for numbers |
 | Type | Montserrat 900 italic, **76 px** (TUNE 68–96), line height 1.0, tracking +0.01 em, one line per phrase, centred on cx 540, max width 952 px; a phrase that measures wider shrinks to ≥ 68 px, else it is split |
 | Fill | Vertical gradient `title`: `title_top` #4A9BE8 (0 %) → `primary` #1570C8 (55 %) → #1450D6 (100 %), clipped to the glyphs |
 | Stroke | 3 px `paper` outside the glyphs (draw a 6 px stroke with `paint-order: stroke fill`) |
@@ -394,7 +396,7 @@ Kind `lockup` (one line at a time), lifetime `hook`.
 | Timing | Phrase k enters 2 f before its first spoken word, but never before the previous phrase has held 0.25 s × its words (the source swaps faster, 0.23–0.4 s per phrase; G3 wins) |
 | Life | No pulse, no drift. The title is the whole hook |
 | Exit | No own exit: it stays up to the whip and is blurred away with the frame (scale 1 → 1.5 about the device point + opacity 1 → 0 over the whip's 3–4 out-frames). Never a pop mid-word |
-| Captions | Hidden from f0 until the whip lands (`captions.hide: [[0, t_whip_cut]]`) because the title shows the spoken words |
+| Captions | Hidden from f0 until the whip lands (`captions.hide: [[0, t_whip_cut]]`) when the title repeats the spoken hook line; a title in its own words leaves the captions on |
 | Budget | One title per reel (H6, N3). It never appears again, not even in the end card |
 
 ### 5.3 Caption system: CS-1 "quiet line" `[DNA mechanics; size and y TUNE; language VAR]`
@@ -439,6 +441,8 @@ Measured reference: the evidence placed captions at y ≈ 1607 (v02) and ≈ 127
 ---
 
 ## §6 Hook system `[REQ]`
+
+**Hook title (every style, 8 Oct 2026; above anything below):** the on-screen title promises the viewer something: an outcome they want, a curiosity gap, or who it's for ("How to go viral as a doctor creating content", not the label "Reels for Doctors"). It doesn't have to repeat the spoken words; it has to be true to what the reel delivers. A title shown as someone's words (in quotes) is still word for word. This section sets the title's shape (lines, sizes, word limits, case, the keyword device), never its voice. Write 8–10 candidates from the formulas below plus the proven patterns ("How to X as a Y", "Why your X isn't working", "The X nobody tells you", "Stop doing X", "Your X vs mine", a number or a contrast), score them on outcome, curiosity, who it's for and brevity, check the best against the stopper tests, and pick; any "write 3" below means this, and the next two go to the storyboard as alternates. A style with no on-screen title applies this to its post title.
 
 ### 6.1 Stopper tests
 | Test | This style's number |
@@ -526,7 +530,7 @@ Example (phones): "So my phone did something weird last night." Example (kitchen
 The editor appends a row for every new reel (D.6): the device, what f0 shows, what the whip reveals and when.
 
 ### 6.5 Title writing `[DNA formula; NICHE text]`
-**Formula:** `[setup] / [twist] / [the device]` in 2–3 phrases of ≤ 3 words, ALL CAPS, ≤ 9 words, and it is **the spoken hook line, word for word**. The device (or its category) is named in the last phrase.
+**Formula:** `[setup] / [twist] / [the device]` in 2–3 phrases of ≤ 3 words, ALL CAPS, ≤ 9 words: a promise true to the reel (it need not be the spoken hook line). The device (or its category) is named in the last phrase.
 
 | Template | Example |
 |---|---|
@@ -539,7 +543,6 @@ The editor appends a row for every new reel (D.6): the device, what f0 shows, wh
 | **Price** | THE {PRICE} {DEVICE} / THAT BEATS / {RIVAL} |
 
 - **Write 3 and pick by the stopper tests** (thumbnail, read time, mute).
-- If the creator's spoken hook doesn't fit the formula, keep the speech and switch to H-B (captions carry the question). Never put words on the title that the creator didn't say.
 - **Banned:** "INSANE", "MIND-BLOWING", "YOU WON'T BELIEVE", emoji, a count the reel doesn't deliver, a claim the footage doesn't show.
 
 ### 6.6 Hook sound
@@ -1126,7 +1129,7 @@ Every displayed value equals a batch shown or the jump to it (H10, H11). The cou
 - [ ] f0: the device ≥ 15 % of frame height + the title phrase or the first caption chunk; something moving (V-F0).
 - [ ] Z-4 open punch on f1–f5 (H-A); the hook whip lands by 2.5 s (V-F0).
 - [ ] ≥ 5 weighted SCs in 0–3 s; hook gaps ≤ 1.25 s (V-CADENCE).
-- [ ] Title: verbatim speech, ≤ 9 words, 2–3 phrases, ≤ 3 words each, ≥ 0.25 s per word, 0 emoji, rides out in the whip (V-TITLE, review).
+- [ ] Title: a hook (a promise the reel keeps), ≤ 9 words, 2–3 phrases, ≤ 3 words each, ≥ 0.25 s per word, 0 emoji, rides out in the whip (V-TITLE, review).
 - [ ] Thumbnail test at 25 % and the mute test pass (review).
 
 **3. Body and cadence**

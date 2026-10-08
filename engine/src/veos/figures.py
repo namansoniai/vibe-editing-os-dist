@@ -10,6 +10,7 @@ plan/figures.json
     "years": {"value": 10, "from": "spoken@4.1"},             # a number word in the transcript near t (V-DATA checks it)
     "rate":  {"value": 8, "unit": "%", "from": "creator"}      # the creator gave it when asked
   },                                            # from: script (+ said) | creator | spoken@<t> | source:<citation id>
+                                                #       | illustrative (a made-up but realistic number, "1.2M views")
   "scales": {"S-int": {"max": 200000}},         # optional fixed axis maxima (else the max of the figures' values)
   "figures": [
     {"id": "flat", "kind": "bar", "label": "8% flat",
@@ -27,6 +28,9 @@ An arg is an input name, `fig:<id>` / `fig:<id>.<output>` (another figure's fina
 (per_year, elapsed_years, periods, from, to). A literal for a **claim** parameter (principal, rate_pct, ...) has no
 provenance and is an error. `value` on a step / figure is what the reel says and shows; the engine recomputes it
 (`computed`) and V-DATA compares the two at display precision (+- round_to / 2). Shown = value when stated, else computed.
+An `illustrative: true` figure is an illustration, not a claim (a views counter climbing to a made-up "1.2M"): its
+literals and its stated `value` need no provenance, and V-DATA does not recompute it. A number the speaker says is
+never illustrative: it is an input from the script or spoken@t, shown as said.
 
 Writes work/figures.json (what the bundle carries as `figures`; `ctx.fig(id)` in a scene):
 {version, numbers, inputs {name: {value, unit, from, said}}, figures {id: {id, kind, label, formula, output, format,
@@ -42,7 +46,7 @@ from .core import VeosError, need_project, read_json, write_json
 from .numfmt import convert, fmt_num, parse_numbers, resolve_spec, same_number
 
 KINDS = ("bar", "bar_race", "counter", "slider", "ledger", "donut", "grid_fill", "line", "hero_number", "table")
-PROVENANCE = ("script", "creator", "buyer", "spoken@", "source:", "figure:")
+PROVENANCE = ("script", "creator", "buyer", "spoken@", "source:", "figure:", "illustrative")
 
 
 # ------------------------------------------------------------------ the safe formula library (pure, no eval)
@@ -166,7 +170,7 @@ def compute(formula: str, args: dict) -> dict:
 def _provenance_error(name: str, inp: dict) -> str | None:
     src = str(inp.get("from") or "")
     if not src:
-        return f"input '{name}' has no provenance (`from`: script | creator | spoken@<t> | source:<id>)"
+        return f"input '{name}' has no provenance (`from`: script | creator | spoken@<t> | source:<id> | illustrative)"
     if not any(src == p or (p.endswith(("@", ":")) and src.startswith(p) and len(src) > len(p)) for p in PROVENANCE):
         return f"input '{name}' has an unknown provenance '{src}'"
     if src.startswith("spoken@"):
@@ -205,7 +209,7 @@ class _Resolver:
         if isinstance(v, bool):
             v = None
         if isinstance(v, (int, float)):
-            if claim:
+            if claim and not (self.figs.get(fid) or {}).get("illustrative"):
                 self.err(fid, f"figure {fid}: '{pname}' is the literal {v}, which has no provenance",
                          f"declare it in figures.json `inputs` with `from` (script + said, creator, spoken@t) and refer to it by name")
                 return None
@@ -290,6 +294,8 @@ class _Resolver:
                 raw_args["value"] = {"value": f.get("value"), "from": f.get("from"), "said": f.get("said")}
             elif f.get("input"):
                 raw_args["value"] = f.get("input")
+            elif f.get("illustrative") and isinstance(f.get("value"), (int, float)):  # a made-up number, as stated
+                raw_args["value"] = f.get("value")
         output = str(f.get("output") or FORMULAS[formula][4])
         fmt = resolve_spec(f.get("format"), self.base)
         round_to = float(f.get("round_to") or 0)

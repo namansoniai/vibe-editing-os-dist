@@ -481,6 +481,14 @@ def main(args, project: Project | None) -> dict:
             need = needs_cutout(proj)
             if not need["needed"]:
                 return {"skipped": True, "needed": False, "why": need["why"], "sources": []}
+        # before the cut only the sound was conformed: convert the frames the cut keeps (all with --all) first
+        from .conform import ensure
+        cut_ids = None
+        if not every and (proj.work / "cutmap.json").exists():
+            cut_ids = {g.get("src") for g in read_json(proj.work / "cutmap.json").get("segments") or []}
+        heads = [s for s in sdoc["sources"] if s.get("kind") == "talking-head" and (not args.id or s["id"] == args.id)]
+        if any([ensure(proj, s["id"], every=every) for s in heads if cut_ids is None or s["id"] in cut_ids]):
+            sdoc = read_json(sj)
         for s in sdoc["sources"]:
             if s.get("kind") != "talking-head" or (args.id and s["id"] != args.id):
                 continue

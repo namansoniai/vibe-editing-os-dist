@@ -25,6 +25,7 @@ from your purchase email." Then invoke skill `vibe-editing-os:setup` with argume
    - **Existing:** `veos workspace set --playbook <id> --dir <folder>`.
    - **New:** invoke skill `vibe-editing-os:playbook` (it links the folder when done), then continue.
    - **No playbooks at all:** say "First let's set up your editing playbook (about 10 minutes, once)", then invoke `vibe-editing-os:playbook`.
+   - **A style is never picked without being seen.** Never list styles as text options here. If the user named a style or a creator ("edit it like Kallaway"), pass it to the playbook skill (`style: <their words>`): it opens that style playing in their browser and asks before using it.
 4. `PB` = that playbook's folder. Read `PB/playbook.md` **by sections**, only what each phase needs, and always `PB/learned.md` (small) if it exists.
 
 ## 1. Find or create the project
@@ -72,10 +73,10 @@ camera/crop per moment and the captions get one colour per speaker).
 - **On failure:** read `last_error`. Fix it if it's yours; otherwise tell the user plainly what's needed. **Never skip a phase.**
 - Give a one-line progress note between phases.
 - **The cut gate (every mode):** after the rough cut, the user watches the cut and approves it before captions; changes in plain words go back to the rough-cutter (`reel-roughcut` step 5). Autopilot therefore has two approvals: the cut and the storyboard.
-- **Director mode** adds a concept gate inside the plan phase, after the plan check and before any scene code is written (`reel-plan` §4b): the hook, the title/banner, and a one-line-per-section outline.
+- **Director mode** adds a concept gate inside the plan phase, after the plan check and before any scene code is written (`reel-plan` §4b): the hook, the top 3 hook titles to pick from, and a one-line-per-section outline.
 
 ## 3. The storyboard gate
-1. Tell the user the storyboard is open (click the `mockup.html` path) and what to check: hook, pacing, visuals matching the words, text, ending. **Wait.**
+1. Tell the user the storyboard is open (click the `mockup.html` path) and what to check: hook, the hook title (the page shows two more options: "use the second title" swaps it), pacing, visuals showing what's said, text, ending. **Wait.**
 2. **Approve** ("approve", "ok", "theek hai", "render"): `veos project set approved_at=<ISO now> phase=approved`, then render. (An "approve" while the phase is still `prep` and a cut exists is the cut approval: `reel-roughcut` handles it.)
 3. **Changes:** restate each in one line, apply it (§5), rebuild the storyboard, and return to this gate.
 4. **Layout issues from the storyboard check** (reel-storyboard step 6): a code-only issue (the scene doesn't match its brief) goes to the scene-coder in fix mode; anything else is a plan change (§5).
@@ -91,6 +92,7 @@ camera/crop per moment and the captions get one colour per speaker).
 1. Restate the feedback in one line and **apply it to the current reel**:
    - **Timeline or visual changes:** check `plan/ideas.md` before changing a beat. Change the plan first, surgically (`plan/timeline.json`, `plan/scenes.plan.json`, the scene's brief in `plan/scene-briefs.md`), run `veos validate --plan`, then send the `vibe-editing-os:scene-coder` agent (fix mode) the changed scene ids and what changed, and review their stills (`reel-plan` §6). Never edit `plan/scenes.js` yourself.
    - **Caption text:** `veos captions apply`.
+   - **Hook title:** "use the second / third title" swaps `meta.title` with that entry of `meta.title_alternatives` and the title scene's text in the plan (the old title joins the alternatives), then the scene-coder in fix mode. A title they rewrite themselves: use it as given (the style's shape still applies), and always ask the question in step 2 (area `plan`, e.g. "Hook titles promise an outcome to the audience, like 'How to go viral as a doctor creating content'").
    - **Takes:** back to rough cut.
 2. Unless it's obviously one-off ("fix the spelling of Rahul"), ask: **"Save this for your future reels too?"**
    - **Yes:** `veos learn add --playbook <id> --area <plan|visuals|captions|sound|cut|pacing|other> --text "<the rule, written as a clear instruction>" --reel <project name> --quote "<their words>"`. Confirm in one line: "Saved to your <name> playbook."
@@ -106,7 +108,7 @@ camera/crop per moment and the captions get one colour per speaker).
   - Look at contact sheets, not frames one by one.
   - Mechanical runs go to the `vibe-editing-os:veos-runner` agent.
   - Scene code is written by the `vibe-editing-os:scene-coder` agent (Sonnet) from your plan; you plan, it builds.
-- **The footage is the truth:** never invent words, numbers or claims.
+- **Say what was said:** a number or quote the creator says appears as they said it; never put words in their mouth. Illustrations may use made-up but realistic numbers and names ("212 views", "1.2M views"), with no label, and a hook title promises what the reel delivers in words of its own.
 - **Never modify the user's clips.** Outputs stay inside `P`.
 - **Never patch, reinstall or downgrade the engine on the user's machine, and never ask the user to choose an engine fix.** If a `veos` command fails with an engine error (a crash or missing tool):
   1. Run `veos doctor` once.

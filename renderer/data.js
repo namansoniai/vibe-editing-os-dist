@@ -30,7 +30,7 @@ function need(id, what) {
 }
 function scene(o, d) {
   const s = Object.assign({}, d, o.extra || {});
-  for (const k of ["in", "out", "behind", "follow_footage", "parallax", "may_overlap_face", "overlaps", "cuts", "kind", "roles", "exception"]) if (o[k] !== undefined) s[k] = o[k];
+  for (const k of ["in", "out", "behind", "follow_footage", "parallax", "may_overlap_face", "overlaps", "cuts", "kind", "roles", "exception", "depicts", "illustrative"]) if (o[k] !== undefined) s[k] = o[k];
   if (o.events) s.events = [...new Set([...(s.events || []), ...o.events])].sort((a, b) => a - b);
   return VEOS.scene(s);
 }

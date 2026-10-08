@@ -24,6 +24,7 @@ import time
 import numpy as np
 
 from . import facedet, reframe
+from .conform import video_mode
 from .core import SIZE, VeosError, need_project, read_json, tools, write_json
 from .sync import from_session, to_session
 
@@ -315,7 +316,7 @@ def main(args, project) -> dict:
     reg_cams, summary, warnings = {}, [], []
     for c in cams:
         vid = proj.work / "src" / f"{c['id']}.mp4"
-        path = vid if vid.exists() else proj.abs(c["path"])
+        path = vid if video_mode(c, proj) == "full" else proj.abs(c["path"])  # a kept-range conform is black elsewhere
         an = analyse_camera(path, c["width"], c["height"], args.fps)
         times = np.arange(an["n"]) / args.fps
         t_master = from_session(master.get("sync") or {"offset": 0.0},

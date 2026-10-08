@@ -15,6 +15,9 @@ V-DATA (runs when the reel has plan/figures.json, a scene bound to a figure, or 
   their figures' values, `spoken@t` inputs that were not spoken. Advice (validate's levels): incidental numbers on
   screen ("2025", "10x"), shared scales, counters on the word, spoken numbers missing from figures.json. Made-up
   (illustrative) figures need no label.
+  Illustrations (Naman, 8 Oct 2026: "212 views", "98 views", "1.2M views" can be shown): a scene with
+  `illustrative: true` shows made-up but realistic numbers, so V-DATA and V-NUMFMT skip it entirely (no failure, no
+  advice). Only what the speaker says is held to what was said.
 V-NUMFMT: every number written in a scene (text_content, and the measured texts when plan/measure.text.json exists)
   follows the profile's numbers: grouping (a wrong rupee grouping fails), currency glyph (₹, not Rs / INR), compact
   system (no K/M/B on ₹ amounts in a lakh/crore style; no lakh/crore in a K/M/B style), decimals, units (dual shows
@@ -22,7 +25,7 @@ V-NUMFMT: every number written in a scene (text_content, and the measured texts 
   Verbatim text is exempt: a scene with `verbatim: true`, and numbers inside its `quote_text` / `headline` / `quote`
   (a headline that says "Rs 500 crore" is shown as published).
 Scene meta fields: figure | figures, lands, scale {id, max} | scales [...], kind, text_content, verbatim, quote_text,
-headline.
+headline, illustrative.
 """
 from __future__ import annotations
 
@@ -97,11 +100,17 @@ def _active(c) -> bool:
     return bool(get_path(c.style, "profile.modules.data_figures", False))
 
 
+def _checked(c) -> list[dict]:
+    """The scenes V-DATA / V-NUMFMT judge: every scene but the illustrations (`illustrative: true`)."""
+    return [s for s in c.scenes if not s.get("illustrative")]
+
+
 # --------------------------------------------------------------------------- V-DATA
 def rule_data(c, p: dict):
     figs = _figures(c)
-    bound = [s for s in c.scenes if bound_ids(s)]
-    datak = [s for s in c.scenes if s.get("kind") in DATA_KINDS and parse_numbers(s.get("text_content", ""))]
+    scenes = _checked(c)
+    bound = [s for s in scenes if bound_ids(s)]
+    datak = [s for s in scenes if s.get("kind") in DATA_KINDS and parse_numbers(s.get("text_content", ""))]
     if figs is None and not bound and not (_active(c) and datak) and not p.get("require"):
         return []
     out = []
@@ -136,7 +145,7 @@ def rule_data(c, p: dict):
     all_c = _cands(figs, None)
     # bound scenes: text numbers, illustrative label, scales
     scale_seen: dict[str, list[tuple[str, float]]] = {}
-    for s in c.scenes:
+    for s in scenes:
         ids = bound_ids(s)
         t = float(s.get("t_in", 0))
         if not ids:
@@ -196,7 +205,7 @@ def rule_data(c, p: dict):
     # counters land on the spoken number
     spoken = spoken_all
     n_lands = 0
-    for s in c.scenes:
+    for s in scenes:
         for L in s.get("lands") or []:
             if not isinstance(L, dict) or not isinstance(L.get("t"), (int, float)):
                 continue
@@ -324,6 +333,8 @@ def rule_numfmt(c, p: dict):
     texts = _texts(c, bool(p.get("captions")))
     for s, text, src in texts:
         sid = s.get("id")
+        if s.get("illustrative"):  # an illustration's made-up numbers ("1.2M views") are not judged
+            continue
         if s.get("verbatim"):  # a verbatim headline / quote card: its words are someone else's (NC-13), not ours to format
             continue
         quoted = [t["raw"] for k in VERBATIM_KEYS if s.get(k) for t in parse_numbers(str(s[k]))]

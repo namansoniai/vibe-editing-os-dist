@@ -166,11 +166,16 @@ def _prep(args, project):
     jobs, skipped = [], 0
     fix_cache: dict[str, str] = {}
     with_cut: set[str] = set()
+    ensured: set[str] = set()
     for seg in cm["segments"]:
         sid = seg["src"]
         if sid in vo_ids:  # a voice-over span has no picture: no footage frames, no cut-out (the stage stays hidden)
             continue
         src, matte = pr.work / "src" / f"{sid}.mp4", pr.work / "matte" / f"{sid}.mp4"
+        if sid not in ensured:  # the kept-range conform (after the cut only the kept seconds are converted)
+            from .conform import ensure
+            ensure(pr, sid)
+            ensured.add(sid)
         if not src.exists():
             raise VeosError("INPUT_MISSING", f"missing {pr.rel(src)}", "Run `veos conform` first.")
         cut = matte.exists()  # the person cut-out is made only when the reel needs it (`veos matte --if-needed`)

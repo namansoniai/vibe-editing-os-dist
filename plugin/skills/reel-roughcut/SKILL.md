@@ -16,7 +16,7 @@ user-invocable: false
 3. **Director mode, a conversation longer than 150 s:** it returns 2–3 candidate moments instead. Offer them to the user, then send the choice back to the same agent (SendMessage).
 4. `VERDICT: failed`: `veos project set last_error="roughcut: <reason>" --project "P"` and stop with a plain-language message.
 5. **The cut gate (every mode, autopilot included):** when `work/edl.json`, `work/cutmap.json` and `work/words.edit.json` exist, show the cut and wait.
-   - Open the preview `P/work/cut_proxy.mp4` for the user:
+   - Open the preview `P/work/cut_proxy.mp4` for the user (a small preview with sound, read straight from the original clips; the full-quality picture is made after the approval):
      - Windows: PowerShell `Start-Process "<absolute path to P/work/cut_proxy.mp4>"`
      - macOS: `open "<path>"`
 

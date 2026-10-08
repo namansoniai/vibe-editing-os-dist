@@ -25,6 +25,7 @@ from pathlib import Path
 import numpy as np
 
 from . import reframe as RF
+from .conform import ensure
 from .core import FPS, SIZE, VeosError, read_json, run, tools, write_json
 from .sync import from_session, to_session
 
@@ -268,6 +269,7 @@ def render(proj, shots: list[dict], canvas: tuple = SIZE, fallback: str = "blurf
                 cam = c["cam"]
                 s = sources[cam]
                 if cam not in readers:
+                    ensure(proj, cam, every=True)  # every frame: the cameras are read across the whole conversation
                     vid = proj.work / "src" / f"{cam}.mp4"
                     readers[cam] = Reader(vid if vid.exists() else proj.abs(s["path"]), s["width"], s["height"],
                                           int(s.get("frames") or round(s["duration"] * FPS)))

@@ -83,7 +83,7 @@ fx.plain = plain;
 function scene(o, d) { // register with the factory defaults, then the caller's extra fields
   const s = Object.assign({}, d, o.extra || {});
   for (const k of ["id", "t_in", "t_out", "z", "in", "out", "behind", "follow_footage", "parallax", "may_overlap_face", "overlaps", "cuts", "kind", "roles",
-    "in_frames", "out_frames", "step_frames", "step_fps", "smear"]) if (o[k] !== undefined) s[k] = o[k];
+    "in_frames", "out_frames", "step_frames", "step_fps", "smear", "depicts", "illustrative"]) if (o[k] !== undefined) s[k] = o[k];
   // a track anchor is an object {track, ...}; helpers like typeStack use `anchor: "top"` for text layout, which stays theirs
   if (o.anchor && typeof o.anchor === "object" && !Array.isArray(o.anchor)) s.anchor = o.anchor;
   if (o.events) s.events = [...new Set([...(s.events || []), ...o.events])].sort((a, b) => a - b);

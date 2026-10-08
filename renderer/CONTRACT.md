@@ -26,7 +26,7 @@ engine outputs (cutmap.json, words.edit.json, face/*.json, matte/*.mp4, sources.
 ```json
 {
   "version": 2,
-  "meta": {"size": [1080,1920], "fps": 30, "out_fps": 30, "duration": 52.4, "frames": 1572, "playbook": "naman", "title": "…", "keyword": "SCALE", "count": 3},
+  "meta": {"size": [1080,1920], "fps": 30, "out_fps": 30, "duration": 52.4, "frames": 1572, "playbook": "naman", "title": "…", "title_alternatives": ["…", "…"], "keyword": "SCALE", "count": 3},
   "inputs": {"cutmap": "work/cutmap.json", "words": "work/words.edit.json", "frames": "work/frames/", "face": "work/face.edit.json"},
   "assets": {"logo_claude": {"type": "image", "src": "assets/logos/claude.svg"}},
   "beats": [ {"id": 1, "section": "HOOK", "t0": 0.0, "t1": 1.55, "spoken": "…", "trigger": {"word": "website", "at": 0.62},
@@ -80,6 +80,7 @@ engine outputs (cutmap.json, words.edit.json, face/*.json, matte/*.mp4, sources.
 | `parallax`, `nodes`, `text_px`, `text_class` | canvas camera: how much the scene moves with it (0..1 / false), the camera targets it provides, and its smallest font-size + text class (V-CANVAS) |
 | `kind` | optional: `"banner"` (M1, M4, M13 headline), `"cta-keyword"` (M13 keyword check), `"meme"` (M9) |
 | `chips`, `lines` | banner only: `[{text, role}]` keyword chips, number of lines (M4) |
+| `depicts`, `illustrative` | what the scene pictures (V-DEPICT / V-POINT advice count it as a picture); `true` when its numbers and names are made up for an illustration (V-DATA / V-NUMFMT skip it). SCENES-API section 2 |
 | `render(ctx, lt, dur)` | returns an HTML string (`return ctx.html(...)`) or draws on `ctx.canvas()` and returns `""`. `lt` = seconds since `t_in`, `dur` = `t_out - t_in` |
 
 **Rules for scenes:** pure functions of `(ctx, lt, dur)`. No `Math.random`, `Date`, timers, `<video>` or network fetches (use `ctx.rng(seed)`). Use `ctx.tokens` colours/fonts, never hard-coded hexes for role colours. Registration errors (bad fields, duplicate id, syntax) are reported with the scene id by `veos scenes-meta` and fail the player boot.

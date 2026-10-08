@@ -517,6 +517,8 @@ def main(args, project):
                             "Pick --at inside the reel (and inside the --clip source's spans).")
         for sid in {e["src"] for e in plan}:
             p = pr.work / "src" / f"{sid}.mp4"
+            from .conform import ensure
+            ensure(pr, sid)  # after the cut only the kept seconds are converted (once)
             if not p.exists():
                 raise VeosError("NO_CONFORM", f"work/src/{sid}.mp4 missing", "Run `veos conform` first.")
             sw, sh = _probe_wh(tt.ffprobe, p)

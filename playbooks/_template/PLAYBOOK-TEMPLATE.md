@@ -4,7 +4,7 @@
 
 The playbook is written for an AI editor (Claude), who reads it section by section while editing. Use tables. Use IDs (D1…, M1…, N1…, P-…, T-…, Z-…) so the editor can cite rules.
 
-**The editing rules come first.** `playbooks/_global/GLOBAL-RULES.md` (nine directions, not limits: smooth motion, nothing overlapping by accident, a clear face, readable text, one idea at a time, show what's said, never fake facts, pace like the style, the style decides the look) applies to every playbook.
+**The editing rules come first.** `playbooks/_global/GLOBAL-RULES.md` (ten directions, not limits: smooth motion, nothing overlapping by accident, a clear face, readable text, one idea at a time, show the thing not the word, say what was said, hook titles hook, pace like the style, the style decides the look) applies to every playbook.
 - Restate them in §2 first: "The editing rules apply; see GLOBAL-RULES.md." Write this playbook's own rules the same way: directions with the creator's reasons, not hard caps.
 - **Never write a rule that conflicts with them.** A dense style is still clean: dense in *time* (many changes), not dense in *space* (many things at once).
 
@@ -59,7 +59,7 @@ Add any steps this creator needs: product shots, a screen-recording step, a reci
 - **Stopper test** for frame 0 and 0–3 s.
 - **The default hook formula for this creator**, as a second-by-second table, plus 4–8 alternative formulas, each with an example **from their topics**.
 - **Result pairs by topic:** a table of this creator's typical subjects → the bad state → the good state → how to show each. **This is the most important table for literal visuals.**
-- **Banner/title writing** with templates and banned phrasing.
+- **Banner/title writing** with templates and banned phrasing. The hook title promises the viewer something (an outcome, a curiosity gap, who it's for) and is true to what the reel delivers; it need not repeat the spoken words. This section sets its shape (lines, sizes, word limits, case), never its voice; the planner writes 8–10 candidates, scores them and picks (GLOBAL-RULES direction 8).
 - **CTA formula** (their keyword/DM/link/follow habits).
 
 ## §7 Structure
@@ -72,7 +72,8 @@ Add any steps this creator needs: product shots, a screen-recording step, a reci
 - **Families:** the kinds of visuals this creator needs (screen captures, product shots, their own B-roll clips, device mocks, data visuals, metaphor machines, kinetic type, comedy layer…), with the **assets the creator must supply** for each.
 - **Pattern specs (P-…):** 20–60 named visual patterns, each with what's on screen, the motion recipe (frames at 30 fps), and when to use it. Invent patterns that fit **this niche's ideas**: a fitness "rep counter that fills a muscle diagram", a finance "money stack that splits into percentages", a cooking "ingredient drop into a bowl"…
 - **Line → pattern lookup:** this creator's line types (from their actual topics) → primary pattern → alternates. **The editor classifies every sentence with this table.**
-- **Data rules** (if they use numbers): quantities countable, the same axes for comparisons, real numbers only.
+- **Picture first:** every key beat shows the thing being said (an object, a screen or app, a diagram, numbers in motion), in this style's own look; text supports the picture. Pointing words ("this, this and this") get a picture of what's meant.
+- **Data rules** (if they use numbers): quantities countable, the same axes for comparisons; a number the creator says is shown as said; illustrations may use made-up but realistic numbers ("212 views", "1.2M views"), no label.
 - **Asset rules:** real captures/footage first, generic mocks allowed only as stated, no stock clichés.
 
 ## §9 Transitions

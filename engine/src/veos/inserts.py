@@ -8,7 +8,9 @@ scan   transcript (work/words.edit.json, edit time) + the script (project.json `
        plan/script.md) -> plan/inserts.scan.json: the moments that call for third-party material, each with
        {id, kind, t0, t1, spoken, script_text, name, cues, also, suggest {recipe, quote_text?}, ask}, plus the
        one plain-language question the `reel-inputs` skill asks the creator. Deterministic heuristic (no model):
-       keyword and pattern cues per category, scored per sentence, deduplicated per (kind, name).
+       keyword and pattern cues per category, scored per sentence, deduplicated per (kind, name). Also `pointers`:
+       the moments where the speaker points with words ("this, this and this", "from this to this", "ye dekho"), from
+       veos.pointers; the same question round asks what each should show (with a suggested picture).
 check  plan/inserts.json against the record schema, the creator's assets (`veos asset add --origin creator`) and the
        verbatim rule (a created card quotes only script / transcript / creator-typed text). Same checks V-INSERTS runs.
        Made-up cards carry no label and nothing needs a credit line (Naman, 8 Oct 2026).
@@ -25,7 +27,9 @@ plan/inserts.json (written by the planner after the one question):
                 "quote_text"?  (verbatim words shown as someone's words or as a headline),
                 "source"?      ({masthead, date, url?, headline, highlight_spans[]} for citation cards),
                 "scene"?       (scene id or ids that show it; scenes may instead declare `insert: <id>`)}],
-   "dismissed": [{"moment": scan id, "why": str}]}
+   "dismissed": [{"moment": scan id, "why": str}],
+   "pointers": [{"id": scan pointer id, "t0", "show": str (what the viewer sees there),
+                 "by": "creator" | "inferred" (the creator's answer, or the planner's own reading when they had none)}]}
 """
 from __future__ import annotations
 
@@ -35,6 +39,7 @@ import unicodedata
 from pathlib import Path
 
 from .core import VeosError, need_project, read_json, write_json
+from .pointers import find_pointers, pointer_question
 
 KINDS = ("post", "headline", "clip", "chart", "event", "person", "product", "app_ui")
 RECIPES = ("quote_card", "headline_card", "recreated_ui", "diagram", "logo_plate", "silhouette", "citation_strip")
@@ -634,10 +639,12 @@ def main(args, project) -> dict:
         md, spath = script_text_of(proj, args.script)
         ms = scan(words.get("words") if isinstance(words, dict) else words, md, _brands(proj), args.min_score, "")
         q = question(ms)
-        out = {"version": 1, "engine": "veos.inserts/1", "script": spath, "fetch": False, "moments": ms, "question": q}
+        ptrs = find_pointers(words.get("words") if isinstance(words, dict) else words)
+        out = {"version": 1, "engine": "veos.inserts/1", "script": spath, "fetch": False, "moments": ms, "question": q,
+               "pointers": ptrs}
         write_json(proj.path("plan", "inserts.scan.json"), out)
         return {"moments": len(ms), "by_kind": {k: sum(1 for m in ms if m["kind"] == k) for k in KINDS if any(m["kind"] == k for m in ms)},
-                "question": q, "file": "plan/inserts.scan.json"}
+                "question": q, "pointers": len(ptrs), "pointing": pointer_question(ptrs), "file": "plan/inserts.scan.json"}
     fp = Path(args.file) if args.file else proj.root / "plan" / "inserts.json"
     if not fp.exists():
         raise VeosError("NO_INSERTS", f"{fp.name} not found", "Write plan/inserts.json after asking the creator (reel-inputs).")

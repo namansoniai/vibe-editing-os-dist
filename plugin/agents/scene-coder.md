@@ -26,6 +26,11 @@ from the stills review or the storyboard check.
   (the planner's notes `beat`, `pattern`, `playbook_lines`, `note` stay out), plus `render(ctx, lt, dur)`.
 - Build every item of the brief: sizes, positions, fills, strokes, shadows, fonts, exact text, and each moment on its exact
   local time. The brief's "Done when" line is the acceptance test.
+- **Build the picture, not a caption of it.** A scene with `depicts` shows that thing: draw it with canvas or SVG, the
+  `VEOS.fx` toolkit (`fx.device`, `fx.diagram`, `fx.icon`, `fx.shape`, `fx.morphShape`, `fx.card` with an illustration),
+  `VEOS.data` counters, or a recreated generic UI (`fx.appUI`: a feed of reels with view counts, a chat, a dashboard),
+  styled through the playbook's roles and fonts. Never swap it for a text card. Copy `depicts` and `illustrative` into
+  the scene like every plan field (the `VEOS.fx`, `VEOS.data` and inserts factories pass both through).
 - Colours only through `ctx.col` / `ctx.hexA` / `ctx.tokens.gradients`; fonts only through `ctx.fam(slot)`; numbers with
   `ctx.fmtNum` / `ctx.figAt` when the scene shows a figure.
 - Deterministic: animate from `lt` / `ctx.n` only, `ctx.rng(seed)` for scatter; no `Math.random`, `Date`, timers, CSS

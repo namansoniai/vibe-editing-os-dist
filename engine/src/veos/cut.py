@@ -151,49 +151,72 @@ def gaps_from_words(words: list[dict]) -> list[list[float]]:
 
 # ---------------------------------------------------------------- proxy
 def render_proxy(cutmap: dict, sources: dict, proj, out: Path) -> None:
-    ids = []
-    for sg in cutmap["segments"]:
-        if sg["src"] not in ids:
-            ids.append(sg["src"])
-    inputs, has_audio, picture = [], {}, {}
-    for sid in ids:
-        c = (sources[sid].get("conformed") or {})
-        picture[sid] = sources[sid].get("kind") not in VO_KINDS
-        if picture[sid]:
-            vp = proj.abs(c["video"]) if c.get("video") else proj.work / "src" / f"{sid}.mp4"
-            if not vp.exists():
-                raise VeosError("NOT_CONFORMED", f"work/src/{sid}.mp4 is missing", "Run `veos conform` first.")
-        else:  # a voice-over has no picture: its conformed audio is the input, the proxy frame is plain
-            vp = proj.abs(c["audio"]) if c.get("audio") else proj.work / "audio" / f"{sid}.wav"
-            if not vp.exists():
-                raise VeosError("NOT_CONFORMED", f"work/audio/{sid}.wav is missing", "Run `veos conform` first.")
-        inputs.append(vp)
-        has_audio[sid] = bool(sources[sid].get("audio"))
+    """The review proxy (540x960, with sound) of exactly the cut. A source with an older full conform plays from it, as
+    before; otherwise each kept segment comes straight from the original clip on the conform grid (rawsrc: frame-exact,
+    only the kept stretch is decoded) with its sound from work/audio/<id>.wav, so nothing has to be converted first."""
+    from . import rawsrc
+    from .conform import video_mode
+    inputs: list[list[str]] = []
+
+    def add(opts: list[str], path: Path) -> int:
+        inputs.append([*opts, "-i", str(path)])
+        return len(inputs) - 1
+
+    full_in: dict[str, int] = {}
+    wav_in: dict[str, int] = {}
+    grids: dict[str, rawsrc.Grid] = {}
+    fit = (f"scale={PROXY_W}:{PROXY_H}:force_original_aspect_ratio=decrease,"
+           f"pad={PROXY_W}:{PROXY_H}:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p")
+
+    def wav(sid: str) -> int | None:
+        if sid not in wav_in:
+            c = sources[sid].get("conformed") or {}
+            wp = proj.abs(c["audio"]) if c.get("audio") else proj.work / "audio" / f"{sid}.wav"
+            if not wp.exists():
+                raise VeosError("NOT_CONFORMED", f"work/audio/{sid}.wav is missing", "Run `veos conform --audio-only` first.")
+            wav_in[sid] = add([], wp)
+        return wav_in[sid]
+
+    def sound(j: int | None, a: int, d: float, k: int) -> str:
+        if j is None:
+            return f"anullsrc=r=48000:cl=stereo,atrim=duration={d:.6f}[a{k}]"
+        return (f"[{j}:a]atrim=start={a / FPS:.6f}:duration={d:.6f},asetpts=PTS-STARTPTS,"
+                f"aresample=48000,aformat=channel_layouts=stereo,apad=whole_dur={d:.6f},"
+                f"atrim=duration={d:.6f}[a{k}]")
+
     parts, labels = [], []
     for k, sg in enumerate(cutmap["segments"]):
-        j = ids.index(sg["src"])
+        sid = sg["src"]
+        s = sources[sid]
         a, n = sg["in_frame"], sg["f1"] - sg["f0"]
         d = n / FPS
-        if picture[sg["src"]]:
-            parts.append(f"[{j}:v]trim=start_frame={a}:end_frame={a + n},setpts=PTS-STARTPTS,fps={FPS},"
-                         f"scale={PROXY_W}:{PROXY_H}:force_original_aspect_ratio=decrease,"
-                         f"pad={PROXY_W}:{PROXY_H}:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p[v{k}]")
-        else:
+        has_audio = bool(s.get("audio"))
+        if s.get("kind") in VO_KINDS:  # a voice-over has no picture: a plain frame over its conformed audio
             parts.append(f"color=c=0x16161c:s={PROXY_W}x{PROXY_H}:r={FPS},trim=end_frame={n},setpts=PTS-STARTPTS,"
                          f"setsar=1,format=yuv420p[v{k}]")
-        if has_audio[sg["src"]]:
-            parts.append(f"[{j}:a]atrim=start={a / FPS:.6f}:duration={d:.6f},asetpts=PTS-STARTPTS,"
-                         f"aresample=48000,aformat=channel_layouts=stereo,apad=whole_dur={d:.6f},"
-                         f"atrim=duration={d:.6f}[a{k}]")
-        else:
-            parts.append(f"anullsrc=r=48000:cl=stereo,atrim=duration={d:.6f}[a{k}]")
+            parts.append(sound(wav(sid) if has_audio else None, a, d, k))
+        elif video_mode(s, proj) == "full":  # an older full conform: its own picture and sound, as before
+            c = s.get("conformed") or {}
+            if sid not in full_in:
+                full_in[sid] = add([], proj.abs(c["video"]))
+            j = full_in[sid]
+            parts.append(f"[{j}:v]trim=start_frame={a}:end_frame={a + n},setpts=PTS-STARTPTS,fps={FPS},{fit}[v{k}]")
+            parts.append(sound(j if has_audio else None, a, d, k))
+        else:  # straight from the original clip, only this segment
+            src = proj.abs(s["path"])
+            if sid not in grids:
+                grids[sid] = rawsrc.grid(src)
+            pre, ch = rawsrc.chain(grids[sid], a, n)
+            j = add(pre, src)
+            parts.append(f"[{j}:v]{ch},setpts=PTS-STARTPTS,{fit},tpad=stop_mode=clone:stop={n},trim=end_frame={n}[v{k}]")
+            parts.append(sound(wav(sid) if has_audio else None, a, d, k))
         labels.append(f"[v{k}][a{k}]")
     parts.append("".join(labels) + f"concat=n={len(labels)}:v=1:a=1[v][a]")
     script = proj.path("work", "cut_filter.txt")
     script.write_text(";\n".join(parts), encoding="utf-8")
     cmd = [tools().ffmpeg, "-v", "error", "-y"]
-    for p in inputs:
-        cmd += ["-i", str(p)]
+    for opts in inputs:
+        cmd += opts
     cmd += ["-/filter_complex", str(script), "-map", "[v]", "-map", "[a]", "-r", str(FPS),
             "-c:v", "libx264", "-crf", "28", "-preset", "veryfast", "-pix_fmt", "yuv420p",
             "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
@@ -221,7 +244,7 @@ def main(args, project) -> dict:
     proj = need_project(project)
     sp = proj.work / "sources.json"
     if not sp.exists():
-        raise VeosError("NO_SOURCES", "work/sources.json not found", "Run `veos ingest` and `veos conform` first.")
+        raise VeosError("NO_SOURCES", "work/sources.json not found", "Run `veos ingest` and `veos conform --audio-only` first.")
     src_list = read_json(sp)["sources"]
     if getattr(args, "identity", False):
         wd = {}

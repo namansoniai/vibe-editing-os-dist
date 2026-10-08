@@ -21,9 +21,10 @@ Run `veos paths` first. You need:
 - `reference_playbook`: the reference playbook (read-only, path B)
 - `repo_root`
 
-**Also read `<repo_root>/playbooks/_global/GLOBAL-RULES.md`.** Every playbook follows its nine directions (smooth motion,
-nothing overlapping by accident, a clear face, readable text, one idea at a time, show what's said, never fake facts,
-pace like the style, the style decides the look). Directions, not limits: write the playbook's own rules the same way.
+**Also read `<repo_root>/playbooks/_global/GLOBAL-RULES.md`.** Every playbook follows its ten directions (smooth motion,
+nothing overlapping by accident, a clear face, readable text, one idea at a time, show the thing not the word, say what
+was said, hook titles hook, pace like the style, the style decides the look). Directions, not limits: write the
+playbook's own rules the same way.
 
 ## Step −1: New playbook, or change an existing one
 1. Run `veos workspace get`. It shows the playbook linked to this folder, if any, and all existing playbooks. Entries
@@ -40,6 +41,8 @@ pace like the style, the style decides the look). Directions, not limits: write 
 
 ## Step 0: Choose the path (one question)
 Run `veos templates list` first.
+- **They already named a style or a creator** ("Kallaway style", "like Ali Abdaal", or `style: …` from the reel skill):
+  skip this question and go straight to path A, A1 step 1.
 - **It lists templates** (`count` > 0): ask with AskUserQuestion, path A first:
   - **"Pick a ready-made editing style (recommended, about 2 minutes)"**
   - **"Build my own style from scratch (interview + inspiration videos)"**
@@ -59,16 +62,33 @@ Run `veos templates list` first.
 Templates are ready-to-use graphic editing styles (STYLE-PLAYBOOK-STRUCTURE Part D.0). Each template's playbook is
 complete; the buyer only brands it.
 
-### A1. Gallery (pick by eye)
-1. Run `veos templates gallery` (add `--faceless-first` for faceless buyers). It writes the picker page and prints
-   `out`. Open it for them (Windows `Start-Process "<out>"`, macOS `open "<out>"`).
-2. Say in 2 lines: each card loops three frames of the style; **"needs:"** says what they have to shoot; tell me the
-   name of the one you want. **Ask no filter questions.** Templates in the last section ("For brands & agencies",
-   `section: brands`) are made for product and brand ads.
-3. Faceless templates (`faceless: true`, or listed in `faceless_formats`): describe them as "no face on camera: you record
+### A1. Gallery (pick by eye: a style is never picked without being seen)
+**Never offer styles as text-only options** (no AskUserQuestion list of style names before they have seen them), and
+always name a style together with the creator it's inspired by ("Whiteboard Split, inspired by Kallaway"). Every page
+below plays each style on the creator's own reel. Open a page for them with Windows `Start-Process "<out>"` or macOS
+`open "<out>"`. **If opening fails**, say so in one line and give the page's path and
+https://www.shipwithoutcode.com/veos#styles (every style plays there too); ask only after they've looked.
+1. **They named a style or a creator** ("Kallaway", "like Ali Abdaal", "Whiteboard Split"): run
+   `veos templates gallery --focus "<their words>"` (add `--faceless-first` for faceless buyers). It matches ids, style
+   names and the creators a style is inspired by, writes a page with that style first and highlighted (the rest follow),
+   and prints `out` and `focus` (the matched style: `name`, `inspired_by`). Open it, then ask in one AskUserQuestion:
+   "**<name>, inspired by <creator>**: it's playing in your browser. Use this one?" Options: "Yes, use <name>" /
+   "Show me other styles" (→ step 3).
+   - `NO_STYLE_MATCH` (no style is inspired by that creator yet): pick the 2–3 closest from `veos templates list`
+     (`tagline`, `needs`, `inspired_by`) and open them as in step 2, saying "There's no <creator> style yet; these are
+     the closest:".
+2. **A vague request** ("something clean", "for my finance reels"): shortlist 2–3 from `veos templates list` (`tagline`,
+   `needs`, faceless) and run `veos templates gallery --only "<id>,<id>,<id>"`. Open it, then ask which one they like,
+   naming each with its creator.
+3. **No preference, or "show me all":** run `veos templates gallery` (add `--faceless-first` for faceless buyers) and
+   open it. Say in 2 lines: each card plays the style on the creator's own reel; **"needs:"** says what they have to
+   shoot; tell me the name of the one you want. **Ask no filter questions.** Templates in the last section ("For brands
+   & agencies", `section: brands`) are made for product and brand ads.
+4. Faceless templates (`faceless: true`, or listed in `faceless_formats`): describe them as "no face on camera: you record
    your voice, the edit is all graphics". A template may be faceless in one format only: say which.
-4. They answer with a name (or "the second one"). Match it to its `veos templates list` entry. If they hesitate between
-   two, compare them in two lines from `tagline` and `needs`, and let them choose. Never pick for them.
+5. They answer with a name (or "the second one"). Match it to its `veos templates list` entry. If they hesitate between
+   two, open just those two (`--only "<id>,<id>"`), compare them in two lines from `tagline` and `needs`, and let them
+   choose. Never pick for them.
 
 ### A2. Brand it (one AskUserQuestion round, 4 questions)
 Ask exactly these four questions, all in **one** AskUserQuestion call (skip only the colour question when `brandable` is

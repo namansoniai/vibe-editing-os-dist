@@ -24,7 +24,7 @@
 | D5 | **The caption is the pulse.** One word at a time, always on, in its own band; it never sits on a card or on the face | §5.3, H4 |
 | D6 | **The lockup is the title of the moment.** Bold sans + one italic-serif span + crimson; it changes when the card's idea changes | §5.2, H6 |
 | D7 | **Quiet colour, loud ideas.** Neutral worlds; colour only marks meaning (crimson = the key phrase, neon = the active part, red/green = old/new, yellow = the threshold) | §4 |
-| D8 | **Truthful diagrams.** Concept curves carry concept labels, never invented numbers; every number on screen is spoken, scripted or the creator's own | H11, §18 |
+| D8 | **Truthful diagrams.** Concept curves carry concept labels; every number the creator claims is spoken, scripted or their own; an illustration may use made-up but realistic numbers ("212 views", `illustrative: true`) | H11, §18 |
 
 Buyer directives are added as **BD1…** `[VAR]` and may only make the style stricter or more specific.
 
@@ -141,8 +141,10 @@ This style's craft is **framework extraction → mode schedule**: turning a talk
 ## §2 Hard rules `[REQ] [DNA]`
 
 ### 2.1 Editing rules (every style)
-The nine editing rules in `playbooks/_global/GLOBAL-RULES.md` apply. They are directions, not limits: smooth, seamless motion; nothing overlaps by accident; keep the face clear (behind the speaker is fair game, text included); readable at a glance; one idea at a time; show what's being said; never fake facts; pace like the style, not like a timer; the style decides the look.
+The ten editing rules in `playbooks/_global/GLOBAL-RULES.md` apply. They are directions, not limits: smooth, seamless motion; nothing overlaps by accident; keep the face clear (behind the speaker is fair game, text included); readable at a glance; one idea at a time; show the thing, not the word; say what was said; hook titles hook; pace like the style, not like a timer; the style decides the look.
 - **Facts the engine checks:** accidental overlaps, jumps, the face covered, unreadable text, numbers and quotes that don't match what was said, the promised count. Every count, timing and budget this playbook gives is direction for the edit, not a limit.
+- **Picture first, in this style's own look:** every key beat shows the thing being said (an object, a screen or app, a diagram, numbers in motion), not just its word; text supports the picture and never replaces it. When the speaker points with words ("this, this and this", "from this to this", "ye dekho"), show what they mean. Illustrations may use made-up but realistic numbers and names ("212 views", "1.2M views"), with no label; a number or quote the speaker says is shown as said. This overrides any rule below that bans made-up numbers or asks for an example tag: those rules now cover claims (the creator's results, prices, benchmarks, testimonials), not illustrations.
+- **Hook titles hook:** the on-screen title promises the viewer something (an outcome, a curiosity gap, who it's for) and is true to what the reel delivers; it need not repeat the spoken words. This playbook sets its shape (§5.2, §6.5: lines, sizes, word limits, case), never its voice (§6).
 - **Retired (8 Oct 2026), whatever this playbook says below:** no REPRESENTATIONAL or example labels on made-up cards, no credit lines, no flash limit (flash as often as this style calls for; any "NC-11" cap below no longer applies), and text may sit behind the speaker without an exception.
 
 ### 2.2 Declared exceptions
@@ -384,6 +386,8 @@ Evidence: one word per 0.3–0.6 s throughout (v01 @ 0:04–0:11 "what / school,
 
 ## §6 Hook system `[REQ]`
 
+**Hook title (every style, 8 Oct 2026; above anything below):** the on-screen title promises the viewer something: an outcome they want, a curiosity gap, or who it's for ("How to go viral as a doctor creating content", not the label "Reels for Doctors"). It doesn't have to repeat the spoken words; it has to be true to what the reel delivers. A title shown as someone's words (in quotes) is still word for word. This section sets the title's shape (lines, sizes, word limits, case, the keyword device), never its voice. Write 8–10 candidates from the formulas below plus the proven patterns ("How to X as a Y", "Why your X isn't working", "The X nobody tells you", "Stop doing X", "Your X vs mine", a number or a contrast), score them on outcome, curiosity, who it's for and brevity, check the best against the stopper tests, and pick; any "write 3" below means this, and the next two go to the storyboard as alternates. A style with no on-screen title applies this to its post title.
+
 ### 6.1 Stopper tests (this style's numbers)
 | Test | Number |
 |---|---|
@@ -450,7 +454,7 @@ Pair type for HA-06: **promise → framework** (topic · lockup · the f0 card �
 | Marketing | Email list | "Your Email List Is Worth **More** Than Followers" | A counter card (the creator's list size) | "**here's** the math" |
 
 ### 6.5 Headline writing `[DNA formula; NICHE examples]`
-**Formula:** `[viewer-pointed setup] + [key phrase in crimson] (+ one italic-serif word)`, ≤ 8 words, Title Case, saying exactly what the f0 card shows.
+**Formula:** `[viewer-pointed setup] + [key phrase in crimson] (+ one italic-serif word)`, ≤ 8 words, Title Case, a promise the f0 card starts to prove (it need not repeat the spoken words).
 
 | Template | Example |
 |---|---|
@@ -462,7 +466,7 @@ Pair type for HA-06: **promise → framework** (topic · lockup · the f0 card �
 | Paste / do X and get Y | "Paste One Link And Get **Every Secret**" |
 | All you need | "All You Need Is This **One** *Habit*" |
 
-Write 3 and pick by ST-1 and ST-4. Banned: questions longer than 6 words, clickbait without a card that proves it, more than one crimson device, emoji, ALL CAPS.
+Write 8–10 (§6, above), score them, check the best by ST-1 and ST-4, and pick. Banned: questions longer than 6 words, clickbait without a card that proves it, more than one crimson device, emoji, ALL CAPS.
 
 ### 6.6 Hook sound
 The hook may carry one cue on f0 and one on the reading event (§11); the mode cuts are silent; the bed enters after the hook (at the first unit).

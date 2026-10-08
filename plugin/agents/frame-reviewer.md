@@ -26,7 +26,11 @@ at that moment and in its "Done when" line. Report:
 - an element of the brief that is missing, blank or half-drawn (a card that lost its text, a chip that vanished mid-move);
 - wrong text, a wrong colour role, or clearly the wrong place compared with the brief;
 - a moment that has not happened by its tile (the brief's change is not visible yet);
-- frame 0: the hook element must already read.
+- frame 0: the hook element must already read;
+- **only words where the brief asks for a picture:** the brief (or its scene's `depicts`) names a thing to show (a phone
+  with a waveform, a grid of reels, a counter climbing, a recreated app screen) and the tile shows just text or a plain
+  card. Report what is missing ("brief asks for 3 reel tiles with view counts; the tile shows only the words").
+  A typographic style draws its pictures in its own look; type that builds the object counts as a picture.
 Judge only what a tile can show: motion between tiles is not visible, so don't report timing you cannot see.
 
 Report only real failures; do not comment on taste, pacing or creative choices. Use the tile label's frame (`fNNN`) as

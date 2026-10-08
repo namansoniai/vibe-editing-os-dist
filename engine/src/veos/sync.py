@@ -352,8 +352,9 @@ def _parse_offsets(items: list[str]) -> dict:
 
 def _session_proxy(proj, ref: dict, sync: dict, dur: float, wav: Path, out: Path) -> None:
     """A small CFR proxy of the main camera on the session timeline, with the session audio (rough-cut review)."""
+    from .conform import video_mode
     vid = proj.work / "src" / f"{ref['id']}.mp4"
-    src = vid if vid.exists() else proj.abs(ref["path"])
+    src = vid if video_mode(ref, proj) == "full" else proj.abs(ref["path"])  # a kept-range conform is black elsewhere
     off = sync["offset"]
     w = PROXY_W if (ref.get("width") or 1080) <= (ref.get("height") or 1920) else 960
     vf = [f"fps={FPS}", f"scale={w}:-2"]

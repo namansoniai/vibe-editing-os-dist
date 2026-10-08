@@ -1,6 +1,8 @@
 """`veos storyboard`: build the review page (review/mockup.html) from plan/timeline.json.
 
 Frames are real renderer frames (veos render test mode). Layout and page format follow reference/Storyboard-Template.md.
+The hook title the reel uses (`meta.title`) and the next two best (`meta.title_alternatives`, written by reel-plan with
+every candidate and its scores in plan/ideas.md) head the page, so the creator can swap with "use the second title".
 """
 from __future__ import annotations
 
@@ -203,10 +205,12 @@ def build_config(tl: dict, project, anim_fps: float) -> dict:
     if meta.get("keyword"):
         facts.append(f"Keyword: {meta['keyword']}")
     title = meta.get("title") or project.root.name
+    alts = [str(a) for a in meta.get("title_alternatives") or [] if str(a).strip()][:2]
     return {
         "page_title": f"{project.root.name} Storyboard", "title_main": project.root.name, "title_em": title,
         "subtitle": "Storyboard for review. Every image is a real frame from the renderer; nothing has been rendered to video yet.",
-        "facts": facts, "audio": "mockup/voice.m4a", "size": [w, h], "fps": FPS, "frames": nframes,
+        "facts": facts, "titles": [str(meta["title"])] + alts if meta.get("title") and alts else [],
+        "audio": "mockup/voice.m4a", "size": [w, h], "fps": FPS, "frames": nframes,
         "duration": meta["duration"], "anim_fps": anim_fps,
         "sections": {k: _nice(k) for k in secs}, "modes": {str(b.get("mode")): str(b.get("mode")) for b in beats},
         "legend": legend, "stills": stills, "strips": pick_strips(tl, nframes),
@@ -248,6 +252,19 @@ def cards_html(C: dict, tl: dict, scenes: list[dict]) -> str:
     return "\n".join(out)
 
 
+ORDINAL = ("first", "second", "third")
+
+
+def titles_html(titles: list[str]) -> str:
+    """The hook title in the reel and the next two best, numbered so the creator can say "use the second title"."""
+    if len(titles) < 2:
+        return ""
+    rows = "".join(f'<li{" class=on" if i == 0 else ""}><b>{i + 1}</b> {E(t)}'
+                   + (' <span>in the reel</span>' if i == 0 else "") + "</li>" for i, t in enumerate(titles))
+    return (f'<section class="titles" aria-label="Hook title options"><h2>Hook title</h2><ol>{rows}</ol>'
+            f'<p>To swap, say "use the {ORDINAL[1]} title" (or write your own).</p></section>')
+
+
 def strips_html(C: dict) -> str:
     fps = C["fps"]
     return "".join(
@@ -273,6 +290,7 @@ def build_page(C: dict, tl: dict, png_dir: Path, review: Path, scenes: list[dict
     nav = "".join(f'<a href="#{E(k)}">{E(v)}</a>' for k, v in C["sections"].items()) + '<a href="#motion">Motion strips</a>'
     rep = {"%%TITLE%%": E(C["page_title"]), "%%H1%%": E(C["title_main"]), "%%H1EM%%": E(C["title_em"]), "%%SUB%%": E(C["subtitle"]),
            "%%FACTS%%": "".join(f"<span>{E(f)}</span>" for f in C["facts"]), "%%NAV%%": nav,
+           "%%TITLES%%": titles_html(C.get("titles") or []),
            "%%LEGEND%%": "".join(f"<div><b>{E(a)}</b> {E(b)}</div>" for a, b in C["legend"]),
            "%%CARDS%%": cards_html(C, tl, scenes), "%%STRIPS%%": strips_html(C), "%%DUR%%": f"{C['duration']:.2f}",
            "%%NANIM%%": str(len(an)), "%%STEP%%": str(step), "%%AFPS%%": f"{C['anim_fps']:g}",
@@ -409,6 +427,12 @@ header h1 em{font-family:'Instrument Serif',serif;font-weight:400;color:var(--ac
 .sub{color:var(--mute);margin:0 0 18px;max-width:780px}
 .facts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
 .facts span{font:500 13px 'JetBrains Mono',monospace;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:#ddd}
+.titles{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 18px;margin:0 0 22px;max-width:780px}
+.titles h2{margin:0 0 8px;font-size:18px}.titles ol{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.titles li{font-size:17px;color:#ddd}.titles li b{display:inline-block;min-width:26px;color:var(--mute)}
+.titles li.on{color:var(--text);font-weight:700}.titles li.on b{color:var(--acc)}
+.titles li span{font:500 12px 'JetBrains Mono',monospace;border:1px solid var(--acc);color:var(--acc);border-radius:999px;padding:1px 8px;margin-left:6px}
+.titles p{margin:0;color:var(--mute);font-size:14px}
 nav{position:sticky;top:0;z-index:5;background:rgba(10,10,10,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin-bottom:8px}
 nav a{white-space:nowrap;color:var(--text);text-decoration:none;font-weight:700;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line)}
 nav a:hover{border-color:var(--acc)}
@@ -455,7 +479,7 @@ dt{color:var(--mute)}dd{margin:0;color:#ddd}
 <body><div class="wrap">
 <header><h1>%%H1%% · <em>%%H1EM%%</em></h1>
 <p class="sub">%%SUB%%</p>
-<div class="facts">%%FACTS%%</div></header>
+<div class="facts">%%FACTS%%</div>%%TITLES%%</header>
 <nav>%%NAV%%</nav>
 <section class="player" aria-label="Animatic">
 <div class="screen"><img id="af" src="mockup/anim/a_0000.jpg" alt="Animatic frame"></div>
