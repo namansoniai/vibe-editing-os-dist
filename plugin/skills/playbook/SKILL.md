@@ -152,13 +152,16 @@ Ask with the AskUserQuestion tool (≤ 4 questions per round; always allow free 
 3. **Shooting:** first ask **"Do you appear on camera?"** with options "Yes, I talk to camera", "Sometimes", "No, voice-over only (faceless)".
    - **On camera:** camera setups (selfie / tripod / desk / walking / kitchen / gym…), background, whether they record screen recordings or B-roll, and typical raw length.
    - **Faceless:** how they make the voice-over (phone mic, studio mic, AI voice they own the rights to), whether they write a script first, typical length, and what of their own they can show (screen recordings, B-roll, photos, past reels as proof). This makes a **faceless playbook** (see Step 3).
-4. **Brand:** name and handle, primary + accent colours (hex, or "pick for me"), fonts they like (or "pick for me"), logo file, CTA habits (comment keyword → DM, follow, link in bio, community name), anything they **never** want on screen.
-5. **Assets:** do they have B-roll clips, product shots, screen recordings, or a sound-effects library they're licensed to use? Where are they?
+4. **Brand:** name and handle, primary + accent colours (hex, or "pick for me"), fonts they like (or "pick for me"), whether they have a logo (the file goes into the references folder in Step 2), CTA habits (comment keyword → DM, follow, link in bio, community name), anything they **never** want on screen.
+5. **Assets:** do they have B-roll clips, product shots, screen recordings, or a sound-effects library they're licensed to use? (Just yes or no here: files are dropped into a folder later, never typed as paths.)
 
 Write the answers to `<playbooks>/<id>/profile.md` (id from `veos playbook new-id`).
 
 ## Step 2: Editing inspiration
-Ask: "Share 1–5 reels whose **editing** you love (video files, ideally downloaded; links alone can't be analysed reliably), and optionally 2–3 of your own past reels."
+**Nobody types a file path.** Make a folder, open it for them, and let them drop the videos in:
+1. Create `<the folder they are working in>/references` (Bash `mkdir -p`) and open it: Windows PowerShell `Start-Process "<absolute path>"`, macOS `open "<path>"`.
+2. Say in one plain message, with no multiple-choice options: "I've opened a folder called **references**. Drop 1–5 reels whose **editing** you love into it (downloaded video files: links alone can't be analysed), and 2–3 of your own past reels if you like. Then reply **done**."
+3. When they reply, list the video files in that folder with Bash (`.mp4 .mov .m4v .webm .mkv .avi`, any case). If some are their own reels and the file names don't say so, ask in one line which ones. Nothing there: say so in one line and ask them to drop the files into that folder (or paste a path: a pasted path or folder still works).
 
 For each video file, do a style extraction (the reference process P1). Use the `vibe-editing-os:veos-runner` agent for the heavy commands:
 - `veos sheet <out> --video "<file>" --frames <2 fps list>` for overview contact sheets.

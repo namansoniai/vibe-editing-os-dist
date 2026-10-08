@@ -28,7 +28,7 @@ plugin/
   agents/rough-cutter.md          model: claude-sonnet-5-5, effort high. Reads `veos roughcut-candidates`, decides the takes, writes edl.json, runs veos cut
   agents/scene-coder.md           model: claude-sonnet-5-5, effort high. Writes plan/scenes.js from the planner's plan (scenes.plan.json + scene-briefs.md) until validate passes (V-PLAN included)
   skills/reel/SKILL.md            orchestrator (state machine, gates, resume)
-  skills/reel-prep/SKILL.md       ingest → conform → transcribe → faces (delegates to veos-runner); the person cut-out waits for the plan
+  skills/reel-prep/SKILL.md       ingest → conform → transcribe (delegates to veos-runner); nothing visual before the cut: faces come after it (kept frames only), the person cut-out after the plan
   skills/reel-roughcut/SKILL.md   delegates to rough-cutter: takes, flubs, dead air → edl.json → veos cut → the cut gate (user approves / asks for changes)
   skills/reel-captions/SKILL.md   Claude romanises / fixes caption text → veos captions apply
   skills/reel-plan/SKILL.md       Opus writes the plan (timeline.json + scenes.plan.json + scene-briefs.md) → validate --plan → scene-coder writes scenes.js (validate loop) → veos stills → frame-reviewer against the briefs
@@ -42,7 +42,7 @@ plugin/
 | Phase | Done when | Skill | Model |
 |---|---|---|---|
 | `init` | project.json exists | reel | main |
-| `prep` | sources.json, src/, audio/, words/, face/ exist for every talking-head source (no matte: `veos matte --if-needed` runs after the plan check, only on the kept frames) | reel-prep | veos-runner (sonnet) |
+| `prep` | sources.json, src/, audio/, words/ exist for every talking-head source (no faces: `veos faces` runs at the start of the plan phase, on the kept frames; no matte: `veos matte --if-needed` runs after the plan check, only on the kept frames) | reel-prep | veos-runner (sonnet) |
 | `roughcut` | edl.json + cutmap.json + words.edit.json, **and the user approved the cut** (cut_proxy.mp4 opened; changes go back to the rough-cutter as `CHANGES:` notes) | reel-roughcut | rough-cutter (sonnet) + main (the gate) |
 | `captions` | every word in words.edit.json has a `caption` field | reel-captions | **main** (or sonnet if no Devanagari / no fixes) |
 | `inputs` | the creator's per-reel inputs are collected (screen recordings via `veos asset add`, links, numbers) and stored with `veos project set inputs=@file.json` (may be `{}`) | reel-inputs | **main** |

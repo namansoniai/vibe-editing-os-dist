@@ -1,6 +1,6 @@
 ---
 name: reel-prep
-description: Prep phase of a reel project: ingest, conform, transcribe and find the face in the source clips (or, for a faceless reel, the voice-over). Called by the reel orchestrator before roughcut; not meant to be invoked directly.
+description: Prep phase of a reel project: ingest, conform and transcribe the source clips (or, for a faceless reel, the voice-over). Nothing visual happens before the cut: the face is found after it. Called by the reel orchestrator before roughcut; not meant to be invoked directly.
 model: claude-opus-5-5
 effort: high
 user-invocable: false
@@ -15,7 +15,8 @@ Input: project folder `P` (the `vibe-edit/` folder with project.json). Never han
      - `veos ingest --project "P"` (no paths: it uses the clips stored in project.json)
      - `veos conform --project "P"`
      - `veos transcribe --project "P"` (append `--script "<script path>"` only if the project has a script)
-     - `veos faces --project "P"` (the face in every frame. The person cut-out is NOT made here: the plan decides later whether the reel needs it)
+     - Nothing visual here: the rough cut needs only the words. The face is found after the cut, only in the seconds it
+       keeps (reel-plan §0), and the person cut-out only if the plan needs it.
    - **Faceless (`voiceover_only`):**
      - `veos ingest --project "P"` (it picks the voice-over from project.json; the picture of a video voice-over is ignored; other clips become B-roll)
      - `veos conform --project "P"` (sound only for the voice-over)
@@ -38,7 +39,7 @@ Input: project folder `P` (the `vibe-edit/` folder with project.json). Never han
    ask whether it really belongs to this conversation (a clap at the start of the next recording helps).
 3. If its verdict is `failed`: run `veos project set --project "P" last_error="prep: <short reason>"` and stop with a plain-language message (what failed, what the user can try: re-run `/vibe-editing-os:reel` to resume, or run `veos doctor`). Do not continue.
 4. Verify the done condition (workflow phase `prep`) with Bash `ls` in the project work folder:
-   - **Talking head:** `sources.json` exists, and for every talking-head source `src/`, `audio/<id>.wav`, `words/<id>.json` and `face/<id>.json` exist (no matte yet: that comes after the plan, only when needed).
+   - **Talking head:** `sources.json` exists, and for every talking-head source `src/`, `audio/<id>.wav` and `words/<id>.json` exist (no face boxes or matte yet: both come after the cut).
    - **Faceless:** `sources.json` exists with `"source_type": "voiceover_only"`, and `audio/V.wav` and `words/V.json` exist.
    - **Conversation:** `words/<M>.json`, `speakers.json` and `angles.json` exist, and `veos speakers show` lists N speakers with names.
 

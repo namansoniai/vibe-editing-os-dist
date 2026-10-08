@@ -732,6 +732,10 @@ def _placeholder_frame(tokens: dict) -> str:
             f'<span class="ph-cap">your words appear here</span></div>')
 
 
+# The site's per-style preview loops (8 s, cut from each creator's own reel): the gallery plays them so a buyer picks by
+# the real look; our preview frames sit underneath as the offline fallback (a failed video removes itself).
+SITE_PREVIEW_BASE = "https://lmsshipwithoutcode.blob.core.windows.net/vibeditingos/styles"
+
 GALLERY_CSS = """
 :root{--bg:#EDEAE3;--ink:#1E2622;--muted:#55605A;--card:#FFFFFF;--line:#DDD6CA;--pill:#B7D3B0;--pill2:#F5D77E;--face:#8DB3D4;
   --draft:#F2896B;--e-in:cubic-bezier(.16,1,.3,1);--sh:0 10px 30px rgba(30,38,34,.16)}
@@ -781,6 +785,8 @@ footer{max-width:1180px;margin:36px auto 0;font-size:12px;color:var(--muted)}
 .brands{max-width:1180px;margin:56px auto 0;border-top:1px solid var(--line);padding-top:28px}
 .sec{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(28px,5vw,38px);margin-bottom:6px}
 .sec-note{font-size:14px;color:var(--muted);margin-bottom:22px}
+.frames video.loop{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;background:#111}
+.frames:has(video.loop) .dots{display:none}
 @media (prefers-reduced-motion:reduce){.frames img,.frames .ph,.dots i{animation:none!important}.frames img:first-child,.frames .ph:first-child{opacity:1}}
 """
 
@@ -809,6 +815,9 @@ def _card(rec: dict, out_dir: Path) -> str:
         except (OSError, ValueError):
             inner = '<div class="ph"><span class="ph-cap">preview coming</span></div>'
     dots = "".join(f'<i style="--i:{i}"></i>' for i in range(n)) if n > 1 else ""
+    sid = e(rec["id"])
+    loop = (f'<video class="loop" src="{SITE_PREVIEW_BASE}/{sid}.mp4" poster="{SITE_PREVIEW_BASE}/{sid}.jpg" muted autoplay '
+            f'loop playsinline preload="metadata" aria-label="{e(rec["name"])} preview" onerror="this.remove()"></video>')
     pills = [f'<span class="pill {"r4" if rec["readiness"] == "R4" else ""}">{e(rec["readiness_label"])}</span>']
     if rec["faceless"]:
         pills.append('<span class="pill face">Faceless · no face on camera</span>')
@@ -834,7 +843,7 @@ def _card(rec: dict, out_dir: Path) -> str:
     full = f' · <a href="{e(_rel(Path(page), out_dir))}" target="_blank">Full preview →</a>' if page else ""
     pick = (f'<p class="pick">Not in your plan: upgrade to {e(rec["unlock_with"])} to unlock this style{full}</p>'
             if rec.get("locked") else f'<p class="pick">To use it, tell Claude <code>{e(rec["name"])}</code>{full}</p>')
-    return (f'<article class="card{" locked" if rec.get("locked") else ""}" id="{e(rec["id"])}"><div class="frames n{n}">{inner}'
+    return (f'<article class="card{" locked" if rec.get("locked") else ""}" id="{e(rec["id"])}"><div class="frames n{n}">{inner}{loop}'
             f'<div class="dots">{dots}</div></div>'
             f'<div class="pills">{"".join(pills)}</div><h2>{e(rec["name"])}</h2><p class="insp">{e(insp)}</p>'
             + (f'<p class="tagline">{e(rec["tagline"])}</p>' if rec["tagline"] else "")

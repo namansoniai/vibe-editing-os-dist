@@ -25,7 +25,7 @@ Vibe Editing OS needs a **licence key** from the purchase email (it looks like `
 2. Tell the user in plain words:
    - It downloads about 3 GB: the editing engine with its own Python, the video tool ffmpeg, a rendering browser, and three AI models (speech-to-text, background removal, face detection).
    - It takes 10 to 20 minutes depending on the connection, and can be safely re-run or resumed if it stops.
-   - It needs about 5 GB free now (and 20 GB later for renders).
+   - It needs about 4 GB to install, plus about 1 GB of free space per minute of video while you edit.
 3. Ask with **one AskUserQuestion call, two questions**:
    - **"Ready to install now?"** Options: "Yes, install now", "Not now".
    - **"Your licence key (from your purchase email)"**: "Pick *Other* and paste the key. It looks like VEOS-XXXX-XXXX-XXXX-XXXX." Options: "I can't find my key", "I haven't bought it yet".

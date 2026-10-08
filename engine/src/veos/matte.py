@@ -1,6 +1,8 @@
 """`veos faces` and `veos matte`: face boxes, and the person cut-out (RVM mobilenetv3 ONNX) only where a reel needs it.
 
-    veos faces --project P              face boxes for every talking-head source (prep; fast: no cut-out model)
+    veos faces --project P              face boxes for every talking-head source, after the cut: only the frames the
+                                        cut keeps (+ the same margins as the cut-out), decoded at the processing size
+                                        (no cut-out model); every frame when there is no cut map yet
     veos matte --project P              the person cut-out of the frames the cut keeps (+ a margin); the rest of the
                                         source is written transparent, so the alpha video keeps the source's frame count
     veos matte --if-needed --project P  the same, only when the plan needs the cut-out (cutout.needs_cutout): a scene
@@ -8,7 +10,8 @@
     veos matte --all                    every frame of every source (the old prep behaviour; also with no cut map)
 
 Outputs (per talking-head source id):
-  work/face/<id>.json   SPEC section 3 face format (`veos faces`; `veos matte` writes it too when it is missing)
+  work/face/<id>.json   SPEC section 3 face format (`veos faces`; `veos matte` writes it too when it is missing), plus
+                        `ranges`: the source frames it looked at ("all" or [[a, b], ...]); frames outside are null
   work/matte/<id>.mp4   gray H.264 alpha, same frame count as the source
   work/matte/<id>.json  which source frame ranges were cut out ("all" or [[a, b], ...]); a matte without it covers all
 A source whose matte already covers the wanted frames is skipped (`--force` redoes it).
@@ -216,6 +219,11 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
         s = 960.0 / max(W, H)
         PW, PH, ds = max(2, int(round(W * s))), max(2, int(round(H * s))), 0.5
     scale = PW / W
+    # The face-only pass decodes straight at the processing size: the tracker needs no more, and full-size rgb24 is
+    # ~25 MB a frame for 4K phone footage. Its boxes are mapped back to source pixels. The cut-out keeps the full frame
+    # (the edge refinement needs it).
+    DW, DH = (W, H) if cutout or PW >= W else (PW, PH)
+    sx, sy = W / DW, H / DH
     dsr = np.array([ds], dtype=np.float32)
     inside = (lambda i: True) if ranges is None else (lambda i: any(a <= i < b for a, b in ranges))
     starts = {a for a, _ in ranges} if ranges else set()
@@ -223,8 +231,9 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
     def zero():
         return [np.zeros((1, 1, 1, 1), np.float32) for _ in range(4)]
 
-    dec = subprocess.Popen([ff, "-v", "error", "-i", str(src), "-an", "-fps_mode", "passthrough", "-f", "rawvideo",
-                            "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=W * H * 3 * 2)
+    shrink = ["-vf", f"scale={DW}:{DH}:flags=area"] if (DW, DH) != (W, H) else []
+    dec = subprocess.Popen([ff, "-v", "error", "-i", str(src), "-an", *shrink, "-fps_mode", "passthrough", "-f", "rawvideo",
+                            "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=DW * DH * 3 * 2)
     enc = None
     if cutout:
         out_mp4.parent.mkdir(parents=True, exist_ok=True)
@@ -238,7 +247,7 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
     err: list = []
     q1: queue.Queue = queue.Queue(6)
     q2: queue.Queue = queue.Queue(6)
-    nbytes = W * H * 3
+    nbytes = DW * DH * 3
     blank = bytes(W * H)
 
     def reader():
@@ -247,7 +256,7 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
                 buf = dec.stdout.read(nbytes)
                 if len(buf) < nbytes:
                     break
-                q1.put(np.frombuffer(buf, np.uint8).reshape(H, W, 3))
+                q1.put(np.frombuffer(buf, np.uint8).reshape(DH, DW, 3))
         except BaseException as e:  # noqa: BLE001
             err.append(e)
         finally:
@@ -301,6 +310,11 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
             if rgb is None or err:
                 break
             here = cutout and inside(n)
+            if not cutout and ranges is not None and not inside(n):  # face-only pass: a frame the cut never keeps
+                prev_thumb = None
+                boxes.append(None)
+                n += 1
+                continue
             if tracker is None and not here:  # nothing to look at in this frame
                 prev_thumb = None
                 if cutout:
@@ -309,7 +323,7 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
                     boxes.append(None)
                 n += 1
                 continue
-            small = rgb if (PW, PH) == (W, H) else cv2.resize(rgb, (PW, PH), interpolation=cv2.INTER_AREA)
+            small = rgb if rgb.shape[1] == PW and rgb.shape[0] == PH else cv2.resize(rgb, (PW, PH), interpolation=cv2.INTER_AREA)
             thumb = cv2.cvtColor(cv2.resize(small, (48, 84), interpolation=cv2.INTER_AREA), cv2.COLOR_RGB2GRAY).astype(np.float32)
             reset = n == 0 or n in starts
             if prev_thumb is not None:
@@ -329,6 +343,9 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
                 box = known_boxes[n] if n < len(known_boxes) else None
             else:
                 box = tracker.detect(rgb) if tracker else None
+                if box and (sx, sy) != (1.0, 1.0):  # decoded small: back to source pixels
+                    box = [int(round(box[0] * sx)), int(round(box[1] * sy)), int(round(box[2] * sx)),
+                           int(round(box[3] * sy)), box[4]]
                 boxes.append(box)
             if box:
                 last_box = box
@@ -381,9 +398,11 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
                     "ds": ds, "matte_mb": round(out_mp4.stat().st_size / 2**20, 2)})
     if known_boxes is None and out_face is not None:
         fb = facemod.finalize(boxes)
+        looked = ranges if (not cutout and ranges is not None) else "all"  # the cut-out pass tracks every frame
         write_json(out_face, {"version": 1, "source": source_id, "fps": FPS if abs(fps - FPS) < 0.01 else r3(fps),
-                              "frames": n, "boxes": fb}, indent=None)
-        cov = sum(1 for b in fb if b) / max(n, 1)
+                              "frames": n, "ranges": looked, "boxes": fb}, indent=None)
+        n_looked = n if looked == "all" else sum(min(y, n) - x for x, y in looked if x < n)  # frames it looked at
+        cov = sum(1 for b in fb if b) / max(n_looked, 1)
         res.update({"face_coverage_pct": round(100 * cov, 1),
                     "face_fallback_frames": tracker.fallback_frames if tracker else 0,
                     "hard_cuts": cut_frames, "face_kb": round(out_face.stat().st_size / 1024, 1)})
@@ -402,6 +421,21 @@ def _matte_done(proj: Project, sid: str):
         return read_json(meta).get("ranges") or "all"
     except ValueError:
         return None
+
+
+def _faces_done(proj: Project, sid: str, frames):
+    """What an existing face file of `sid` covers: "all", [[a, b], ...], or None (none, unreadable, wrong length)."""
+    fp = proj.work / "face" / f"{sid}.json"
+    if not fp.exists():
+        return None
+    try:
+        d = read_json(fp)
+    except ValueError:
+        return None
+    boxes = d.get("boxes")
+    if not isinstance(boxes, list) or (frames and len(boxes) != frames):
+        return None
+    return d.get("ranges") or "all"  # a face file from before the per-range pass looked at every frame
 
 
 def _known_boxes(proj: Project, sid: str, frames) -> list | None:
@@ -459,7 +493,7 @@ def main(args, project: Project | None) -> dict:
                             "Check work/sources.json (kind must be talking-head).")
     base = project.root if project else (Path(args.out) if args.out else tools().scratch / "matte-out")
     cut = None
-    if project and not faces_only and not every and (project.work / "cutmap.json").exists():
+    if project and not every and (project.work / "cutmap.json").exists():
         cut = read_json(project.work / "cutmap.json")
     log_lines: list = []
 
@@ -475,12 +509,18 @@ def main(args, project: Project | None) -> dict:
         out_mp4 = base / prefix / "matte" / f"{j['id']}.mp4"
         out_face = base / prefix / "face" / f"{j['id']}.json"
         if faces_only:
-            if project and not force and _known_boxes(project, j["id"], j["frames"]) is not None:
-                skipped.append({"id": j["id"], "why": "face boxes already found"})
+            n_src = (j["frames"] or _count_frames(Path(j["src"]))) if cut is not None else 0
+            ranges = kept_ranges(cut, j["id"], n_src) if cut is not None else None
+            if cut is not None and not ranges:
+                skipped.append({"id": j["id"], "why": "the cut keeps none of this source"})
                 continue
-            log(f"{j['id']}: faces {j['src']} {info['w']}x{info['h']} {info['fps']:.3f} fps")
+            if project and not force and covers(_faces_done(project, j["id"], j["frames"]), ranges or "all"):
+                skipped.append({"id": j["id"], "why": "face boxes already cover the frames the cut keeps"})
+                continue
+            log(f"{j['id']}: faces {j['src']} {info['w']}x{info['h']} {info['fps']:.3f} fps; "
+                + ("every frame" if ranges is None else f"{sum(y - x for x, y in ranges)} of {n_src} frames in {len(ranges)} ranges"))
             res = process(Path(j["src"]), info["w"], info["h"], info["fps"], None, out_face, False, args.threads,
-                          j["cuts"], j["frames"], j["id"], log, faces=not j.get("plates"))
+                          j["cuts"], j["frames"], j["id"], log, faces=not j.get("plates"), ranges=ranges)
         else:
             n_src = (j["frames"] or _count_frames(Path(j["src"]))) if cut is not None else 0
             ranges = kept_ranges(cut, j["id"], n_src) if cut is not None else None
@@ -490,7 +530,9 @@ def main(args, project: Project | None) -> dict:
             if project and not force and covers(_matte_done(project, j["id"]), ranges or "all"):
                 skipped.append({"id": j["id"], "why": "the cut-out already covers the frames the cut keeps"})
                 continue
-            known = _known_boxes(project, j["id"], j["frames"]) if project else None
+            # reuse the face pass only where it looked (a re-cut can keep frames it never saw): else track here
+            known = (_known_boxes(project, j["id"], j["frames"])
+                     if project and covers(_faces_done(project, j["id"], j["frames"]), ranges or "all") else None)
             log(f"{j['id']}: {j['src']} {info['w']}x{info['h']} {info['fps']:.3f} fps; cut-out "
                 + ("every frame" if ranges is None else f"{sum(y - x for x, y in ranges)} of {n_src} frames in {len(ranges)} ranges"))
             res = process(Path(j["src"]), info["w"], info["h"], info["fps"], out_mp4, out_face, quality, args.threads,

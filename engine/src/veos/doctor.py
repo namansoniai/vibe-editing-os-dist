@@ -11,6 +11,8 @@ from pathlib import Path
 
 from .core import _find, r3, read_json, veos_home
 
+DISK_MIN_GB = 3  # below this a reel can run out of room mid-edit
+
 
 def _ram_gb() -> float | None:
     try:
@@ -75,8 +77,9 @@ def main(args, project) -> dict:
     free_gb = du.free / 2 ** 30
     machine = {"os": f"{platform.system()} {platform.release()} ({platform.version()})", "cpu": _cpu_name(),
                "cores": os.cpu_count(), "ram_gb": round(ram, 1) if ram else None, "disk_free_gb": round(free_gb, 1)}
-    add("disk space", free_gb >= 20, f"{free_gb:.0f} GB free on {anchor.drive or anchor}",
-        "Free up disk space; renders and models need about 20 GB.")
+    # measured: a 68 s reel's project folder is ~0.76 GB (frame pictures), plus render chunks and the final MP4
+    add("disk space", free_gb >= DISK_MIN_GB, f"{free_gb:.0f} GB free on {anchor.drive or anchor}",
+        "Each 1-minute reel needs about 1 GB while you edit it; free up some space.")
     add("memory", ram is None or ram >= 8, f"{ram:.0f} GB RAM" if ram else "unknown",
         "Under 8 GB of RAM: renders will be slow; close other programs.")
     add("VEOS_HOME", home.exists(), str(home), "Run /reel-setup to create the tools folder.")
