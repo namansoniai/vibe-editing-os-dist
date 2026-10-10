@@ -326,8 +326,21 @@ for n in _template _styles; do
 done
 
 # ---- 10 doctor
-step doctor "Checking everything with veos doctor"
-export PATH="$TOOLS/ffmpeg/bin:$PATH"
+step doctor "Putting veos on your PATH, then checking everything with veos doctor"
+# a stable wrapper in VEOS_HOME/bin (the plugin folder moves with every update); linked into ~/.local/bin or ~/bin when
+# one of them is already on PATH (shell profiles are never edited)
+mkdir -p "$HOME_DIR/bin"
+WRAP_SRC="$(cd "$(dirname "$0")" && pwd)/../bin/veos"; [ -f "$WRAP_SRC" ] || WRAP_SRC="$APP/plugin/bin/veos"
+if [ -f "$WRAP_SRC" ]; then
+  sed "s|^home=\"\${VEOS_HOME:-\${CLAUDE_PLUGIN_OPTION_VEOS_HOME:-}}\"|home=\"\${VEOS_HOME:-\${CLAUDE_PLUGIN_OPTION_VEOS_HOME:-$HOME_DIR}}\"|" "$WRAP_SRC" > "$HOME_DIR/bin/veos"
+  chmod +x "$HOME_DIR/bin/veos"
+  LINKED=""
+  for d in "$HOME/.local/bin" "$HOME/bin"; do
+    case ":$PATH:" in *":$d:"*) if [ -z "$LINKED" ] && [ -d "$d" ]; then ln -sf "$HOME_DIR/bin/veos" "$d/veos" && LINKED="$d"; fi ;; esac
+  done
+  if [ -n "$LINKED" ]; then info "veos linked into $LINKED"; else info "veos wrapper: $HOME_DIR/bin/veos (add that folder to your PATH to type just 'veos')"; fi
+fi
+export PATH="$HOME_DIR/bin:$TOOLS/ffmpeg/bin:$PATH"
 DOC="$("$VENVPY" -m veos doctor || true)"
 READY="$(printf '%s' "$DOC" | "$VENVPY" -c 'import sys,json; print(str(bool(json.load(sys.stdin).get("ready"))).lower())' 2>/dev/null || echo false)"
 PROBLEMS="$(printf '%s' "$DOC" | "$VENVPY" -c 'import sys,json; print(json.dumps(json.load(sys.stdin).get("problems",[])))' 2>/dev/null || echo '[]')"

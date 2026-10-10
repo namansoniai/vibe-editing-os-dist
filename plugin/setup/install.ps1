@@ -1,5 +1,6 @@
 <#
-  Vibe Editing OS - one-time installer (Windows 10/11, PowerShell 5.1+). No admin rights, nothing outside VEOS_HOME.
+  Vibe Editing OS - one-time installer (Windows 10/11, PowerShell 5.1+). No admin rights; nothing outside VEOS_HOME except
+  VEOS_HOME\bin (the `veos` wrapper) added once to the USER Path, so `veos` works in any new PowerShell or cmd window.
   Idempotent + resumable: every step checks what is already there. Re-run any time; use -Update to refresh the app.
 
   Params / env:
@@ -112,6 +113,36 @@ function HashOf([string[]]$files) {
   foreach ($f in $files) { if (Test-Path $f) { [void]$sb.Append((Get-FileHash -Algorithm SHA256 -Path $f).Hash) } }
   return $sb.ToString()
 }
+# `veos` in any new PowerShell / cmd window: a stable wrapper in VEOS_HOME\bin (the plugin folder moves with every
+# update, VEOS_HOME doesn't) and that folder on the USER Path (HKCU, no admin). Idempotent: never added twice.
+function Install-VeosWrapper([string]$h) {
+  $bin = Join-Path $h 'bin'; New-Item -ItemType Directory -Force -Path $bin | Out-Null
+  $src = @((Join-Path $PSScriptRoot '..\bin\veos.cmd'), (Join-Path $h 'app\plugin\bin\veos.cmd')) | Where-Object { Test-Path $_ } | Select-Object -First 1
+  if ($src) {
+    $txt = [IO.File]::ReadAllText((Resolve-Path $src).Path)
+    $txt = $txt.Replace('if "%H%"=="" set "H=%LOCALAPPDATA%\VibeEditingOS"', ('if "%H%"=="" set "H={0}"' -f $h))
+  } else {
+    $txt = "@echo off`r`nsetlocal`r`nset `"H=%VEOS_HOME%`"`r`nif `"%H%`"==`"`" set `"H=$h`"`r`n" +
+           "set `"VEOS_HOME=%H%`"`r`nset `"PLAYWRIGHT_BROWSERS_PATH=%H%\browsers`"`r`nset `"HF_HOME=%H%\models\hf`"`r`n" +
+           "if exist `"%H%\app`" set `"VEOS_APP=%H%\app`"`r`nset `"PYTHONIOENCODING=utf-8`"`r`nset `"PYTHONUTF8=1`"`r`n" +
+           "set `"PATH=%H%\tools\ffmpeg\bin;%PATH%`"`r`n`"%H%\venv\Scripts\python.exe`" -m veos %*`r`nexit /b %ERRORLEVEL%`r`n"
+  }
+  [IO.File]::WriteAllText((Join-Path $bin 'veos.cmd'), $txt, (New-Object System.Text.UTF8Encoding($false)))
+  return $bin
+}
+function Add-UserPath([string]$dir, [string]$keyName = 'Environment') {
+  $key = [Microsoft.Win32.Registry]::CurrentUser.CreateSubKey($keyName)
+  try {
+    $raw = [string]$key.GetValue('Path', '', [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+    $want = $dir.TrimEnd('\').ToLowerInvariant()
+    $parts = @($raw -split ';' | Where-Object { $_.Trim() -ne '' })
+    foreach ($p in $parts) { if ([Environment]::ExpandEnvironmentVariables($p).Trim().TrimEnd('\').ToLowerInvariant() -eq $want) { return $false } }
+    $key.SetValue('Path', ((@($parts) + $dir) -join ';'), [Microsoft.Win32.RegistryValueKind]::ExpandString)
+  } finally { $key.Close() }
+  # tell Explorer and new terminals that the environment changed (SetEnvironmentVariable broadcasts WM_SETTINGCHANGE)
+  if ($keyName -eq 'Environment') { try { [Environment]::SetEnvironmentVariable('VEOS_PATH_REFRESH', $null, 'User') } catch {} }
+  return $true
+}
 function Finish([bool]$ok, [hashtable]$extra) {
   $o = [ordered]@{ ok = $ok; home = $Home_; seconds = [int]((Get-Date) - $T0).TotalSeconds; log = $LogFile }
   foreach ($k in $extra.Keys) { $o[$k] = $extra[$k] }
@@ -119,7 +150,7 @@ function Finish([bool]$ok, [hashtable]$extra) {
   if ($ok) { exit 0 } else { exit 1 }
 }
 
-# Process-scoped env only (never touches the user/system environment).
+# Process-scoped env only (the user Path gets VEOS_HOME\bin in step 10, nothing else).
 $env:VEOS_HOME = $Home_
 $env:UV_PYTHON_INSTALL_DIR = Join-Path $Home_ 'python'
 $env:UV_CACHE_DIR = Join-Path $Home_ 'cache\uv'
@@ -182,6 +213,7 @@ try {
       try {
         if (Test-Path (Join-Path $App '.git')) {
           Info "git: updating existing checkout ($Ref)"
+          Run 'git' @('-C', $App, 'remote', 'set-url', 'origin', $Repo)  # follow the plugin's repo (e.g. switching to or from the beta)
           Retry { Run 'git' @('-C', $App, 'fetch', '--depth', '1', 'origin', $Ref) } 'git fetch'
           Run 'git' @('-C', $App, 'reset', '--hard', 'FETCH_HEAD')
         } else {
@@ -332,8 +364,10 @@ print(p)
   }
 
   # ---- 10 doctor -----------------------------------------------------------------------------------------------
-  Step 'doctor' 'Checking everything with veos doctor'
-  $env:PATH = (Join-Path $Home_ 'tools\ffmpeg\bin') + ';' + $env:PATH
+  Step 'doctor' 'Putting veos on your PATH, then checking everything with veos doctor'
+  $bin = Install-VeosWrapper $Home_
+  if (Add-UserPath $bin) { Info "added $bin to your user PATH (new terminals know 'veos')" } else { Info "veos already on your user PATH ($bin)" }
+  $env:PATH = $bin + ';' + (Join-Path $Home_ 'tools\ffmpeg\bin') + ';' + $env:PATH
   $doc = & $VenvPy -m veos doctor
   $global:LASTEXITCODE = 0
   $ready = $false; $problems = @()

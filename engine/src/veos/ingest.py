@@ -5,6 +5,9 @@ voice-over as source `V` (kind `voiceover`; a video file is accepted and its pic
 no `--audio` when project.json says `source_type: voiceover_only` (the VO is project.json `voiceover`, else the
 audio-only file, else the longest file with sound). In a voice-over project every other clip is supplementary (B-roll /
 screen recording, never a talking head).
+
+No-voice reels (`source_type: no_voice`, novoice.py): clips are B-roll / screen recordings, photos become `still`
+sources (held in work/stills/<id>.mp4), and the music (project.json `music`, else the audio-only files) is source `M`.
 """
 from __future__ import annotations
 
@@ -157,9 +160,11 @@ def classify(an: dict, lufs: float | None, has_audio: bool) -> tuple[str, float,
 
 
 # ---------------------------------------------------------------- command
-def _collect(inputs: list[str]) -> list[Path]:
+def _collect(inputs: list[str], stills: bool = False) -> list[Path]:
+    """Media files in `inputs` (folders searched recursively); `stills` also takes photos (no-voice reels)."""
+    from .novoice import STILL_EXT
     out, seen = [], set()
-    exts = media.VIDEO_EXT | media.AUDIO_EXT
+    exts = media.VIDEO_EXT | media.AUDIO_EXT | (STILL_EXT if stills else set())
     for s in inputs:
         p = Path(s).expanduser()
         if not p.exists():
@@ -249,13 +254,19 @@ def main(args, project) -> dict:
     vo_args = list(getattr(args, "audio", None) or [])
     voice_mode = bool(vo_args) or pstate.get("source_type") == "voiceover_only"
     plates = not voice_mode and pstate.get("source_type") == "animated_plates"  # puppets / animation: no face detection
+    no_voice = not voice_mode and pstate.get("source_type") == "no_voice"  # clips / photos + music (novoice.py)
     if not inputs and not vo_args:  # default to the clips registered by `veos project init`
         inputs = pstate.get("clips") or []
         if not inputs:
             raise VeosError("NO_INPUT", "no files given and project.json has no clips",
                             "Pass files/folders (or --audio <voice-over>), or run `veos project init <clips> --project P` first.")
-    files = _collect(inputs) if inputs else []
+    files = _collect(inputs, stills=no_voice) if inputs else []
     vo_files: list[Path] = []
+    music_files: list[Path] = []
+    if no_voice:
+        from . import novoice
+        music_files = novoice.pick_music(files, pstate.get("music"))
+        files = [f for f in files if f not in music_files]
     if voice_mode:
         vo_files = _collect(vo_args) if vo_args else pick_voiceover(files, pstate.get("voiceover"))
         if not vo_files:
@@ -278,8 +289,20 @@ def main(args, project) -> dict:
         summary.append({"id": entry["id"], "file": f.name, "kind": VO_KIND, "duration": entry["duration"],
                         "picture_ignored": entry["picture_ignored"]})
         warnings += [f"{f.name}: {n}" for n in entry["notes"] if "quiet" in n or "silent" in n]
+    for k, f in enumerate(music_files):
+        entry = novoice.music_source(f, novoice.music_id(k), proj)
+        sources.append(entry)
+        summary.append({"id": entry["id"], "file": f.name, "kind": entry["kind"], "duration": entry["duration"]})
+        warnings += [f"{f.name}: {n}" for n in entry["notes"] if "silent" in n]
     nth, ns = 0, 0
     for f in files:
+        if no_voice and novoice.is_still(f):  # a photo / slide: held in a short clip, like any other clip after this
+            ns += 1
+            entry = novoice.still_source(f, f"S{ns}", proj)
+            sources.append(entry)
+            summary.append({"id": entry["id"], "file": f.name, "kind": entry["kind"], "fit": entry["fit"],
+                            "size": entry["image_size"]})
+            continue
         pr = media.probe(f)
         v = pr["video"]
         notes: list[str] = []
@@ -299,7 +322,7 @@ def main(args, project) -> dict:
             if v["vfr"]:
                 warnings.append(f"{f.name}: variable frame rate (conform makes it a constant 30 fps)")
         else:
-            if finder is None:
+            if finder is None and not no_voice:  # no-voice: no presenter to find, only B-roll vs screen recording
                 finder = FaceFinder()
             dur = v["duration"] or pr["duration"]
             an = analyse_video(f, dur, finder)
@@ -314,9 +337,9 @@ def main(args, project) -> dict:
                          rotation=v["rotation"], fps_in=v["fps_in"], vfr=v["vfr"])
             if v["vfr"]:
                 warnings.append(f"{f.name}: variable frame rate (conform makes it a constant 30 fps)")
-        if voice_mode and kind == "talking-head":  # a voice-over reel has no presenter: extra clips are B-roll
+        if (voice_mode or no_voice) and kind == "talking-head":  # no presenter: extra clips are B-roll
             kind = "broll"
-            notes.append("voice-over project: used as B-roll, not as a talking head")
+            notes.append(("no-voice" if no_voice else "voice-over") + " project: used as B-roll, not as a talking head")
             segs = [{"start": 0.0, "end": entry["duration"], "setup": "other"}]
         if kind == "talking-head":
             sid = _talking_id(nth)
@@ -332,8 +355,8 @@ def main(args, project) -> dict:
         summary.append({"id": sid, "file": f.name, "kind": kind, "duration": entry["duration"],
                         "segments": [[s["start"], s["end"], s["setup"]] for s in segs],
                         "vfr": entry.get("vfr", False)})
-    doc = {"version": 1, "fps": FPS, "source_type": "voiceover_only" if voice_mode else "animated_plates" if plates else "talking_head",
-           "sources": sources}
+    doc = {"version": 1, "fps": FPS, "source_type": "voiceover_only" if voice_mode else "animated_plates" if plates
+           else "no_voice" if no_voice else "talking_head", "sources": sources}
     if script:
         doc["script"] = script
     write_json(proj.path("work", "sources.json"), doc)

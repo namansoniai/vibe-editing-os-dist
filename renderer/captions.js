@@ -3,7 +3,7 @@
  * Draws the chunk list that the engine's caption profile engine (engine/src/veos/capengine.py) put in the bundle
  * (`VEOS_BUNDLE.captions`, also work/captions.json). Python decides the words, chunks, lines, fonts, sizes, colours,
  * emphasis and timing; this file only lays the block out (measured with the loaded fonts), anchors it to the stage
- * (fixed_y, seam, below_card, chest, inside_footage, top_left), animates swaps / word reveals / karaoke / kinetic
+ * (fixed_y, seam, seam_above, below_card, chest, inside_footage, top_left), animates swaps / word reveals / karaoke / kinetic
  * stacks, and applies the hide rules. Every frame is a pure function of n.
  *
  * Captions are drawn in screen space at z7 by core.js (`__subtitles`): stage morphs, footage camera presets and the
@@ -104,7 +104,8 @@ function init(B, env) {
   return Promise.all(loads).then(async () => {
     const fams = new Set(ALL.flatMap(c => (c.words || []).map(w => w.fam).filter(Boolean)));
     for (const f of fams) { await document.fonts.load(`400 40px '${f}'`, "Aa1").catch(() => {}); await document.fonts.load(`italic 400 40px '${f}'`, "Aa1").catch(() => {}); }
-    for (const f of C.fallback_fonts || []) if (/Devanagari/.test(f.family)) await document.fonts.load(`400 40px '${f.family}'`, "कार").catch(() => {});
+    // Indic-script fallbacks (Devanagari, Telugu, Tamil, ...) load with a sample of their own script
+    for (const f of C.fallback_fonts || []) if (f.sample || /Devanagari/.test(f.family)) await document.fonts.load(`400 40px '${f.family}'`, f.sample || "कार").catch(() => {});
   });
 }
 
@@ -229,6 +230,7 @@ function anchorTop(c, prof, bh, fr) {
   let top = null;
   if ((a === "chest" || c.avoided) && c.top != null) top = c.top;
   else if (a === "seam" && win) top = (g.y > 1 ? g.y : g.y + g.h) + (+pos.dy || 0) - bh / 2;
+  else if (a === "seam_above" && win) top = (g.y > 1 ? g.y : g.y + g.h) - off - bh; // bottom edge `offset` px above the seam (clear of the head)
   else if (a === "below_card" && win) top = g.y + g.h + off;
   else if (a === "inside_footage" && win) top = Math.min(g.y + g.h, H) - off - bh;
   else if (a === "top_left") top = safe.y[0] + off;

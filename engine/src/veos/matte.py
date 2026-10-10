@@ -12,7 +12,9 @@
 Outputs (per talking-head source id):
   work/face/<id>.json   SPEC section 3 face format (`veos faces`; `veos matte` writes it too when it is missing), plus
                         `ranges`: the source frames it looked at ("all" or [[a, b], ...]); frames outside are null
-  work/matte/<id>.mp4   gray H.264 alpha, same frame count as the source
+  work/matte/<id>.mp4   gray H.264 alpha, same frame count as the source, at the proxy size (proxy_size: the
+                        1080x1920 frame it fills is 720x1280; --quality: the source size); only the kept
+                        ranges are decoded and cut out
   work/matte/<id>.json  which source frame ranges were cut out ("all" or [[a, b], ...]); a matte without it covers all
 A source whose matte already covers the wanted frames is skipped (`--force` redoes it).
 
@@ -43,6 +45,7 @@ from pathlib import Path
 import numpy as np
 
 from .core import FPS, Project, VeosError, need_project, r3, read_json, tools, write_json
+from .cut import src_frames
 from . import face as facemod
 
 RVM_URL = "https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_mobilenetv3_fp32.onnx"
@@ -165,6 +168,17 @@ def refine_up(alpha: np.ndarray, rgb: np.ndarray, size: tuple[int, int], guided:
 
 
 # ---------------------------------------------------------------- one source
+SKIP = object()          # reader -> main loop: a source frame outside the kept ranges (not decoded)
+PROXY_COVER = 2 / 3      # the cut-out's proxy: the 1080x1920 frame it fills is 720x1280
+
+
+def proxy_size(W: int, H: int) -> tuple[int, int]:
+    """Size the default cut-out works at: the source scaled so the 1080x1920 frame it covers is 720x1280 (never
+    larger than the source), even numbers for the encoder."""
+    t = min(1.0, PROXY_COVER * max(1080 / W, 1920 / H))
+    return max(2, 2 * int(round(W * t / 2))), max(2, 2 * int(round(H * t / 2)))
+
+
 def kept_ranges(cut: dict, sid: str, n_src: int) -> list[list[int]]:
     """The source frames of `sid` the cut map keeps, widened by the warm-up / tail margins and joined when close:
     [[a, b), ...] in source frames, inside [0, n_src)."""
@@ -173,7 +187,7 @@ def kept_ranges(cut: dict, sid: str, n_src: int) -> list[list[int]]:
         if seg.get("src") != sid:
             continue
         a = int(seg["in_frame"])
-        b = a + int(seg["f1"]) - int(seg["f0"])
+        b = a + src_frames(seg)  # source frames (a sped-up segment covers more source than edit frames)
         spans.append([max(0, a - WARMUP_F), min(n_src, b + TAIL_F)])
     spans.sort()
     out: list[list[int]] = []
@@ -202,7 +216,12 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
     """One decode pass over a source.
     faces False (animated plates): no face tracking; the face file is written with empty boxes.
     out_mp4 None: the face-only pass of `veos faces` (no cut-out model at all).
-    ranges: the source frame ranges to cut out (None = every frame); frames outside are written transparent.
+    ranges: the source frame ranges to cut out (None = every frame); frames outside are written transparent. With a
+      conformed source (`expect_frames` known) only those ranges are decoded (one seek each); the face boxes then
+      cover only them too (the face file says so in `ranges`).
+    The default cut-out works at a proxy size (proxy_size: the 1080x1920 frame it fills is 720x1280): the matte is
+    written at that size and `veos prep-frames` scales it up with the footage (soft, feathered edges). --quality keeps
+    the full source size.
     known_boxes: the boxes of an earlier `veos faces` pass, used instead of tracking again (the face file is kept)."""
     import cv2
     cv2.setNumThreads(4)
@@ -220,9 +239,13 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
         PW, PH, ds = max(2, int(round(W * s))), max(2, int(round(H * s))), 0.5
     scale = PW / W
     # The face-only pass decodes straight at the processing size: the tracker needs no more, and full-size rgb24 is
-    # ~25 MB a frame for 4K phone footage. Its boxes are mapped back to source pixels. The cut-out keeps the full frame
-    # (the edge refinement needs it).
-    DW, DH = (W, H) if cutout or PW >= W else (PW, PH)
+    # ~25 MB a frame for 4K phone footage. Its boxes are mapped back to source pixels. The cut-out decodes at the proxy
+    # size (the edge refinement runs there and the matte is written there), --quality at the full size.
+    if cutout:
+        DW, DH = (W, H) if quality else proxy_size(W, H)
+    else:
+        DW, DH = (W, H) if PW >= W else (PW, PH)
+    OW, OH = DW, DH  # the matte's size
     sx, sy = W / DW, H / DH
     dsr = np.array([ds], dtype=np.float32)
     inside = (lambda i: True) if ranges is None else (lambda i: any(a <= i < b for a, b in ranges))
@@ -232,12 +255,14 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
         return [np.zeros((1, 1, 1, 1), np.float32) for _ in range(4)]
 
     shrink = ["-vf", f"scale={DW}:{DH}:flags=area"] if (DW, DH) != (W, H) else []
-    dec = subprocess.Popen([ff, "-v", "error", "-i", str(src), "-an", *shrink, "-fps_mode", "passthrough", "-f", "rawvideo",
-                            "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=DW * DH * 3 * 2)
+    ranged = ranges is not None and bool(expect_frames)  # decode only the kept ranges of the conformed source
+    dec = None if ranged else subprocess.Popen(
+        [ff, "-v", "error", "-i", str(src), "-an", *shrink, "-fps_mode", "passthrough", "-f", "rawvideo",
+         "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=DW * DH * 3 * 2)
     enc = None
     if cutout:
         out_mp4.parent.mkdir(parents=True, exist_ok=True)
-        enc = subprocess.Popen([ff, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "gray", "-s", f"{W}x{H}",
+        enc = subprocess.Popen([ff, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "gray", "-s", f"{OW}x{OH}",
                                 "-framerate", f"{fps:.6f}", "-i", "-",
                                 "-vf", "scale=in_range=full:out_range=full,format=yuv420p",
                                 "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-x264-params", "fullrange=1",
@@ -248,10 +273,42 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
     q1: queue.Queue = queue.Queue(6)
     q2: queue.Queue = queue.Queue(6)
     nbytes = DW * DH * 3
-    blank = bytes(W * H)
+    blank = bytes(OW * OH)
+
+    def read_ranges():
+        n = 0
+        for a, b in ranges:
+            a, b = max(a, n), min(b, int(expect_frames))
+            while n < a:
+                q1.put(SKIP)
+                n += 1
+            if b <= a:
+                continue
+            seek = ["-ss", f"{(a - 0.5) / fps:.5f}"] if a > 0 else []
+            p = subprocess.Popen([ff, "-v", "error", *seek, "-i", str(src), "-an", *shrink, "-frames:v", str(b - a),
+                                  "-fps_mode", "passthrough", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=DW * DH * 3 * 2)
+            try:
+                while n < b:
+                    buf = p.stdout.read(nbytes)
+                    if len(buf) < nbytes:
+                        break
+                    q1.put(np.frombuffer(buf, np.uint8).reshape(DH, DW, 3))
+                    n += 1
+            finally:
+                p.stdout.close()
+                p.wait()
+            if n < b:  # the source ended early: the frame count check below reports it
+                return
+        while n < int(expect_frames):
+            q1.put(SKIP)
+            n += 1
 
     def reader():
         try:
+            if ranged:
+                read_ranges()
+                return
             while True:
                 buf = dec.stdout.read(nbytes)
                 if len(buf) < nbytes:
@@ -282,7 +339,7 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
                     d = np.abs(a - prev_a)
                     a = np.where(d < EMA_MAX_DELTA, (1 - EMA_PREV) * a + EMA_PREV * prev_a, a)
                 prev_kept, prev_a = kept, a
-                full = refine_up(a, rgb, (W, H), guided=(PW != W))
+                full = refine_up(a, rgb, (OW, OH), guided=(PW != OW))
                 enc.stdin.write(np.clip(full * 255 + 0.5, 0, 255).astype(np.uint8).tobytes())
         except BaseException as e:  # noqa: BLE001
             err.append(e)
@@ -309,6 +366,14 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
             rgb = q1.get()
             if rgb is None or err:
                 break
+            if rgb is SKIP:  # a frame outside the kept ranges, never decoded: transparent, no face box
+                prev_thumb = None
+                if cutout:
+                    q2.put("blank")
+                if known_boxes is None:
+                    boxes.append(None)
+                n += 1
+                continue
             here = cutout and inside(n)
             if not cutout and ranges is not None and not inside(n):  # face-only pass: a frame the cut never keeps
                 prev_thumb = None
@@ -372,8 +437,9 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
                 enc.stdin.close()
             except Exception:  # noqa: BLE001
                 pass
-        dec.stdout.close()
-        dec.wait()
+        if dec is not None:
+            dec.stdout.close()
+            dec.wait()
         if enc:
             enc_err = enc.stderr.read().decode("utf-8", "replace")
             enc.wait()
@@ -393,12 +459,14 @@ def process(src: Path, W: int, H: int, fps: float, out_mp4: Path | None, out_fac
         if out_frames != n:
             raise VeosError("FRAME_MISMATCH", f"alpha video has {out_frames} frames, expected {n}", "Re-run `veos matte`.")
         write_json(out_mp4.with_suffix(".json"), {"version": 1, "source": source_id, "frames": n,
-                                                  "ranges": "all" if ranges is None else ranges}, indent=None)
+                                                  "ranges": "all" if ranges is None else ranges,
+                                                  "size": [OW, OH]}, indent=None)
         res.update({"cut_out_frames": cut_out, "mode": "quality" if quality else "default", "proc_size": [PW, PH],
-                    "ds": ds, "matte_mb": round(out_mp4.stat().st_size / 2**20, 2)})
+                    "matte_size": [OW, OH], "ds": ds, "matte_mb": round(out_mp4.stat().st_size / 2**20, 2)})
     if known_boxes is None and out_face is not None:
         fb = facemod.finalize(boxes)
-        looked = ranges if (not cutout and ranges is not None) else "all"  # the cut-out pass tracks every frame
+        # the face pass and a ranged decode look only at the kept ranges; a full decode tracks every frame
+        looked = ranges if ranges is not None and (not cutout or ranged) else "all"
         write_json(out_face, {"version": 1, "source": source_id, "fps": FPS if abs(fps - FPS) < 0.01 else r3(fps),
                               "frames": n, "ranges": looked, "boxes": fb}, indent=None)
         n_looked = n if looked == "all" else sum(min(y, n) - x for x, y in looked if x < n)  # frames it looked at
@@ -475,6 +543,9 @@ def main(args, project: Project | None) -> dict:
         plates = sdoc.get("source_type") == "animated_plates"
         if sdoc.get("source_type") == "voiceover_only" and not args.id:  # E-12: no presenter, nothing to cut out
             return {"skipped": True, "reason": "voice-over reel: no presenter footage, so no matte and no face boxes",
+                    "sources": []}
+        if sdoc.get("source_type") == "no_voice" and not args.id:  # clips / photos + music: no presenter
+            return {"skipped": True, "reason": "no-voice reel: no presenter, so no matte and no face boxes",
                     "sources": []}
         if getattr(args, "if_needed", False):
             from .cutout import needs_cutout

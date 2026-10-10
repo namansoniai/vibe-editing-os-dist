@@ -321,7 +321,7 @@ def check_script(page: Path) -> None:
 
 
 # ------------------------------------------------------------------ voice
-def build_voice(project, tl: dict, out: Path) -> None:
+def build_voice(project, tl: dict, out: Path, warnings: list | None = None) -> None:
     t = tools()
     dur = float(tl["meta"]["duration"])
     cm_path = project.work / "cutmap.json"
@@ -341,7 +341,7 @@ def build_voice(project, tl: dict, out: Path) -> None:
         graph = "[0:a]asetpts=PTS-STARTPTS[c]"
     graph += f";[c]highpass=f=80,loudnorm=I=-14:TP=-1.5,apad,atrim=end={dur:.4f}[o]"
     out.parent.mkdir(parents=True, exist_ok=True)
-    bus = _sfx_bus(project, tl, inputs, graph, dur)
+    bus = _sfx_bus(project, tl, inputs, graph, dur, warnings)
     if bus is not None:  # the creator hears the sounds before approving: voice + SFX bus
         inputs = inputs + ["-i", str(bus)]
         graph = graph.replace("[o]", "[v]") + (";[1:a]aformat=channel_layouts=mono[s];[v]aresample=48000,aformat=channel_layouts=mono[vm];"
@@ -350,8 +350,9 @@ def build_voice(project, tl: dict, out: Path) -> None:
          "-c:a", "aac", "-b:a", "128k", str(out)], project, "storyboard")
 
 
-def _sfx_bus(project, tl: dict, inputs: list, graph: str, dur: float):
-    """Bus WAV for the animatic, or None when the timeline has no catalogue cues / no catalogue (then voice only)."""
+def _sfx_bus(project, tl: dict, inputs: list, graph: str, dur: float, warnings: list | None = None):
+    """Bus WAV for the animatic, or None when the timeline has no catalogue cues / no catalogue (then voice only). A sound
+    that cannot be downloaded is left out and named in `warnings`."""
     if not any(c.get("id") for c in tl.get("sfx") or []):
         return None
     from .sfxlib import pack_dir, read_catalog_doc
@@ -365,13 +366,29 @@ def _sfx_bus(project, tl: dict, inputs: list, graph: str, dur: float):
     vref = sc / "animatic_voice.wav"  # the loudness-normalised voice, so cue levels sit where the final mix puts them
     run([tools().ffmpeg, "-y", "-v", "error", *inputs, "-filter_complex", graph, "-map", "[o]", "-ac", "1", "-ar", "48000",
          str(vref)], project, "storyboard")
-    return _build_bus_file(tl, cat, pack, vref, sc / "animatic_sfx.wav")
+    return _build_bus_file(tl, cat, pack, vref, sc / "animatic_sfx.wav", warnings)
 
 
-def _build_bus_file(tl, cat, pack, vref, out):
+def _build_bus_file(tl, cat, pack, vref, out, warnings: list | None = None):
     from .sfxlib import build_bus
-    build_bus(tl, cat, pack, vref, out)
+    res = build_bus(tl, cat, pack, vref, out)
+    if warnings is not None:
+        warnings.extend(w for w in res.get("warnings") or [] if w.startswith("skipped sound"))
     return out
+
+
+def ensure_transition_ids(tl: dict) -> dict:
+    """Give every timeline transition an `id` (`<type>-<n>`, or `transition-<n>` for a marker); the storyboard names them."""
+    seen = {str(tr.get("id")) for tr in tl.get("transitions") or [] if isinstance(tr, dict) and tr.get("id")}
+    for i, tr in enumerate(tl.get("transitions") or []):
+        if isinstance(tr, dict) and not tr.get("id"):
+            base = f"{tr.get('type') or 'transition'}-{i + 1}"
+            tid, k = base, 2
+            while tid in seen:
+                tid, k = f"{base}-{k}", k + 1
+            tr["id"] = tid
+            seen.add(tid)
+    return tl
 
 
 # ------------------------------------------------------------------ main
@@ -381,7 +398,7 @@ def main(args, project):
     tlp = project.root / "plan" / "timeline.json"
     if not tlp.exists():
         raise VeosError("NO_TIMELINE", f"{tlp} not found", "Write plan/timeline.json first (planner step).")
-    tl = read_json(tlp)
+    tl = ensure_transition_ids(read_json(tlp))
     C = build_config(tl, project, args.anim_fps)
     write_json(project.root / "plan" / "storyboard.config.json", C)
     st, sp, an, al = all_frames(C)
@@ -402,7 +419,7 @@ def main(args, project):
     review = project.root / "review"
     try:
         render._render(ns, project)
-        build_voice(project, tl, review / "mockup" / "voice.m4a")
+        build_voice(project, tl, review / "mockup" / "voice.m4a", warnings)
         res = build_page(C, tl, scratch, review, scenes)
     finally:
         shutil.rmtree(scratch, ignore_errors=True)

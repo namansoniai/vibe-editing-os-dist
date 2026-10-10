@@ -10,6 +10,10 @@ window, or None when no face is visible (hidden stage, dimmed footage, an opaque
 show other sources, or the box falls outside the window). The geometry is the renderer's (core.js `geom`, layouts.js
 `geom` / `frameRect`) without camera presets; when `veos measure` recorded the frame's footage transform
 (plan/measure.text.json `geo`), that exact transform is used instead.
+
+`screen_head(c, n, box, raw, sil)` returns the presenter's head region the same way (face, hair, room above the head:
+`head_box`, from the cut-out silhouette when `silhouette()` could read one, else the face box grown by HAIR_UP / SIDES),
+clipped to the window plus its head-breakout strip. `map_region` is the Ctx-free core the caption engine uses too.
 """
 from __future__ import annotations
 
@@ -288,6 +292,42 @@ def screen_face(c, n: int, box, raw=None) -> tuple | None:
     """Face box (x0, y0, x1, y1) on screen at frame n (see module doc). `box` is [x, y, w, h, ...] as a full stage shows
     it (after the E-16b base reframe, framing.apply_boxes: what `full` / `low` draw); `raw` the same box in footage space
     (before the reframe: the card / pip / stack windows and the measured transform map from it; default `box`)."""
+    return _screen(c, n, box, raw, None)
+
+
+def screen_head(c, n: int, box, raw=None, sil=None) -> tuple | None:
+    """The presenter's HEAD REGION (x0, y0, x1, y1) on screen at frame n: face, hair and a little room above the head
+    (head_box: the cut-out silhouette `sil` when known, else the face box expanded), clipped to the presenter window
+    extended upward by the layout's head `breakout` (the strip [window.y - bo, window.y] where the cut-out head rises
+    over a card / pip window). None when no presenter shows (the same cases as screen_face)."""
+    return _screen(c, n, box, raw, sil if sil is not None else False)
+
+
+def screen_window_fit(c, n: int, box, raw=None, sil=None) -> dict | None:
+    """window_fit at frame n (see window_fit): None on a full-frame stage, or when no presenter shows (the same cases as
+    screen_face). `sil`: the cut-out silhouette tuple, or None for the face box grown for the hair."""
+    if not box or len(box) < 4:
+        return None
+    F = tuple(float(v) for v in box[:4])
+    R0 = tuple(float(v) for v in (raw or box)[:4]) if (raw or box) and len(raw or box) >= 4 else F
+    t = n / (c.fps or 30)
+    ev = stage_entry_at(c, t)
+    lid = str(ev.get("layout", "full"))
+    eng = c.stage_engine_at(t)
+    if eng in ("hidden", "full", "low") or dimmed(c.style, lid, ev):
+        return None
+    from .profilecheck import presenter_visible
+    if not presenter_visible(c, n, need_face=False):
+        return None
+    got = window_fit(c.style, lid, eng, ev, F, R0, (getattr(c, "framing", None) or {}).get("ranges"),
+                     geo=_geo_at(c, n), sil=sil)
+    if got is not None:
+        got["layout"] = lid
+    return got
+
+
+def _screen(c, n: int, box, raw, head) -> tuple | None:
+    """screen_face (head None) / screen_head (head False: the expanded face box, or a silhouette tuple)."""
     if not box or len(box) < 4:
         return None
     F = tuple(float(v) for v in box[:4])
@@ -301,25 +341,152 @@ def screen_face(c, n: int, box, raw=None) -> tuple | None:
     from .profilecheck import presenter_visible
     if not presenter_visible(c, n, need_face=False):
         return None
-    geo = _geo_at(c, n)
+    return map_region(c.style, lid, eng, ev, F, R0, (getattr(c, "framing", None) or {}).get("ranges"),
+                      geo=_geo_at(c, n), head=head)
+
+
+# ------------------------------------------------------------------------------------------------ the head region
+# The person comes first (Naman, 9 Oct 2026): nothing drawn above the presenter may cover the face, the hair or the
+# top of the head. Face boxes run brow to chin, so the head region grows them: up by HAIR_UP face heights (skull and
+# hair) plus HEADROOM, sideways by SIDES face widths each side. When the cut-out (work/frames/c*.webp) exists for the
+# frame, the real silhouette above the chin line replaces the guess (silhouette()).
+HAIR_UP = 0.75
+HEADROOM = 0.10
+SIDES = 0.15
+SIL_UP_MAX = 1.6     # the silhouette search window above the face box (face heights) ...
+SIL_SIDE_MAX = 0.6   # ... and beside it (face widths): hair, not a raised hand at arm's length
+SIL_ALPHA = 128
+
+
+def head_box(box, sil=None) -> tuple:
+    """Head region (x, y, w, h) in the same space as the face box (x, y, w, h). `sil` = (left, up, right): how far the
+    cut-out silhouette above the chin reaches past the face box, in face widths / heights (silhouette()); without it the
+    face box grows by SIDES each side and HAIR_UP up. HEADROOM is always added above. The bottom stays at the chin."""
+    x, y, w, h = (float(v) for v in box[:4])
+    if sil:
+        left, up, right = (max(0.0, float(v)) for v in sil)
+    else:
+        left, up, right = SIDES, HAIR_UP, SIDES
+    up += HEADROOM
+    return (x - left * w, y - up * h, w * (1 + left + right), h * (1 + up))
+
+
+def silhouette(path, box) -> tuple | None:
+    """(left, up, right) extents of the person cut-out above the chin line around the face box (footage space), read
+    from a cut-out frame (RGBA, alpha = the person); None when the file is missing / unreadable / shows no person."""
+    try:
+        import numpy as np
+        from PIL import Image
+        with Image.open(path) as im:
+            if "A" not in im.getbands():
+                return None
+            a = np.asarray(im.getchannel("A"))
+    except Exception:  # noqa: BLE001 - a broken frame is "no silhouette"
+        return None
+    x, y, w, h = (float(v) for v in box[:4])
+    if w < 2 or h < 2:
+        return None
+    H_, W_ = a.shape[:2]
+    cx0, cx1 = max(0, int(x - SIL_SIDE_MAX * w)), min(W_, int(x + w + SIL_SIDE_MAX * w) + 1)
+    cy0, cy1 = max(0, int(y - SIL_UP_MAX * h)), min(H_, int(y + h))  # rows above the chin line only
+    if cx1 - cx0 < 2 or cy1 - cy0 < 2:
+        return None
+    m = a[cy0:cy1, cx0:cx1] >= SIL_ALPHA
+    rows, cols = np.nonzero(m.any(axis=1))[0], np.nonzero(m.any(axis=0))[0]
+    if not len(rows) or not len(cols):
+        return None
+    top, left, right = cy0 + rows[0], cx0 + cols[0], cx0 + cols[-1] + 1
+    return ((x - left) / w, (y - top) / h, (right - (x + w)) / w)
+
+
+def breakout_px(v) -> float:
+    """layouts.js normBreakout: true = 160 px, a number = px, {px} = px."""
+    if isinstance(v, dict):
+        v = v.get("px", True)
+    if v is True:
+        return 160.0
+    if _num(v) and v > 0:
+        return float(v)
+    return 0.0
+
+
+def _project(style: dict, lid: str, eng: str, ev: dict, F, R0, base_framing=None, geo=None, head=None):
+    """The unclipped screen rect (x0, y0, x1, y1) of the face box / head region, the footage window (x, y, w, h) and
+    the head breakout px (card / pip, head regions only); None when nothing shows. See map_region."""
+    ev = ev or {}
+    if head is not None:
+        sil = head or None
+        EF, ER = head_box(F, sil), head_box(R0, sil)
+    else:
+        EF, ER = F, R0
+    bo = 0.0
     if geo:
         a, b, cc, d, e, f = (float(v) for v in geo["m"])
-        pts = [(a * x + cc * y + e, b * x + d * y + f) for x, y in ((R0[0], R0[1]), (R0[0] + R0[2], R0[1]),
-                                                                     (R0[0], R0[1] + R0[3]), (R0[0] + R0[2], R0[1] + R0[3]))]
+        pts = [(a * x + cc * y + e, b * x + d * y + f) for x, y in ((ER[0], ER[1]), (ER[0] + ER[2], ER[1]),
+                                                                     (ER[0], ER[1] + ER[3]), (ER[0] + ER[2], ER[1] + ER[3]))]
         win = tuple(float(v) for v in geo["win"])
         x0, y0 = min(p[0] for p in pts), min(p[1] for p in pts)
         x1, y1 = max(p[0] for p in pts), max(p[1] for p in pts)
     else:
-        B = F if eng in ("full", "low") else R0  # the base reframe only applies to the full and low stages
-        g = (_legacy(c.style, eng, ev, B) if eng in LEGACY else
-             _new(c.style, lid, eng, ev, B, (getattr(c, "framing", None) or {}).get("ranges")))
+        full = eng in ("full", "low")
+        B, E = (F, EF) if full else (R0, ER)  # the base reframe only applies to the full and low stages
+        g = (_legacy(style, eng, ev, B) if eng in LEGACY else _new(style, lid, eng, ev, B, base_framing))
         if g is None:
             return None
         win, s, ax, ay, fx, fy = g
-        x0, y0 = ax + s * (B[0] - fx), ay + s * (B[1] - fy)
-        x1, y1 = ax + s * (B[0] + B[2] - fx), ay + s * (B[1] + B[3] - fy)
-    wx0, wy0, wx1, wy1 = win[0], win[1], win[0] + win[2], win[1] + win[3]
+        x0, y0 = ax + s * (E[0] - fx), ay + s * (E[1] - fy)
+        x1, y1 = ax + s * (E[0] + E[2] - fx), ay + s * (E[1] + E[3] - fy)
+    if head is not None and eng in ("card", "pip"):
+        bo = breakout_px(_params(style, lid, eng, ev).get("breakout"))
+    return (x0, y0, x1, y1), win, bo
+
+
+def map_region(style: dict, lid: str, eng: str, ev: dict, F, R0, base_framing=None, geo=None, head=None):
+    """Screen rect (x0, y0, x1, y1) of the face box (head None) or of the head region (head False / a silhouette) given
+    the stage layout. F: the face box as a full stage shows it (after the base reframe); R0: the same box in footage
+    space. The window's transform is computed from the face box itself; the head region rides the same transform and
+    is clipped to the window, extended upward by the layout's head breakout (card / pip). None when nothing shows."""
+    got = _project(style, lid, eng, ev, F, R0, base_framing, geo, head)
+    if got is None:
+        return None
+    (x0, y0, x1, y1), win, bo = got
+    wx0, wy0, wx1, wy1 = win[0], win[1] - bo, win[0] + win[2], win[1] + win[3]
     x0, y0, x1, y1 = max(x0, wx0, 0), max(y0, wy0, 0), min(x1, wx1, W), min(y1, wy1, H)
     if x1 - x0 < 4 or y1 - y0 < 4:
         return None
     return (x0, y0, x1, y1)
+
+
+# ------------------------------------------------------------------------------------------------ window crops (advice)
+# Does a window crop the creator's head? When the footage shows inside a rect smaller than the frame (card, pip, split /
+# stack cell, letterbox band, the legacy panels), the head region (head_box: the cut-out silhouette, else the face box
+# grown for the hair, plus headroom) is compared with the visible window plus a card / pip `breakout` strip. Full-frame
+# stages (full, low, a 1080x1920 card) are exempt. V-FACE reports it as advice only, and the renderer frames every
+# window with the style's own face / eye (Naman, 10 Oct 2026: no automatic head-safe framing).
+FIT_TOL = 2.0  # px: rounding between this model and the renderer
+
+
+def full_frame(win) -> bool:
+    """The footage window covers the whole frame (core.js: the world shows through no window)."""
+    x, y, w, h = (float(v) for v in win[:4])
+    return x <= 0.5 and y <= 0.5 and x + w >= W - 0.5 and y + h >= H - 0.5
+
+
+def window_fit(style: dict, lid: str, eng: str, ev: dict, F, R0, base_framing=None, geo=None, sil=None) -> dict | None:
+    """Does the head region fit the presenter's window? None for a full-frame stage or when nothing shows; else
+    {"head": unclipped screen head region (x0, y0, x1, y1), "win": the visible window (clipped to the frame, its top
+    raised by the breakout strip), "bo": breakout px, "cut": {side: px the head reaches past that edge} (empty: fits)}.
+    `sil`: a silhouette tuple (presenter.silhouette) or None for the face box grown for the hair."""
+    if eng in ("full", "low"):
+        return None
+    got = _project(style, lid, eng, ev, F, R0, base_framing, geo, sil or False)
+    if got is None:
+        return None
+    (x0, y0, x1, y1), win, bo = got
+    if full_frame(win):
+        return None
+    wx0, wy0 = max(0.0, win[0]), max(0.0, win[1] - bo)
+    wx1, wy1 = min(float(W), win[0] + win[2]), min(float(H), win[1] + win[3])
+    cut = {k: v for k, v in (("top", wy0 - y0), ("left", wx0 - x0), ("right", x1 - wx1), ("bottom", y1 - wy1))
+           if v > FIT_TOL}
+    return {"head": (x0, y0, x1, y1), "win": (wx0, wy0, wx1, wy1), "bo": bo, "cut": cut}

@@ -4,6 +4,7 @@ Cue: {"t": edit s where the file's anchor lands, "id": catalogue id, "db"?, "bea
 transition@<t>", "why": "..."}. Legacy cues ({"file": ...}) are left to M10/M9.
 
 S1 tied to picture   S2 vibe match   S3 palette   S4 restraint   S5 ledger   S6 catalogue
+S4's density count (sounds per 10 s) is taste (vcommon.taste): validate leaves it out of its output.
 `fail` comes from validate.py (imported lazily to avoid a cycle).
 """
 from __future__ import annotations
@@ -11,6 +12,7 @@ from __future__ import annotations
 import re
 
 from .core import FPS
+from .vcommon import taste
 
 TOL_FRAMES = 3
 DEFAULT_PALETTE = {  # tone.energy -> vibes the playbook's sound may use
@@ -194,8 +196,8 @@ def s4(c):
         n = sum(1 for r in qs[i:] if float(r["t"]) < t + 10 - 1e-6)
         if n > cap and t > flagged + 10:
             flagged = t
-            out.append(_fail("S4", _bid(c, q), t, f"{n} sounds in the 10 s from {t:.1f} s (max {cap})",
-                             f"remove {n - cap} sound(s) between {t:.1f} and {t + 10:.1f} s: keep the ones on the biggest moments"))
+            out.append(taste(_fail("S4", _bid(c, q), t, f"{n} sounds in the 10 s from {t:.1f} s (max {cap})",
+                                   f"remove {n - cap} sound(s) between {t:.1f} and {t + 10:.1f} s: keep the ones on the biggest moments")))
     for a, b in zip(qs, qs[1:]):
         if float(b["t"]) - float(a["t"]) < 0.25 - 1e-6:
             ra = (c.catalog_by_id or {}).get(a["id"], {}).get("role")

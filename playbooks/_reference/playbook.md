@@ -6,6 +6,9 @@
 
 **Visual preview** (14 animated frames): `preview/index.html`.
 
+### The feel
+This is the calm reel in a loud feed, and that's exactly why a tired thumb stops on it. Frame 0 is a mirror: a slumped desk-worker spine with a soft Clay ache pulsing at the lower back, a dark Forest Card naming the thing they've ignored all day, and Aria already at the corner of it, relaxed, like she knew they'd come. They stop because it's their back. Then, before they can decide she's just another fitness account, the fix arrives: a coral light sweeps across, the slump becomes her own body doing the move, the spine line straightens from Clay to Leaf, and the whole frame exhales. That's the promise: you can do this today, at your desk, in five minutes, and here's the proof in her body, not in a stock clip. After the hook it's dense but never loud. Every exercise is her real demo, every cue is drawn on her body exactly where she says it, every rep ticks when she actually moves. Nothing is described that could be shown. The Sage rail at the top quietly tells them how much is left, so they stay. Aria keeps coming back to their eyes, warm and unhurried, because people follow her, not the graphics. Teasing is a raised eyebrow, never a slap: a Butter tag when she catches a habit everyone's guilty of, then straight back to clean, quiet teaching. When her body is doing the work, let it breathe: a stretch holding on screen with its timer running is calmer and more convincing than any graphic. The last move gets the biggest stage, and the reel lands on something they can do before they close the app. No shouting type, no shake, no alarm red, no stock bodies, no number she didn't say. If a frame would look at home on a gym-bro account, it's wrong.
+
 ### Creator directives (non-negotiable)
 | # | Directive | Where it lives |
 |---|---|---|
@@ -13,7 +16,7 @@
 | D2 | **Trust in correct form.** Every exercise she names is shown in **her own demo clip**, with the form cue drawn on the body (spine line, cue chips, angle arcs). Wrong form is only ever shown as **her own deliberate demo of the mistake**, clearly marked | §8.3 P-01…P-13, §2 M8 |
 | D3 | **No gym-bro vibe.** No shouting type, no shakes, no flexing stock footage, no "beast mode" language, no aggressive red. Calm voice, crisp edits | §2 N-list, §4, §9 banned list, §10.2 |
 | D4 | **Dense on-the-word motion graphics** (what she loved in the inspiration): every exercise, body part, food, number and step gets its visual 2 f before the word | §2 M6, M7, §8 |
-| D5 | **Calmer and premium-wellness:** sage, coral, linen, deep forest; soft shadows; smooth 8–16 f transitions; at most 2 gentle tease beats per reel, never meme sounds | §4, §9, §10, §11 |
+| D5 | **Calmer and premium-wellness:** sage, coral, linen, deep forest; soft shadows; smooth 8–16 f transitions; teasing gentle and rare, never meme sounds | §4, §9, §10, §11 |
 | D6 | **Step markers and clean cards** are the signature: the Sage rail + Eucalyptus numeral tile at every item, and evolving rounded cards | §7.1, §8.3 P-35…P-37 |
 | D7 | **Truth only:** no fake transformations, no calorie or gram numbers she didn't say, client results only with real data and consent | §2 M14, §8.5, §8.7 |
 | D8 | **Two CTAs, always the same:** "comment **PLAN** and I'll DM you the free 7-day plan" + "follow for daily 5-minute fixes" | §6.8, P-43…P-45 |
@@ -21,7 +24,7 @@
 ### Quick index
 | § | What |
 |---|---|
-| §1 | Procedure (do this in order, incl. demo sync, nutrition and consent checks) |
+| §1 | Procedure: how to approach a reel of hers (incl. demo sync, nutrition and consent checks) |
 | §2 | Hard rules (MUST / NEVER) |
 | §3 | Worlds (Studio, Linen, Forest), screen modes, stage moves, layout, safe zones |
 | §4 | Colour system (Sage + Coral, one job per hue, contrast pairs) |
@@ -29,57 +32,60 @@
 | §6 | Hook system: stopper test, Mirror → Fix, result pairs per topic, banner writing, CTA |
 | §7 | Structure: Sage rail + numeral tile, item ritual, open loops, calm-crisp rhythm |
 | §8 | B-roll & motion graphics: families, 50 patterns P-01…P-50, line → pattern lookup, data rules, assets |
-| §9 | Transitions T-01…T-15, grammar, budget, banned list |
+| §9 | Transitions T-01…T-15, grammar, rhythm, banned list |
 | §10 | Motion tokens, zoom system Z-1…Z-7, layers, finishing |
 | §11 | Sound: voice-first, optional licensed bed, future soft-SFX pools, ledger, mix |
 | §12 | Footage handling (studio tripod, gym selfie, demo camera) |
-| §13 | Output contract: beat-sheet schema + checkpoint |
+| §13 | What your plan should settle: the beat, the hook, what you tell her with the storyboard |
 | §14 | Worked examples: desk stretches, belly-fat myth, 8 kg client story |
-| §15 | QA checklist |
+| §15 | Your look at the storyboard: the checklist |
 | App. | Banner bank (10) |
 
 ---
 
-## §1 Procedure (follow in order)
+## §1 Procedure: how to approach a reel of hers
 
-1. **Inventory.** `ffprobe` every clip: resolution, fps, duration, audio. Sort clips into setups (§12.1): **A** studio tripod, **B** gym selfie, **C** demo camera. Conform VFR phone footage to 30 fps CFR. Pick one voice track (the talking-head mic; demo clips are usually muted).
-2. **Matte** Aria in all A/B talking-head clips (depth sandwich, bubble, cue cloud) and in demo clips used for P-02 form ghost (§12.3).
-3. **Transcribe** with word timestamps. Captions are English, sentence case; keep "yaar", "bas" and other Hindi words romanised exactly as spoken. Check every exercise and food name against the glossary (§5.4).
+You watch, listen, plan, build and look at the storyboard yourself; the edit skill has the mechanics. These are the decisions her reels live or die on, in the order that makes them easy.
+
+1. **Know the footage.** Sort the clips into setups (§12.1): **A** studio tripod, **B** gym selfie, **C** demo camera. The voice is the talking-head mic; demo clips are usually muted.
+2. **Count on the cut-out** of Aria in the A/B talking heads (depth sandwich, bubble, cue cloud) and in demo clips used for the P-02 form ghost (§12.3); make sure it's there before the storyboard.
+3. **Captions** are English, sentence case; keep "yaar", "bas" and other Hindi words romanised exactly as spoken. Check every exercise and food name against the glossary (§5.4).
 4. **Segment** into `HOOK`, `LOOP`, `ITEM-n` (ordinal words: "first", "number two", "the last one"), `PAYOFF`, `CTA`.
-5. **Classify every sentence** with a line type from §8.4 and mark its **trigger word** (the exercise, body part, food, number or verb that the visual lands on).
-6. **Tone-tag every sentence:** `lift` · `calm` · `explain` · `warn` · `mock` (= gentle tease) · `awe` · `win` · `cta` (§11.1). A sentence is `mock` only when she gently teases a common mistake ("we've all done the 200-crunches-a-day thing, yaar"). Max 2 `mock` beats per reel.
-7. **Demo sync (Aria-specific).** For every exercise named, find its demo clip (setup C). Log: clip, in/out, the **rep onsets** (frame of each rep's bottom/peak), the hold start/end, and whether the clip shows correct form or her **deliberate mistake** take. No demo clip → the exercise gets the P-14 line-art silhouette, and you flag it at the checkpoint ("record: seated cat-cow, side view").
+5. **Read every sentence** for what the viewer should see right now, and mark its **trigger word** (the exercise, body part, food, number or verb that the visual lands on).
+6. **Tone-tag every sentence:** `lift` · `calm` · `explain` · `warn` · `mock` (= gentle tease) · `awe` · `win` · `cta` (§11.1). A sentence is `mock` only when she gently teases a common mistake ("we've all done the 200-crunches-a-day thing, yaar"). Teasing stays rare: it's a raised eyebrow, not the format.
+7. **Demo sync (Aria-specific).** For every exercise named, find its demo clip (setup C). Log: clip, in/out, the **rep onsets** (frame of each rep's bottom/peak), the hold start/end, and whether the clip shows correct form or her **deliberate mistake** take. No demo clip → the exercise gets the P-14 line-art silhouette, and you name it when you show her the storyboard ("record: seated cat-cow, side view").
 8. **Truth check (Aria-specific).**
-   - Numbers: list every number she says (minutes, reps, kg, weeks, grams). Only these may appear on screen. **No calorie or protein number she didn't say.**
+   - Numbers: list every number she says (minutes, reps, kg, weeks, grams). Only these may appear on screen as claims about bodies, food, time or clients. **No calorie or protein number she didn't say.** Everyday illustration props (a phone clock at 6:47 pm, a packed work calendar) may use realistic numbers, with no label.
    - Nutrition: food names and swaps exactly as she says them.
    - Client stories: real data file + consent confirmed? If not, the client pattern is P-32 "what changed" only, with no photos and no chart.
 9. **Pick the result pair** for the hook (§6.4): the viewer's **current state** (slumped, stuck, doing the wrong move) and the **fixed state** (her doing it right, the posture reset, the swap made). Plan the asset for both.
-10. **Write 3 banners** (§6.5) and **3 hook variants** (§6.2, §6.6). Recommend one. Run the stopper test (§6.1).
+10. **Write the banner and pick the hook** (§6.5, §6.2, §6.6): 8–10 banner candidates, the best by the stopper test (§6.1), the next two as alternates.
 11. **Plan the visual story** for every number, comparison, food and body part (§8.5): which pattern makes the viewer *see* it.
-12. **Fill the beat sheet** (§13): one beat per trigger word, an event every ≤ 1.8 s (≤ 1.0 s in the hook). Each beat gets mode, pattern, family, caption, tone, zoom, transition and SFX (empty until she has a library, §11).
-13. **Transition map + budgets** (§9.3, §9.4). Sound plan: voice-first + optional bed (§11).
-14. **CHECKPOINT** (§13.4), then **wait for approval.**
-15. Build act by act, storyboard, QA (§15, max 3 passes), final render.
+12. **Plan the beats** (§13): one beat per trigger word, the edit moving with her calm, crisp delivery (brisk in the hook, unhurried in a stretch). Each beat gets mode, pattern, family, caption, tone, zoom, transition and SFX (empty until she has a library, §11).
+13. **Transition map + the rhythm of the moves** (§9.3, §9.4). Sound plan: voice-first + optional bed (§11).
+14. **Build it section by section, look at the storyboard** the way §15 says, fix what bothers you once, then show her (§13.4).
 
 ---
 
 ## §2 Hard rules
 
+**The editing rules apply; see GLOBAL-RULES.md.** Craft is judged by eye, in context, on the storyboard: Aria's face, hair and the top of her head clear of what's in front of her when the moment is about her (captions included), never cut by accident; no text over text by accident; words in sync; numbers and names right. On taste this playbook leads. Numbers below are craft (positions, sizes, frames, colours) or what the inspiration measured; where one describes rhythm, it's the feel to match, never a quota.
+
 **MUST**
 - M1. **Frame 0 is a thumbnail and a stopper.** It holds ≥ 3 layers: **Forest Card banner + the result pair (or the bad state) + Aria**. At least one element is moving on f0 (the card's soft settle, the spine line drawing, the demo playing). The banner is fully readable on f0.
-- M2. **≥ 8 visual changes in the first 3 s** (caption steps, cue chips, a spine line, the light sweep, a card evolve, a zoom).
+- M2. **The first 3 s are crisp and alive.** Caption steps, cue chips, a spine line, the light sweep, a card evolve and a zoom land one after another, each on its word. The inspiration ran about eight changes in 3 s: that's the feel, not a quota.
 - M3. **The fix is visible by 2.5 s.** The viewer sees Aria's correct move / fixed state by 2.5 s, not only the problem.
 - M4. **The banner obeys §5.2 / §6.5:** ≤ 9 words, ≤ 2 lines, one keyword chip, readable at 25% scale, and saying the same thing as the result pair on screen.
 - M5. **Zero dead air.** At most 1 gap ≥ 150 ms per 15 s. A deliberate ≤ 0.4 s breath pause is allowed only before a reveal (it's her calm signature). Jump cuts on word boundaries ±1 f.
 - M6. **Literal, on-the-word visuals.** Every exercise, body part, food, number and step gets its visual **2 f before the word** and fully on within ±5 f. Exercise demo cards land within ±2 f of the exercise name. Rep counters tick on the **rep onset in the demo**, not on a timer.
-- M7. **Something changes every ≤ 1.8 s** (body) and **≤ 1.0 s** (hook). Nothing is visually static for more than 3.0 s. A calm hold (a stretch demo running with a hold timer) counts as changing only if the timer or breath cue is visibly moving.
+- M7. **Always alive, never busy.** Something moves with every idea she says. A calm hold is welcome when her body is doing the work: a stretch demo with a moving hold timer or breath cue is alive. A frozen frame with nothing moving is not.
 - M8. **Form is shown, not described.** Every form cue ("ribs down", "neutral spine", "knees over toes") is drawn on her demo: P-04 spine line, P-11 cue chips, P-03 angle arc or P-02 ghost. Wrong form only from her **own deliberate mistake take**, framed in Clay with ✕ and the label "common mistake".
-- M9. **Tone drives treatment.** The comedy layer (Butter tease tags, P-21; soft markup, P-46) appears only on `mock` beats, max 2 per reel, never in the hook's first 1 s and never on a form demonstration of the *correct* move. `calm` beats (stretch holds) get Z-4 or no zoom and the breath cue.
+- M9. **Tone drives treatment.** The comedy layer (Butter tease tags, P-21; soft markup, P-46) appears only on `mock` beats and rarely (a raised eyebrow, not the format), never in the hook's first 1 s and never on a form demonstration of the *correct* move. `calm` beats (stretch holds) get Z-4 or no zoom and the breath cue.
 - M10. **SFX ledger is clean** once she has a licensed library: no file > 2× (the list cue may repeat per item), no file on two consecutive cues. **Until then: no SFX at all.**
-- M11. **Aria stays on screen or one tap away.** Graphics live in cards, splits, the Forest stage with a panel or bubble, or the depth sandwich. A full-screen graphic **without her** lasts ≤ 3.5 s. Her own demo clip full-screen counts as "her on screen".
-- M12. **The face is never covered.** The banner bottom sits ≥ 48 px above her head top. Captions at chest height. Tags and chips never on her face. On demo clips, cue chips never cover the body part they name (leader line instead).
+- M11. **Aria stays on screen or one tap away.** Graphics live in cards, splits, the Forest stage with a panel or bubble, or the depth sandwich. A full-screen graphic **without her** is a short visit: come back to her before it starts to feel like a slideshow. Her own demo clip full-screen counts as "her on screen".
+- M12. **Keep her face and hair clear.** People follow her, not the graphics, so nothing in front of her sits on her face, her hair or the top of her head when the moment is about her, captions included; behind her is fair game (the depth sandwich, the cue cloud), text included. The framing that does it: the banner bottom ≥ 48 px above her head top; captions at chest height; tags and chips beside her face, not on it. On demo clips, cue chips stay off the body part they name (leader line instead). Judge it by eye: what's never fine is a head cut or a face buried by accident.
 - M13. **Promise integrity.** The banner count equals the items shown ("3 desk stretches" = 3 rail nodes = 3 items). "5 minutes" in the banner = the hold timers/plan actually add up to what she says. The CTA keyword **PLAN** is on screen ≥ 1.5 s in the CTA section.
-- M14. **Facts only from her words or her records.** Numbers (kg, weeks, minutes, reps, grams) appear only if she says them. No calories she didn't say. Client data only from her real records with consent. Food labels exactly as spoken.
+- M14. **Claims only from her words or her records.** Body, food, time and client numbers (kg, weeks, minutes, reps, grams) appear only if she says them, shown as she said them. No calories she didn't say. Everyday illustration props may use realistic numbers with no label (a phone clock, a packed calendar); they never make a claim about a body or a meal. Client data only from her real records with consent. Food labels exactly as spoken.
 - M15. **Spelling:** English exact; exercise and food names per the glossary (§5.4); Hindi words romanised as spoken ("yaar", "bas", "chalo").
 - M16. **Hold before you cut.** Titles and labels hold ≥ 12 f after building. On-screen text holds ≥ 0.28 s per word.
 - M17. **Audio:** −14 LUFS integrated, true peak ≤ −1.5 dBTP. Hard end ≤ 6 f after the last word.
@@ -90,10 +96,10 @@
 - N2. **Contrast failures:** coral or sage *text* on Linen (2.2:1 / 1.5:1); paper text on Sage; light text on her white studio wall without the Forest Card or a soft shadow.
 - N3. **Stock gym footage**, especially shirtless or flexing clips, stock "fit people", stock food shots. Every person on screen is Aria (or a consented client); every food shot is hers.
 - N4. **Aggressive red alarm graphics:** no flashing red, no warning triangles, no siren colour, no "DANGER" type, no shakes on bad states. Bad = Clay outline + ✕, quiet.
-- N5. The same zoom twice in a row; the same transition 3× in a row; the same SFX file on consecutive cues.
-- N6. More than 3 bright roles in one frame (Sage + 2). Butter outside the tease layer. Coloured words inside subtitles.
-- N7. **Numbers she didn't say:** calories, protein grams, body-fat %, "burns X kcal", "Y% faster". Not even as decoration.
-- N8. Transitions outside T-01…T-15 or zooms outside Z-1…Z-7. **Banned outright:** shatter, zoom-blur slam, glitch, RGB split, invert flicker, whip blur, light-leak burns, camera shake, crash zoom, rotation snap, stamps.
+- N5. Zooms and transitions on autopilot (a move repeated because it's the default, not because the moment wants it); the same SFX file on consecutive cues.
+- N6. A crowded palette: Sage leads, with an accent or two beside it. Butter outside the tease layer. Coloured words inside subtitles.
+- N7. **Numbers she didn't say:** calories, protein grams, body-fat %, "burns X kcal", "Y% faster". These are claims about bodies and food, so they never appear unless she says them, not even inside an illustration.
+- N8. **The moves this style refuses:** shatter, zoom-blur slam, glitch, RGB split, invert flicker, whip blur, light-leak burns, camera shake, crash zoom, rotation snap, stamps. (A new eased move is welcome when a moment needs one: build it as precisely as T-01…T-15 and Z-1…Z-7.)
 - N9. **Meme sounds or meme visuals** (vine boom, "bruh", skulls 💀, clown 🤡, facepalm stickers). Gym-bro language in graphics ("BEAST MODE", "NO EXCUSES", "GRIND").
 - N10. A black tail > 0.2 s, or an outro louder than her voice.
 - N11. Text layers overlapping (subtitle under a title, chip over the banner).
@@ -114,16 +120,16 @@
 Switching worlds is a beat; it lands on an ordinal word ("first", "number two") or a discourse word ("but", "here's the thing", "so").
 
 ### 3.2 Screen modes
-| Mode | What | Share (per 60 s) |
+| Mode | What | When it carries the reel |
 |---|---|---|
-| `HOOK` | Mirror → Fix (§6.2): Forest Card banner + result pair + Aria | 5–8 s |
-| `F` | Full-frame talking head + `CAP-SUB`, with Z-1…Z-4 | 25–35% |
-| `S` | Linen split: card(s) on top (demo card, swap card, plate), Aria in the panel at the bottom (`P-BLEED` top y 1135, or `P-INSET` x 12–1068, y 1008–1881) | 30–45% |
-| `D` | **Demo full:** her demo clip full-frame (it's her), cue chips drawn on it, Aria-talking in the G-4 bubble when she is explaining over it | 10–20% (higher in form reels) |
-| `FS` | **Forest stage** split or full: hero number, timeline, myth → fact; Aria in the panel or bubble | 5–20% (higher in client and myth reels) |
-| `V` | **Versus split:** left = common mistake (Clay frame ✕), right = correct (Leaf frame ✓), identical crop and timing | ≤ 12% |
-| `A` | **Slide-aside:** Aria in x 0–450, a tall card (demo, plate, checklist) on the right | ≤ 12% |
-| `I` | Inset card over `F` in the top band (y 300–900) | ≤ 10% |
+| `HOOK` | Mirror → Fix (§6.2): Forest Card banner + result pair + Aria | The opening seconds, until the banner glides out |
+| `F` | Full-frame talking head + `CAP-SUB`, with Z-1…Z-4 | Her warm asides, the why, gentle teases, the CTA: the person people follow |
+| `S` | Linen split: card(s) on top (demo card, swap card, plate), Aria in the panel at the bottom (`P-BLEED` top y 1135, or `P-INSET` x 12–1068, y 1008–1881) | Exercises, swaps, plates, coach notes: the teaching workhorse |
+| `D` | **Demo full:** her demo clip full-frame (it's her), cue chips drawn on it, Aria-talking in the G-4 bubble when she is explaining over it | Long demos while she talks; it takes over form reels |
+| `FS` | **Forest stage** split or full: hero number, timeline, myth → fact; Aria in the panel or bubble | Numbers, timelines, myth → fact; it takes over client and myth reels |
+| `V` | **Versus split:** left = common mistake (Clay frame ✕), right = correct (Leaf frame ✓), identical crop and timing | The mistake-vs-correct moment |
+| `A` | **Slide-aside:** Aria in x 0–450, a tall card (demo, plate, checklist) on the right | She explains beside a tall card |
+| `I` | Inset card over `F` in the top band (y 300–900) | A quick reference while she keeps talking |
 
 ### 3.3 Linen split layout (`S`)
 ```
@@ -199,7 +205,7 @@ Gradients (numeral tiles, hero glows, sweep only):
 - **Butter** = it's a gentle joke.
 
 ### 4.3 Rules
-- Max **3 bright roles per frame** (Sage + 2). Clay and Leaf together count as 2 (versus frames).
+- **Sage leads; an accent or two beside it,** never a crowded palette. In a versus frame, Clay and Leaf are the two accents.
 - One hue per caption block. Subtitles are never coloured.
 - On Linen, coloured *text* is only Clay, Leaf or Eucalyptus (all ≥ 4.5:1); Sage and Coral appear only as **fills** with ink text.
 - On her white studio wall, every text block either sits on the Forest Card / a paper chip, or switches to `ink` text with a paper halo (the light-background rule, §5.5). Paper text with the soft shadow (0/4/16, ink 45%) is only for dark areas of the footage.
@@ -262,7 +268,7 @@ Gradients (numeral tiles, hero glows, sweep only):
 ### 5.6 Serif titles, edge labels, emphasis lines
 - **Serif title (P-35):** Instrument Serif italic 88 px, ink on Linen / paper on Forest, typed 1 letter / 2 f with blur 8 → 0 px, above the card (y 190–290). Holds the whole item.
 - **Edge labels (P-37):** Plus Jakarta Sans 800, 96 px, paper with soft shadow, on the demo card's bottom edge, swapped per spoken noun with a 6 f blur cross-swap ("hips" → "ribs" → "breath").
-- **Emphasis line:** Instrument Serif italic 96–110 px, paper on footage (soft shadow), one short phrase ("it's not cardio."), fades in word by word, 8 f each. Replaces the inspiration's red kinetic "MAT BHOOLNA" (I12). Max 2 per reel.
+- **Emphasis line:** Instrument Serif italic 96–110 px, paper on footage (soft shadow), one short phrase ("it's not cardio."), fades in word by word, 8 f each. Replaces the inspiration's red kinetic "MAT BHOOLNA" (I12). Rare: it's the line she wants remembered.
 
 ### 5.7 Kinetic form cues (`KT-CUE`)
 - Inter Tight 600, 64–80 px, ink on a paper pill (radius 999, padding 10/26) with a 2 px Leaf leader line to the body part.
@@ -282,7 +288,7 @@ Gradients (numeral tiles, hero glows, sweep only):
 ### 5.10 Tease tags (`TAG-TEASE`, `mock` beats only)
 - A 1–5 word Butter pill (ink text, Jost 600 52 px, radius 999) with a 1 small calm emoji max (🙈 😅 🫠), soft shadow, rotation ±3°.
 - Pops 0.9 → 1.04 → 1.0 over 8 f, sways ±1.5° for 18 f.
-- ≤ 1 on screen, ≤ 2 per reel, never on the face, never during a correct-form demo. Examples: "200 crunches a day 😅", "we've all done this 🙈", "cardio queen era".
+- One at a time, rare, beside her face rather than on it, never during a correct-form demo. Examples: "200 crunches a day 😅", "we've all done this 🙈", "cardio queen era".
 
 ---
 
@@ -292,7 +298,7 @@ Gradients (numeral tiles, hero glows, sweep only):
 1. **Thumbnail test:** frame 0 at 25% scale still shows *what this is about*: the Forest Card is readable, and the problem (slumped spine, crunch, belly-fat myth card) plus Aria are visible.
 2. **Mute test:** sound off, the first 3 s still tell the story: problem → her fix.
 3. **1-second read:** the banner reads in ≤ 1.5 s (≤ 9 words).
-4. **Change count:** ≥ 8 visual changes in 0–3 s and ≥ 1 moving element on f0.
+4. **Alive test:** something already moves on f0, and the first 3 s are crisp, never busy.
 5. **Feed-contrast test:** in a strip of 6 fitness reel thumbnails (mostly loud yellow/red text on gym footage), ours is the calm one that still pops: the dark Forest Card on her white wall + one Sage chip + her body in a clear posture.
 6. **Bro test:** would this frame look at home on a gym-bro account? If yes, it fails (loud colour, shouting type, shaking camera, flexing).
 
@@ -349,8 +355,8 @@ Spoken pattern (Aria): "*If your lower back hurts after a workday* [mirror]… *
 | **Time promise** | "Fix desk back pain in [5 MINUTES]" |
 | **POV** | "POV: you sit 9 hours and your back [HATES YOU]" |
 
-- **Count banners:** the validator (M13) reads the first number in the banner as the item count. When the banner's number is not the item count ("8 KG in 12 weeks"), set `meta.count` in the timeline to the real number of ITEM sections.
-- **Write 3, pick by the stopper test;** the others go to Trial Reels.
+- **Count banners:** the first number in the banner reads as the item count (M13). When the banner's number is not the item count ("8 KG in 12 weeks"), set `meta.count` in the timeline to the real number of ITEM sections.
+- **The banner is the hook title:** it promises the viewer something (an outcome, a curiosity gap, who it's for) and is true to what the reel delivers. Write 8–10 candidates from the templates above, score them on outcome, curiosity, who it's for and brevity, check the best against the stopper test, and pick; the next two go to the storyboard as alternates.
 - **Banned:** "NO EXCUSES", "BEAST MODE", "SHRED", "BURN FAT FAST", any calorie number, "guaranteed", more than 1 emoji, counts that don't match the items, medical claims ("cure", "heal").
 
 ### 6.6 Other hook formulas (all must show her fix by 2.5 s)
@@ -368,7 +374,7 @@ Spoken pattern (Aria): "*If your lower back hurts after a workday* [mirror]… *
 ### 6.7 Hook sound
 - Voice only, dry. No meme hits, no risers.
 - If she supplies a licensed bed: it enters softly on the fix beat (≈2 s) at −24 dB under the voice and settles at −22 dB.
-- Once she has a licensed SFX library (§11.4): ≤ 3 soft cues in the hook (a soft whoosh on the light sweep, a soft pop on the rail, a pluck on the count), each a different file.
+- Once she has a licensed SFX library (§11.4): a few soft cues in the hook (a soft whoosh on the light sweep, a soft pop on the rail, a pluck on the count), each a different file.
 
 ### 6.8 CTA formula
 1. **Early loop** (5–12 s, `CAP-KEY`): "the free 7-day plan is at the end" → helper "free 7-day plan" + keyword "**at the end**".
@@ -397,7 +403,7 @@ Spoken pattern (Aria): "*If your lower back hurts after a workday* [mirror]… *
 1. **G-1 soft panel drop** (or T-08 push-through into Forest) starting 0–10 f before the ordinal word. List cue sound only if licensed.
 2. **Rail:** connector fills, active node rings Coral. **Numeral tile** rises (SM-2).
 3. **Serif title** types the exercise/food name **on the name** (±2 f) + chips ("chair only", "30 sec each side").
-4. **Demo card** plays her correct demo (P-01). 2–4 evolving beats, one per cue: cue chips (P-11), spine line (P-04), rep ring (P-06) or hold timer (P-07), edge labels (P-37). Every ≤ 1.8 s.
+4. **Demo card** plays her correct demo (P-01). Evolving beats, one per cue, each on its cue word: cue chips (P-11), spine line (P-04), rep ring (P-06) or hold timer (P-07), edge labels (P-37).
 5. **Rise back (G-2)** to Aria for the "why it works" or a gentle tease, with Z-1 or Z-2.
 6. **"Today" tick:** the rail node turns Leaf ✓ on the item's last word.
 
@@ -409,9 +415,9 @@ Spoken pattern (Aria): "*If your lower back hurts after a workday* [mirror]… *
 - Every loop is paid off on screen (M13).
 
 ### 7.4 Rhythm: calm voice, crisp edits
-- **Every 8–12 s a human beat:** a rise back to Aria for a warm aside, a gentle tease (max 2 per reel), or a "you can do this" line to camera. It must also carry information.
-- **Never two tease beats back to back;** at least one `explain` or `win` beat between them.
-- **Calm holds are allowed** during stretches: the demo runs with a moving hold timer and breath cue (P-07, P-08) for up to 3 s without a new element.
+- **Human beats keep it warm:** a rise back to Aria for a warm aside, a gentle tease (rare), or a "you can do this" line to camera, before the teaching starts to feel like a lecture. It must also carry information.
+- **A tease lands after a clean beat:** an `explain` or `win` beat sits between two teases.
+- **Calm holds are her signature** during stretches: the demo runs with a moving hold timer and breath cue (P-07, P-08), and nothing new needs to arrive while her body is doing the work.
 - **Energy curve:** hook (crisp) → item 1 (clear, slow enough to copy) → middle items (steady, alternate Linen ↔ Studio) → last item (the "everyone skips" one: Forest stage or Mode V, the biggest visual) → payoff ("today" checklist P-18) → CTA (warm, confident).
 
 ---
@@ -436,7 +442,7 @@ Spoken pattern (Aria): "*If your lower back hurts after a workday* [mirror]… *
 | B-13 | **Tease layer** | Butter tags, soft mistake markup | Built live; `mock` beats only |
 | B-14 | **CTA kit** | Plan card, PLAN key, DM bubble, follow chip | Built live; the plan PDF's real title |
 
-**Family rules:** ≥ 4 families per 60 s. Same family ≤ 10 s straight (a stretch demo may run 12 s if timers move). B-1 is mandatory for every exercise named (M8). B-13 only on `mock` beats.
+**Family rules:** variety by feel: change the family when the eye stops being surprised (a stretch demo with moving timers can hold longer). B-1 is mandatory for every exercise named (M8). B-13 only on `mock` beats.
 
 ### 8.2 Staging choreography
 Lead −2 f → land ≤ 7 f (soft entries) → read 0.8–1.8 s (something moves inside: the demo, a timer, a line drawing) → **evolve** (add a cue, draw a line, flip) or **swap** (T-06 card push). Evolve inside an item; swap between items.
@@ -497,7 +503,7 @@ Lead −2 f → land ≤ 7 f (soft entries) → read 0.8–1.8 s (something move
 |---|---|---|---|---|
 | **P-29** | **12-week rail** | On Forest: 12 week dots on a line; milestones she names land as Jost labels ("week 4: walks after dinner") | Dots fill Leaf L → R synced to her words; label 8 f each | "In 12 weeks", "by week 4" |
 | **P-30** | **Real chart** | A line chart of **real** recorded weights (her data file), Mist line, Leaf end dot, labelled axes | Line draws 30 f; end dot pulses once | Only with her real data |
-| **P-31** | **Consented photo pair** | Two real client photos, same size, "week 0" / "week 12" labels, small "shared with consent" chip | Left fades in 8 f, right 8 f later; no warping, no filters | Only with written consent |
+| **P-31** | **Consented photo pair** | Two real client photos, same size, "week 0" / "week 12" labels, a small "real client" chip | Left fades in 8 f, right 8 f later; no warping, no filters | Only with written consent |
 | **P-32** | **What-changed stack** | Paper cards stacking with a line icon each: the changes she names ("protein at breakfast", "3 strength days", "8k steps") | Each card slides up 10 f and stacks with a 12 px offset | "What we actually changed" |
 | **P-33** | **Habit grid** | 12×7 grid of day dots filling Sage (consistency), a few left empty (honest) | Fills 2 f per week | "Consistent, not perfect" |
 | **P-34** | **Quote card** | Real client quote in Instrument Serif italic on paper, first name/initial only | Words fade in, 4 f stagger | Real quotes only |
@@ -521,7 +527,7 @@ Lead −2 f → land ≤ 7 f (soft entries) → read 0.8–1.8 s (something move
 | **P-21** | **Tease tag** | Butter pill near the subject (not the face): "200 crunches a day 😅" | Pop 8 f, sway 18 f | Gentle teasing of a habit |
 | **P-46** | **Soft mistake markup** | Thin Clay outline around the mistake + serif note ("neck doing the work") + small ✕ | Outline 12 f, note 10 f, ✕ 6 f | Pointing out the common mistake |
 
-### 8.4 Line → pattern lookup (classify every sentence with this)
+### 8.4 Line → pattern lookup (vocabulary: what fits each line; invent when a moment needs more)
 | Line type (her words) | Primary | Alternates |
 |---|---|---|
 | "If your lower back hurts after sitting all day" (mirror) | P-14 + P-16 | P-15, her slump take |
@@ -563,22 +569,22 @@ Lead −2 f → land ≤ 7 f (soft entries) → read 0.8–1.8 s (something move
 2. **Same axes.** Comparisons (P-10, P-26, P-48, P-31) use identical frames, crops, scales and timing; only the variable changes.
 3. **Show the body, not the jargon.** "Neutral spine" is a line on her spine; "hip hinge" is an angle arc at her hips. The label names it once (`KT-CUE`), then the overlay runs.
 4. **Mistake → correct = Clay → Leaf,** landing on the spoken fix word. Never a warning flash.
-5. **One idea per screen.** Max 3 animated groups at once; the rest dims to 40%.
+5. **One idea per screen.** The hero and what explains it move; the rest dims to 40%.
 6. **Sync to the body:** rep segments fill on rep onsets; spine lines straighten when *she* straightens in the demo.
-7. **Client honesty:** real data + written consent, or no chart/photos (P-32 only). A small "real client · shared with consent" chip on P-30/P-31.
+7. **Client honesty:** real data + written consent, or no chart/photos (P-32 only). Consent is a precondition you check, not a caption. A small "real client" chip on P-30/P-31 is her trust signal on real results; illustrations never carry labels.
 8. **Escalate:** the last item gets the biggest visual (Mode V, Forest stage, or the P-02 ghost).
 
 ### 8.6 Density and variety
-- An event every 0.8–1.8 s (calm holds ≤ 3 s allowed during stretches, §7.4).
-- ≥ 8 different patterns and ≥ 4 families per 60 s.
-- The same pattern at most 2 beats in a row (the item ritual excepted).
+- Dense in time, never in space: events follow her words and her body, one idea on screen at a time; a stretch may hold while it breathes (§7.4).
+- Variety keeps the eye awake: a new idea gets a new picture. The item ritual is the one place where repetition is the point.
+- Build toward the last item; it gets the biggest visual (§8.5 rule 8).
 
 ### 8.7 Asset rules
 - **Her footage first:** every exercise is her demo (B-1/B-2); every food shot is hers (B-6); every desk shot is hers (B-11).
-- **Built-live line art** (silhouettes, body maps, plates, thali, scales) is allowed for concepts, and for any exercise without a demo (flag it at the checkpoint).
+- **Built-live line art** (silhouettes, body maps, plates, thali, scales) is allowed for concepts, and for any exercise without a demo (name it when you show her the storyboard).
 - **No stock** people, gyms, food or bodies. No AI-generated bodies or faces.
 - **Client material:** real, consented, unretouched, same angle and light; first name/initial only.
-- No brand logos on supplements, apparel or equipment unless she names the brand. Blur gym strangers (N13).
+- No brand logos on supplements, apparel or equipment unless she names the brand; then it's the real logo (her file, else fetched from the brand's site, source noted). Blur gym strangers (N13).
 - **Shot list to request when a reel lacks assets:** "side view, 3 reps, 2 s start position" per exercise; "deliberate mistake take, same framing"; "top-down 5 s" per food.
 
 ---
@@ -633,11 +639,10 @@ transitions:
 ```
 (`sfx` stays `null` until she has a licensed library, §11.)
 
-### 9.4 Budget (per 60 s)
-- T-01 / T-08: one per item.
-- T-10: once in the hook, plus once more only for the payoff.
-- T-11: ≤ 2. T-04: ≤ 3. T-09: ≤ 2. T-13: ≤ 2.
-- **The same transition never 3× in a row** (except the item-entry ritual).
+### 9.4 Rhythm of the moves
+- T-01 / T-08 open every item: the ritual is the one place where the same move is the point.
+- T-10 is the fix reveal: the hook's signature, back only when the payoff deserves the same moment.
+- Myth flips (T-11), bubbles (T-04), Sage wipes (T-09) and exposure lifts (T-13) are accents: use them when the moment calls for them, and never just because the last boundary used something else.
 - Cuts within ±1 f of word boundaries; audio never offset.
 
 ---
@@ -666,17 +671,16 @@ transitions:
 | ID | Preset (tokens) | Recipe | Tone / use |
 |---|---|---|---|
 | **Z-1** | `soft-punch` | 1.00 → 1.10 (selfie) / 1.15 (tripod) in **6 f**, light motion blur, hold until the next cut | `lift` / `win` emphasis word |
-| **Z-2** | `glide-in` | 1.00 → 1.25 toward her face in **10 f**, hold 20–40 f, ease back 8 f | `mock` (gentle tease) and "listen to this" moments; ≤ 3 per reel |
+| **Z-2** | `glide-in` | 1.00 → 1.25 toward her face in **10 f**, hold 20–40 f, ease back 8 f | `mock` (gentle tease) and "listen to this" moments; save it for the moments that matter |
 | **Z-3** | `pull-out` | 1.15 → 1.00 in 8 f | Reveal a graphic beside her; the fix reveal |
 | **Z-4** | `push-drift` | 1.00 → 1.05 over the beat | `calm`, `explain`, `awe` |
 | **Z-5** | `shake` (settle nudge) | ±3 px 6 f + 1.02 bump | Hero numbers landing; never on bad states |
 | **Z-6** | `zoom-through` | = T-08 (1 → 3×, 14 f) | World changes |
-| **Z-7** | `form-focus` | On demo footage only: 1.00 → 1.40 toward the named joint in 12 f, hold 20–40 f | "Watch my hips", P-12 moments; ≤ 3 per reel |
+| **Z-7** | `form-focus` | On demo footage only: 1.00 → 1.40 toward the named joint in 12 f, hold 20–40 f | "Watch my hips", P-12 moments: when the joint is the point |
 
 **Zoom rules:**
-- In Mode F, a zoom event every **3.5–6 s**.
-- **Never the same Z twice in a row** (validator N5-zoom).
-- Zoom on meaning (emphasis, tease, reveal, form), not on every cut. Tripod jump cuts alternate: plain → Z-1 → plain → Z-4…
+- In Mode F the camera answers her softly: when she lands a point, it moves, and a long talking stretch never sits dead.
+- Zoom on meaning (emphasis, tease, reveal, form), not on every cut, and vary it so it never feels mechanical. Tripod jump cuts alternate: plain → Z-1 → plain → Z-4…
 - Zooms never push her face out of the safe frame or under the banner; Z-7 never crops the body part being discussed.
 
 ### 10.3 Layer order (back to front)
@@ -710,7 +714,7 @@ transitions:
 | `calm` | Sage / Mist | Z-4 or none | Stretch holds, breath cues | None (voice + bed) |
 | `explain` | Mist / Eucalyptus | Z-4 | Cues, mechanisms, swaps | Paper slide, soft tick |
 | `warn` | Clay (quiet) | none | Mistakes, myths | A low soft thud (never an alarm) |
-| `mock` | Butter | Z-2 | Gentle tease, ≤ 2 per reel | **None** (no meme sounds, ever) |
+| `mock` | Butter | Z-2 | Gentle tease, rare | **None** (no meme sounds, ever) |
 | `awe` | Coral | Z-3 / Z-4 | The fix reveal, the client result | Shimmer |
 | `win` | Leaf | Z-1 | ✓ ticks, completed items, payoff | Soft chime |
 | `cta` | Sage + Coral key | Z-3 | PLAN, follow | Soft key click |
@@ -723,9 +727,9 @@ transitions:
 ### 11.3 SFX ledger rules (apply as soon as a library exists)
 - Any file ≤ 2 uses. One file may be the **list cue** (one per item).
 - No file on two consecutive cues. Rotate variants inside a pool.
-- Density: ≤ 1 cue per 2 s on average (calmer than the inspiration). Never 2 overlapping. Never under a trigger word's consonant (shift ±2 f).
+- Density by feel: sparser and softer than the inspiration; two cues never fight each other. Never under a trigger word's consonant (shift ±2 f).
 - Levels: −24…−30 dB under the voice. Sounds should be *felt*, not noticed.
-- `meme_max_per_reel` = 0 in `tokens.json`: any meme cue fails validation (M9).
+- `meme_max_per_reel` = 0 in `tokens.json`: no meme cue, ever (M9).
 
 ### 11.4 Pools to source (when she buys a licensed pack)
 | Role | What to look for |
@@ -782,7 +786,7 @@ demos:
     hold: null
 ```
 
-### 12.5 Reaction / warmth bank (ask at the shoot)
+### 12.5 Reaction / warmth bank (when she has recorded one)
 2–3 s each, for rise-backs, bubbles and tease beats:
 - a warm smile to camera
 - a knowing "we've all done this" laugh
@@ -797,9 +801,11 @@ demos:
 
 ---
 
-## §13 Output contract
+## §13 What your plan should settle
 
-### 13.1 Beat sheet schema (the first ```yaml``` block of the edit brief)
+Your `ideas.md` is a page or two, for you. For her reels it has decided, before any code: the result pair and how both states are produced, the banner and its two alternates, the tone of every line, the demo for every exercise, the truth list, the transition map and the sound plan.
+
+### 13.1 How decided one beat is (in `timeline.json` it becomes a beat, its scenes and its cues)
 ```yaml
 - id: 4
   section: HOOK                  # HOOK | LOOP | ITEM-n | PAYOFF | CTA
@@ -823,18 +829,18 @@ demos:
   transition_in: T-10
   transition_out: evolve
   demo: {clip: raw/C_0007.mp4, take: correct, in_s: 1.2}
-  numbers_said: []               # every number on screen must be listed here (M14)
+  numbers_said: []               # every claim number on screen (body, food, time, client) is listed here (M14)
   sfx: []                        # empty until a licensed library exists (§11.2)
   assets: [raw/C_0007.mp4]
 ```
 
-### 13.2 SFX ledger
+### 13.2 SFX ledger (keep it in your notes as you go)
 ```yaml
 sfx_ledger: {}                   # voice-first; fill only with licensed files (§11.3)
 bed: null                        # or {file: "<licensed track>", licence: "<source>", level_db: -22, in_s: 1.9}
 ```
 
-### 13.3 Hook proposal format (3 required)
+### 13.3 How decided a hook is
 ```yaml
 - name: "Stop -> Do: crunch vs dead bug"
   formula: HF-3
@@ -847,16 +853,14 @@ bed: null                        # or {file: "<licensed track>", licence: "<sour
   stopper_test: {thumbnail: pass, mute: pass, read_s: 1.1, changes_3s: 10, bro_test: pass}
 ```
 
-### 13.4 Checkpoint (before building)
-Send:
-1. 3 hooks with banners + the stopper test results.
-2. The result pair and how both states are produced (which demo takes; any line-art fallback).
-3. The beat sheet with tones, the transition map and the sound plan (voice-only or licensed bed).
-4. **The truth list:** every number on screen and where she said it; client data source + consent status.
-5. **The demo sync log** (§12.4) and the **missing-asset shot list** (§8.7).
-6. Style stills: f0 (thumbnail), the fix reveal, one item ritual (rail + tile + title + demo), one form overlay, one rise-back, the CTA (PLAN key).
+### 13.4 What you tell her with the storyboard
+A few lines, with the storyboard open:
+1. The hook and its banner (the page shows the two alternates).
+2. Any line-art fallback: the exercises that had no demo, with the **missing-asset shot list** (§8.7) for next time.
+3. **The truth list:** every number on screen and where she said it; client data source + consent status.
+4. Anything fetched from the web, with where it came from.
 
-**Wait for approval.** The storyboard page is gate 2.
+The moments you'll look at hardest on the storyboard yourself: f0 (thumbnail), the fix reveal, one item ritual (rail + tile + title + demo), one form overlay, one rise-back, the CTA (PLAN key).
 
 ---
 
@@ -900,7 +904,7 @@ Send:
 - **HOOK (0–6 s):** f0 = Forest Card + Forest stage: P-38 "8 kg" counting 0 → 8 (f0–f26) + P-29 12-week rail filling + Aria in the panel. 1.5 s: "and it wasn't a crash diet" → P-20 soft strike on "crash diet". 2.4 s: first P-32 card slides up ("what changed").
 - **BODY:** SM-6 week rail as the marker. Each change she names = one P-32 card + its proof visual: steps (P-15-style step ring, her number only), protein (P-24 plate with her food shots), strength (her demo), sleep (P-49 coach note). P-33 habit grid on "she wasn't perfect" (honest gaps). P-34 quote if a real quote exists.
 - **PAYOFF:** P-30 real chart (consent) or P-38 "8 kg" again + "12 weeks" → T-10 sweep to Aria: "you can start with one of these today" → P-18.
-- **CTA:** P-43 + P-44 + P-45. Chip "real client · shared with consent" on any client visual.
+- **CTA:** P-43 + P-44 + P-45. A small "real client" chip on real client results.
 
 ### 14.4 Idea 4 hook in one line
 "Stop doing crunches" → Mode V from f0 (her crunch take ✕ / her dead bug ✓), P-46 outline at her neck + note "neck doing the work", P-21 tag "200 a day? 😅", chip flip CRUNCHES → DEAD BUGS at 1.9 s, P-11 "ribs down" at 2.4 s.
@@ -910,37 +914,39 @@ SM-5 swap counter (1/4…4/4) + P-27 thali map that stays on screen as the spine
 
 ---
 
-## §15 QA checklist
+## §15 Your look at the storyboard: the checklist
+
+Watch it once as a stranger with a thumb over the next reel (a tired desk worker at 6 pm), then once as the editor whose name is on it. Fix what bothers you, in one pass.
 
 **Stopper / hook**
-- [ ] f0 has Forest Card + result pair + Aria; banner readable at 25%; one element moving.
-- [ ] ≥ 8 changes in 0–3 s; the fix visible by 2.5 s.
-- [ ] Banner ≤ 9 words, ≤ 2 lines, one chip, ≤ 1 calm emoji, matches the visuals.
-- [ ] Bro test passed: no loud colour, no shake, no shouting type.
+- f0 has Forest Card + result pair + Aria; banner readable at 25%; one element moving.
+- The first 3 s are crisp and alive; the fix visible by 2.5 s.
+- Banner ≤ 9 words, ≤ 2 lines, one chip, ≤ 1 calm emoji, matches the visuals.
+- Bro test passed: no loud colour, no shake, no shouting type.
 
 **Body**
-- [ ] Every exercise named has her demo (or a flagged line-art fallback).
-- [ ] Every form cue is drawn on the body (P-04/P-11/P-03/P-02).
-- [ ] Mistakes come only from her deliberate mistake take, Clay-framed, labelled.
-- [ ] Rail + numeral tile at every item; count = banner count.
-- [ ] Event every ≤ 1.8 s; nothing static > 3 s (stretch holds have moving timers).
-- [ ] ≥ 8 patterns, ≥ 4 families per 60 s; same Z never twice in a row; same T never 3× in a row.
-- [ ] ≤ 3 bright roles per frame; subtitles never coloured; coral/sage never as text on Linen.
-- [ ] No white text over her white wall or her face (light-background rule, §5.5).
-- [ ] Face never covered; captions at chest height; chips never on the body part they name.
-- [ ] ≤ 2 tease beats, only on `mock`; never during a correct-form demo.
+- Every exercise named has her demo (or a line-art fallback you'll name to her).
+- Every form cue is drawn on the body (P-04/P-11/P-03/P-02).
+- Mistakes come only from her deliberate mistake take, Clay-framed, labelled.
+- Rail + numeral tile at every item; count = banner count.
+- Alive and calm from start to end: every hold is on purpose (stretch holds have moving timers); it builds to the last item.
+- Variety by feel: no zoom or transition on autopilot.
+- Sage leads every frame; subtitles never coloured; coral/sage never as text on Linen.
+- No white text over her white wall or her face (light-background rule, §5.5).
+- Her face, hair and the top of her head read clear whenever the moment is about her; captions at chest height; chips off the body part they name. Nothing cuts her head or buries her face by accident.
+- Teasing is rare, only on `mock`, never during a correct-form demo.
 
 **Sound**
-- [ ] No SFX unless licensed; ledger clean if used; zero meme sounds.
-- [ ] Bed licensed (or none); ducked ≥ 22 dB; no copyrighted songs.
-- [ ] −14 LUFS, TP ≤ −1.5 dBTP; hard end ≤ 6 f after the last word.
+- No SFX unless licensed; no file overused; zero meme sounds.
+- Bed licensed (or none), well under her voice; no copyrighted songs.
+- The loudness and the hard end ≤ 6 f after the last word are the render's job; it checks them.
 
 **Truth / text / end**
-- [ ] Every on-screen number is in `numbers_said` or her client records. No calories she didn't say.
-- [ ] Client visuals: real data, consent chip, no warping/filters; no fake transformations.
-- [ ] No stock people/gyms/food; gym strangers blurred.
-- [ ] Glossary spellings; sentence-case subtitles; Hindi words as spoken.
-- [ ] PLAN on screen ≥ 1.5 s; plan card + follow chip present; every open loop paid off.
+- Every claim number on screen (body, food, time, client) is one she said or from her client records; no calories she didn't say. Illustration props carry no label.
+- Client visuals: real data, consent confirmed, no warping/filters; no fake transformations.
+- No stock people/gyms/food; gym strangers blurred.
+- Glossary spellings; sentence-case subtitles; Hindi words as spoken.
+- PLAN readable in the CTA; plan card + follow chip present; every open loop paid off.
 
 ---
 

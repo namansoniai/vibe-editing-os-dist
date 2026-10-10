@@ -107,7 +107,8 @@ class Project:
 
 
 def read_json(p: str | Path) -> Any:
-    with open(p, encoding="utf-8") as f:
+    """A JSON file, with or without a UTF-8 byte-order mark (Windows PowerShell's Out-File / Set-Content write one)."""
+    with open(p, encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -129,6 +130,48 @@ def run(cmd: list[str], project: Project | None = None, log_as: str = "", check:
         raise VeosError("TOOL_FAILED", f"{Path(cmd[0]).name} failed: {' | '.join(tail)}",
                         "See the log in <project>/logs for details.")
     return r
+
+
+_FILTER_FORM: dict[str, str] = {}
+INLINE_MAX = 24000  # chars: a filter graph longer than this never goes on the command line (Windows caps it at 32767)
+
+
+def filter_form(ffmpeg: str) -> str:
+    """How this ffmpeg reads a filter graph from a file: "-/filter_complex" (ffmpeg 7+; recent nightlies removed
+    -filter_complex_script), "-filter_complex_script" (ffmpeg 6 and older), or "inline". Probed once per binary on a
+    1-frame null source."""
+    if ffmpeg in _FILTER_FORM:
+        return _FILTER_FORM[ffmpeg]
+    import tempfile
+    form = "inline"
+    with tempfile.TemporaryDirectory() as d:
+        f = Path(d) / "probe.txt"
+        f.write_text("[0:v]null[v]", encoding="utf-8")
+        for opt in ("-/filter_complex", "-filter_complex_script"):
+            try:
+                r = subprocess.run([ffmpeg, "-v", "error", "-f", "lavfi", "-i", "nullsrc=s=16x16:d=0.04", opt, str(f),
+                                    "-map", "[v]", "-frames:v", "1", "-f", "null", "-"], capture_output=True, timeout=30)
+            except (OSError, subprocess.SubprocessError):
+                continue
+            if r.returncode == 0:
+                form = opt
+                break
+    _FILTER_FORM[ffmpeg] = form
+    return form
+
+
+def filter_complex_args(script: Path, ffmpeg: str | None = None) -> list[str]:
+    """ffmpeg arguments that apply the filter graph written in `script`, in the form this ffmpeg supports (see
+    filter_form); the graph goes inline only when neither file form works and it is short enough."""
+    form = filter_form(ffmpeg or tools().ffmpeg)
+    if form != "inline":
+        return [form, str(script)]
+    graph = Path(script).read_text(encoding="utf-8-sig")
+    if len(graph) > INLINE_MAX:
+        raise VeosError("FFMPEG_FILTER_FILE", "this ffmpeg reads filter graphs neither from -/filter_complex nor "
+                        "-filter_complex_script, and the graph is too long for the command line",
+                        "Update the engine (`veos doctor`) so it uses its bundled ffmpeg.")
+    return ["-filter_complex", graph.replace("\n", "")]
 
 
 def r3(x: float) -> float:

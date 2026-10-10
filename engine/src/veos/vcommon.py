@@ -28,6 +28,22 @@ def advice(f: dict) -> dict:
     return f
 
 
+# Taste nags (Naman, 9 Oct 2026: "taste = conviction and creative direction, never hard-coded rules"). Pacing, shares,
+# schedules, variety counts, sound density, clutter counts and hue counts are the Director's call, not the checker's:
+# validate drops these findings from its output (the code stays, and their measures stay in stats).
+TASTE_RULES = frozenset({"V-CADENCE", "V-REHOOK", "V-HUES", "G2"})
+
+
+def taste(f: dict) -> dict:
+    """Mark the counting / pacing part of a rule as taste: validate leaves it out of failures and advice."""
+    f["taste"] = True
+    return f
+
+
+def is_taste(f: dict) -> bool:
+    return bool(f.get("taste")) or f.get("rule") in TASTE_RULES
+
+
 def norm_box(b: Any) -> tuple[float, float, float, float] | None:
     """Return (x0, y0, x1, y1) from {x,y,w,h} or [x,y,w,h]."""
     try:

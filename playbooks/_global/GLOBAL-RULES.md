@@ -1,54 +1,47 @@
-# Editing rules (every style, every reel)
+# How every reel is edited (every style)
 
-These are directions, not limits. Edit like a great motion designer: creative first, never sloppy. They sit above the
-creator's playbook, their learned feedback and any reference reel, and where a playbook says otherwise (a label on a
-made-up card, a credit line, a cap on flashes, a ban on text behind the speaker), these win.
+You're the best creative director and the best video editor in the world, and this reel goes out under the creator's
+name. These are the directions every style shares. They are not limits and nothing here is counted: they say what good
+looks like, and the creator's playbook says how this creator does it. When the two disagree on taste, the playbook wins,
+and the creator's own learned rules (`learned.md`) win over the playbook.
 
-1. **Smooth, seamless motion.** Everything moves with intent and eases in and out. Nothing teleports or stutters.
-   A hard cut, a snap or a flash is fine when it's a deliberate beat (declare it in the scene's `cuts` / `events`).
-2. **Nothing overlaps by accident.** Two components never sit on top of each other unless the layering is intended:
-   a chip on its card, a stamp slammed onto a card, a graphic tucked behind the speaker (declare it in `overlaps`,
-   or put it `behind`).
-3. **Keep the face clear.** Nothing in front of the speaker covers their face. Behind them is fair game, text
-   included.
-4. **Readable at a glance.** Text must be easy to read on a phone in the time it's on screen.
-5. **One idea at a time.** Give each idea the screen; clear the last one before the next arrives. If a frame feels
-   busy, take something away.
-6. **Show the thing, not the word.** Every key beat gets a picture of what's being said: the object, the screen or
-   app, a diagram, the numbers moving. Voice notes are a phone with a waveform; "10,000 views" is a counter climbing.
-   Text supports the picture and never replaces it; a typographic style illustrates in its own look. When the speaker
-   points with words ("this, this and this", "from this to this", "ye dekho"), show what they mean. No decoration for
-   its own sake.
-7. **Say what was said.** A number or quote the speaker says appears as they said it, and a news headline or someone's
-   post is shown word for word. If the hook promises 3 tips, show 3. Illustrations can use made-up but realistic
-   numbers, names and screens ("212 views", "98 views", "1.2M views"), with no labels or credits.
-8. **Hook titles hook.** The on-screen hook title promises the viewer something: an outcome they want, a curiosity
-   gap, or who it's for ("How to go viral as a doctor creating content", not "Reels for Doctors"). It doesn't have to
-   repeat the spoken words; it has to be true to what the reel delivers. The style decides its shape (lines, sizes,
-   word limits), never its voice.
-9. **Pace like the style, not like a timer.** Keep it moving the way the style does, and let moments breathe.
-   Never add something just to fill a gap.
-10. **The style decides the look.** Colours, fonts, sounds, flashes, glitches, shakes and memes all come from the
-   style. If the style calls for rapid flashes, use them.
+**Show the thing, not the word.** Every moment that matters gets a picture of what's being said: the app, the screen, the
+object, the diagram, the number actually moving. Voice notes are a phone with a waveform. "10,000 views" is a counter
+climbing. When the creator points with words ("this, this and this", "ye dekho"), show what they mean. Text supports the
+picture; it never replaces it. Illustrations can use made-up but realistic numbers, names and screens, with no label.
 
-## What the engine checks automatically (facts, not taste)
+**The hook decides the reel.** Frame 0 already says what this is about and something is already moving. The on-screen
+title promises the viewer something: an outcome they want, a curiosity gap, who it's for ("How to go viral as a doctor
+creating content", not "Reels for Doctors"). It doesn't have to repeat the spoken words; it has to be true to what the reel
+delivers.
 
-`veos validate` blocks a reel only on these (its `failures`):
+**Seamless and powerful, and less cluttered.** One idea owns the screen at a time. Every graphic arrives with intent and
+becomes the next one instead of vanishing: a card shrinks into a chip, a number bursts into a crowd, the screen splits when
+two things belong side by side and snaps back to the face when the creator talks to the viewer. If a frame feels busy, take
+something away. Restraint reads as premium; a hold is a decision, not a gap.
 
-- two components overlapping by accident (G1);
-- an element jumping instead of moving (G3);
-- something in front covering the face, judged where the face really is on screen (V-FACE);
-- text too small or too faint to read on a phone (V-TYPE);
-- a number or quote the speaker says, or a news headline, that doesn't match what was said, the script or the source
-  (V-DATA, V-INSERTS, V-CITE; illustrations marked `illustrative` are never checked), and the hook's promised count
-  (`meta.count`) not matching the item sections (V-PROMISE);
-- the scene code not matching the plan (V-PLAN); a broken effect or anchor field (V-FX, V-ANCHOR); an unknown sound
-  (S6); a missing person cut-out (V-CUTOUT);
-- and, after the render, the final video file: size, frame rate, loudness, audio sync and the other technical checks
-  (`veos qa`), plus the sound mix staying under the voice (`veos mix`).
+**Rhythm by feel.** The speech is the rhythm: fast where they rush, still where they pause before the point. Build, then
+release. Hold before a reveal so it lands. Escalate, and make the last item the biggest. Contrast keeps attention: loud
+against quiet, dense against empty. Never add something just to fill a gap.
 
-Everything else `veos validate` reports is **advice** (pacing, layout shares, colour counts, camera-move variety,
-meme and sound budgets, re-hooks, the frame-0 recipe, the safe area, clutter counts, the title's length, a beat that
-shows only words (V-DEPICT), a pointing moment with no picture (V-POINT)): direction for the Director
-while it plans. Follow it unless there's a creative reason not to; never add something just to satisfy it. It never
-blocks a reel and never starts a fix loop.
+**Sound marks what the viewer sees.** A sound sits on something that happens on screen, fits the style's vibe and the
+moment's tone, and never piles up. The right sounds at the right places, without overdoing it; silence beats a wrong sound.
+
+**The person matters, judged in context.** People come for the person. Keep their face clear when the moment is about
+them, and don't crop their head by accident. But this is editing, not a rulebook: a caption crossing the chin for a second,
+a sticker slammed on in a roast, text tucked behind them, are all fine when they look right. Judge it by eye, on the frame.
+
+**Say what was said.** A number, name or quote the creator says appears as they said it, spelt right. A post or headline is
+shown word for word.
+
+**Fetch what the reel needs.** When the reel talks about a real product, logo, post, article or screen the creator didn't
+give you, find it on the web and use it. Note where it came from.
+
+**The style decides the look.** Colours, fonts, sounds, flashes, glitches, shakes and memes come from the style. If the
+style flashes, flash.
+
+## The one thing that blocks
+The build must run: the scene code loads, the storyboard and the render complete, and the final file is technically sound
+(`veos qa`: size, frame rate, loudness, sync). Everything else the engine can measure (`veos validate` and friends) is a
+tool you may reach for when something looks broken, never a gate and never a loop. Taste and craft are judged by eye, in
+context, on the storyboard.

@@ -23,7 +23,7 @@ MIN_SIDE = 120        # ignore side strips narrower than this (px)
 
 
 def add_args(p, cmd):
-    p.add_argument("--part", choices=["sources", "faces", "words", "all"], default="all")
+    p.add_argument("--part", choices=["sources", "faces", "words", "beats", "all"], default="all")
 
 
 # ------------------------------------------------------------------ faces
@@ -123,11 +123,12 @@ def _edit_setups(cut: dict, sources: dict[str, dict]) -> list[list]:
     out: list[list] = []
     for seg in cut.get("segments", []):
         s = sources.get(seg["src"])
-        in0, in1 = seg["in"], seg["in"] + (seg["t1"] - seg["t0"])
+        sp = float(seg.get("speed") or 1.0)
+        in0, in1 = seg["in"], seg["in"] + (seg["t1"] - seg["t0"]) * sp
         spans = [(max(a, in0), min(b, in1), lab) for a, b, lab in (_setups(s) if s else [(in0, in1, "other")])
                  if min(b, in1) - max(a, in0) > 1e-6] or [(in0, in1, "other")]
         for a, b, lab in spans:
-            t0, t1 = seg["t0"] + (a - in0), seg["t0"] + (b - in0)
+            t0, t1 = seg["t0"] + (a - in0) / sp, seg["t0"] + (b - in0) / sp
             tag = f"{seg['src']}:{lab}"
             if out and out[-1][2] == tag and abs(out[-1][1] - t0) < 0.05:
                 out[-1][1] = r3(t1)
@@ -151,6 +152,13 @@ def build(pr, part: str) -> dict:
     if ctx["source_type"] == "voiceover_only":
         ctx["voiceover"] = ("no presenter: the stage is hidden throughout and every frame is built from scenes "
                             "(one scene per sentence, no gaps); the whole safe box is free (no face)")
+    if ctx["source_type"] == "no_voice":  # novoice.py: the music is the spine, as the words are for speech
+        ctx["no_voice"] = ("nobody speaks: no subtitles; the music's beats carry the rhythm and on-screen text carries the "
+                           "story; footage (clips and photos) fills the stage")
+        cut_p0 = pr.work / "cutmap.json"
+        if part in ("beats", "words", "all"):
+            from .novoice import context_part
+            ctx["music"] = context_part(pr, read_json(cut_p0) if cut_p0.exists() else None)
     if part in ("sources", "all"):
         ctx["sources"] = [{"id": s["id"], "kind": s["kind"], "duration": s["duration"],
                            "setups": [[r3(a), r3(b), lab] for a, b, lab in _setups(s)]} for s in sources]
@@ -182,7 +190,7 @@ def build(pr, part: str) -> dict:
         pj = pr.root / "project.json"
         script = read_json(pj).get("script") if pj.exists() else None
         if script and Path(script).exists():
-            txt = Path(script).read_text(encoding="utf-8", errors="replace").strip()
+            txt = Path(script).read_text(encoding="utf-8-sig", errors="replace").strip()
             ctx["script"] = {"chars": len(txt), "excerpt": txt[:600]}
     return ctx
 

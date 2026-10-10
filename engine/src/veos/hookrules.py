@@ -13,7 +13,7 @@ ARCHETYPES; `hooks.f0.require` / `forbid` in tokens may name any requirement.
 """
 from __future__ import annotations
 
-from .vcommon import HEADLINE_KINDS, SUBTITLE_Z, fail, fr, get_path
+from .vcommon import HEADLINE_KINDS, SUBTITLE_Z, fail, fr, get_path, taste
 
 TOL_S = 0.1  # caption "at f0": the first chunk/word may start up to 3 frames in
 
@@ -314,6 +314,9 @@ def _req(item):
 
 
 def rule_f0(c, p: dict) -> list[dict]:
+    """V-F0: frame 0 is not empty or unreadable (the archetype's frame-0 elements, hooks.f0.forbid, a known archetype
+    the style uses). Its timers (an element due by N s, the payoff deadline) are taste (vcommon.taste): validate leaves
+    them out of its output."""
     legacy = bool(p.get("legacy"))
     ha = archetype_of(c, p)
     hooks = c.style.get("hooks") or {}
@@ -351,8 +354,9 @@ def rule_f0(c, p: dict) -> list[dict]:
             out.append(fail("V-F0", bid, 0, M1_MSG[name], M1_FIX[name]))
         else:
             when = "at frame 0" if by <= 0 else f"by {by:.1f} s"
-            out.append(fail("V-F0", bid, by, f"{ha} {ARCHETYPES[ha]['name']}: {desc} is missing {when} "
-                            f"({expected(ha, hooks)})", fix(by)))
+            f = fail("V-F0", bid, by, f"{ha} {ARCHETYPES[ha]['name']}: {desc} is missing {when} "
+                     f"({expected(ha, hooks)})", fix(by))
+            out.append(taste(f) if by > 0 else f)  # a deadline after frame 0 is a timer: taste
     if legacy:
         return out
     for name in f0.get("forbid") or []:
@@ -373,14 +377,13 @@ def _payoff(c, ha: str, hooks: dict) -> list[dict]:
         t = float(tagged[0].get("t_in", 0))
         c.stats_extra["hook"]["payoff_t"] = round(t, 3)
         if fr(t) > fr(by):
-            return [fail("V-F0", c.beat_id(t), t, f"the payoff scene {tagged[0].get('id')} lands at {t:.2f} s ({ha} payoff by {by:.1f} s)",
-                         f"bring {tagged[0].get('id')} forward so it starts by {by:.1f} s, or tighten the hook")]
+            return [taste(fail("V-F0", c.beat_id(t), t, f"the payoff scene {tagged[0].get('id')} lands at {t:.2f} s ({ha} payoff by {by:.1f} s)",
+                               f"bring {tagged[0].get('id')} forward so it starts by {by:.1f} s, or tighten the hook"))]
         return []
     if req is None:
-        c.warnings.append(f"V-F0: {ha} payoff-by {by:.1f} s not checked; tag the payoff scene with payoff: true")
-        return []
+        return []  # (the payoff deadline is taste: nothing to warn about)
     desc, pred, fix = REQS[req]
     if pred(c, by, False):
         return []
-    return [fail("V-F0", c.beat_id(by), by, f"{ha} payoff: {desc} has not landed by {by:.1f} s ({expected(ha, hooks)})",
-                 f"{fix(by)} (or tag the payoff scene with payoff: true)")]
+    return [taste(fail("V-F0", c.beat_id(by), by, f"{ha} payoff: {desc} has not landed by {by:.1f} s ({expected(ha, hooks)})",
+                       f"{fix(by)} (or tag the payoff scene with payoff: true)"))]

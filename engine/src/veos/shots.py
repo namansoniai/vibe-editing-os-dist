@@ -17,6 +17,7 @@ import time
 
 from . import compose, turnrules
 from .core import SIZE, VeosError, need_project, r3, read_json, write_json
+from .cut import seg_speed, src_frames
 from .dialoguerules import DialogueCtx, rule_speaker
 from .speakers import QWORDS
 
@@ -122,8 +123,8 @@ def _edit_onsets(proj, cm: dict) -> dict:
         for a, _ in segs:
             for s in cm["segments"]:
                 lo = s["in_frame"] / 30.0
-                if lo <= a < lo + (s["f1"] - s["f0"]) / 30.0:
-                    out.setdefault(sid, []).append(round(s["t0"] + a - lo, 3))
+                if lo <= a < lo + src_frames(s) / 30.0:
+                    out.setdefault(sid, []).append(round(s["t0"] + (a - lo) / seg_speed(s), 3))
     return out
 
 

@@ -14,12 +14,17 @@ Checks (each a failure with a fix):
     one of the classes: claim, but, number, sentence (first word of a sentence), pause (>= 0.25 s silence before it),
     any, or a literal word.
 Params (validator.rules["V-LAYOUT"]): tol_s, share_tolerance (absolute fraction, default 0.02), check_format (default true).
+
+Taste, not checks (Naman, 9 Oct 2026): the shares, the schedule min / max and the switch-on words are marked
+vcommon.taste() and `veos validate` leaves them out of its output (the code and `stats.layouts` stay). Sync of a switch
+to the words is V-ONWORD's job. What V-LAYOUT still says: a layout that does not resolve, a layout outside the
+format, a malformed overshoot.
 """
 from __future__ import annotations
 
 import re
 
-from .vcommon import fail, fr
+from .vcommon import fail, fr, taste
 
 ENGINES = ("full", "low", "panel", "inset", "slide-aside", "bubble", "hidden", "card", "stack", "pip", "letterbox", "blurfill")
 LAYOUT_META = ("schedule",)
@@ -191,24 +196,22 @@ def rule_layout(c, p: dict) -> list:
         if sh < lo - tol or sh > hi + tol:
             more = sh < lo
             msg = f"layout '{lid}' holds {sh:.0%} of the runtime (target {lo:.0%}-{hi:.0%}{' for ' + fmt if fmt else ''})"
-            if missing:
-                c.warnings.append(f"V-LAYOUT (warning, not a failure): {msg}; the share targets need creator footage that "
-                                  f"this project does not have: {'; '.join(f'{w} for {lid2}' for lid2, w in missing)}. "
-                                  "Add the clips (`veos asset add`) to hold the style's shares")
-                continue
-            out.append(fail("V-LAYOUT", None, 0.0, msg,
-                            f"{'use' if more else 'cut back'} '{lid}' to about {(lo if more else hi) * dur:.1f} s "
-                            f"({'+' if more else '-'}{abs((lo if more else hi) - sh) * dur:.1f} s)"))
+            if missing:  # (taste: the share is the Director's call; kept as a measure, never said)
+                msg += ("; the share targets need creator footage that this project does not have: "
+                        + "; ".join(f"{w} for {lid2}" for lid2, w in missing))
+            out.append(taste(fail("V-LAYOUT", None, 0.0, msg,
+                                  f"{'use' if more else 'cut back'} '{lid}' to about {(lo if more else hi) * dur:.1f} s "
+                                  f"({'+' if more else '-'}{abs((lo if more else hi) - sh) * dur:.1f} s)")))
     # 3. schedule min / max per run
     mx, mn = sched.get("max_s") or {}, sched.get("min_s") or {}
     for k, (lid, a, b) in enumerate(rs):
         d = b - a
         if lid in mx and d > float(mx[lid]) + 1e-6:
-            out.append(fail("V-LAYOUT", c.beat_id(a), a, f"layout '{lid}' holds {d:.1f} s from {a:.1f} s (max {mx[lid]} s)",
-                            f"switch layout before {a + float(mx[lid]):.1f} s (on a claim word)"))
+            out.append(taste(fail("V-LAYOUT", c.beat_id(a), a, f"layout '{lid}' holds {d:.1f} s from {a:.1f} s (max {mx[lid]} s)",
+                                  f"switch layout before {a + float(mx[lid]):.1f} s (on a claim word)")))
         if lid in mn and k < len(rs) - 1 and d < float(mn[lid]) - 1e-6:
-            out.append(fail("V-LAYOUT", c.beat_id(a), a, f"layout '{lid}' holds only {d:.2f} s from {a:.1f} s (min {mn[lid]} s)",
-                            f"hold '{lid}' at least {mn[lid]} s, or drop this switch"))
+            out.append(taste(fail("V-LAYOUT", c.beat_id(a), a, f"layout '{lid}' holds only {d:.2f} s from {a:.1f} s (min {mn[lid]} s)",
+                                  f"hold '{lid}' at least {mn[lid]} s, or drop this switch")))
     # 4. switch-on words
     want = [str(x).lower() for x in (sched.get("switch_on") or [])]
     if want and len(rs) > 1:
@@ -220,14 +223,14 @@ def rule_layout(c, p: dict) -> list:
             for lid, a, _ in rs[1:]:
                 near = [i for i, w in enumerate(words) if abs(float(w["s"]) - a) <= ttol]
                 if not near:
-                    out.append(fail("V-LAYOUT", c.beat_id(a), a, f"the switch to '{lid}' at {a:.2f} s is not on a word",
-                                    f"move the switch onto the start of a {'/'.join(want)} word"))
+                    out.append(taste(fail("V-LAYOUT", c.beat_id(a), a, f"the switch to '{lid}' at {a:.2f} s is not on a word",
+                                          f"move the switch onto the start of a {'/'.join(want)} word")))
                     continue
                 if not any(set(want) & word_classes(words, i, speech_lang(c)) for i in near):
                     heard = ", ".join(repr(str(words[i].get("w", ""))) for i in near)
-                    out.append(fail("V-LAYOUT", c.beat_id(a), a,
-                                    f"the switch to '{lid}' at {a:.2f} s lands on {heard}, not a {'/'.join(want)} word",
-                                    f"move it to the nearest {'/'.join(want)} word (e.g. but / lekin, then / phir, so / toh, a number)"))
+                    out.append(taste(fail("V-LAYOUT", c.beat_id(a), a,
+                                          f"the switch to '{lid}' at {a:.2f} s lands on {heard}, not a {'/'.join(want)} word",
+                                          f"move it to the nearest {'/'.join(want)} word (e.g. but / lekin, then / phir, so / toh, a number)")))
     c.stats_extra["layouts"] = {"runs": [[lid, round(a, 2), round(b, 2)] for lid, a, b in rs],
                                 "share": {k: round(v / dur, 3) for k, v in sorted(tot.items())}, "format": fmt}
     return out

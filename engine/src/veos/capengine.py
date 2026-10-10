@@ -33,12 +33,51 @@ W, H = 1080, 1920
 REPO = Path(__file__).resolve().parents[3]
 LIB_PATH = Path(__file__).resolve().parent / "data" / "caption_profiles.json"
 DEV_FALLBACK = "Noto Sans Devanagari"
+# Indic scripts -> the bundled Noto Sans family that renders them (assets/fonts/fonts.json); Devanagari goes through
+# deva_family (a style may pick Noto Serif Devanagari). Marathi is Devanagari, Punjabi is Gurmukhi.
+INDIC_FAMILY = {"devanagari": DEV_FALLBACK, "bengali": "Noto Sans Bengali", "gurmukhi": "Noto Sans Gurmukhi",
+                "gujarati": "Noto Sans Gujarati", "tamil": "Noto Sans Tamil", "telugu": "Noto Sans Telugu",
+                "kannada": "Noto Sans Kannada", "malayalam": "Noto Sans Malayalam"}
+# a few letters per family so the renderer loads the font before it measures (document.fonts.load)
+SCRIPT_SAMPLE = {DEV_FALLBACK: "कार", "Noto Sans Bengali": "বাংলা", "Noto Sans Gurmukhi": "ਪੰਜਾਬੀ",
+                 "Noto Sans Gujarati": "ગુજરાતી", "Noto Sans Tamil": "தமிழ்", "Noto Sans Telugu": "తెలుగు",
+                 "Noto Sans Kannada": "ಕನ್ನಡ", "Noto Sans Malayalam": "മലയാളം"}
 
 
 def deva_family(prof: dict, cfg=None) -> str:
     """The family Devanagari words use: the profile's `language.devanagari_family`, else the style's
     `captions.devanagari_family` (e.g. Noto Serif Devanagari for a serif style), else Noto Sans Devanagari."""
     return ((prof.get("language") or {}).get("devanagari_family") or getattr(cfg, "deva", None) or DEV_FALLBACK)
+
+
+def script_family(text: str, prof: dict, cfg=None) -> str | None:
+    """The bundled family an Indic-script word is drawn in (Telugu -> Noto Sans Telugu, ...; Devanagari ->
+    deva_family); None for Latin and scripts without a bundled font."""
+    from .langs import script_of
+    sc = script_of(str(text or ""))
+    if sc == "devanagari":
+        return deva_family(prof, cfg)
+    return INDIC_FAMILY.get(sc)
+
+
+def regional_script_notes(texts: list[str]) -> list[str]:
+    """Captions in an Indic script other than Devanagari keep their original words (nothing is dropped or garbled);
+    say which scripts appear, the bundled font that draws them (or that none ships, so the browser falls back to a
+    system font such as Nirmala UI on Windows), and how to show them romanised instead."""
+    from .langs import script_of
+    found: dict[str, int] = {}
+    for t in texts:
+        for part in str(t or "").split():
+            sc = script_of(part)
+            if sc not in ("latin", "devanagari", "other"):
+                found[sc] = found.get(sc, 0) + 1
+    out = []
+    for sc, n in sorted(found.items()):
+        fam = INDIC_FAMILY.get(sc)
+        how = f"in {fam}" if fam else f"in a system font (no {sc.title()} font ships in assets/fonts)"
+        out.append(f"captions: {n} word(s) in {sc.title()} script, shown as spoken {how}. For romanised captions "
+                   f"write a map and run `veos captions apply`.")
+    return out
 
 UNIT_DEFAULTS = {
     "word": {"words": [1, 1], "max_chars_line": 18, "lines": 1, "pause_split_s": 0.25, "min_hold_s_per_word": 0.3},
@@ -205,7 +244,7 @@ def get(d, path, default=None):
 
 def load_library() -> dict:
     try:
-        return json.loads(LIB_PATH.read_text(encoding="utf-8")).get("profiles", {})
+        return json.loads(LIB_PATH.read_text(encoding="utf-8-sig")).get("profiles", {})
     except (OSError, ValueError):
         return {}
 
@@ -547,7 +586,7 @@ def _fonts_json() -> dict:
     global _FJ
     if _FJ is None:
         try:
-            _FJ = json.loads((REPO / "assets" / "fonts" / "fonts.json").read_text(encoding="utf-8"))
+            _FJ = json.loads((REPO / "assets" / "fonts" / "fonts.json").read_text(encoding="utf-8-sig"))
         except (OSError, ValueError):
             _FJ = {}
     return _FJ
@@ -1051,6 +1090,9 @@ def arrange(ch: list[Word], prof: dict, cfg: Config, meas: Measurer, colour_hex:
         st = _word_style(w, prof, cfg, colour_hex, speaker)
         recs.append({"t": _case_text(w, prof, k == 0), "i": w.i, "s": round(w.s, 3), "e": round(w.e, 3),
                      "f": None, "emph": bool(w.emph), "tier": 0, "dev": w.dev, "spk": w.spk, **st})
+        fam = script_family(recs[-1]["t"], prof, cfg)
+        if fam:   # an Indic-script word: drawn in its own Noto family, no italic, no tracking (renderer `dev`)
+            recs[-1]["dev"], recs[-1]["dfam"] = True, fam
     if duet:
         variant = "duet"
         jump = duet.get("size_jump") or [1.0, 1.6, 2.5]
@@ -1123,7 +1165,7 @@ def arrange(ch: list[Word], prof: dict, cfg: Config, meas: Measurer, colour_hex:
     for r in recs:
         r["sz"] = round(r["sz"], 1)
         r["fam"] = family_of(cfg, r["slot"])
-        if r["dev"]:
+        if r["dev"] and not r.get("dfam"):
             r["dfam"] = deva_family(prof, cfg)
         r["w"] = round(meas.width(r["t"], r["fam"] if not r["dev"] else r["dfam"], r["wt"], r["sz"], r["it"],
                                   0 if r["dev"] else trk), 1)
@@ -1197,7 +1239,7 @@ def _break_lines(recs: list[dict], prof: dict, cfg: Config, meas: Measurer) -> l
 
     def wpx(k):
         r = recs[k]
-        return meas.width(r["t"], family_of(cfg, r["slot"]) if not r["dev"] else deva_family(prof, cfg), r["wt"], r["sz"],
+        return meas.width(r["t"], family_of(cfg, r["slot"]) if not r["dev"] else (r.get("dfam") or deva_family(prof, cfg)), r["wt"], r["sz"],
                           r["it"], trk)
 
     widths = [wpx(k) for k in range(n)]
@@ -1434,6 +1476,17 @@ def hide_ranges(cfg: Config, tl: dict, scenes: list | None, prof_hide: set) -> l
             if isinstance(tr, dict) and tr.get("t") is not None:
                 d = float(tr.get("dur", 0.33))
                 out.append((f_of(tr["t"]), f_of(float(tr["t"]) + d), "transition"))
+    # a layout whose caption block says `hide: true` shows no captions (its own type carries the words, e.g. a hook
+    # layout with a lockup line and the face window where the caption band would be)
+    st = sorted([e for e in (tl.get("stage") or []) if isinstance(e, dict)], key=lambda e: float(e.get("t", 0) or 0))
+    for i, e in enumerate(st):
+        lay = cfg.layouts.get(str(e.get("layout", "full"))) if isinstance(cfg.layouts, dict) else None
+        cap = lay.get("caption") if isinstance(lay, dict) else None
+        if isinstance(cap, dict) and cap.get("hide") is True:
+            a = f_of(e.get("t", 0) or 0)
+            b = f_of(st[i + 1].get("t", 0) or 0) if i + 1 < len(st) else 10 ** 7
+            if b > a:
+                out.append((a, b, "layout"))
     for s in scenes or []:
         try:
             a, b = f_of(s["t_in"]), max(f_of(s["t_out"]), f_of(s["t_in"]) + 1)
@@ -1547,7 +1600,8 @@ def _visible_span(f0: int, f1: int, hides: list) -> tuple[int, int] | None:
 
 def build(tokens: dict, tl: dict | None, words_doc, *, face=None, scenes=None, frames_dir: Path | None = None,
           script: list[str] | None = None, glossary_terms=None) -> dict:
-    """The full caption export for one reel (pure apart from optional frame sampling)."""
+    """The full caption export for one reel (pure apart from optional frame sampling). `face`: the face boxes as a full
+    stage shows them (after the E-16b base reframe)."""
     tl = tl or {}
     warnings: list[str] = []
     cfg = resolve_config(tokens, tl)
@@ -1591,6 +1645,7 @@ def build(tokens: dict, tl: dict | None, words_doc, *, face=None, scenes=None, f
     glossary = X.Glossary(list(glossary_terms or []) + [t for p in cfg.profiles.values()
                                                         for t in (get(p, "language.glossary") or [])])
     ws = caption_words(raw, cfg, script=script, glossary=glossary, warnings=warnings)
+    warnings.extend(regional_script_notes([w.text for w in ws]))
     # profile per word: by_layout from the stage, then planner overrides
     for w in ws:
         w.prof = cfg.default
@@ -1735,7 +1790,7 @@ def extra_fonts(cfg: Config, chunks: list[dict], warnings: list) -> list[dict]:
     for f in dict.fromkeys(fams):
         files = font_files(f)
         if files:
-            out.append({"family": f, "files": files})
+            out.append({"family": f, "files": files, **({"sample": SCRIPT_SAMPLE[f]} if f in SCRIPT_SAMPLE else {})})
         else:
             warnings.append(f"caption font {f!r} is neither a font slot of the playbook nor a bundled family "
                             "(assets/fonts/fonts.json); the browser falls back to a system font")
@@ -1750,6 +1805,9 @@ def _legacy_rect(text, cfg, p, meas, tl, f0):
     w = min(w0, 960)
     cy = p["position"]["cy"]
     lay = stage_at(tl, f0 / FPS).get("layout", "full")
+    lt = cfg.layouts.get(lay) if isinstance(cfg.layouts, dict) else None
+    if isinstance(lt, dict) and lt.get("engine") in ("panel", "inset"):
+        lay = lt["engine"]  # the renderer's v1 subtitles go by the stage's engine (core.js subtitleHTML: st.name)
     L = cfg.layout
     P = L.get("panel") or {}
     if lay == "panel":
@@ -1824,6 +1882,8 @@ def _place(rec: dict, prof: dict, pos: dict, cfg: Config, tl: dict, face):
     elif anchor == "seam" and sr:
         cy = sr[1] if sr[1] > 1 else sr[1] + sr[3]
         cy += float(pos.get("dy", 0) or 0)
+    elif anchor == "seam_above" and sr:  # the block's bottom edge `offset` px above the seam: clear of the head below it
+        top = (sr[1] if sr[1] > 1 else sr[1] + sr[3]) - off - bh
     elif anchor == "below_card" and sr:
         top = sr[1] + sr[3] + off
     elif anchor == "inside_footage" and sr:
@@ -1839,6 +1899,8 @@ def _place(rec: dict, prof: dict, pos: dict, cfg: Config, tl: dict, face):
     # sits at or below the face centre goes below the chin, else down to the fallback band (`position.face_fallback_cy`,
     # default the lowest caption line of the safe zone); one above the face centre goes above the head. If neither
     # clears the face, the caption keeps the position furthest from the face on its own side and is flagged.
+    # Full-frame stages only (full, low): on a window (card, pip, stack, split) the caption stays where the layout puts
+    # it; the Director decides whether it may touch the person there (Naman, 10 Oct 2026: captions on the face are okay).
     fb = _face_at(face, rec["f0"], rec["layout"], cfg, ev)
     if fb is not None and pos.get("avoid_face", True) and anchor not in ("top_left",):
         top = avoid_face(top, bh, bw, fb, pos, cfg, off, anchor, rec)

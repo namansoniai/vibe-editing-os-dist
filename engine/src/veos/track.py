@@ -46,6 +46,7 @@ from pathlib import Path
 import numpy as np
 
 from .core import FPS, VeosError, need_project, r3, read_json, tools, write_json
+from .cut import src_frame
 
 PROXY = 640          # proxy long side (px)
 STEP = 2             # track every 2nd frame (~15 fps at 30 fps), interpolate the rest
@@ -396,7 +397,7 @@ def _edit_plan(pr, clip: str | None, fa: int, fb: int) -> list[dict]:
         if clip and seg.get("src") != clip:
             continue
         for n in range(max(fa, seg["f0"]), min(fb + 1, seg["f1"])):
-            out.append({"f": n, "src": seg["src"], "sf": seg["in_frame"] + (n - seg["f0"])})
+            out.append({"f": n, "src": seg["src"], "sf": src_frame(seg, n)})
     return out
 
 

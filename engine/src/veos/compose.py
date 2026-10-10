@@ -27,6 +27,7 @@ import numpy as np
 from . import reframe as RF
 from .conform import ensure
 from .core import FPS, SIZE, VeosError, read_json, run, tools, write_json
+from .cut import src_frame
 from .sync import from_session, to_session
 
 BLUR_DIM = 0.45  # default brightness of the blurfill backdrop; tokens `dialogue.blur_dim` (0..1, 1 = undimmed) overrides it
@@ -98,9 +99,9 @@ class TimeMap:
     def master_t(self, n: int) -> float:
         for s in self.segs:
             if s["f0"] <= n < s["f1"]:
-                return (s["in_frame"] + n - s["f0"]) / FPS
+                return src_frame(s, n) / FPS
         s = self.segs[-1]
-        return (s["in_frame"] + n - s["f0"]) / FPS
+        return src_frame(s, n) / FPS
 
     def cam_t(self, cam: str, t_master: float) -> float:
         cs = self.sources[cam].get("sync") or {"offset": 0.0}

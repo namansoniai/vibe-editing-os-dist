@@ -22,6 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from .core import FPS, VeosError, need_project, r3, read_json, run, tools, write_json
+from .cut import select_expr, seg_speed, src_frame
 
 REPO = Path(__file__).resolve().parents[3]
 W, H = 1080, 1920
@@ -61,8 +62,11 @@ def _job(ff: str, d: dict) -> dict:
     t0 = time.perf_counter()
     cover = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=bicubic,crop={W}:{H}"
     seek = max(0.0, (d["in_frame"] - 0.5) / FPS)
+    sel = d.get("select") or ""  # a sped-up cut (cut.select_expr): only the source frames the edit frames show
+    if sel:
+        sel += f",setpts=N/({FPS}*TB),"
     if not d["matte"]:  # no cut-out for this source: the footage frames only
-        vf = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase:flags=bicubic:in_color_matrix=bt709:in_range=tv,"
+        vf = (f"[0:v]{sel}scale={W}:{H}:force_original_aspect_ratio=increase:flags=bicubic:in_color_matrix=bt709:in_range=tv,"
               f"crop={W}:{H},format=rgb24[a]")
         cmd = [ff, "-y", "-v", "error", "-ss", f"{seek:.5f}", "-i", d["src"], "-filter_complex", vf,
                "-map", "[a]", "-frames:v", str(d["count"]), "-q:v", JPEG_Q, "-start_number", str(d["n0"]),
@@ -70,9 +74,10 @@ def _job(ff: str, d: dict) -> dict:
         r = subprocess.run(cmd, capture_output=True)
         err = r.stderr.decode("utf-8", "replace").strip()
         return {"d": d, "rc": r.returncode, "err": err[-600:], "s": time.perf_counter() - t0}
-    vf = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase:flags=bicubic:in_color_matrix=bt709:in_range=tv,"
+    # the matte may be smaller than the source (`veos matte` works at a proxy size): the cover scale brings it to 1080x1920
+    vf = (f"[0:v]{sel}scale={W}:{H}:force_original_aspect_ratio=increase:flags=bicubic:in_color_matrix=bt709:in_range=tv,"
           f"crop={W}:{H},format=rgb24,split[a][b];"
-          f"[1:v]{cover},format=gray{d['alpha_fix']}[m];"
+          f"[1:v]{sel}{cover},format=gray{d['alpha_fix']}[m];"
           f"[b]format=gbrp[bg];[bg][m]alphamerge,format=bgra[c]")
     cmd = [ff, "-y", "-v", "error", "-ss", f"{seek:.5f}", "-i", d["src"], "-ss", f"{seek:.5f}", "-i", d["matte"],
            "-filter_complex", vf,
@@ -195,8 +200,11 @@ def _prep(args, project):
             m = n
             while m < hi and m - n < CHUNK and (args.force or not have(m, cut)):
                 m += 1
-            jobs.append({"src": str(src), "matte": str(matte) if cut else None, "in_frame": seg["in_frame"] + (n - seg["f0"]),
-                         "n0": n, "count": m - n, "dir": str(fdir), "alpha_fix": fix_cache.get(sid, "")})
+            job = {"src": str(src), "matte": str(matte) if cut else None, "in_frame": src_frame(seg, n),
+                   "n0": n, "count": m - n, "dir": str(fdir), "alpha_fix": fix_cache.get(sid, "")}
+            if seg_speed(seg) != 1.0:  # sped-up cut: pick the frames the edit shows from the decoded run
+                job["select"] = select_expr(seg_speed(seg), src_frame(seg, n) - seg["in_frame"])
+            jobs.append(job)
             n = m
 
     # gentle default so a laptop stays usable during prep; --workers or VEOS_WORKERS raise it
@@ -271,7 +279,7 @@ def _face_edit(pr, cm, ffprobe) -> dict:
         sw, sh = dims[sid]
         s, ox, oy = _cover(sw, sh)
         for n in range(seg["f0"], seg["f1"]):
-            i = seg["in_frame"] + (n - seg["f0"])
+            i = src_frame(seg, n)
             bx = cache[sid][i] if 0 <= i < len(cache[sid]) else None
             if bx:
                 x, y, w, h = bx[:4]
@@ -413,7 +421,7 @@ def _bundle(args, project):
     try:
         fj = read_json(TREPO / "assets" / "fonts" / "fonts.json")
         have = {v.get("family") for v in (tok.get("fonts") or {}).values() if isinstance(v, dict)} | set(tok.get("fonts_extra") or {})
-        for fam in referenced_families(None, fj, sj.read_text(encoding="utf-8")):
+        for fam in referenced_families(None, fj, sj.read_text(encoding="utf-8-sig")):
             if fam not in have:
                 files = font_entry(fam, fj, warnings)
                 if files:

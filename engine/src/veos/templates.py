@@ -4,7 +4,8 @@ list                       the shipped templates (playbooks/_styles/<id>/, TEMPL
                            needs, readiness, tier (core / full), section, languages, CTA devices, brandable roles and
                            preview paths. Templates that need an engine capability this install doesn't have are hidden
                            (`--all` shows them).
-copy <id> --name N [--handle @h] [--colors ...] [--language english|hinglish|hinglish-en|hindi] [--currency X]
+copy <id> --name N [--handle @h] [--colors ...] [--language english|hinglish|hinglish-en|hindi|<regional>]
+     [--captions original|romanised|english] [--speed 1.1|1.2] [--currency X]
           [--cta device[:value]] [--id ID]
                            the buyer's branded copy in the user playbooks folder: brand variables (BV-01/02/05/06/08)
                            applied (buyers can change anything; only the never-bendable core is refused), a silent
@@ -54,7 +55,9 @@ FRAME_EXT = (".webp", ".png", ".jpg", ".jpeg", ".gif", ".avif")
 LANG_NAMES = {"en": "English", "hi": "Hindi", "hinglish": "Hinglish", "ta": "Tamil", "te": "Telugu", "mr": "Marathi",
               "bn": "Bengali", "gu": "Gujarati", "kn": "Kannada", "ml": "Malayalam", "pa": "Punjabi", "ur": "Urdu",
               "es": "Spanish", "fr": "French", "de": "German", "pt": "Portuguese", "ar": "Arabic"}
-SCRIPT_NAMES = {"Latn": "Latin script", "Deva": "Devanagari"}
+SCRIPT_NAMES = {"Latn": "Latin script", "Deva": "Devanagari", "Telu": "Telugu script", "Taml": "Tamil script",
+                "Knda": "Kannada script", "Mlym": "Malayalam script", "Beng": "Bengali script",
+                "Gujr": "Gujarati script", "Guru": "Gurmukhi"}
 INDIAN = {"hi", "hinglish", "ta", "te", "mr", "bn", "gu", "kn", "ml", "pa"}
 # the three setup answers every template offers (structure D.3 BV-05); English is the default
 LANG_OPTIONS = {"en/en/Latn": "English", "hinglish/hinglish/Latn": "Hinglish", "hinglish/en/Latn": "Hinglish speech, English captions",
@@ -65,10 +68,20 @@ LANG_LABELS = {"en/en/Latn": "English (English speech, English captions)",
                "hi/hi/Deva": "Hindi (Hindi speech, Devanagari captions)"}
 LANG_ALIASES = {"english": "en/en/Latn", "en": "en/en/Latn", "hinglish": "hinglish/hinglish/Latn",
                 "hinglish-en": "hinglish/en/Latn", "hinglish-english": "hinglish/en/Latn", "hinglish_en": "hinglish/en/Latn",
-                "hinglish>en": "hinglish/en/Latn",
+                "hinglish>en": "hinglish/en/Latn", "hindi-english": "hinglish/hinglish/Latn",
+                "hindienglish": "hinglish/hinglish/Latn",
                 "hindi": "hi/hi/Deva", "hi": "hi/hi/Deva"}
 DEFAULT_LANG = "en/en/Latn"
 HINGLISH_EN = "hinglish/en/Latn"  # BV-05 4th answer: Hinglish speech, English captions (transform translate)
+# regional Indian languages any template takes (langs.whisper_code maps the name or code-mix): the speech code and the
+# script its own captions are written in (Marathi in Devanagari, Punjabi in Gurmukhi)
+REGIONAL = {"te": "Telu", "ta": "Taml", "kn": "Knda", "ml": "Mlym", "mr": "Deva", "bn": "Beng", "gu": "Gujr", "pa": "Guru"}
+REGIONAL_NAMES = {"te": "telugu", "ta": "tamil", "kn": "kannada", "ml": "malayalam", "mr": "marathi", "bn": "bengali",
+                  "gu": "gujarati", "pa": "punjabi"}
+# the caption-script answer (tokens.schema §3.3a): its own script as spoken, romanised, or English (translated)
+CAPTION_CHOICES = {"original": "original", "own": "original", "native": "original", "script": "original",
+                   "romanised": "romanised", "romanized": "romanised", "roman": "romanised", "latin": "romanised",
+                   "latn": "romanised", "english": "english", "en": "english", "translate": "english"}
 NUMBERS_INTL = {"grouping": "international", "currency": "$", "compact": "k_m_b"}
 NUMBERS_INDIAN = {"grouping": "indian", "currency": "₹", "compact": "lakh_crore"}
 TIERS = ("core", "full")
@@ -91,6 +104,7 @@ NEEDS = {  # source_type -> footage_dependency -> what the buyer has to shoot (t
     "edited_master": "an edited long video to re-cut",
     "stunt_footage": "raw event footage from several cameras",
     "animated_plates": "animation plates + a voice-over",
+    "no_voice": "your clips, photos or a screen recording + a music track (no voice)",
 }
 
 
@@ -104,7 +118,13 @@ def add_args(p, cmd):
                    help="copy BV-02: one or two hex colours for the brandable roles in order ('#FFFFFF,#7C5CFF'), "
                         "or role=hex pairs ('accent=#7C5CFF')")
     p.add_argument("--language", help="copy BV-05: english (default), hinglish, hinglish-en (Hinglish speech, English captions) or hindi; or a speech/captions/script "
-                                      "entry of the template's `languages` (e.g. hinglish/hinglish/Latn)")
+                                      "entry of the template's `languages` (e.g. hinglish/hinglish/Latn); or a regional "
+                                      "language or its English mix (telugu, tamil, kannada, malayalam, marathi, bengali, "
+                                      "gujarati, punjabi, telugu-english, tanglish, ...) with --captions")
+    p.add_argument("--captions", help="copy BV-05: the caption script for a language other than English: original (its own "
+                                      "script, as spoken), romanised (Latin letters) or english (translated). Default: "
+                                      "original for a regional language, romanised for its English mix")
+    p.add_argument("--speed", help="copy: speed every reel up (playbook cut.speed): 1.1 or 1.2 (1.0 to 1.5); 1 = normal")
     p.add_argument("--currency", help="copy BV-06: the currency on screen (INR / Rs / the rupee glyph, or $ / EUR / GBP). "
                                       "Default: $ for English, rupees in lakh / crore for Hinglish and Hindi")
     p.add_argument("--cta", help="copy BV-08: device[:value], e.g. comment_keyword:BUDGET, link_bio:Free sheet, none")
@@ -221,6 +241,12 @@ def lang_label(key: str) -> str:
     speech, cap, script = key.split("/")
     if key in LANG_LABELS:
         return LANG_LABELS[key]
+    if speech not in LANG_NAMES and speech != "hinglish":  # a regional name or code-mix ("telugu-english")
+        said = " ".join(w.capitalize() for w in re.split(r"[-_ ]+", speech))
+        if cap == "en":
+            return f"{said} speech, English captions (translated)"
+        shown = f"romanised {LANG_NAMES.get(cap, cap)}" if script == "Latn" else SCRIPT_NAMES.get(script, script)
+        return f"{said} speech, captions in {shown}"
     s = f"{LANG_NAMES.get(speech, speech)} speech → {LANG_NAMES.get(cap, cap)} captions"
     return s + (f" ({SCRIPT_NAMES.get(script, script)})" if script != "Latn" or cap in ("hi", "hinglish") else "")
 
@@ -475,6 +501,63 @@ def resolve_language(language: str, offered: list[str]) -> str:
     return match
 
 
+def caption_choice(captions: str | None) -> str | None:
+    if captions is None or not str(captions).strip():
+        return None
+    c = CAPTION_CHOICES.get(str(captions).strip().lower())
+    if not c:
+        raise VeosError("BAD_CAPTIONS", f"'{captions}' isn't a caption choice",
+                        "Use --captions original (its own script), romanised or english.")
+    return c
+
+
+def regional_language(language: str, captions: str | None = None) -> dict | None:
+    """A regional Indian language (or its English mix) -> {key, speech, code, cap, script, transform, choice}; None for
+    anything else. Any template takes these: the caption engine shows any script (tokens.schema §3.3a)."""
+    from .langs import whisper_code
+    if re.search(r"[/>,]", language):  # a template key (speech/captions/script): only what the template offers
+        return None
+    s = re.sub(r"[\s_]+", "-", language.strip().lower())
+    code = whisper_code(s)
+    if code not in REGIONAL:
+        return None
+    mix = bool(re.search(r"english|lish$|-en$", s))
+    choice = caption_choice(captions) or ("romanised" if mix else "original")
+    if choice == "english":
+        cap, script, transform = "en", "Latn", "translate"
+    elif choice == "romanised":
+        cap, script, transform = code, "Latn", "transliterate"
+    else:
+        cap, script, transform = code, REGIONAL[code], "verbatim"
+    speech = REGIONAL_NAMES[code] if re.fullmatch(r"[a-z]{2}", s) else s
+    return {"key": f"{speech}/{cap}/{script}", "speech": speech, "code": code, "cap": cap, "script": script,
+            "transform": transform, "choice": choice}
+
+
+def hindi_family(language: str, captions: str | None) -> str:
+    """--language hindi / hinglish with a --captions answer -> the matching Hindi-family option (hindi, hinglish or
+    hinglish-en); any other language unchanged."""
+    c = caption_choice(captions)
+    if not c or language.strip().lower().replace(" ", "-") not in ("hindi", "hi", "hinglish", "hindi-english"):
+        return language
+    return {"original": "hindi", "romanised": "hinglish", "english": "hinglish-en"}[c]
+
+
+def speed_choice(speed) -> float | None:
+    """--speed 1.1 / 1.2 (1.0 to 1.5) -> the playbook's cut.speed; 1 (normal) -> None (no cut block)."""
+    if speed is None or str(speed).strip() == "":
+        return None
+    from .langs import SPEED_RANGE
+    try:
+        v = round(float(str(speed).strip().rstrip("xX\u00d7")), 2)
+    except ValueError:
+        raise VeosError("BAD_SPEED", f"--speed {speed!r} is not a number", "Use --speed 1.1 or 1.2 (1 = normal).") from None
+    if not SPEED_RANGE[0] <= v <= SPEED_RANGE[1]:
+        raise VeosError("BAD_SPEED", f"speed {v:g} is outside {SPEED_RANGE[0]:g}-{SPEED_RANGE[1]:g}",
+                        "Use --speed 1.1 or 1.2 (1 = normal).")
+    return None if v == 1.0 else v
+
+
 def numbers_for(speech: str, currency: str | None, base: dict | None = None) -> dict:
     """BV-06: numbers follow the language. English -> international ($, 1.2M) unless the buyer picks rupees; Hinglish
     and Hindi -> rupees in lakh / crore (unless the buyer picks another currency). A style that never compacts
@@ -507,7 +590,7 @@ def _unique_id(name: str | None, handle: str | None, tid: str) -> str:
 
 def copy_template(tid: str, *, name: str | None = None, handle: str | None = None, colors: str | None = None,
                   language: str | None = None, cta: str | None = None, new_id: str | None = None,
-                  currency: str | None = None) -> dict:
+                  currency: str | None = None, captions: str | None = None, speed=None) -> dict:
     caps = capabilities()
     info = find_template(tid, caps)
     from .licence import template_access
@@ -532,7 +615,14 @@ def copy_template(tid: str, *, name: str | None = None, handle: str | None = Non
     # inputs
     brandable = info["brandable"]
     branded = _parse_colors(colors, brandable) if colors else {}
-    lang_key_ = resolve_language(language, info["languages"]) if language else None
+    regional = regional_language(language, captions) if language else None
+    if regional:
+        lang_key_ = regional["key"]
+    elif captions and not language:
+        raise VeosError("BAD_CAPTIONS", "--captions goes with --language", "Pass the language too, e.g. --language telugu.")
+    else:
+        lang_key_ = resolve_language(hindi_family(language, captions), info["languages"]) if language else None
+    cut_speed = speed_choice(speed)
     cta_rec = _parse_cta(cta, info["cta_devices"]) if cta else None
 
     pid = new_id or _unique_id(name, handle, tid)
@@ -588,7 +678,9 @@ def copy_template(tid: str, *, name: str | None = None, handle: str | None = Non
     if lang_key_ and lang_key_ != info["default_language"]:
         lang = tokens["profile"].setdefault("language", {})
         transform = (lang.get("captions") or {}).get("transform") or "verbatim"
-        if cap == "hinglish":
+        if regional:
+            transform = regional["transform"]
+        elif cap == "hinglish":
             transform = "transliterate"  # romanised Hinglish captions, whatever script the transcript comes in
         elif speech == cap:
             transform = "clean" if transform == "clean" else "verbatim"
@@ -602,7 +694,7 @@ def copy_template(tid: str, *, name: str | None = None, handle: str | None = Non
     elif lang_key_:
         variables["BV-05"] = dict(zip(("speech", "captions", "script"), lang_key_.split("/")))
     have = (tokens.get("profile") or {}).get("numbers") or {}
-    nums = numbers_for(speech, currency, have)
+    nums = numbers_for(regional["code"] if regional else speech, currency, have)
     if any(have.get(k) != v for k, v in nums.items()):
         for k, v in nums.items():
             _apply_var(tokens, f"profile.numbers.{k}", v, applied, skipped)
@@ -625,6 +717,17 @@ def copy_template(tid: str, *, name: str | None = None, handle: str | None = Non
                          "Link in bio" if dev == "link_bio" else None if dev == "none" else CTA_WORDS.get(dev))}
         _apply_var(tokens, "creator.cta", c, applied, skipped)
         variables["BV-08"] = cta_rec
+    if regional and regional["choice"] == "original" and regional["script"] != "Deva":
+        notes.append(f"Captions keep your words in {SCRIPT_NAMES[regional['script']]}, shown in your computer's own "
+                     "font for it. Romanised captions for a reel: ask while editing.")
+    if regional and regional["choice"] == "english":
+        notes.append("English captions are translated from what you say; the editor writes them for each reel.")
+    # the creator's speed-up (tokens.schema §3.22a): every reel's cut plays this fast unless they ask otherwise
+    if cut_speed:
+        tokens["cut"] = {**(tokens.get("cut") if isinstance(tokens.get("cut"), dict) else {}), "speed": cut_speed}
+        applied.append("cut.speed")
+        variables["speed"] = cut_speed
+        notes.append(f"Your reels play {cut_speed:g}x faster (pitch kept); ask for normal speed on any reel.")
     for sk in skipped:
         notes.append(sk["message"])
 
@@ -648,7 +751,7 @@ def copy_template(tid: str, *, name: str | None = None, handle: str | None = Non
               "BV-05": variables.get("BV-05") or dict(zip(("speech", "captions", "script"), info["default_language"].split("/"))),
               "BV-08": {"device": (cta_rec or {}).get("device"), "keyword": (cta_rec or {}).get("value"),
                         "value": (cta_rec or {}).get("value")}}
-        pm.write_text(fill_placeholders(pm.read_text(encoding="utf-8"), bv), encoding="utf-8", newline="\n")
+        pm.write_text(fill_placeholders(pm.read_text(encoding="utf-8-sig"), bv), encoding="utf-8", newline="\n")
         lineage.update_playbook_md(dest, tokens, [f"- {today} · created from template `{tid}` v{info['version']} "
                                                   f"(variables: {', '.join(sorted(variables)) or 'none'})"])
     (dest / "profile.md").write_text(_profile_md(info, tokens, variables, nudges, notes, lang_key_), encoding="utf-8",
@@ -699,17 +802,18 @@ def _profile_md(info: dict, tokens: dict, variables: dict, nudges: list, notes: 
         f"- **{info['name']}** (`{info['id']}` v{info['version']}), {insp}.",
         f"- Needs: {info['needs']}." + (" Faceless: no face on camera." if info["faceless"] else ""),
         f"- Formats: {', '.join((f['id'] + ' ' + (f['name'] or '')).strip() for f in info['formats']) or 'one'}.", "",
-        "## Branding answers (structure D.3)", "",
+        "## Branding answers", "",
         "| BV | Question | Answer |", "|---|---|---|",
         f"| BV-01 | Name and handle | {a1} |",
         f"| BV-02 | Brand colours | {a2} |",
         f"| BV-05 | Spoken and caption language | {a5} |",
         f"| BV-06 | Numbers | {_numbers_line(tokens)} |",
-        f"| BV-08 | Call to action | {a8} |", "",
+        f"| BV-08 | Call to action | {a8} |",
+        f"| - | Speed-up | {format(variables['speed'], 'g') + 'x' if variables.get('speed') else 'normal'} |", "",
         "## Everything else", "",
-        "Template defaults (structure D.3): fonts, formats, theme packs, humour level, series, sponsor wording, duration."
-        " Change any of them later with \"change my playbook\". Niche slots (hook pairs, the line → pattern lookup,"
-        " worked examples, the headline bank) adapt per reel from your transcript (D.6).",
+        "Template defaults: fonts, formats, theme packs, humour level, series, sponsor wording, duration."
+        " Change any of them later with \"change my playbook\". The playbook's hook pairs, line → pattern lookup,"
+        " worked examples and hook-title bank are the style's vocabulary: each reel adapts them to your topic.",
     ]
     if notes or nudges:
         lines += ["", "## Notes", ""] + [f"- {n}" for n in notes]
@@ -1053,7 +1157,7 @@ def check_package(d: Path) -> dict:
                 problems.append(f"{f.name} is {w}x{h}; card frames are 9:16")
         except Exception:  # noqa: BLE001
             warnings.append(f"could not read {f.name}")
-    text = (d / "playbook.md").read_text(encoding="utf-8")
+    text = (d / "playbook.md").read_text(encoding="utf-8-sig")
     first = next((ln for ln in text.splitlines() if ln.startswith("# ")), "")
     if not re.fullmatch(r"# .+ Style Playbook \(template v\d+\)", first.strip()):
         warnings.append("the title should read '# <Style name> Style Playbook (template v<N>)'")
@@ -1086,4 +1190,5 @@ def main(args, project) -> dict:
         raise VeosError("MISSING_ARGS", "templates copy needs exactly one template id",
                         "Example: veos templates copy ledger-explainer --name Riya --handle @riya.money")
     return copy_template(args.template[0], name=args.name, handle=args.handle, colors=args.colors, language=args.language,
-                         cta=args.cta, new_id=args.new_id, currency=args.currency)
+                         cta=args.cta, new_id=args.new_id, currency=args.currency, captions=args.captions,
+                         speed=args.speed)

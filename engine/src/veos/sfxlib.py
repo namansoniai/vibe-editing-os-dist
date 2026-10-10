@@ -500,24 +500,34 @@ def _download(url: str, dst: Path, size: int | None) -> int:
                     "Check the internet connection and run `veos sfx fetch` again.")
 
 
-def fetch_entries(entries: list[dict], pack: Path, base_url: str | None) -> dict:
-    """Download only what is missing (or the wrong size) into `pack`/<relpath>."""
-    got, skipped, nbytes = [], 0, 0
+def fetch_entries(entries: list[dict], pack: Path, base_url: str | None, tolerant: bool = False) -> dict:
+    """Download only what is missing (or the wrong size) into `pack`/<relpath>. `tolerant`: a sound that cannot be
+    downloaded (no URL, 404, offline) is skipped and listed in `failed` [{id, file, why}] instead of raising."""
+    got, skipped, nbytes, failed = [], 0, 0, []
     for e in entries:
         dst = pack / e["file"]
         if dst.exists() and (not e.get("size") or dst.stat().st_size == e["size"]):
             skipped += 1
             continue
-        url = entry_url(e, base_url)
-        if not url:
-            raise VeosError("NO_SFX_URL", f"no download url for '{e['id']}' and the file is not in {pack}",
-                            "The catalogue needs base_url (tools/publish_sfx.py writes it).")
-        nbytes += _download(url, dst, e.get("size"))
+        try:
+            url = entry_url(e, base_url)
+            if not url:
+                raise VeosError("NO_SFX_URL", f"no download url for '{e['id']}' and the file is not in {pack}",
+                                "The catalogue needs base_url (tools/publish_sfx.py writes it).")
+            nbytes += _download(url, dst, e.get("size"))
+        except VeosError as err:
+            if not tolerant:
+                raise
+            failed.append({"id": e["id"], "file": Path(e["file"]).name, "why": err.message})
+            continue
         got.append(e["id"])
-    return {"downloaded": len(got), "already_cached": skipped, "mb_downloaded": round(nbytes / 1e6, 2), "ids": got}
+    out = {"downloaded": len(got), "already_cached": skipped, "mb_downloaded": round(nbytes / 1e6, 2), "ids": got}
+    if tolerant:
+        out["failed"] = failed
+    return out
 
 
-def ensure_cached(cat_doc_or_list, ids, pack: Path) -> dict:
+def ensure_cached(cat_doc_or_list, ids, pack: Path, tolerant: bool = False) -> dict:
     doc = cat_doc_or_list if isinstance(cat_doc_or_list, dict) else {"sounds": cat_doc_or_list}
     by_id = {e["id"]: e for e in doc["sounds"]}
     miss = [i for i in ids if i not in by_id]
@@ -528,7 +538,7 @@ def ensure_cached(cat_doc_or_list, ids, pack: Path) -> dict:
     if bad:
         raise VeosError("SFX_EXCLUDED", f"sound(s) marked do-not-use ({by_id[bad[0]].get('excluded_reason')}): {', '.join(bad)}",
                         "Pick other sounds; excluded ones are never fetched or used.")
-    return fetch_entries([by_id[i] for i in dict.fromkeys(ids)], pack, doc.get("base_url"))
+    return fetch_entries([by_id[i] for i in dict.fromkeys(ids)], pack, doc.get("base_url"), tolerant)
 
 
 def fetch(args, project=None) -> dict:
@@ -550,8 +560,18 @@ def fetch(args, project=None) -> dict:
         ids += [c["id"] for c in read_json(tlp).get("sfx") or [] if c.get("id")]
     if not ids:
         raise VeosError("NOTHING_TO_FETCH", "no sound ids given", "Use --ids a,b,c, --playbook ID or --project P.")
-    r = ensure_cached(doc, ids, pack)
-    return {"pack": pack.as_posix(), "requested": len(set(ids)), **{k: v for k, v in r.items() if k != "ids"}}
+    r = ensure_cached(doc, ids, pack, tolerant=True)
+    out = {"pack": pack.as_posix(), "requested": len(set(ids)), **{k: v for k, v in r.items() if k != "ids"}}
+    if r.get("failed"):
+        out["warnings"] = [skip_note(f) for f in r["failed"]]
+    return out
+
+
+def skip_note(f: dict, t: float | None = None) -> str:
+    """One warning line for a sound that could not be downloaded and was left out."""
+    at = f" (cue at {t:.2f} s)" if t is not None else ""
+    return (f"skipped sound '{f['id']}' ({f['file']}){at}: it could not be downloaded ({f['why'][:120]}); "
+            "the rest plays. Swap it for another catalogue id or drop the cue.")
 
 
 # --------------------------------------------------------------------------- timeline -> bus
@@ -577,10 +597,13 @@ def voice_reference_db(voice_wav: Path) -> float | None:
 REF_VOICE_DB = -18.0   # cue dB defaults assume a voice whose speaking RMS is -18 dBFS; the bus is shifted to the real voice
 
 
-def build_cuesheet(tl: dict, cat: list[dict], offset_db: float = 0.0) -> list[dict]:
+def build_cuesheet(tl: dict, cat: list[dict], offset_db: float = 0.0, skip=()) -> list[dict]:
+    """The bus cue sheet; cues whose id is in `skip` (sounds that could not be downloaded) are left out."""
     by_id = {e["id"]: e for e in cat}
     sheet = []
     for c in sorted(tl.get("sfx") or [], key=lambda x: x.get("t", 0)):
+        if c.get("id") in skip:
+            continue
         if "id" not in c:
             raise VeosError("LEGACY_CUE", f"sfx cue at {c.get('t')} s uses 'file', not a catalogue 'id'",
                             "Rewrite the cue as {t, id, on, why} (renderer/CONTRACT.md section 2).")
@@ -600,13 +623,19 @@ def build_cuesheet(tl: dict, cat: list[dict], offset_db: float = 0.0) -> list[di
 
 def build_bus(tl: dict, cat, pack: Path, voice_wav: Path | None, out: Path) -> dict:
     """Timeline sfx -> mono bus WAV `out` (+ `<out>.cues.json` next to it for the mix gate). Missing sound files are downloaded
-    into `pack` first. `cat` is the catalogue doc (or its list of sounds)."""
+    into `pack` first; a sound that cannot be downloaded is skipped and named in `warnings` / `skipped` (the bus, the
+    storyboard and the mix still build). `cat` is the catalogue doc (or its list of sounds)."""
     doc = cat if isinstance(cat, dict) else {"sounds": cat}
     cat = doc["sounds"]
     want = [c["id"] for c in tl.get("sfx") or [] if c.get("id")]
-    fetched = ensure_cached(doc, want, pack)
+    fetched = ensure_cached(doc, want, pack, tolerant=True)
+    failed = {f["id"]: f for f in fetched.get("failed") or []}
+    skipped_notes = []
+    for c in sorted(tl.get("sfx") or [], key=lambda x: x.get("t", 0)):
+        if c.get("id") in failed:
+            skipped_notes.append(skip_note(failed[c["id"]], float(c.get("t", 0) or 0)))
     for e in cat:  # descriptions-only entries have no measurements yet: measure the downloaded file now
-        if e["id"] in want and e.get("peak_t") is None:
+        if e["id"] in want and e["id"] not in failed and e.get("peak_t") is None:
             f = features(pack / e["file"])
             e.update({k: f[k] for k in MEASURE_KEYS if k in f} | {"dur": f["dur"], "end": f["end"], "measured": True})
             e["anchor"] = e.get("anchor") or default_anchor(e.get("role"), f["attack_ms"])
@@ -616,8 +645,9 @@ def build_bus(tl: dict, cat, pack: Path, voice_wav: Path | None, out: Path) -> d
         ref = voice_reference_db(voice_wav)
         if ref is not None:
             offset = ref - REF_VOICE_DB
-    sheet = build_cuesheet(tl, cat, offset)
+    sheet = build_cuesheet(tl, cat, offset, skip=set(failed))
     mix, ledger, warnings, n = audio.place(sheet, pack, {}, dur)
+    warnings = skipped_notes + warnings
     audio._write_wav(out, mix)
     write_json(out.with_suffix(".cues.json"), {"voice_offset_db": r3(offset), "cues": sheet}, indent=1)
     by_id = {e["id"]: e for e in cat}
@@ -626,7 +656,8 @@ def build_bus(tl: dict, cat, pack: Path, voice_wav: Path | None, out: Path) -> d
         warnings.append(f"{len(draft)} sound(s) still have draft tags: {', '.join(draft)}")
     return {"cues": n, "files": len(ledger), "bus_peak_db": r3(20 * np.log10(float(np.abs(mix).max()) + 1e-12)),
             "dur": r3(len(mix) / SR), "voice_ref_db": None if ref is None else r3(ref), "voice_offset_db": r3(offset),
-            "downloaded": fetched["downloaded"], "mb_downloaded": fetched["mb_downloaded"], "warnings": warnings}
+            "downloaded": fetched["downloaded"], "mb_downloaded": fetched["mb_downloaded"], "warnings": warnings,
+            "skipped": sorted(failed)}
 
 
 def build_project_bus(project, args=None) -> dict:

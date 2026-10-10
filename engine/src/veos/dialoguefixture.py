@@ -25,7 +25,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .core import run, tools, veos_home
+from .core import filter_complex_args, run, tools, veos_home
 from .testing import FOOTAGE
 
 FPS = 30
@@ -194,7 +194,7 @@ def _render_person(reel: Path, edl: list, audio_wav: Path, out: Path) -> None:
     parts.append("".join(lab) + f"concat=n={len(lab)}:v=1:a=0,format=yuv420p[v]")
     script = out.with_suffix(".filter.txt")
     script.write_text(";\n".join(parts), encoding="utf-8")
-    run([tools().ffmpeg, "-v", "error", "-y", "-i", str(reel), "-i", str(audio_wav), "-/filter_complex", str(script),
+    run([tools().ffmpeg, "-v", "error", "-y", "-i", str(reel), "-i", str(audio_wav), *filter_complex_args(script),
          "-map", "[v]", "-map", "1:a", "-r", str(FPS), "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
          "-c:a", "aac", "-b:a", "160k", "-shortest", str(out)])
     script.unlink(missing_ok=True)

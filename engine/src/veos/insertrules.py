@@ -1,12 +1,13 @@
 """V-INSERTS and V-CITE (E-10; structure §12.5, §19, NC-7, NC-13).
 
 Blocking (facts): someone's words or a headline not verbatim, highlight words that aren't in the headline, media of
-unknown origin (NC-7: the creator's own files or a created visual only). Everything else here is advice (validate's
+unknown origin (NC-7: the creator's own file, a file fetched from the web with its source, or a created visual). Everything else here is advice (validate's
 levels). Made-up cards carry no label and nothing needs a credit line (Naman, 8 Oct 2026).
 
 V-INSERTS (always on; nothing to check -> no findings)
-  - plan/inserts.json is valid (veos.inserts.record_problems): ids, kinds, origins (creator | created only),
-    `origin: creator` points to a plan/assets entry added with `veos asset add --origin creator`, created inserts name
+  - plan/inserts.json is valid (veos.inserts.record_problems): ids, kinds, origins (creator | created | fetched),
+    `origin: creator` / `fetched` points to a plan/assets entry added with `veos asset add` (`--origin creator`, or
+    `--source <url>` for a file fetched from the web), created inserts name
     a recipe and what they stand in for, quote_text is verbatim from the script / transcript / the creator's own text.
   - every moment in plan/inserts.scan.json has a record or a `dismissed` reason;
   - every third-party pattern beat (beat `pattern` in tokens.inserts.patterns or the default list, or a beat with
@@ -15,7 +16,7 @@ V-INSERTS (always on; nothing to check -> no findings)
     a creator record's scene shows its asset (scene `asset`, when declared); a quote / headline scene shows exactly the
     record's quote_text;
   - any scene that declares `quote_text` (any quote card, even without a record) quotes verbatim (NC-13);
-  - scenes that show a plan/assets file declare it (`asset`) and that asset has origin creator or created.
+  - scenes that show a plan/assets file declare it (`asset`) and that asset has origin creator, created or fetched.
 V-CITE (always on; runs on `source` beats and scenes)
   - every source has masthead + date + headline; highlight spans exist in the headline text;
   - a created source card quotes the headline exactly from the script / transcript / creator text;
@@ -110,7 +111,7 @@ def rule_inserts(c, p: dict) -> list:
         if not any(_overlaps(s.get("t_in", 0), s.get("t_out", 0), t0, t1) for s in scs):
             out.append(advice(fail("V-INSERTS", c.beat_id(t0), t0, f"insert {rid}'s scene ({', '.join(s['id'] for s in scs)}) is not on screen "
                             f"during its moment {float(t0):.2f}-{float(t1):.2f} s", "Move the scene onto the moment's words.")))
-        if r.get("origin") == "creator" and r.get("file"):
+        if r.get("origin") in ("creator", "fetched") and r.get("file"):
             nm = asset_name(r["file"])
             shown = [s.get("asset") for s in scs if s.get("asset")]
             if shown and nm not in {asset_name(a) for a in shown}:
@@ -123,19 +124,20 @@ def rule_inserts(c, p: dict) -> list:
                                 "Show exactly the record's quote_text (scene `quote_text` / the factory's `quote`)."))
     for s in c.scenes:
         q = s.get("quote_text")
-        if q and s.get("origin") != "creator" and not is_verbatim(q, docs):
+        if q and s.get("origin") not in ("creator", "fetched") and not is_verbatim(q, docs):
             out.append(fail("V-INSERTS", c.beat_id(s.get("t_in", 0)), s.get("t_in", 0),
                             f"scene {s.get('id')} quotes \"{str(q)[:60]}\", which is not in the script, transcript or the creator's text (NC-13)",
                             "Quote only the script's or transcript's words, verbatim."))
         a = s.get("asset")
         if a and proj is not None:
             o = (origins.get(asset_name(a)) or {}).get("origin")
-            if o not in ("creator", "created"):
+            if o not in ("creator", "created", "fetched"):
                 out.append(fail("V-INSERTS", c.beat_id(s.get("t_in", 0)), s.get("t_in", 0),
-                                f"scene {s.get('id')} shows asset '{a}', which has no recorded origin (creator | created)",
-                                f"Add it with `veos asset add <file> --name {asset_name(a)} --origin creator` (only the creator's own files)."))
+                                f"scene {s.get('id')} shows asset '{a}', which has no recorded origin (creator | created | fetched)",
+                                f"Add it with `veos asset add <file> --name {asset_name(a)}` (with `--source <url>` for a file from the web)."))
     c.stats_extra["inserts"] = {"records": len(recs), "creator": sum(1 for r in recs if r.get("origin") == "creator"),
                                 "created": sum(1 for r in recs if r.get("origin") == "created"),
+                                "fetched": sum(1 for r in recs if r.get("origin") == "fetched"),
                                 "scanned": len(scan_ids), "third_party_beats": len(tp_beats)}
     return out
 

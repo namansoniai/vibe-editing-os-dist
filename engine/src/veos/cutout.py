@@ -85,6 +85,9 @@ def needs_cutout(pr, scenes: list[dict] | None = None, tl: dict | None = None) -
     if sources.get("source_type") == "voiceover_only":
         out["why"] = ["voice-over reel: there is no presenter to cut out"]
         return out
+    if sources.get("source_type") == "no_voice":
+        out["why"] = ["no-voice reel: there is no presenter to cut out"]
+        return out
     behind = [s for s in scenes if s.get("behind") and s.get("id")]
     spans = breakout_spans(tl, tokens)
     frames = sorted({(_f(s.get("t_in") or 0), _f(s.get("t_out") or 0)) for s in behind} | set(spans))

@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 from . import media, rawsrc
-from .core import FPS, VeosError, need_project, r3, read_json, run, tools, write_json
+from .core import FPS, VeosError, filter_complex_args, need_project, r3, read_json, run, tools, write_json
 
 BT601 = rawsrc.BT601
 ENCODE = ["-c:v", "libx264", "-crf", "16", "-preset", "veryfast", "-pix_fmt", "yuv420p",
@@ -109,7 +109,7 @@ def _kept_video(proj, g: rawsrc.Grid, vid: Path, ranges: list[list[int]], total:
     script = proj.path("work", "conform_filter.txt")
     script.write_text(";\n".join(parts), encoding="utf-8")
     tmp = vid.with_suffix(".tmp.mp4")
-    cmd = [ff, "-v", "error", "-y", *inputs, "-/filter_complex", str(script), "-map", "[v]", "-fps_mode", "cfr",
+    cmd = [ff, "-v", "error", "-y", *inputs, *filter_complex_args(script, ff), "-map", "[v]", "-fps_mode", "cfr",
            "-r", str(FPS), *ENCODE, "-movflags", "+faststart", str(tmp)]
     run(cmd, proj, "conform")
     got = _count_frames(tmp)
@@ -136,7 +136,7 @@ def conform_source(proj, s: dict, *, audio_only: bool = False, every: bool = Fal
         raise VeosError("SOURCE_MISSING", f"source file not found: {src}", "Move it back or re-run `veos ingest`.")
     pr = media.probe(src)
     v = pr["video"]
-    if s.get("kind") == "voiceover":  # a voice-over: only its sound is used (a video's picture is ignored)
+    if s.get("kind") in ("voiceover", "music"):  # a voice-over / music track: only its sound is used (picture ignored)
         v = None
     vid = proj.path("work", "src", f"{s['id']}.mp4")
     wav = proj.path("work", "audio", f"{s['id']}.wav")
@@ -217,7 +217,7 @@ def ensure(project, sid: str, every: bool = False) -> dict | None:
         return None
     data = read_json(sp)
     s = next((x for x in data.get("sources") or [] if x.get("id") == sid), None)
-    if s is None or s.get("kind") in ("voiceover", "audio-only", "session"):  # no picture, or sync's session proxy
+    if s is None or s.get("kind") in ("voiceover", "audio-only", "session", "music"):  # no picture, or sync's session proxy
         return None
     src = proj.abs(s["path"]) if s.get("path") else None
     if src is None or not src.exists():  # nothing to convert from: the reader reports what is missing

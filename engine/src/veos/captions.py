@@ -37,8 +37,15 @@ def _is_dev(w: dict) -> bool:
 
 def _status(words: list[dict]) -> dict:
     no = [w for w in words if "caption" not in w]
+    from .langs import script_of
+    regional: dict[str, int] = {}
+    for w in no:
+        sc = script_of(str(w.get("w", "")))
+        if sc not in ("latin", "devanagari", "other"):
+            regional[sc] = regional.get(sc, 0) + 1
     return {"words": len(words), "with_caption": len(words) - len(no),
             "devanagari_no_caption": sum(1 for w in no if _is_dev(w)),
+            "regional_script_no_caption": regional,
             "low_confidence_no_caption": sum(1 for w in no if (w.get("p") if w.get("p") is not None else 1) < LOW_P)}
 
 
@@ -59,7 +66,7 @@ def _script_text(pr, explicit: str | None, transform: str) -> list[str] | None:
         cands += [pr.root / "script.md", pr.root.parent / "script.md"]
     for c in cands:
         if c and Path(c).exists():
-            txt = Path(c).read_text(encoding="utf-8")
+            txt = Path(c).read_text(encoding="utf-8-sig")
             sents = parse_script(txt) if Path(c).suffix.lower() == ".md" else [x.strip() for x in txt.splitlines() if x.strip()]
             if sents:
                 return sents

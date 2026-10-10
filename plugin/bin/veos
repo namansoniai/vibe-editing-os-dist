@@ -18,7 +18,7 @@ for v in venv dev-venv; do
   done
 done
 if [ -z "$python" ]; then
-  echo '{"ok":false,"error":{"code":"ENGINE_MISSING","hint":"run /vibe-editing-os:reel-setup"}}'
+  echo '{"ok":false,"error":{"code":"ENGINE_MISSING","hint":"run /vibe-editing-os:setup"}}'
   exit 1
 fi
 export VEOS_HOME="$home"

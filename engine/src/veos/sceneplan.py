@@ -17,7 +17,9 @@ Two checks, both inside `veos validate`:
   plan mode   `veos validate --plan` (before the code): scenes come from plan/scenes.plan.json with their declared boxes
               (no measure), so face, safe zone, overlap, clutter, hues, on-word, sound anchors, data and the playbook's
               rules judge the plan itself; `plan_checks` adds V-PLAN: a well-formed plan, every beat layer planned, every
-              planned scene in a beat, every scene briefed with a "Done when" line. Writes plan/validate.plan.json.
+              planned scene in a beat (and, as advice only, a "Done when" line per scene when plan/scene-briefs.md
+              exists or the scene carries `done_when`). Writes plan/validate.plan.json. Without plan/scenes.plan.json
+              (the one-file flow: timeline.json + scenes.js) there is no V-PLAN and `--plan` judges the code.
   code mode   plain `veos validate` (after the code), whenever plan/scenes.plan.json exists: `fidelity` adds V-PLAN for
               every difference between the registered scenes and the plan: missing or extra scenes, timing (±1 frame),
               z, behind, kind, presets and their effective entry / exit windows, box (±2 px), roles, text, overlaps,
@@ -31,14 +33,15 @@ import re
 from pathlib import Path
 
 from .core import FPS, VeosError, read_json
-from .vcommon import enter_frames, exit_frames, fail, norm_box
+from .vcommon import advice, enter_frames, exit_frames, fail, norm_box
 
 PLAN_FILE = ("plan", "scenes.plan.json")
 BRIEFS_FILE = ("plan", "scene-briefs.md")
 FRAME_TOL = 1.0 / FPS + 1e-6   # s: timing tolerance (one frame)
 BOX_TOL = 2.0                  # px: declared box tolerance
 SIZE = (1080, 1920)
-NOTES = {"beat", "pattern", "playbook_lines", "note", "notes", "why", "brief", "extent"}   # planner-only, not scene fields
+NOTES = {"beat", "pattern", "playbook_lines", "note", "notes", "why", "brief", "extent",   # planner-only, not scene fields
+         "intent", "look", "moments", "done_when"}
 TIMES = ("t_in", "t_out")
 TIME_LISTS = ("events", "cuts")
 # compared even when the plan leaves them out (absent = the default), because each one changes what a rule allows:
@@ -200,20 +203,22 @@ def plan_checks(tl: dict, plan: list[dict], briefs: str | None, duration: float)
             add(s["id"], float(s.get("t_in") or 0), f"'{s['id']}' is not in any beat's layers",
                 "Add it to the layers of the beat it belongs to in plan/timeline.json.")
 
+    # the briefs are direction, not build integrity: optional (the one-file plan carries `done_when` on the scene itself),
+    # and a missing brief or "Done when" line is advice
     if briefs is None:
-        out.append(fail("V-PLAN", None, 0, "plan/scene-briefs.md is missing",
-                        "Write one brief per scene (a heading naming its id, what it is, its moments, a 'Done when' line)."))
         return out
     sections = brief_sections(briefs, [s["id"] for s in plan])
     for s in plan:
         sid, t = s["id"], float(s.get("t_in") or 0)
+        if s.get("done_when"):
+            continue
         body = brief_for(sections, sid)
         if body is None:
-            add(sid, t, f"'{sid}' has no brief in plan/scene-briefs.md",
-                "Add a section whose heading names the id (e.g. `### h-banner: ...`).")
+            out.append(advice(fail("V-PLAN", _beat_of(tl, sid, t), t, f"'{sid}' has no brief in plan/scene-briefs.md",
+                                   "Add a section whose heading names the id, or a `done_when` on the scene.")))
         elif "done when" not in body.lower():
-            add(sid, t, f"the brief for '{sid}' has no 'Done when' line",
-                "End the brief with what the finished scene must show, on which words.")
+            out.append(advice(fail("V-PLAN", _beat_of(tl, sid, t), t, f"the brief for '{sid}' has no 'Done when' line",
+                                   "End the brief with what the finished scene must show, on which words.")))
     return out
 
 

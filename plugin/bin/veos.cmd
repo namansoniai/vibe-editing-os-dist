@@ -7,7 +7,7 @@ set "PY="
 if exist "%H%\venv\Scripts\python.exe" set "PY=%H%\venv\Scripts\python.exe"
 if "%PY%"=="" if exist "%H%\dev-venv\Scripts\python.exe" set "PY=%H%\dev-venv\Scripts\python.exe"
 if "%PY%"=="" (
-  echo {"ok":false,"error":{"code":"ENGINE_MISSING","hint":"run /vibe-editing-os:reel-setup"}}
+  echo {"ok":false,"error":{"code":"ENGINE_MISSING","hint":"run /vibe-editing-os:setup"}}
   exit /b 1
 )
 set "VEOS_HOME=%H%"

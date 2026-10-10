@@ -73,18 +73,23 @@ def _end_pts(path: Path, approx_end: float) -> float | None:
     """When the last shown frame ends (its pts + its duration), read from the packets of the last few seconds; this is
     the end-of-stream time ffmpeg hands the fps filter (a stream's own duration can be one frame short of it)."""
     pk: list[tuple[float, float]] = []
-    for back in (3.0, 12.0, None):  # a seek that reads nothing (seen once, not reproducible) falls back to further back
+    # a seek that reads nothing (seen once), or whose packets stop well before the stream's own end (seen in full test
+    # runs only, never alone), falls back to further back and at last to the whole stream
+    for back in (3.0, 12.0, None):
         iv = ["-read_intervals", f"{max(0.0, approx_end - back):.3f}%"] if back is not None else []
         r = run([tools().ffprobe, "-v", "error", "-select_streams", "v:0", *iv,
                  "-show_entries", "packet=pts_time,duration_time", "-of", "csv=p=0", str(path)], check=False)
+        got: list[tuple[float, float]] = []
         for line in r.stdout.decode("utf-8", "replace").splitlines():
             p = line.strip().split(",")
             try:
-                pk.append((float(p[0]), float(p[1]) if len(p) > 1 and p[1] not in ("", "N/A") else 0.0))
+                got.append((float(p[0]), float(p[1]) if len(p) > 1 and p[1] not in ("", "N/A") else 0.0))
             except (ValueError, IndexError):
                 continue
-        if pk:
-            break
+        if got:
+            pk = got
+            if max(t for t, _ in got) >= approx_end - 1.0:
+                break
     if not pk:
         return None
     pk.sort()

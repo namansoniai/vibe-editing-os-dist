@@ -11,7 +11,11 @@ while the last successful check is under RECHECK_HOURS old; after that it re-che
 reached the buyer keeps working until GRACE_DAYS have passed since the last successful check.
 
 Developer bypass: env VEOS_DEV=1, or running from the dev venv (VEOS_HOME/dev-venv). VEOS_DEV=0 forces the gate on
-(tests). Template tiers (`template.json` tier core|full) map to licence tiers in TEMPLATE_ACCESS.
+(tests).
+
+Beta channel: only a beta build ships `_channel.json` beside this file (written by `tools/make_dist.py --channel beta`
+into the dist copy; never committed to the source tree, and production builds refuse to ship it). With
+`{"licence": false}` in it the gate is open: no key, no server, every template tier unlocked. Template tiers (`template.json` tier core|full) map to licence tiers in TEMPLATE_ACCESS.
 
 Only these leave the computer: the key, a device id (a one-way hash of the machine id and the OS user name), the
 computer's name (hostname) and the app version.
@@ -84,6 +88,26 @@ def dev_mode() -> bool:
     if v:
         return v not in ("0", "false", "no", "off")
     return Path(sys.prefix).name.lower() == "dev-venv"
+
+
+CHANNEL_FILE = Path(__file__).with_name("_channel.json")
+
+
+def channel() -> dict:
+    """The build-channel marker ({} in production and in the source tree; see the module docstring)."""
+    try:
+        d = json.loads(CHANNEL_FILE.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return {}
+    return d if isinstance(d, dict) else {}
+
+
+def licence_off() -> bool:
+    """True only in a build whose channel marker says {"licence": false} (the beta)."""
+    return channel().get("licence") is False
+
+
+BETA_LINE = "beta build: no licence needed, every style unlocked"
 
 
 def tier_name(tier: str | None) -> str:
@@ -252,7 +276,7 @@ def load() -> tuple[dict | None, str]:
     if not p.is_file():
         return None, "missing"
     try:
-        rec = json.loads(p.read_text(encoding="utf-8"))
+        rec = json.loads(p.read_text(encoding="utf-8-sig"))
         if not isinstance(rec, dict) or not normalize_key(rec.get("key")):
             return None, "corrupt"
     except (OSError, ValueError):
@@ -327,6 +351,8 @@ def status() -> dict:
         rec, state = load()
         return {"active": True, "dev": True, "line": "developer mode (no licence needed)",
                 **({"saved": summary(rec)} if rec and state == "ok" else {})}
+    if licence_off():
+        return {"active": True, "beta": True, "channel": channel().get("channel", "beta"), "line": BETA_LINE}
     rec, state = load()
     if state != "ok":
         why = {"missing": "not activated on this computer", "corrupt": "the saved licence file is damaged",
@@ -348,6 +374,8 @@ def validate() -> dict:
     """Online check. Within the offline grace a network failure is a warning, not an error."""
     if dev_mode():
         return {"valid": True, "dev": True, "line": "developer mode (no licence needed)"}
+    if licence_off():
+        return {"valid": True, "beta": True, "line": BETA_LINE}
     rec, state = load()
     if state != "ok":
         raise _required(state)
@@ -410,6 +438,8 @@ def require() -> dict:
     """Raise LICENCE_REQUIRED unless this computer may run engine commands. Network only once a day at most."""
     if dev_mode():
         return {"dev": True}
+    if licence_off():
+        return {"beta": True}
     rec, state = load()
     if state != "ok":
         raise _required(state)
@@ -436,6 +466,8 @@ def template_access() -> dict:
     """Which template tiers this install may use. Local only (the gate already checked the licence)."""
     if dev_mode():
         return {"dev": True, "tier": None, "tier_name": "developer", "allowed": ["core", "full"]}
+    if licence_off():
+        return {"dev": False, "beta": True, "tier": None, "tier_name": "beta (everything unlocked)", "allowed": ["core", "full"]}
     rec, state = load()
     tier = rec.get("tier") if rec and state == "ok" and not rec.get("rejected") else None
     allowed = list(TEMPLATE_ACCESS.get(tier, ("core", "full"))) if tier else []
@@ -451,7 +483,7 @@ def unlock_plan(template_tier: str | None) -> str:
 def doctor_check() -> tuple[bool, str, str]:
     """(ok, one-line detail, hint) for `veos doctor`. Local only."""
     s = status()
-    if s.get("dev"):
+    if s.get("dev") or s.get("beta"):
         return True, s["line"], ""
     return bool(s["active"]), s["line"].removeprefix("licence: "), (
         "" if s["active"] else s.get("hint") or "Check your internet connection, then run `veos licence validate`.")

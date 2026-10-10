@@ -408,7 +408,8 @@ class EditFaces:
         if not (s["f0"] <= f < s["f1"]):
             return None
         bs, tf = self.boxes.get(s["src"]) or [], self.tf.get(s["src"])
-        i = s["in_frame"] + (f - s["f0"])
+        from .cut import src_frame
+        i = src_frame(s, f)
         b = bs[i] if 0 <= i < len(bs) else None
         if not b or not tf:
             return None

@@ -514,6 +514,7 @@
     if (c && isNum(c.cy) && c.anchor !== "seam") return c.cy;
     const a = li.anchors;
     if (c && c.anchor === "seam" && a.seam) return a.seam.y;
+    if (c && c.anchor === "seam_above" && a.seam) return a.seam.y - (isNum(c.offset) ? c.offset : 24) - 40;
     if (c && c.anchor === "below_card" && a.below_card) return Math.min(a.below_card.y + 70, 1480);
     if (li.engine === "stack" && a.seam) return a.seam.y;
     if ((li.engine === "card" || li.engine === "letterbox" || li.engine === "blurfill") && a.below_card) return Math.min(a.below_card.y + 70, 1480);

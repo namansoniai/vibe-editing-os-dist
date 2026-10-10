@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import copy
 
-from .vcommon import FRAME_H, fail, get_path, norm_box
+from .vcommon import FRAME_H, fail, get_path, norm_box, taste
 
 ENUMS = {
     "source_type": ("talking_head", "voiceover_only", "narrated_footage", "multi_speaker", "edited_master",
-                    "stunt_footage", "animated_plates"),
+                    "stunt_footage", "animated_plates", "no_voice"),
     "presenter.presence": ("anchor", "host", "guest", "flash", "none"),
     "spine": ("talking_head", "audio", "footage", "hybrid"),
     "captions.mode": ("off", "keywords", "full"),
@@ -31,7 +31,7 @@ MODULES = ("chrome", "running_state", "anchors", "data_figures", "citations", "d
 CTA_DEVICES = ("comment_keyword", "dm", "link_bio", "qr", "subscribe", "follow_save_stack", "product_card", "end_card",
                "cross_promo", "post_only", "none")
 FOOTAGE_LEVEL = {"none": 0, "low": 1, "medium": 2, "high": 3, "total": 4}
-NO_PRESENTER_SOURCES = ("voiceover_only", "narrated_footage", "animated_plates", "edited_master")
+NO_PRESENTER_SOURCES = ("voiceover_only", "narrated_footage", "animated_plates", "edited_master", "no_voice")
 PRESENCE_FACE_FRAC = 0.06            # SW-02: the face counts as visible at >= 6 % of frame height
 COVER_FRAC = 0.9                     # a scene covering >= 90 % of the frame hides the presenter when opaque
 FULLFRAME_FOOTAGE = ("broll", "footage", "clip", "archive", "video")
@@ -221,7 +221,7 @@ def presenter_visible(c, n: int, need_face: bool = True) -> bool:
 
 def rule_presence(c, p) -> list[dict]:
     """V-PRESENCE: presenter share within profile.presenter.share and longest absence <= max_absence_s.
-    Off when presence is none."""
+    Off when presence is none. The share is taste (vcommon.taste): validate leaves it out (stats.presence keeps it)."""
     pres = get_path(c.style, "profile.presenter", {}) or {}
     if pres.get("presence") == "none" or c.frames < 1:
         return []
@@ -247,19 +247,18 @@ def rule_presence(c, p) -> list[dict]:
         if hi <= 1.0:  # written as fractions
             lo, hi = lo * 100, hi * 100
         if pct < lo - 1e-6:
-            out.append(fail("V-PRESENCE", None, 0, f"the presenter is visible {pct:.0f}% of the reel (style range {lo:.0f}-{hi:.0f}%)",
-                            "shorten full-frame cutaways or hidden-stage spans, or use a layout that keeps the presenter visible (panel, card, pip)"))
+            out.append(taste(fail("V-PRESENCE", None, 0, f"the presenter is visible {pct:.0f}% of the reel (style range {lo:.0f}-{hi:.0f}%)",
+                                  "shorten full-frame cutaways or hidden-stage spans, or use a layout that keeps the presenter visible (panel, card, pip)")))
         elif pct > hi + 1e-6:
             from .layoutrules import library, missing_footage
             lay = list((c.style.get("_resolved") or {}).get("layouts") or []) or list(library(c.style))
             missing = missing_footage(c, lay)
             msg = f"the presenter is visible {pct:.0f}% of the reel (style range {lo:.0f}-{hi:.0f}%)"
             if missing:  # the cutaways that would lower it are creator footage this project does not have
-                c.warnings.append(f"V-PRESENCE (warning, not a failure): {msg}; the range assumes creator footage this "
-                                  f"project does not have: {'; '.join(f'{w} for {lid}' for lid, w in missing)}")
-            else:
-                out.append(fail("V-PRESENCE", None, 0, msg,
-                                "add the style's cutaways (graphics full-frame, B-roll or hidden-stage spans) to reach the range"))
+                msg += ("; the range assumes creator footage this project does not have: "
+                        + "; ".join(f"{w} for {lid}" for lid, w in missing))
+            out.append(taste(fail("V-PRESENCE", None, 0, msg,
+                                  "add the style's cutaways (graphics full-frame, B-roll or hidden-stage spans) to reach the range")))
     if max_abs is not None and longest / c.fps > float(max_abs) + 1e-6:
         t = best_start / c.fps
         out.append(fail("V-PRESENCE", c.beat_id(t), t,

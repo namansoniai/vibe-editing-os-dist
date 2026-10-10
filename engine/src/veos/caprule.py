@@ -13,6 +13,8 @@ from . import captext as X
 from .core import read_json
 from .vcommon import fail
 
+# caption languages the glossary misspelling check runs on (English, Hinglish; unset = the default English / Hinglish)
+ENGLISH_LIKE = ("en", "eng", "english", "en-in", "en-us", "en-gb", "hinglish", "hi", "hi-latn")
 DEF = {"max_lead_s": 0.15, "max_lag_s": 0.10, "cut_tol_s": 0.05, "spelling": True, "brand_case": True}
 
 
@@ -175,12 +177,15 @@ def rule_caption(c, p: dict) -> list:
                     counts["emphasis"] += 1
                     out.append(fail("V-CAPTION", bid, t0, f"caption '{ch.get('text')}' emphasises {len(em)} words (max {mpc})",
                                     "drop an emphasis override"))
-        # glossary spelling (E-20) and brand case
+        # glossary spelling (E-20) and brand case; misspellings only in English / Hinglish captions (a Latin-script
+        # Tamil, Telugu ... caption is never compared with English brand spellings)
         if gl:
             case = ((pf.get("skin") or {}).get("case")) or "sentence"
+            lang = str(((pf.get("language") or {}).get("lang")) or "").lower()
+            spell = not lang or lang in ENGLISH_LIKE
             for w in ws:
                 t = str(w.get("t", ""))
-                miss = gl.near_miss(t)
+                miss = gl.near_miss(t) if spell else None
                 if miss:
                     counts["spelling"] += 1
                     out.append(fail("V-CAPTION", bid, float(w.get("s", t0)), f"'{X.core(t)}' looks like a misspelling of "

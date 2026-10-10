@@ -1,256 +1,257 @@
-# Cinematic Vlog Type Style Playbook (template v1)
+# Cinematic Vlog Type Style Playbook (template v2)
 
-**Purpose.** You (Claude) edit a short-form 9:16 reel for {{BV-01.name|the creator}} ({{BV-01.handle|@yourhandle}}) in the Cinematic Vlog Type style. The input is **narrated footage**: the creator's voice carries the reel (talking pieces filmed in several places, or a voice-over), and the picture is the creator's own cinematic footage (locations, details, staged scenes, drone or overhead shots, screen recordings), chosen sentence by sentence. Your job: pick and cut that footage at 27–51 cuts a minute, lay one hot yellow type layer over it (condensed yellow keyword blocks with thin white script connectors), run a pale-lemon serif subtitle along the bottom, drop examples onto a cream paper world, and close the reel on the exact frame it opened with.
+## The feel
 
-**What makes it hard to copy by hand:** every keyword beat lands on its word within ±5 frames, the blocks slide in with a motion blur and are replaced a beat later, words sit behind the creator's head with a clean matte, and the cut rhythm never drops below one picture change every ~1.6 s. All of it is generated from `words.edit.json` + the beat sheet, so it is exact every time.
+This reel is a short film about the creator's life, with a magazine cover printed over it while they speak. Frame 0 is
+already moving: a mirror with the creator small inside it, a doorway they're walking toward, a drone looking straight
+down at them on a railing. No title yet. Then a thin white handwritten line starts writing itself across the sky, and a
+huge yellow word shoots up into place under it with a streak of motion, on the exact syllable. By the time the first cut
+comes, the whole thesis has been said and seen, and you'd get it on mute.
 
-### Style DNA `[DNA]`
-A cinematic location vlog with a magazine-poster type layer. The footage is always the star: golden-hour exteriors, a signature prop or car, store interiors, staged "characters", drone shots. Over it sits **one** hot yellow (`primary` {{BV-02.primary|#F7DE0B}}), in two voices: a condensed heavy block for the keyword and a thin white script for the words that connect them ("Is your **GIRLFRIEND** still **LOVING THE PICTURES** you got of her?"). A pale pale-lemon serif subtitle sits at y 1468 almost the whole time. Examples, recaps and app screens drop onto a cream paper world as rounded 9:16 cards or white-bordered polaroids, marked with hand-drawn yellow arrows and ovals. Staged personas get their own colour grade. The last frame is the first frame, so the reel loops.
+That's the engine. The sentence becomes a poster as it's spoken: the yellow block shouts the word to remember, the white
+script whispers the words that join them, and the eye reads only yellow. Underneath, the picture never stops travelling.
+The voice runs on while the world keeps changing, each cut hidden inside a step, a turn, a whip: a kettle, keys, a street,
+a hand, a rooftop. Every noun they list gets its own shot. It feels like being taken somewhere, not told something.
 
-**Copy these 5 things and it reads as this style:**
-1. **Duo titles.** Keywords in a yellow condensed block (Anton 180–340 px, each line fitted to ≈ 880 px), connectors in white pen script (84–112 px), 1–2 block words per beat, each block rising ≈ 0.8 cap heights into place with a vertical smear in 4 f on its word and leaving upward a beat later (§5.2, P-DUO-TITLE).
-2. **Pale-lemon serif subtitle** on ≥ 85% of the speech: EB Garamond 600, 54 px, pale lemon `#EEF272` with a hard dark drop shadow, sentence case, 3–6 words, centred at y 1468, hard swaps (§5.3, CS-1).
-3. **Cinematic footage cut at 27–51 cuts/min**, warm-graded, with location changes, details and staged scenes; persona scenes carry GR-mono / GR-amber / GR-teal (§4.4, §7.6, §9.3, §12).
-4. **The cream paper world**: 9:16 cards and polaroids on `#FCFBE6` / grid paper, spin-in cards, yellow ink annotations (§3.1, P-PAPER-CARD, P-POLAROID, §22).
-5. **Depth and loop**: one keyword behind the head per 20–60 s (E1), and the bookend: the reel ends on its opening shot so the last frame equals frame 0 (§23; optional, on by default, `continuity.bookend` is a VAR, not DNA).
+The creator lives inside the footage, not in a box. Often small, often walking, sometimes framed by a mirror. When a word
+deserves depth it slides in behind their head and becomes part of the shot. When they show proof, the reel steps out onto
+cream paper like a page from their journal: a card, a polaroid, a yellow hand-drawn circle. When they play a character,
+the footage changes colour: black and white for the stuck one, amber for the obsessive, cold teal for the hacker. A quiet
+pale-lemon serif runs along the bottom the whole time, like the subtitle of a film.
 
-### Directives `[DNA]`
+One yellow, and only for the words that matter. Never a card over a great shot. Dense in the hook, calm in the setup, a
+dip at the turn, a peak at the payoff. And the last frame is the first frame, so the reel plays again before anyone
+decides to scroll.
+
+**The test:** pause on any frame and it looks like a still from the creator's own film, beautiful without the type, with
+at most one yellow idea on it.
+
+## What this playbook is
+
+You're editing a narrated vlog: the creator's voice carries the reel (talking pieces filmed in a few places, or a
+voice-over), and the picture is their own cinematic footage, chosen sentence by sentence. You have the authority to make
+it the most watchable reel in their niche. This playbook is the style, pulled from five of OMGAdrian's reels (v01 a store
+visit, v02 "3 types of content creators", v03 a vertical-composition tutorial, v04 a year of posting, v05 a phone
+photo-editing tutorial), measured at full resolution and at full frame rate. Read it all, every time; take what fits this
+reel, invent where a moment needs more, and never break the feel above.
+
+**Who it's for and what it needs.** Travel, lifestyle, fashion, fitness, photography and food creators who shoot their
+own B-roll. Input: talking pieces in two to five places plus plenty of their own B-roll (places, details, hands, a
+signature prop, ideally a drone or overhead shot); the footage *is* the style, and every missing shot has a fallback
+(§12.3). A real product, post or logo the reel names is fetched from the web when they don't have it (§12.5). The
+person cut-out is needed for behind-the-head words and the poster sign-off. Captions follow the creator's language
+(English verbatim by default; Hinglish or Hindi, §5.5); the yellow type stays English Latin caps. Reels run about a
+minute to a minute and a half. Machine values live in `tokens.json`; where this text gives a number tokens also
+holds, they agree.
+
+### Style directives (non-negotiable)
 | # | Directive | Where it lives |
 |---|---|---|
-| D1 | **Footage first, type serves it.** Never cover a great shot with a card; type goes in the sky, the wall, the empty top third | §3.5, §5.2, §12 |
+| D1 | **Footage first, type serves it.** Never cover a great shot with a card; type goes in the sky, on the wall, in the empty top third, or behind the head | §3.6, §5.2, §12 |
 | D2 | **One yellow.** `primary` is the only bright text colour. Keywords, counters, card titles, ink marks and the CTA keyword are yellow; nothing else is | §4 |
-| D3 | **Script connects, block shouts.** Function words are white script; the keyword is always the yellow block. The script never carries the keyword | §5.2 |
-| D4 | **The subtitle is always there.** Pale-lemon serif at y 1468 on every spoken line except while a duo title, an E2 burst or a morph is on screen | §5.3 |
-| D5 | **A thesis, not a result.** The hook states a thesis or asks a question in 3–4 type beats over a moving cinematic shot; the full thesis is on screen by 3.0 s | §6.2 |
-| D6 | **Cut like a vlog.** 27–51 cuts a minute, a picture change every 0.85–1.6 s, cuts on motion, one detail per listed noun | §7.6, §9.3 |
-| D7 | **Paper for proof.** Examples, recaps, rules and app screens leave the footage world and sit on cream paper as cards or polaroids | §3.1, §8 |
-| D8 | **Close the loop.** The last 1.0–1.5 s returns to the opening shot and ends on frame 0's picture | §23 |
-
-Buyer directives `BD1…` `[VAR]` go here; they may only make the style stricter or more specific.
+| D3 | **Script connects, block shouts.** Function words are white pen script; the keyword is always the yellow block. The script never carries the keyword | §5.2 |
+| D4 | **The subtitle is always there.** Pale-lemon serif at y 1468 on every spoken line, except while a duo title, the chaos burst or a morph is on screen | §5.3 |
+| D5 | **A thesis, not a result.** The hook states a thesis or asks a question in 3–4 type beats over a moving cinematic shot; the whole thesis is on screen by 3.0 s | §6.2 |
+| D6 | **Cut like a vlog.** The picture moves on whenever the words give it a reason, cut on motion, one detail per listed noun | §7.5, §9.3 |
+| D7 | **Paper for proof.** Examples, recaps, rules and app screens leave the footage world and sit on cream paper as cards or polaroids | §3.2, §8 |
+| D8 | **Close the loop.** The last 1.0–1.5 s returns to the opening shot and ends on frame 0's picture | §7.6 |
 
 ### Quick index
-| § | What | Status |
+| § | What |
+|---|---|
+| §1 | Procedure: how to approach a reel in this style |
+| §2 | Hard rules: the craft and the style's never-list |
+| §3 | Formats, worlds, layouts, stage moves, safe zones, the person |
+| §4 | Colour and the grades |
+| §5 | Type and captions: the duo title, CS-1 pale-lemon serif, other text |
+| §6 | Hook system: stopper test, HA-12 thesis typography, alternates, hook pairs, CTA, sponsor and end cards |
+| §7 | Structure and rhythm: SM-1…SM-3, the unit rituals, open loops, rhythm by feel, the bookend loop, series furniture |
+| §8 | Visual system (B-roll and patterns): families B-1…B-13, 41 patterns, line → pattern lookup, truth, comedy and ink, assets |
+| §9 | Transition system T-1…T-13, grammar, shot grammar R-1…R-9, how the transitions render |
+| §10 | Motion tokens, camera Z-1…Z-4, layers, finishing |
+| §11 | Sound |
+| §12 | Footage handling: setups, shots and fallbacks, cut-out, inserts, how B-roll plays |
+| §13 | What your plan should settle |
+| §14 | Worked examples (3) |
+| §15 | Your look at the storyboard: the checklist |
+| §16 | Build notes |
+| App. A / B | Evidence map / hook-title bank |
+
+---
+
+## §1 Procedure: how to approach a reel in this style
+
+You watch, listen, plan, build and look at the storyboard yourself; the edit skill has the mechanics. This style
+lives or dies on two crafts: choosing which moment of which clip carries each word, and splitting the thesis into the
+words that shout and the words that whisper.
+
+1. **Pick the format** (§3.1). The script names steps, rules, settings or "how to" → F-B. Anything else → F-A. Never mix:
+   an F-A reel may step onto paper for an example, but never runs the F-B rule ritual.
+2. **Log the B-roll bank.** Give every clip an id (`B01…`), tags (subject, place, action, mood: `walk`, `detail`, `hands`,
+   `product`, `wide`, `overhead`, `persona:<name>`), its usable span and its motion direction (for cut-on-motion). Mark
+   SH-1, the opener, and check it has **at least 1.5 s of pre-roll before its in-point**: the bookend needs it (§7.6).
+   Mark talking pieces by setup (A/B/C/D, §12.1). Talking pieces (or the voice-over file) carry the voice and become the
+   cut map; every other clip is picture only and plays over the voice (§12.6).
+3. **Count on the cut-out** for the talking pieces and the SH-11 headroom and SH-12 poster shots: behind-the-head words
+   and the poster both need it (`matte: required`, so it starts right after the cut; make sure it's there before the
+   storyboard). Check the hair at 200 %; a take with a messy matte gets its word above the head instead
+   (FB-11).
+4. **Feel the tone of every line:** `hype` (the thesis, a claim) · `awe` (a place, a cinematic reveal) · `explain` (a
+   rule, a step) · `warn` (the problem state, a negative persona) · `win` (the result, the payoff) · `cta`. The tone picks
+   the treatment: hype gets duo beats and cuts on motion; awe gets a second or two with no type, a Z-1 drift and the
+   subtitle only; explain goes to paper with guide lines and yellow ink; warn gets the GR-mono persona (and the chaos
+   burst if the line is about overload); win gets the polaroid after-state, the count-up and the warm grade; cta gets the
+   keyword on the poster, then the bookend.
+5. **Split the thesis (this style's signature craft).** Write it in 12 spoken words or fewer. Split it into
+   **connectors** (articles, pronouns, prepositions, auxiliaries, conjunctions: script) and **keywords** (nouns, numbers,
+   names, the main verb or adjective: block), group the keywords into 3–4 beats of 1–2 words, and time each beat to its
+   spoken word (§5.2). Write 8–10 candidate hooks, pick by the stopper test (§6.1), keep the next two as alternates.
+6. **Match a shot to every sentence.** A creator clip carries each idea; a listed noun gets its own detail shot; a place
+   gets its establishing wide. Where no clip fits, the moment goes to paper (a card, a polaroid) or to a created visual
+   (§12.5).
+7. **Decide what leaves for paper, who gets a grade, and where the depth goes.** Lines that *show* something (an example,
+   a recap, a rule, a screen, a photo) step onto paper; personas get their grade (§4.3); a keyword that deserves depth
+   goes behind the head on a matted take with headroom; the one chaos burst goes on the one line about overload, if
+   there is one.
+8. **Keep the speaker's pauses honest.** Tighten talking-piece pauses to 0.35 s, except the deliberate ones (0.35–0.9 s
+   inside a sentence): those stay, the subtitle shows ".." there, and the picture keeps moving through them.
+9. **Plan the furniture:** the bookend (SH-1's in-point, the pre-roll span, the last sentence that rides it), the ink
+   anchors (read sampled frames and write the x/y of every arrow tip and oval), the series number, the sponsor's logo and
+   disclosure.
+10. **Plan the sound** (§11): sparse; the cuts and the type carry the energy, a cue only marks a landing.
+
+---
+
+## §2 Hard rules: the craft and the style's never-list
+
+**Craft, by eye** (judge it on the storyboard, in context, the way an editor does):
+- **Keep the person clear.** This is their life on film, so keep the face and hair clear of front layers when the moment
+  is about them. The framing that does it: front-layer type in the duo band ends ≈ 40 px above the head top (read from
+  the cut-out when it exists), or the word goes **behind** the head, or the beat moves sideways or to a wider shot; ink
+  marks, chaos snippets, UI chips and floating panels sit beside the face; a card title stays clear of the face inside
+  the card's own clip. When the moment wants otherwise (a subtitle crossing the chin of a low wide for a beat), that's
+  editing; what's never fine is a head chopped or a face buried by accident. Behind the person is fair game, text
+  included (`behind: true`). The geometry is in §3.7.
+- **No text over text.** Never two duo titles at once; the subtitle hides under every z8 element (duo titles, the CTA
+  keyword, the end block, the chaos burst); a duo never sits over the CTA keyword; at most three ink marks on screen;
+  chaos snippets each keep their own spot.
+- **On the word.** Each block keyword starts 2 f before its spoken word and is fully landed within ±5 f; counters land on
+  the number word; ink marks start on the word naming the thing; a script connector writes on from its word's onset.
+  Type follows words, cuts follow pictures: never cut inside a block's 4 f rise (move the cut up to 3 f). Audio is never
+  offset.
+- **Say what was said.** Every number shown as a fact (a counter, "#3", "52 weeks") is spoken or scripted, as digits.
+  Illustrations (a recreated app screen, a search pill, a mock post) may use made-up but realistic numbers and names, no
+  label. Before/after photos are the creator's real results: never simulate an "after". Never a fake UI, metric or
+  follower count presented as real.
+- **Promise integrity.** "N types / N rules / N steps" = N items shown with N markers; the thesis is paid off on screen
+  before the CTA; the CTA keyword is readable ≥ 1.5 s.
+- **Spelling.** Brand, place and tool names exactly as in the glossary; ".." only where the speaker actually pauses.
+- **Readable.** Subtitles 54 px; display text ≥ 40 px; each duo beat reads in 1.2 s or less; text holds ≥ 0.25 s per
+  word and every title ≥ 10 f after it completes. Yellow never sits on cream, white or greige (1.2:1): on light worlds
+  the block is `ink`. A yellow block over a bright sky or a white wall that falls below 3:1 gets a 3 px `shade` stroke on
+  that block only, or moves to the darker half of the frame.
+- **Private data.** Screen recordings (SH-8) are checked for emails, phone numbers and account names, blurred for their
+  whole time on screen.
+- **Disclosure.** A sponsored reel shows "Paid partnership" for ≥ 2.0 s (or the whole sponsored span when the product is
+  used on screen) and says it aloud.
+- **No dead air.** Talking-piece pauses are tightened to 0.35 s except the speaker's deliberate ".." pauses (up to
+  0.9 s), during which the picture keeps moving (a B-roll cut or a drift).
+- **Audio and output.** −14 LUFS integrated, true peak ≤ −1.5 dBTP, the bed ≥ 18 dB under the voice, a hard end ≤ 6 f
+  after the last word on the bookend frame, no black tail. 1080 × 1920, 30 fps CFR.
+
+**Never in this style:**
+- Banner slabs; pills, boxes or highlights behind captions or titles (a UI chip is a UI object, not a caption); coloured
+  words inside the subtitle; emoji in type.
+- A second text accent: no red/green axis, no pink, no gradient on a keyword (the one gradient is the sign-off word,
+  P-SIGNOFF-SUN).
+- Yellow text directly on cream or white paper.
+- Punch-ins outside the T-12 zoom-through, crash zooms, shakes, rotation snaps, RGB splits, resting light-leak PNGs,
+  film burns, glitch packs. A new move is welcome when it's built in this style's language.
+- Stock footage or generated scenes passed off as the creator's world; drone-look fakes made from stills.
+- Meme sounds, stickers, stamps, emoji pops. Comedy here is staging and dry script asides, nothing else.
+- A script connector carrying the keyword; a duo title over the CTA keyword.
+- A chaos burst on a line that isn't about overload, or a second one in the reel.
+- Raw full-bleed screen recordings: always inside P-APP-DEVICE or P-PHONE-REEL (a full-bleed UI close-up up to 1.5 s is
+  fine only as a zoom inside the device).
+- A fade to black or a black tail: the reel ends on the bookend picture.
+- Sans-serif or ALL-CAPS subtitles; a subtitle anywhere but its band (§3.6).
+- Meaning text in Instagram's bars: the top 110 px, below y 1540, or the right 110 px between y 900 and 1540.
+- Decoration: a card, mark or word that doesn't show what is being said.
+
+---
+
+## §3 Worlds, layouts, stage moves, safe zones
+
+### 3.1 Formats
+| | F-A "Vlog / story" (default) | F-B "Tutorial with paper cards" |
 |---|---|---|
-| §0 | Style profile (switches) | ON |
-| §1 | Procedure | ON |
-| §2 | Hard rules, exceptions E1 + E2 | ON |
-| §3 | Worlds, layouts, stage moves, safe zones | ON |
-| §4 | Colour, grades | ON (themes OFF: single) |
-| §5 | Type, duo titles, caption profile CS-1 | ON |
-| §6 | Hook system (HA-12 default; HA-05 for F-B) | ON |
-| §7 | Structure (story / tutorial) and cadence | ON |
-| §8 | Visual system: 41 patterns | ON |
-| §9 | Transitions and shot grammar | ON |
-| §10 | Motion, camera (slow push only), layers, finishing | ON |
-| §11 | Sound contract | ON (minimal) |
-| §12 | Footage, shot list SH-1…SH-13, fallbacks, inserts | ON |
-| §13 | Output contract | ON |
-| §14 | Worked examples (3) | ON |
-| §15 | QA | ON |
-| §16 Chrome · §17 Running state · §18 Data · §19 Citations · §20 Dialogue · §21 Canvas camera | | OFF |
-| §22 Ink · §23 Continuity · §24 Series · §25 Brand & end cards | | ON |
-| Formats | F-A "Vlog / story" (default) · F-B "Tutorial with paper cards" | |
+| When | A thesis told through places, staged personas or a personal journey: opinions, "N types of X", a visit, a year recap, a challenge | A how-to in 3–8 rules or steps: a technique, an app or tool walkthrough, a before/after fix |
+| Layouts | L-full, L-card916, L-hidden | L-full, L-card916, L-card43, L-hidden |
+| Default hook | HA-12 thesis typography (§6.2) | HA-05 title lockup, readable by 0.7 s (§6.3) |
+| Structure | `story`, markers SM-1 "#N." | `tutorial`, markers SM-2 rule chapters |
+| How it feels | Mostly footage, paper only when a line shows something | Paper carries the examples and the yellow ink marks them; the footage carries the creator applying each rule |
 
----
+What makes them one style: the same yellow type layer (block plus script), the same pale-lemon serif subtitle at y 1468,
+the same graded cinematic footage, the same cream paper world and the same bookend loop.
 
-## §0 Style profile `[REQ]`
-
-```yaml
-profile:                         # mirrored in tokens.json -> profile
-  source_type: narrated_footage
-  presenter: {presence: host, share: [45, 60], max_absence_s: 6}      # F-B: share [35, 55], max_absence_s 8
-  spine: hybrid
-  captions: {mode: full, role: support, mute_policy: mute_safe}
-  graphics: support
-  duration: {class: standard, target_s: [55, 85]}
-  language: {speech: en, captions: {lang: en, script: Latn, transform: verbatim}, on_screen: en, post_title: en,
-             supported: [[en, en, Latn], [hinglish, hinglish, Latn], [hi, hi, Deva]]}
-  numbers: {grouping: international, currency: "$", compact: k_m_b, units: metric, decimals: 0}
-  tone: {energy: balanced, comedy: light, comedy_max: light}
-  themes: {policy: single, packs: [], default: null}
-  formats: {list: [F-A, F-B], default: F-A}
-  footage_dependency: high
-  cta: {devices: [comment_keyword, link_bio, end_card, post_only], placement: end}
-  modules: {chrome: false, running_state: false, anchors: false, data_figures: false, citations: false,
-            dialogue: false, canvas_camera: false, ink: true, continuity: true, series: true, brand: true}
-```
-
-Why each switch has its value:
-- **source_type: narrated_footage**, because the voice runs continuously while the picture changes to locations, details and staged scenes every ~1.2 s (v01, v02 @ 0:03–0:35). Talking pieces are part of the footage, not the spine.
-- **presenter: host 45–60%**: the face is visible in roughly half the runtime, often small (mirror, overhead, persona scenes); B-roll runs of 3–6 s without a face are normal (v01 @ 0:22–0:25). F-B runs 35–55% with absences up to 8 s, because paper-card and device runs hold examples (v03 @ 0:20–0:27, v05 @ 0:30–0:54).
-- **spine: hybrid**: talking pieces and footage alternate as equals; the audio decides the order (analysis gap G-A2).
-- **captions: full / support / mute_safe**: the serif subtitle is on 85–92% of the runtime (65% in v02, which has more big titles), but the type layer and the picture are the strongest elements.
-- **graphics: support**: type, paper cards and ink illustrate the speech; they never carry the argument alone. 10–18% of runtime is keyword titles, 0–29% paper cards.
-- **duration: standard 55–85 s** (evidence 58–85 s, mean 77 s). One mid-reel re-hook (§7.4).
-- **language** `(unverified)`: all five evidence reels are English. The template supports Hinglish and Hindi as buyer choices ({{BV-05.speech|en}} speech, {{BV-05.captions|en}} captions). On-screen type stays English Latin caps (Anton has no Devanagari; §5.5).
-- **numbers: international** (counters "365", "52"); BV-06 switches to Indian grouping and ₹ when the buyer's language is Indian.
-- **tone: balanced / light**: dry wit lives in staged personas and script asides; no meme SFX, no stickers.
-- **themes: single**: one yellow across every reel. Persona colour comes from grades (§4.4), not theme packs.
-- **formats**: F-A vlog/story (v01, v02, v04); F-B tutorial with paper cards (v03, v05). Shared DNA: the same type layer, subtitle, yellow, paper world and loop.
-- **footage_dependency: high**: the look depends on footage the creator must shoot (§12). Readiness R4: without it, the §12.3 fallbacks apply and the card says so.
-- **cta**: comment keyword (v02 @ 0:54), link in bio / end block (v03 @ 1:22), spoken only (v05 @ 1:09, v01 loops).
-- **modules**: ink (yellow arrows, ovals and guide lines, v03), continuity (bookend loop, v01 @ 1:23 = @ 0:00; walk-in/walk-out, v04), series (lockup "ep. 06", v05 @ 0:09), brand (logo chip + disclosure, v05 @ 0:08, @ 0:57).
-
-### 0.4 Formats `[DNA set; VAR enable]`
-| Field | F-A "Vlog / story" (default) | F-B "Tutorial with paper cards" |
-|---|---|---|
-| `when` | A thesis told through places, staged personas or a personal journey: opinions, "N types of X", a visit, a year recap, a challenge | A how-to in 3–8 rules or steps: a technique, an app or tool walkthrough, a before/after fix |
-| `profile` overrides | — | `presenter: {share: [35, 55], max_absence_s: 8}` |
-| `layouts` | L-full, L-card916, L-hidden | L-full, L-card916, L-card43, L-hidden |
-| `hooks.default` | HA-12 thesis typography | HA-05 title lockup (payoff ≤ 0.7 s) |
-| `structure` | story · markers SM-1 "#N." | tutorial · markers SM-2 card-title chapters |
-| `cadence` | cuts 27–51 /min, median shot 0.85–1.6 s | cuts 27–42 /min, median shot 0.9–1.6 s |
-| Paper share | 0–30% | 20–45% |
-| Shared DNA | one yellow · duo titles · pale-lemon serif subtitle at y 1468 · graded cinematic footage · cream paper world · bookend loop (optional, on by default) | same |
-
-**Picking the format per reel:** the script names steps, rules, settings or "how to" → F-B. Anything else → F-A. Declare it in the reel header (§13.3). Never mix: an F-A reel may show one paper card run (≤ 30%), but never the F-B rule ritual.
-
-### 0.5 Theme packs
-OFF (`themes.policy: single`). One yellow for every reel; a buyer who brands it ({{BV-02.primary|#F7DE0B}}) changes it everywhere.
-
----
-
-## §1 Procedure (follow in order) `[DNA]`
-
-1. **P1 Inventory.** `ffprobe` every input. Sources are often 23.98/24/25 fps: conform everything to **30 fps CFR**. Register each file with its origin (`creator`, or `created` for what you build, §12.5).
-2. **P1b B-roll bank tagging (narrated_footage).** Give every clip an id (`B01…`), tags (subject, place, action, mood: `walk`, `detail`, `hands`, `product`, `wide`, `overhead`, `persona:<name>`), its usable span and its motion direction (for cut-on-motion). Mark which shot is SH-1 (the opener) and check it has **≥ 1.5 s of pre-roll before its in-point** (needed by the bookend, §23). Mark talking pieces by setup (A/B/C/D, §12.1). Talking pieces (or the creator's voice-over file) carry the voice and become the cut map; every other clip is picture-only and plays as a scene over the voice (§12.6).
-3. **P2 Matte.** Matte every talking piece and SH-11 headroom shot where a behind-head word (E1) or a poster backdrop (P-POSTER-BACKDROP) may land. Check hair edges at 200%. A take with a messy matte gets no E1 word (FB-11).
-4. **P3 Transcribe** with word timestamps. Apply `language.captions.transform` ({{BV-05.captions|en}}); keep the speaker's ellipsis pauses: a pause of 0.35–0.9 s inside a sentence becomes ".." on the subtitle (v04 "I made a post.."). Apply the glossary and mask profanity (`inner` mask).
-5. **P4 Rough cut and segment.** Write the EDL from the talking pieces (pauses tightened to ≤ 0.35 s except the ".." pauses) and run `veos cut`. Segment into the structure's units (§7.1): F-A `HOOK · SETUP · SCENE-n · TURN · PAYOFF · CTA · BOOKEND`; F-B `HOOK · CONTEXT · RULE-n · RESULT · CTA · BOOKEND`.
-6. **P5 Classify** every sentence with a line type (§8.4) and its trigger word.
-7. **P6 Tone-tag** every sentence: `hype` (thesis, claims), `awe` (cinematic reveals, places), `explain` (rules, steps), `warn` (problem state, a negative persona), `win` (result, payoff), `cta`.
-8. **P7 Hook plan: the duo split (this style's craft).** Write the thesis in ≤ 12 words. Split it into **connectors** (function words: script) and **keywords** (content words: block), group the keywords into 3–4 beats of 1–2 words, and time each beat to its spoken word (§5.2, §6.2). Write **3 hook variants** with their archetype, run the stopper tests (§6.1).
-9. **P8 Visual plan.**
-   - **P8b Shot matching:** pick a creator clip for every sentence (the B-roll bank), one picture change every 0.85–1.6 s; listed nouns get one detail each (R-3). Where no clip fits, build a paper card, a polaroid or a created visual (§12.5).
-   - A pattern per line (§8.4); decide which lines leave the footage world for the paper world.
-   - Behind-head words: at most one per 20 s, only on matted takes with ≥ 300 px headroom (E1).
-   - The grade plan (persona → GR id, §4.4) and the one chaos burst if a line is about overload (E2).
-10. **P9 Beat sheet** (§13): one beat per trigger; meet §7.6.
-11. **P10 Cue moments** (§11) and the transition map (§9).
-12. **P11 Assets.** `veos asset add` every B-roll clip and every clip or photo that appears inside a card, polaroid, device or spin (they play through `fx.clip` / `ctx.videoFrame`, §12.6). Ask once for third-party moments (§12.5). Resolve fallbacks (§12.3) and list them.
-13. **Module steps:** **anchor pass** for ink (§22: read sampled frames, write the x/y of every arrow tip and oval), **chain design** for the bookend (§23: SH-1's in-point, the pre-roll span, the final sentence that rides it), **series metadata** (§24: episode number), **sponsor check** (§25: logo file, disclosure line).
-14. **P12 Checkpoint** (§13.5), then **wait for approval.**
-15. **P13 Build:** act by act; `veos validate`; preview and QA (§15, at most 3 passes); render.
-
----
-
-## §2 Hard rules `[DNA]`
-
-### 2.1 Editing rules (every style)
-The ten editing rules in `playbooks/_global/GLOBAL-RULES.md` apply. They are directions, not limits: smooth, seamless motion; nothing overlaps by accident; keep the face clear (behind the speaker is fair game, text included); readable at a glance; one idea at a time; show the thing, not the word; say what was said; hook titles hook; pace like the style, not like a timer; the style decides the look.
-- **Facts the engine checks:** accidental overlaps, jumps, the face covered, unreadable text, numbers and quotes that don't match what was said, the promised count. Every count, timing and budget this playbook gives is direction for the edit, not a limit.
-- **Picture first, in this style's own look:** every key beat shows the thing being said (an object, a screen or app, a diagram, numbers in motion), not just its word; text supports the picture and never replaces it. When the speaker points with words ("this, this and this", "from this to this", "ye dekho"), show what they mean. Illustrations may use made-up but realistic numbers and names ("212 views", "1.2M views"), with no label; a number or quote the speaker says is shown as said. This overrides any rule below that bans made-up numbers or asks for an example tag: those rules now cover claims (the creator's results, prices, benchmarks, testimonials), not illustrations.
-- **Hook titles hook:** the on-screen title promises the viewer something (an outcome, a curiosity gap, who it's for) and is true to what the reel delivers; it need not repeat the spoken words. This playbook sets its shape (§5.2, §6.5: lines, sizes, word limits, case), never its voice (§6).
-- **Retired (8 Oct 2026), whatever this playbook says below:** no REPRESENTATIONAL or example labels on made-up cards, no credit lines, no flash limit (flash as often as this style calls for; any "NC-11" cap below no longer applies), and text may sit behind the speaker without an exception.
-
-### 2.2 Declared exceptions
-| ID | Limits in this style (never looser than the registry) | DNA reason | Evidence |
-|---|---|---|---|
-| **E1** behind-subject type | `TC-display` only (an Anton block word 200–340 px, or a P-COUNT-UP number 280–400 px, `primary`); `behind: true` on a clean matte; visible glyph area ≥ 65% for the whole hold; first and last letters visible; ≤ 1 at a time; hold ≥ 0.6 s; ≤ 3 per 60 s; parallax drift 8–12 px against the head; never inside a GR-L grade span (§4.4) | The depth sandwich is how the style makes a word part of the shot | v02 @ 0:33 BEINGS, 0:38 BACK, 0:39 HOW, 0:40 SUPERPOWER, 0:53 GROW; v05 @ 0:07 EDITING |
-| **E2** chaos burst | ≤ 1.5 s; **≤ 1 per reel** (stricter than the registry's 2); ≤ 6 text snippets; nothing in front of the face box; subtitles hidden; GR-mono footage under it; followed by ≥ 1.0 s with ≤ 2 elements; never in the hook's first 2 s, never in the CTA | Overload, self-doubt, "too many options" is shown, not said | v02 @ 0:04–0:08, 0:34–0:36 |
-
-No other exception. Subtitles are 54 px (no E3), display text ≥ 40 px, no edge bleed (E5), no hard-swap slots (E6). A buyer may switch E1 or E2 off (stricter, VAR).
-
-### 2.3 Style MUST rules
-- **H1 Frame 0 moves.** f0 is a moving cinematic shot (live footage in motion, a walk-in, a drone move, or Z-1 push-drift starting at f0); in HA-12 the first type beat (a script connector or a block word) starts by **0.7 s**; in HA-05 the title lockup is readable by **0.7 s**. A static frame or a fade-in at f0 fails. `check: V-F0`
-- **H2 Cadence.** Weighted state changes 5–12 per 10 s in the body; max gap between weight-1 changes **3.0 s**; nothing static > 2.5 s (footage counts as motion). Hook: ≥ 6 weighted changes in 0–3 s, no gap > 0.8 s. `check: V-CADENCE`
-- **H3 Cut rhythm is DNA.** 27–51 cuts/min (F-B 27–42), median shot 0.85–1.6 s (F-B 0.9–1.6 s). Card swaps, carousel slides and spins count as cuts: declare them in `transitions` or scene `cuts`. `check: V-CADENCE`
-- **H4 Thesis by 3.0 s.** HA-12: the whole thesis phrase has been on screen (all its beats) by 3.0 s; HA-05: the title by 0.7 s; HA-19: the premise word by 3.0 s; HA-08: the hero number by 1.7 s. `check: V-F0`
-- **H5 Subtitle.** CS-1 runs on every spoken word outside duo-title, E2 and morph spans; 3–6 words, one line, ≤ 28 characters, y 1468, hard swaps; sync lead ≤ 0.15 s. `check: V-CAPTION`
-- **H6 Behind-head words** follow E1 exactly (2.2). `check: V-EXC`
-- **H7 The chaos burst** follows E2 exactly (2.2), and only on a line whose meaning is overload. `check: V-EXC` + review
-- **H8 On the word.** Each block keyword starts 2 f before its spoken word and is fully landed within ±5 f; counters land on the number word; ink marks start on the word naming the thing. `check: V-ONWORD`
-- **H9 Face.** Front-layer type keeps ≥ 40 px from the face box; a word that must overlap the head goes behind it (E1) or moves. `check: V-FACE`
-- **H10 Presence.** Presenter visible 45–60% of runtime (F-B 35–55%; TUNE ±10); longest absence 6 s (F-B 8 s). `check: V-PRESENCE`
-- **H11 Promise.** "N types / N rules / N steps" = N items shown with N markers; the thesis is paid off before the CTA; the CTA keyword is on screen ≥ 1.5 s. `check: V-PROMISE`
-- **H12 Headline limits.** A duo title is ≤ 7 words total (script + block), ≤ 2 block lines, ≤ 3 block words per line; each beat reads in ≤ 1.2 s. A title lockup is ≤ 6 words, ≤ 2 lines. `check: V-TITLE`
-- **H13 One yellow.** `primary` is the only bright text hue; ≤ 2 bright roles per frame (`primary` + `accent` on a poster). `check: V-HUES`
-- **H14 Camera.** Only Z-1 push-drift, Z-2 slow-push and Z-3 reset (zoom policy `slow_push`); never a punch, crash, shake or rotation as a camera event (the one measured punch lives inside the T-12 zoom-through transition, §9.1). Never the same preset twice in a row. `check: V-CAMERA`
-- **H15 Bookend.** The last 1.0–1.5 s plays SH-1 (or its fallback) so that the **final frame's picture equals frame 0's picture**; no type is fully visible on either frame. `check: V-CONTINUITY` (pending: review)
-- **H16 Inserts.** Third-party material (other people's posts, artworks, app UIs, logos) appears only from the creator's files; otherwise a created card. `check: V-INSERTS`
-- **H17 Dead air (hybrid).** In talking pieces ≤ 1 gap ≥ 200 ms per 15 s; a deliberate pause ≤ 0.9 s is allowed only where the subtitle shows ".." and the picture keeps moving (a B-roll cut or a camera drift). `check: review`
-- **H18 Truth.** Every number on screen (counters, "#3", "52 weeks") is spoken or in the script; app screens are the creator's recordings or generic recreations. `check: V-NUMFMT` + review
-- **H19 Spelling.** Brand and place names exactly as in the glossary; ellipses ".." kept only where the speaker pauses. `check: V-CAPTION`
-- **H20 Grades.** A persona keeps one grade id for all its shots; two consecutive personas never share a grade; ≤ 8 grade events per reel. `check: V-GRADE` (pending: review)
-- **H21 Light worlds flip the type.** On W-paper and W-grid the keyword block is `ink`, never yellow; yellow stays on footage, W-void and W-poster, or burned onto a card's photo. `check: V-TYPE` + review
-- **H22 Audio and determinism.** −14 LUFS, true peak ≤ −1.5 dBTP, hard end ≤ 6 f after the last word (NC-8); every frame a pure function of its index (NC-9). `check: review`
-
-### 2.4 NEVER
-- **N1** Banner slabs, pills, boxed or highlighted captions, coloured words inside the subtitle, emoji in type.
-- **N2** A second text accent (no red/green axis, no pink, no gradients on keywords except the sign-off word P-SIGNOFF-SUN).
-- **N3** Yellow text directly on cream or white paper (contrast 1.2:1): use `ink` (H21).
-- **N4** Punch-ins (outside the one T-12 zoom-through), crash zooms, shakes, rotation snaps, RGB splits, resting light-leak PNGs, film burns, glitch packs.
-- **N5** Stock footage or generated scenes presented as the creator's world; drone-look fakes made from stills.
-- **N6** Meme SFX, stickers, stamps, emoji pops (comedy is light: staging and script asides only).
-- **N7** Two duo titles at once; a duo title over the CTA keyword; a script connector carrying the keyword.
-- **N8** A chaos burst on a line that isn't about overload, or a second one in the reel.
-- **N9** Raw full-bleed screen recordings: always inside P-APP-DEVICE or P-PHONE-REEL (a full-bleed UI close-up ≤ 1.5 s is allowed only as a zoom inside the device).
-- **N10** Fake UIs, invented metrics or follower counts presented as real.
-- **N11** A fade to black or a black tail: the reel ends on the bookend picture.
-- **N12** Sans-serif or ALL-CAPS subtitles; subtitles above y 1470 or below y 1510.
-- **N13** Meaning text in the top 110 px, below y 1540, or in the right 110 px between y 900 and 1540.
-- **N14** Decoration: a card, mark or word that doesn't show what is being said.
-
-Buyer additions `BN1…` `[VAR]`.
-
----
-
-## §3 Worlds, layouts, stage moves, safe zones `[DNA; coordinates TUNE ±5%]`
-
-### 3.1 Worlds
+### 3.2 Worlds
 | ID | Kind | Look | Carries | Enter / exit |
 |---|---|---|---|---|
-| **W-footage** | footage | The creator's graded cinematic footage, full-bleed (GR-warm, §4.4). Behind a smaller stage: a 28 px-blurred copy at 45% brightness | 55–80% of every reel: places, talking pieces, details, personas | Hard cut (T-1), cut on motion (T-2), blur-through (T-3) |
-| **W-paper** | paper | Flat cream `#FCFBE6` (`cream`), noise 0.03, no grid, no vignette | 9:16 cards, 4:3 cards, phone reels, recap riffles, ink guides (v03 @ 0:11–0:27, v04 @ 0:19–0:55) | Hard cut with the card already placed (G-3) or G-1 shrink-to-card; exit by a hard cut (measured v04 @0:27.9), T-6 fade only as an alternate |
-| **W-grid** | paper | Greige `#E5E1D3` (`greige`) with a 64 px 1 px grid (`grid` `#CFCBB6`), vignette 0.42, noise 0.04 | Polaroids, device frames, carousels, the series lockup (v02 @ 0:29–0:31, 0:45–0:50; v05 @ 0:09, 0:23–0:25, 0:30–0:54) | Hard cut; polaroid drop (10 f) |
-| **W-void** | void | Near-black `#050505` (`night`); plain under the spin card (v03 @0:06.5 shows no dots), white dots 10% at 120 px pitch only behind devices, vignette 0.3 | The spin-in card's launch pad (v03 @ 0:06–0:09), dark device close-ups (v05 @ 0:32–0:51), the end block fallback | Hard cut; T-4 spin out to full |
-| **W-poster** | card-world | `accent` sun: a near-solid disc centred (540, 975), r 487, `#D42A05` at the centre to `#B50E05` at the edge, on a near-black `#0A0603`-`#270402` field (audit: v02 @0:54.5) | The CTA and sign-off silhouette (v02 @ 0:52–0:58) | Hard cut. Usually drawn *behind the matted creator* (P-POSTER-BACKDROP) rather than as a stage world |
+| **W-footage** | footage | The creator's graded cinematic footage, full-bleed (§4.3). Behind a smaller stage: a 28 px-blurred copy at 45 % brightness (pad 60) on `night` | Most of every reel: places, talking pieces, details, personas | Hard cut (T-1), cut on motion (T-2), blur-through (T-3) |
+| **W-paper** | paper | Flat cream `#FCFBE6` (`cream`; measured paper `#FAF8E3`/`#FEFFE8`), noise 0.03, no grid, no vignette | 9:16 cards, 4:3 cards, phone reels, recap riffles, ink guides (v03 @ 0:11–0:27, v04 @ 0:19–0:55) | Hard cut with the card already placed (G-3) or G-1 shrink-to-card; out by a hard cut (measured v04 @0:27.9), T-6 fade only as an alternate |
+| **W-grid** | paper | Greige `#E5E1D3` (`greige`) with a 64 px, 1 px grid (`grid` `#CFCBB6`, alpha 0.9), vignette 0.42, noise 0.04 | Polaroids, device frames, carousels, the series lockup (v02 @ 0:29–0:31, 0:45–0:50; v05 @ 0:09, 0:23–0:25, 0:30–0:54) | Hard cut; the polaroid flash (T-10) |
+| **W-void** | void | Near-black `#050505` (`night`), noise 0.03, vignette 0.3; plain under the spin card (v03 @0:06.5 shows no dots); white dots at 10 %, 120 px pitch, r 2, only behind devices | The spin card's launch pad (v03 @ 0:06–0:09), dark device close-ups (v05 @ 0:32–0:51), the end block's fallback | Hard cut; T-4 spin out to full |
+| **W-poster** | card-world | `accent` sun: a near-solid disc centred (540, 975), r 487, `#D42A05` at the centre to `#B50E05` at the edge, on a near-black `#0A0603`–`#270402` field, noise 0.03, vignette 0.35 (measured v02 @0:54.5) | The CTA and the sign-off silhouette (v02 @ 0:52–0:58) | Hard cut, or the T-11 warm flash. Usually drawn *behind the matted creator* (P-POSTER-BACKDROP) rather than as a stage world |
 
-World colours come from `roles`; the buyer's `accent` recolours W-poster.
+World colours come from `roles`; a creator's brand `accent` recolours W-poster. Light worlds (W-paper, W-grid) flip the
+type to `ink` (§4.4).
 
-### 3.2 Layout library
-| ID | Engine | Presenter / footage rect | Graphic rect | Caption | Treatment | Share F-A | Share F-B |
-|---|---|---|---|---|---|---|---|
-| **L-full** | `full` | 0, 0, 1080 × 1920 | — (type in the sky or top third) | fixed_y 1468 | GR-warm | 55–100% | 35–75% |
-| **L-card916** | `card` | x 192, y 160, w 696, h 1238, radius 40, crop 9:16, shadow 0.35, on W-paper | card-top title band x 232–848, y 200–460 | fixed_y 1468 (40 px under the card) | — | 0–30% | 0–40% |
-| **L-card43** | `card` | x 72, y 494, w 936, h 702, radius 28, crop 4:3, shadow 0.25, on W-paper | title band y 200–460 | fixed_y 1468 | guide lines (P-GUIDE-LINES) allowed inside | — | 0–25% |
-| **L-hidden** | `hidden` | none: every pixel is a scene (paper cards from assets, polaroids, devices, spin, end block) | x 64–1016, y 110–1440 | fixed_y 1468 | — | 0–30% | 10–50% |
+### 3.3 Layouts
+| ID | Engine | Footage / clip rect | Graphic rect | Caption |
+|---|---|---|---|---|
+| **L-full** | `full` | 0, 0, 1080 × 1920 | none: type goes in the sky, the wall or the top third | CS-1, cy 1468 |
+| **L-card916** | `card` | x 192, y 160, w 696, h 1238, radius 40, crop 9:16, shadow 0.35, on W-paper | the card's top band x 192–888, y 160–460 (the burned title) | CS-1, cy 1468 (≈ 40 px under the card) |
+| **L-card43** | `card` | x 72, y 494, w 936, h 702, radius 28, crop 4:3, shadow 0.25, on W-paper; guide lines (P-GUIDE-LINES) allowed inside | title band x 72–1008, y 200–460 | CS-1, cy 1468 |
+| **L-hidden** | `hidden` | none: every pixel is a scene (paper cards from assets, polaroids, devices, the spin, the end block) | x 64–1016, y 110–1440 | CS-1, cy 1468 |
 
 Scene-built frames (not stage layouts; they play `veos asset add` clips with `ctx.videoFrame`):
-| Frame | Rect (resting) | Used by |
+| Frame | Rect (at rest) | Used by |
 |---|---|---|
-| Paper card 9:16 | x 192, y 160, w 696, h 1238, radius 40 (measured v03 @0:11.5 x 189-891, y 183-1431; v04 @0:22 x 162-918, y 168-1479; set so the subtitle clears y 1500 under the card), shadow `0 18px 40px rgba(0,0,0,.18)` | P-PAPER-CARD, P-RECAP-RIFFLE, P-CARD-CAROUSEL |
+| Paper card 9:16 | x 192, y 160, w 696, h 1238, radius 40 (measured v03 @0:11.5 x 189–891, y 183–1431; v04 @0:22 x 162–918, y 168–1479; set so the subtitle clears the card), shadow `0 18px 40px rgba(0,0,0,.18)` | P-PAPER-CARD, P-RECAP-RIFFLE, P-CARD-CAROUSEL |
 | Polaroid | image 700 × 875 + 24 px `frame` border all round (outer 748 × 923), centre (540, 860), tilt −2.5…+2.5°, shadow `0 14px 30px rgba(0,0,0,.35)` | P-POLAROID, P-BEFORE-AFTER-POLAROID |
 | Device | x 150, y 170, w 780, h 1270, radius 64, 22 px `#0E0E0E` bezel, shadow `0 30px 60px rgba(0,0,0,.45)` | P-APP-DEVICE |
 | Phone reel | x 252, y 180, w 576, h 1250, radius 48 | P-PHONE-REEL |
 | Spin card | 16:9, w 900, h 506, radius 28, launched from centre (540, 960) | P-SPIN-CARD |
 
-**Layout schedule:** none fixed. Rule: leave L-full for paper only on a line that *shows* something (an example, a recap, a rule, a screen, a photo); come back to L-full on the next opinion or turn word ("but", "so", "and that's why").
+**When to leave L-full.** Only on a line that *shows* something (an example, a recap, a rule, a screen, a photo); come
+back to the footage on the next opinion or turn word ("but", "so", "and that's why"). Paper is proof, and proof is over
+the moment the creator starts arguing again.
 
-### 3.3 Stage moves
+### 3.4 Stage moves
 | ID | Move | Recipe (30 fps) | Use |
 |---|---|---|---|
-| **G-1** | Shrink-to-card | `stage: {layout: "L-card916", via: "shrink-to-card", dur: 12}`; world switches to W-paper at the same t; the card title (P-PAPER-CARD title) blur-slides in at f+8 | Footage becomes the example ("this is what I mean") |
+| **G-1** | Shrink-to-card | `stage: {layout: "L-card916", via: "shrink-to-card", dur: 12}`; the world switches to W-paper at the same t; the card title (P-PAPER-CARD) blur-slides in at f+8 | The footage becomes the example ("this is what I mean") |
 | **G-2** | Grow-from-card | `via: "grow-from-card", dur: 10` back to L-full | Back to the story from an example |
-| **G-3** | Paper cut | Hard cut (0 f) from L-full to L-hidden/L-card916 on W-paper with the card already at rest; the card's content keeps playing | The default way into paper (v03 @ 0:11) |
+| **G-3** | Paper cut | Hard cut (0 f) from L-full to L-hidden / L-card916 on W-paper with the card already at rest; the card's content keeps playing | The default way into paper (v03 @ 0:11) |
 | **G-4** | Spin-to-vertical | P-SPIN-CARD (T-4): on plain black a playing 16:9 card turns 90° and grows until it covers the frame (2.5–4.5 s), then cuts | Opening a flashback, "the old way", a chapter (v03 @ 0:06–0:10) |
 | **G-5** | Fade-through | `via: "fade-through", dur: 8` | Into and out of a device close-up |
-| **G-6** | Depth sandwich | Not a move: an E1 word drawn `behind: true` between the footage and the cut-out, drifting 8–12 px | Behind-head words (P-BEHIND-WORD) |
+| **G-6** | Depth sandwich | Not a move: a keyword drawn `behind: true` between the footage and the cut-out, drifting 8–12 px against the head | Behind-head words (P-BEHIND-WORD, P-BEHIND-LOCKUP) |
 
-### 3.4 Layout diagrams
+### 3.5 Layout diagrams
 ```
 L-full (hook / thesis beat)                 L-card916 on W-paper
 ┌─────────────────────────┐ 0               ┌─────────────────────────┐ 0
 │ (IG top UI, keep clear) │ ← 0–110          │                         │ ← 0–110 clear
 │ script connector  y 250 │                  │ ╭─────────────────────╮ │ ← card y 160 (x 192–888)
-│ BLOCK KEYWORD           │ ← duo band       │ │ CARD TITLE (yellow, │ │ ← burned title y 160–420
+│ BLOCK KEYWORD           │ ← duo band       │ │ CARD TITLE (yellow, │ │ ← burned title y 160–460
 │ BLOCK KEYWORD           │   y 120–880      │ │ no stroke)          │ │
 │        script  bottom-rt│                  │ │                     │ │
 │                         │                  │ │   creator clip      │ │
 │ (head top ≥ lockup      │                  │ │   (9:16, radius 40) │ │
-│  bottom + 40 px)        │                  │ │                     │ │
-│     presenter / place   │                  │ ╰─────────────────────╯ │ ← card bottom 1398
-│                         │                  │   Lemon serif subtitle  │ ← cy 1468
+│  bottom + 40 px, or the │                  │ │                     │ │
+│  word goes behind it)   │                  │ ╰─────────────────────╯ │ ← card bottom 1398
+│     presenter / place   │                  │   Lemon serif subtitle  │ ← cy 1468
+│                         │                  │                         │
 │  Lemon serif subtitle   │ ← cy 1468         │                         │
 │ (IG bottom UI)          │ ← 1540–1920       │ (IG bottom UI)          │
 └─────────────────────────┘ 1920             └─────────────────────────┘
@@ -267,120 +268,162 @@ L-card43 on W-paper (F-B rule)              Polaroid on W-grid
 └─────────────────────────┘                  └─────────────────────────┘
 ```
 
-### 3.5 Safe zones and bands
-- **Meaning-text box:** x 64–1016, y 110–1500 (`layout.safe`, TUNE inside NC-5). The right column x > 970 between y 900 and 1540 stays empty.
-- **Duo band:** y 120–880, x 64–1016 (measured: v01 @0:02 blocks y 279–711, v05 @0:02.2 y 100–693, v02 @0:01.7 y 300–865). First block line top at y 300 (hook) or y 230 (mid-reel); script connectors at y 230–300 above, or under the last block line + 16 px.
-- **Title band (HA-05 lockup, card titles):** y 230–410 on L-full (v03 @0:02.6 y 230–363, v04 @0:02.5 y 250–401); card titles inside the card's top 300 px.
-- **Caption band:** centre y 1468 on every layout (one line, ~62 px tall: y 1437–1499). The source sits at cy ≈ 1488 (glyphs y 1467–1510, v01 @0:12, v03 @0:02.6, v05 @0:30); it is lifted 20 px to stay above y 1500.
-- **Counter band:** digits top y 200–260; unit stack directly under, ≤ y 900.
-- **Legal line:** x 64, y 128, `TC-legal` 24 px.
+### 3.6 Safe zones and bands
+- **Meaning-text box:** x 64–1016, y 110–1500 (`layout.safe`). The right column x > 970 between y 900 and 1540 stays
+  empty (Instagram's buttons).
+- **Duo band:** y 120–880, x 64–1016 (measured: v01 @0:02 blocks y 279–711, v05 @0:02.2 y 100–693, v02 @0:01.7
+  y 300–865). The first block line's top sits at y 300 in the hook, y 230 mid-reel; script connectors at y 230–300 above
+  it, or under the last block line + 16 px. The source's LOVING reached y 100, inside Instagram's top bar; keep ≥ 120.
+- **Title band (HA-05 lockup):** y 230–410 on L-full (v03 @0:02.6 y 230–363, v04 @0:02.5 y 250–401); card titles inside
+  the card's top 300 px.
+- **Caption band:** centred at y 1468 on every layout, one line about 62 px tall (54 px × 1.15): y 1437–1499. The source
+  sits at cy ≈ 1488 (glyphs y 1467–1510, v01 @0:12, v03 @0:02.6, v05 @0:30); it is lifted 20 px to stay above y 1500.
+- **Counter band:** digits' top y 200–260; the unit stack directly under, ending by y 900.
+- **Disclosure line:** x 64, y 128, 24 px (the sponsor's "Paid partnership" only).
 
-### 3.6 Presenter rules
-- **Share** 45–60% F-A, 35–55% F-B (TUNE ±10). **Longest absence** 6 s F-A, 8 s F-B. A persona scene with the creator counts as presence.
-- **Return:** by a hard cut or cut on motion to a talking piece; never by a morph from paper unless G-2.
-- **Head-top positions:** setup A 250–520, setup B 420–700, setup C 600–1100, setup D 560–800. **Front-layer type keeps its bottom edge ≥ 40 px above the head top:** a one-line beat (top y 330, 200 px) ends near y 520, so it needs a head top ≥ 560; a two-line beat ends near y 720 and needs ≥ 760. A higher head takes the word behind it (E1), or the beat shifts sideways so its rect clears the face box by 40 px, or the beat moves to a wider shot.
-- **Behind the head (E1):** only Anton block words 200–340 px (or count-up digits), centred on the head's x ±120 px, top of word 60–160 px above the head top so that ≥ 65% of the glyph area stays visible; first and last letters always clear of the hair.
+### 3.7 The person
+- **Where they are.** On L-full the creator is wherever the footage puts them: the head top sits at y 250–520 in a
+  location talking piece (setup A), 420–700 on the seated set (B), 600–1100 in a wide or overhead (C), 560–800 in a
+  headroom shot (D). In a card (L-card916, L-card43) they're inside the card's clip.
+- **The head region** is the face, the hair and the room above the head, read from the cut-out when it exists (hair
+  included), plus 40 px (`layout.face_clearance`). Keep front layers off it, captions included, unless the moment wants
+  otherwise; judge it on the frame.
+- **The duo band against the head.** Front-layer type keeps its bottom edge ≥ 40 px above the head top: a one-line beat
+  (top y 330, 200 px) ends near y 520, so it needs a head top at y ≥ 560; a two-line beat ends near y 720 and needs
+  ≥ 760. A higher head takes the word **behind** it (G-6), or the beat shifts sideways so its rect clears the head region,
+  or the beat moves to a wider shot. Setup A and B heads are usually too high for a front two-line beat: that's what the
+  depth sandwich is for.
+- **The caption against the head.** The caption band (y 1437–1499) sits under the head in every setup: on a talking
+  piece it's at chest height or below. In a wide where the person stands low (head top near y 1100), the chin still sits
+  well above y 1437; if a shot ever puts the head inside y 1380–1500, pick another moment of the clip or another clip.
+- **Behind the head.** Anton block words 200–340 px (or count-up digits), centred on the head's x ± 120 px, the top of
+  the word 60–160 px above the head top, so that ≥ 65 % of the glyph area stays visible for the whole hold; the first and
+  last letters always clear of the hair; one at a time; held ≥ 0.6 s; drifting 8–12 px against the head (parallax). It
+  needs a clean matte (hair checked at 200 %); without one, the word goes above the head on the front layer (FB-11).
+- **Cards.** The L-card916 card ends at y 1398 and the caption starts at 1437: 39 px of cream between them. A card's
+  burned title (top band y 160–460) stays off the face in the card's clip: pick the clip moment or its `focus` so the
+  head sits below y 500, else drop the title and let the subtitle carry the line.
+- **How often they're there.** People came for this person's life: they're on screen often, sometimes small, sometimes
+  just a pair of hands, and a B-roll run of a few seconds without the face is normal. Bring them back by a hard cut or a
+  cut on motion to a talking piece on the opinion, the turn or the CTA, never mid-clause, and never by a morph out of
+  paper except G-2. A persona scene with the creator in it counts as them being there.
 
 ---
 
-## §4 Colour, grades `[roles' meanings DNA; brandable hex VAR; grade strength TUNE]`
+## §4 Colour and the grades
 
 ### 4.1 Role palette
-| Role | Hex | One job | Text on it / contrast | Brandable |
-|---|---|---|---|---|
-| `primary` | {{BV-02.primary|#F7DE0B}} | **The** yellow: keyword blocks, behind-head words, counters, title lockups, card titles, ink arrows and ovals, the CTA keyword | `ink` 15.3:1 | **VAR** (any one saturated hue; contrast-nudged to ≥ 4.5:1 with ink) |
-| `accent` | {{BV-02.accent|#D42A05}} | Poster backdrop only: the sun disc / colour wall behind the silhouette (P-POSTER-BACKDROP, P-SIGNOFF-SUN) | `ink` 4.9:1; `primary` on it 3.2:1 (display ≥ 96 px only) | **VAR** |
-| `subtitle` | `#EEF272` | Pale-lemon serif subtitle text | with its 1 px `shade` stroke and hard drop shadow it reads on any background | TUNE (pale lemon to cream) |
-| `paper` | `#FFFFFF` | White script connectors, guide lines, lasso outlines | — | DNA |
-| `ink` | `#0B0B0B` | Keyword blocks and script on light worlds (H21) | on `cream` 18.8:1 | DNA |
-| `shade` | `#1A1208` | Warm black for text strokes (subtitle 1 px; connectors and titles carry none) and shadows | — | DNA |
-| `cream` | `#FCFBE6` | W-paper background | `ink` 18.8:1 | TUNE |
-| `greige` | `#E5E1D3` | W-grid background | `ink` 15:1 | TUNE |
-| `grid` | `#CFCBB6` | 1 px grid on W-grid | — | TUNE |
-| `frame` | `#F6F4EC` | Polaroid border | — | TUNE |
-| `gold` | `#9A6E0A` | Series lockup only (≥ 96 px) | on `greige` 3.5:1 | TUNE |
-| `night` | `#050505` | W-void | — | DNA |
+| Role | Hex | One job | Text on it / contrast |
+|---|---|---|---|
+| `primary` | `#F7DE0B` | **The** yellow: keyword blocks, behind-head words, counters, title lockups, card titles, ink arrows and ovals, the CTA keyword | `ink` 15.3:1 |
+| `accent` | `#D42A05` | Poster backdrop only: the sun disc or colour wall behind the silhouette (P-POSTER-BACKDROP, P-SIGNOFF-SUN) | `ink` 4.9:1; `primary` on it 3.2:1 (display ≥ 96 px only) |
+| `subtitle` | `#EEF272` | The pale-lemon serif subtitle | with its 1 px `shade` stroke and hard drop shadow it reads on any background |
+| `paper` | `#FFFFFF` | White script connectors, guide lines, lasso outlines | — |
+| `ink` | `#0B0B0B` | Keyword blocks and script on light worlds | on `cream` 18.8:1 |
+| `shade` | `#1A1208` | Warm black for the subtitle's 1 px stroke and shadows (connectors and titles carry no stroke) | — |
+| `cream` | `#FCFBE6` | W-paper | `ink` 18.8:1 |
+| `greige` | `#E5E1D3` | W-grid | `ink` 15:1 |
+| `grid` | `#CFCBB6` | The 1 px grid on W-grid | — |
+| `frame` | `#F6F4EC` | The polaroid border | — |
+| `gold` | `#9A6E0A` | The series lockup only (≥ 96 px) | on `greige` 3.5:1 |
+| `night` | `#050505` | W-void | — |
 
-`fixed_meaning: []`: this style has no red/green axis. `max_bright_per_frame: 2` (`primary` + `accent`, and `accent` only on a poster).
+Gradients (tokens `gradients`): `sun` `#FF8A2A` → `#E8401C` → `#7A0F06`; `soon` `#FFE400` → `#FFB21C` → `#F26A12` (the
+sign-off word only); `teal_wall` `#1FA3C6` → `#0C7FA0` → `#06465A` (the cool colour wall behind a thesis poster, v02 @
+0:39–0:40). A creator's brand colour can replace `primary` (any one saturated hue, nudged to ≥ 4.5:1 with ink) and
+`accent`; it then changes everywhere.
 
 ### 4.2 Meanings
-- **Yellow = the word to remember.** Only content words (nouns, numbers, the key verb, the CTA keyword) are yellow. A yellow arrow or oval means "look here".
+- **Yellow = the word to remember.** Only content words (nouns, numbers, the key verb, the CTA keyword) are yellow. A
+  yellow arrow or oval means "look here".
 - **White script = the connective tissue** of the sentence. Never a keyword, never a number.
-- **Cream serif = the voice.** Every spoken word, quiet and constant.
-- **Accent = the stage for the sign-off.** The poster backdrop appears in at most two beats per reel (a thesis poster, the CTA / sign-off).
-- **Grades = characters.** GR-mono, GR-amber and GR-teal tell personas or moods apart (4.4).
+- **Pale-lemon serif = the voice.** Every spoken word, quiet and constant.
+- **Accent = the stage for the sign-off.** The poster is a closing gesture (and at most a thesis poster before it), so it
+  feels like the end of a film, not wallpaper.
+- **Grades = characters.** GR-mono, GR-amber and GR-teal tell personas or moods apart (§4.3).
 - Brand colours appear only inside a logo chip (P-LOGO-CHIP); a logo's own colours never count as a style hue.
+- Two bright roles in a frame at most: `primary`, plus `accent` only on a poster.
 
-### 4.3 Theme packs
-OFF (`themes.policy: single`).
-
-### 4.4 Grades `[TUNE strength; ids and meanings DNA]`
-| ID | CSS filter stack (renderer) | Look | Use | Evidence |
+### 4.3 The grades
+| ID | CSS filter stack | Look | Use | Evidence |
 |---|---|---|---|---|
-| **GR-warm** (footage default) | `sepia(0.12) saturate(1.08) contrast(1.04)`; tokens: warmth +0.08, saturation 1.06, bloom 0.08, vignette 0.12 | Warm teal-orange, golden skin, blue skies kept | Every creator clip unless a scene grade applies | v04 @ 0:00 (sky `#3E86C4`, warm skin) |
-| **GR-mono** | `grayscale(1) contrast(1.18) brightness(0.92)` | Hard black and white | The negative / stuck persona, self-doubt, the "before" state, under the chaos burst | v02 @ 0:04–0:08, 0:32–0:36 |
-| **GR-amber** | `sepia(0.45) saturate(1.35) hue-rotate(-10deg) contrast(1.06) brightness(0.96)` | Tungsten amber, deep shadows | The obsessive / collector persona, nostalgia, late night | v02 @ 0:09–0:17 |
-| **GR-teal** | `sepia(0.35) hue-rotate(140deg) saturate(1.25) contrast(1.05)` | Cold teal-green | The shortcut / hacker persona, cold logic, "the algorithm" | v02 @ 0:18–0:23 |
+| **GR-warm** (footage default) | `sepia(0.12) saturate(1.08) contrast(1.04)`; tokens `grades.footage`: lift 0.02, warmth +0.08, saturation 1.06, bloom 0.08, vignette 0.12 | Warm teal-orange, golden skin, blue skies kept | Every creator clip unless a persona grade applies | v04 @ 0:00 (sky `#3E86C4`, warm skin) |
+| **GR-mono** | `grayscale(1) contrast(1.18) brightness(0.92)` | Hard black and white | The negative or stuck persona, self-doubt, the "before" state, under the chaos burst | v02 @ 0:04–0:08, 0:32–0:36 |
+| **GR-amber** | `sepia(0.45) saturate(1.35) hue-rotate(-10deg) contrast(1.06) brightness(0.96)` | Tungsten amber, deep shadows | The obsessive or collector persona, nostalgia, late night | v02 @ 0:09–0:17 |
+| **GR-teal** | `sepia(0.35) hue-rotate(140deg) saturate(1.25) contrast(1.05)` | Cold teal-green | The shortcut or hacker persona, cold logic, "the algorithm" | v02 @ 0:18–0:23 |
 
-**Grade events:** a grade starts on a cut (never mid-shot), lasts the whole persona or mood segment, ≤ 8 events per reel, and two consecutive personas never share an id (H20). The creator's own "answer" segment returns to GR-warm.
+**How grades behave.** A grade starts on a cut, never mid-shot, and lasts the whole persona or mood segment. A persona
+keeps one grade for all its shots, and two consecutive personas never share one, so the viewer can tell them apart
+without a label. The creator's own "answer" segment comes back to GR-warm (v02 shows a high-key white studio there).
 
-**How grades render today (GR-L, until engine item E-16 ships).** For each grade span write a `timeline.grades` entry `{"t": 4.05, "until": 8.02, "grade": "GR-mono"}` (it counts as a state change and V-GRADE will read it) **and** a z4 scene that grades everything beneath it:
-```js
-// GR-L: today's grade layer (E-16 pending). z4 sits above the footage group and below every text layer.
-VEOS.scene({ id: "grade-mono-1", t_in: 4.05, t_out: 8.02, z: 4, in: "none", out: "none", roles: [],
-  box: { x: 0, y: 0, w: 1080, h: 1920 },
-  render(ctx) { return ctx.html(`<div style="position:absolute;inset:0;backdrop-filter:grayscale(1) contrast(1.18) brightness(.92)"></div>`); } });
-```
-Costs of GR-L: it is one of the four G2 scenes, and it would grey a behind-head word (behind words live inside the footage group). So **no E1 word inside a GR-L span**: use a front-layer block above the head there (FB-11). GR-warm is not drawn by GR-L (too subtle to be worth a layer); it applies when E-16 ships.
+**How they render.** Grades draw on the footage layer, under every graphic: the footage, the cut-out and the breakout all
+take the same grade, so a behind-head word stays pure yellow inside a GR-mono span and the person matches the background.
+- **Camera footage (talking pieces):** GR-warm is automatic (`tokens.grades.footage`). A persona span is a
+  `timeline.grades[]` event from cut to cut, hard in and out: `{"t": 4.05, "t1": 8.02, "grade": "GR-mono", "fade": 0}`.
+  When one scene already spans the whole segment, `grade: "GR-mono"` on that scene does the same (the footage takes the
+  grade while the scene is on screen). A frozen B&W beat is an event with `"freeze": true`.
+- **B-roll clips** are video assets and the engine leaves them natural, so each B-roll scene grades its own frame with
+  `ctx.grade(...)`: the persona's id inside a persona span, the warm footage grade everywhere else (§12.6).
+- No LUT packs. The only light effects are the flash transitions T-10 / T-11 (§9.1), never a resting overlay.
 
-### 4.5 Rules
-- ≤ 2 bright roles per frame (NC-10 allows 4; this style uses 2).
-- Yellow never sits on cream, white or greige unless it is burned onto a photo inside a card (H21, N3). On light worlds the block is `ink`.
-- Script connectors are thin white monoline handwriting with **no stroke** (audit: v05 @0:02.2 over water, v02 @0:54.5 over black) and only a faint `0 1px 4px rgba(0,0,0,.35)` shadow; on a bright sky move them to the darker side rather than outline them.
-- Yellow blocks on footage carry **no shadow and no stroke** (v01 @0:02, v05 @0:02.2, v04 @0:02.5); when V-TYPE reports < 3:1 (bright sky, white wall), add a 3 px `shade` stroke to that block only, or move it to the darker half of the frame.
-- Footage is graded only by §4.4. No LUT packs. The only light effects are the flash transitions T-10 / T-11 (§9.1), never a resting overlay.
-
-**Must match `tokens.json`.**
+### 4.4 Rules
+- Yellow never sits on cream, white or greige unless it's burned onto a photo inside a card. On W-paper and W-grid the
+  keyword block and the script are `ink`, no stroke (v02 @ 0:28 "IT'S ALL", 0:38 "Hold you BACK").
+- Script connectors are thin white monoline handwriting with **no stroke** (v05 @0:02.2 over water, v02 @0:54.5 over
+  black) and only a faint `0 1px 4px rgba(0,0,0,.35)` shadow; on a bright sky move them to the darker side rather than
+  outline them.
+- Yellow blocks on footage carry **no shadow and no stroke** (v01 @0:02, v05 @0:02.2, v04 @0:02.5), except the 3 px
+  `shade` stroke a block gets when it falls below 3:1 on a bright sky or a white wall (§2).
+- Footage is graded only by §4.3.
 
 ---
 
-## §5 Type & caption system
+## §5 Type and captions
 
-### 5.1 Font map `[slots DNA; families TUNE within the class]`
-| Slot | Family (bundled) | Weight | Font class (TUNE boundary) | Used for |
+### 5.1 Font map
+| Slot | Family (bundled) | Weight | Class | Used for |
 |---|---|---|---|---|
-| `display` | **Anton** | 400 | condensed heavy caps | Duo keyword block, behind-head words, CTA keyword |
-| `wide` | **Montserrat** | 900 | wide ultra-heavy caps (audit: the source face is narrower than Archivo Black; Montserrat 900 matches its cap-height-to-width ratio within 5%) | Title lockup, card titles, end block, echo outline, series block |
+| `display` | **Anton** | 400 | condensed heavy caps | The duo keyword block, behind-head words, the CTA keyword |
+| `wide` | **Montserrat** | 900 | wide ultra-heavy caps (measured: Montserrat 900 matches the source face's cap-height-to-width ratio within 5 %; Archivo Black is wider) | Title lockup, card titles, the end block, the echo outline, the series block, the counter's unit |
 | `numeric` | **Montserrat** | 900 | wide ultra-heavy caps | Count-up digits |
-| `script` | **Nanum Pen Script** | 400 | thin pen handwriting (Pinyon Script is the calligraphic TUNE option) | Duo connectors, script asides, series script |
-| `serif` | **EB Garamond** | 600 | old-style serif 500–600 | Subtitles (CS-1), "#N." markers, chaos phrase fragments (italic) |
-| `ui` / `body` | **Jost** | 500–700 | geometric sans | UI chips, chaos bracket tags, the logo-plate wordmark, legal line, created UI text |
-| `mono` | JetBrains Mono | 400 | mono | `TC-decorative` texture only |
+| `script` | **Nanum Pen Script** | 400 | thin pen handwriting | Duo connectors, script asides, the series script |
+| `serif` | **EB Garamond** | 600 (subtitle), 500 (markers, chaos phrases) | old-style serif | Subtitles (CS-1), "#N." markers, chaos phrase fragments (italic) |
+| `ui` / `body` | **Jost** | 500–700 | geometric sans | UI chips, chaos bracket tags, the logo-plate wordmark, the disclosure line, created UI text |
+| `marker` | **Pinyon Script** | 400 | thin calligraphic script | The calligraphic option for a connector or a series name (v02 @ 0:14–0:16 "doesn't care about", 0:57 "See you in there"); rare ink note labels |
+| `mono` | JetBrains Mono | 400 | mono | Code-shaped texture only |
 
-The white pen connectors use **Nanum Pen Script** (slot `script`) and the wide titles **Montserrat 900** (slot `wide`), both bundled. Pinyon Script remains a TUNE option for calligraphic connectors (v02 @ 0:14–0:16 "doesn't care about", 0:57 "See you in there"). Brand wordmarks and series logos are image assets, not fonts.
+Brand wordmarks and series logos are image assets, not fonts.
 
-### 5.2 Headline element: the duo title (`kind: "lockup"`) `[DNA recipe; NICHE text]`
+### 5.2 The headline element: the duo title (`kind: "lockup"`)
+The duo title is how this style speaks. It isn't a caption and it isn't a banner: it's the spoken sentence turned into a
+poster word by word, the keywords huge and yellow, the joining words small and handwritten. It's for the moments that
+deserve a title: the hook, a thesis line, a persona's name, the turn, the CTA. Between those, the subtitle carries the
+voice alone.
+
 | Property | Spec |
 |---|---|
-| Block (keyword) | Anton 400, caps, `primary` `#F7DE0B`, **180–340 px**, line height 0.88, tracking −1%, **no shadow**; each line is **size-fitted to span ≈ 860–900 px** (x ≈ 96–984), so a short word gets huge and a long line gets smaller (audit: v01 @0:02 SHOPPING 247 px / cap 211; v05 @0:02.2 LOVING ≈ 335 px / cap 308, THE PICTURES ≈ 180 px). ≤ 3 words per line, ≤ 2 lines; never below 170 px |
+| Block (keyword) | Anton 400, caps, `primary` `#F7DE0B`, **180–340 px**, line height 0.88, tracking −1 %, **no shadow**; each line is **size-fitted to span ≈ 860–900 px** (x ≈ 96–984), so a short word gets huge and a long line gets smaller (measured: v01 @0:02 SHOPPING 247 px / cap 211; v05 @0:02.2 LOVING ≈ 335 px / cap 308, THE PICTURES ≈ 180 px). Up to 3 words per line, 2 block lines; a lockup is ≤ 7 words in all (3 lines with the script) |
 | Script (connectors) | Nanum Pen Script 400, as spoken, `paper`, **84–112 px** (default 100; v02 @0:54.5 "Just comment" 542 px wide, glyphs 73 px tall), no stroke, faint shadow `0 1px 4px rgba(0,0,0,.35)` |
 | Placement | **Above-left** of the block (script baseline 12–20 px above the block's top, x = block left + 8) for leading connectors; **below-right** (top = block bottom + 16, right-aligned to the block) for trailing ones. **Corners variant** (P-DUO-CORNERS): leading words at (96, 250) and (984, 250, right-aligned), trailing words at the block's bottom corners |
-| Block entry | **Rise-smear** (measured v01 @0:00.59–0:00.72, `strip-hook-duo-blurslide.jpg`): the word rises from **y + 0.8 × cap height (≈ 150–220 px)** to rest with a **vertical** motion smear (24 → 0 px, along y only) and opacity 0 → 1 over **4 f** (3 f at the source's 24 fps: +150 → +72 → 0 px, expo-out); starts 2 f before the word's onset |
-| Script entry | **Write-on**: a left-to-right clip mask over **8 f** (linear), starts on the word's onset (v01 "when it comes to what" ≈ 0.30–0.47 s) |
-| Hold | 0.4–0.6 s per single-word beat; a full two-line lockup holds ≥ 10 f after its last word lands |
-| Exit | **Rise-out**: up ≈ 110–150 px (−35 then −110 px measured), vertical smear 0 → 24, opacity 1 → 0 over **3–4 f**, ease-in; words leave **last-in first, 1 f apart** (v01 WEAR leaves 1 f before YOU). The script **un-writes right to left** in 4 f (v01 @0:00.93–1.05), it does not slide. The next beat may start 3–5 f after the exit ends (a short empty beat is allowed, v01 @ 0:01.17) |
-| Exit at a cut | The hook's last lockup is **not** animated out: it holds and leaves with the shot on the hard cut (v01 @0:03.99 "IS WAY BETTER" → walk-in, subtitle starts on the cut) |
-| Exit inside a burst | Inside the E2 burst a duo blurs out **in place** (blur 0 → 16 px, no travel, 3 f; v02 @0:06.67 "to be PERFECT") |
-| Join | A second block word on the same line slides in on its own word while the first holds (v01 "YOU" → "YOU WEAR") |
-| Replace | A new beat replaces the whole block (blur out, then in) when the next keyword starts a new idea |
-| f0 | In HA-12 nothing is fully visible on f0: the first connector starts writing at f0 (0% revealed) or the first block lands at 0.4–0.7 s |
+| Block entry | **Rise-smear** (measured v01 @0:00.59–0:00.72, `strip-hook-duo-blurslide.jpg`): the word rises from **y + 0.8 × cap height (≈ 150–220 px; tokens 180)** to rest with a **vertical** motion smear (24 → 0 px, along y only) and opacity 0 → 1 over **4 f** (3 f at the source's 24 fps: +150 → +72 → 0 px), expo-out; starts 2 f before the word |
+| Script entry | **Write-on:** a left-to-right clip mask over **8 f**, linear, from the word's onset (v01 "when it comes to what" ≈ 0.30–0.47 s) |
+| Hold | 0.4–0.6 s per single-word beat; a full two-line lockup holds ≥ 10 f after its last word lands; each beat reads in 1.2 s or less |
+| Exit | **Rise-out:** up ≈ 130 px (measured −35 then −110 px), vertical smear 0 → 24, opacity 1 → 0 over **4 f** (3 f measured at 24 fps), ease-in; words leave **last-in first, 1 f apart** (v01 WEAR leaves 1 f before YOU). The script **un-writes right to left** in 4 f (v01 @0:00.93–1.05); it never slides. The next beat may start 3–5 f after the exit ends (a short empty beat is part of the rhythm, v01 @ 0:01.17) |
+| Exit at a cut | The hook's last lockup is **not** animated out: it holds and leaves with the shot on the hard cut (v01 @0:03.99 "IS WAY BETTER" → the walk-in; the subtitle starts on the cut) |
+| Exit inside the chaos burst | The duo blurs out **in place** (blur 0 → 16 px, no travel, 3 f; v02 @0:06.67 "to be PERFECT") |
+| Join | A second block word on the same line rises in on its own word while the first holds (v01 "YOU" → "YOU WEAR") |
+| Replace | A new beat replaces the whole block (out, then in) when the next keyword starts a new idea |
+| Frame 0 | In HA-12 nothing is fully visible on f0: the first connector starts writing at f0 (0 % revealed), or the first block lands at 0.4–0.7 s. The first type beat starts by 0.7 s |
 | Lifetime | `section`: the hook (2.5–4.0 s), a thesis re-hook, a persona label, the CTA |
-| Budget | 4–9 duo titles per 60 s (≈ 10–18% of runtime), never two at once, subtitles hidden while one is up (z8) |
-| Light worlds | On W-paper / W-grid the block and the script are `ink`, no stroke (v02 @ 0:28 "IT'S ALL", 0:38 "Hold you BACK") |
+| Light worlds | On W-paper and W-grid the block and the script are `ink`, no stroke |
+| Layer | z8; the subtitle hides while a duo is up; never two duo titles at once |
 
-**Duo split rule (P7):** keywords = nouns, numbers, names, the main verb or adjective of the claim; connectors = articles, pronouns, prepositions, auxiliaries, conjunctions. "When it comes to what **YOU WEAR** / **SHOPPING IN PERSON** / **IS WAY BETTER** than online." Never put two keywords in the script; never set a connector in the block, except a pronoun the block needs to make sense ("**YOU** WEAR").
+**The duo split.** Keywords are nouns, numbers, names, the main verb or adjective of the claim; connectors are articles,
+pronouns, prepositions, auxiliaries, conjunctions. "When it comes to what **YOU WEAR** / **SHOPPING IN PERSON** / **IS WAY
+BETTER** than online." Never two keywords in the script; never a connector in the block, except a pronoun the block needs
+to make sense ("**YOU** WEAR").
 
-**Scene recipe (one scene per beat; helpers shared by all duo scenes):**
+**Scene recipe (one scene per beat; the helpers are shared by every duo scene):**
 ```js
 // Rise-smear state at local time lt for an element that lands at `at` and leaves at `outAt` (seconds, local).
 // travel = 0.8 x cap height (cap ≈ 0.73 x font size for Anton), so a 240 px word rises ≈ 140 px.
@@ -401,7 +444,7 @@ function duoWord(ctx, w, lt, outAt) {   // w = {text, at, x, y, size, kind: "blo
   const light = ctx.world === "W-paper" || ctx.world === "W-grid";
   const col = light ? ctx.col("ink") : (block ? ctx.col("primary") : ctx.col("paper"));
   const font = block ? `400 ${w.size}px/0.88 ${ctx.fam("display")}` : `400 ${w.size}px/1.1 ${ctx.fam("script")}`;
-  const deco = block ? "text-transform:uppercase;letter-spacing:-0.01em;"            // no stroke, no shadow (audit)
+  const deco = block ? "text-transform:uppercase;letter-spacing:-0.01em;"            // no stroke, no shadow
     : (light ? "" : "text-shadow:0 1px 4px rgba(0,0,0,.35);");
   const wr = Math.min(1, Math.max(0, (lt - w.at) * 30 / 8)), un = outAt != null && lt >= outAt ? Math.min(1, (lt - outAt) * 30 / 4) : 0;
   const wipe = block ? "" : `clip-path:inset(0 ${Math.round(100 - 100 * wr * (1 - un))}% 0 0);`;
@@ -420,797 +463,429 @@ VEOS.scene({ id: "duo-1", t_in: 0.0, t_out: 1.20, z: 8, in: "none", out: "none",
     return ctx.html(W.map(w => duoWord(ctx, w, lt, out)).join(""));
   } });
 ```
-Declare every landing and the exit in `events` (they are state changes and V-ONWORD anchors). Take `at` values from `words.edit.json` (word onset − `t_in`).
+Declare every landing and the exit in `events` (they're the on-the-word anchors). Take `at` values from
+`words.edit.json` (word onset − `t_in`). A behind-head word is the same scene with `behind: true`.
 
-### 5.3 Caption system profile CS-1 `[DNA mechanics; size and y TUNE; language VAR]`
+### 5.3 Caption profile CS-1: the pale-lemon serif
 | Group | CS-1 (extends `lib:omgadrian`) |
 |---|---|
-| Mode | `full` / `support` / `mute_safe` |
-| Chunking | unit `phrase`; **3–6 words** (mean 4); max 28 characters per line; **1 line**; never split a name, number or unit; new chunk on `. , ? !` and on any pause ≥ 0.9 s (`hard_pause_s`) |
-| Timing | lead 2 f; hold ≥ 0.25 s per word; tail 0.12 s; swap **hard** (a free chunk swap, not a slot, so no E6); no pause hold |
-| Skin | slot `serif` (EB Garamond) **600**, **54 px** (`TC-subtitle`), sentence case as spoken, tracking 0, colour `subtitle` **pale lemon `#EEF272`** (glyph cores `#EDF36A`-`#EFF079`, v01 @0:12, v03 @0:02.6), 1 px `shade` stroke, **hard drop shadow `2px 3px 2px rgba(0,0,0,.85)`** (down-right, v03 @0:11.5 on cream), no container |
-| Position | `fixed_y`, **cy 1468**, centred, max width 952, on every layout (L-card916 leaves a 40 px gap under the card); no colour flip (the hard shadow keeps it readable on cream) |
-| Speakers | — (a second person on camera keeps the same skin) |
-| Emphasis | `none`: the subtitle never highlights (the duo title does) |
-| Variants | karaoke, two-tier, duet, kinetic stack: none in CS-1 (the duo title is built as scenes, 5.2) |
-| Hide rules | `under_z8` (duo titles, the CTA keyword, the end block, the chaos burst), `E2`, `morph` |
-| Language | Latin script; keep English terms verbatim; don't normalise spelling; profanity `inner` mask (`S**T`); glossary = the creator's brand, place and tool names; keep ".." on in-sentence pauses |
+| Mode | `full` / `support` / `mute_safe`: on every spoken word, but the type layer and the picture are the strongest things on screen |
+| Chunking | unit `phrase`; **3–6 words** (mean 4); max 28 characters; **1 line**; never split a name, number or unit; a new chunk on `. , ? !` and on any pause ≥ 0.9 s |
+| Timing | lead 2 f; hold ≥ 0.25 s per word; tail 0.12 s; swap **hard** (0 f); no pause hold |
+| Skin | slot `serif` (EB Garamond) **600**, **54 px**, sentence case as spoken, tracking 0, line height 1.15, colour `subtitle` **pale lemon `#EEF272`** (measured glyph cores `#EDF36A`–`#EFF079`, v01 @0:12, v03 @0:02.6), a 1 px `shade` stroke, a **hard drop shadow `2px 3px 2px rgba(0,0,0,.85)`** (down-right, v03 @0:11.5 on cream), no container |
+| Position | `fixed_y`, **cy 1468**, centred, max width 952, on every layout (L-card916 leaves ≈ 40 px under the card); no colour flip: the hard shadow keeps it readable on cream |
+| Speakers | one skin (a second person on camera keeps it) |
+| Emphasis | `none`: the subtitle never highlights; the duo title does that job |
+| Hide | under every z8 element (duo titles, the CTA keyword, the end block, the chaos burst), and during a morph |
+| Language | Latin script; keep English terms verbatim; don't normalise spelling; profanity masked inside (`S**T`); the glossary = the creator's brand, place and tool names; keep ".." on the speaker's in-sentence pauses (v04 "I made a post..") |
 
-Measured at full resolution: EB Garamond-fit width gives **47–48 px** at 1080 (v01 @0:12 "because nothing is worse" 470 px wide; v03 @0:02.6 582 px). The template sets **54 px** so the subtitle meets the G4 floor without the E3 exception (the coverage decision is E1 + E2 only); TUNE range 54–62.
+Measured at full resolution, the source's serif fits **47–48 px** at 1080 (v01 @0:12 "because nothing is worse" 470 px
+wide; v03 @0:02.6 582 px). The style sets **54 px** so it meets the readability floor; 54–62 is the comfortable range.
 
-### 5.4 Other text systems
+### 5.4 Other text
 | System | Class | Recipe | Hold |
 |---|---|---|---|
-| **Title lockup** (HA-05, P-TITLE-LOCKUP) | TC-display | Montserrat 900 caps **80–108 px**, `primary` (v03/v04 use the lemon `#FBF434`, a TUNE alternative), **no stroke, no shadow**, line height 0.92, centred, each line size-fitted to 860–980 px wide (line 2 often smaller: v04 @0:02.5 cap 79 then 62 px), y 230–410, ≤ 6 words in ≤ 2 lines. **Squash-in** (measured v03 @0:00.39–0:00.52, `strip-title-squash-in.jpg`): each line opens from a thin bar (scaleY 0.05 → 1 about the line's centre, slight vertical smear: `filter:${ctx.blur(px, 90)}`) in **3 f**, line 2 starts **2 f** after line 1; no rule (the "dashed rule" on the 6 fps sheet was line 1 at scaleY ≈ 0.05) | 2.0–4.0 s, then leaves with the shot on a cut, or blur-out 4 f |
-| **Card title** (burned on a paper card's photo) | TC-display | Montserrat 900 caps 64–84 px, `primary`, no stroke, x card + 40, y card + 40, ≤ 3 lines, ≤ 5 words (v03 @0:11.5, v04 @0:22) | the card's life |
-| **Counter** (P-COUNT-UP) | TC-display | Montserrat 900 280–400 px `primary`, centred x 540, top y 220; digits **append** left to right (3 → 36 → 365), one per spoken beat or every 6 f; unit word(s) 90–120 px stacked under, line height 0.9 | ≥ 1.0 s after the last digit |
-| **Echo outline** (P-ECHO-OUTLINE) | TC-display | The phrase twice in Montserrat 900 120–170 px: filled `primary`, then outline-only (3 px `primary` stroke, transparent fill), stacked as 4 lines over the presenter | 0.8–1.2 s |
-| **Hash marker** (SM-1) | TC-label | "#1." EB Garamond 600 54 px `subtitle` + the subtitle shadow, centred at y 1468 **in place of** the subtitle | 0.5–0.8 s |
-| **Script aside** (P-SCRIPT-ASIDE) | TC-display | Nanum Pen Script 84–112 px `paper`, no stroke, alone, top band y 230–420, written on in 8 f | 1.0–2.0 s |
-| **UI chip** (P-UI-CHIP) | TC-label | Jost 600 44 px `ink` on a white pill (radius 999, padding 18/34, shadow `0 8px 24px rgba(0,0,0,.25)`) with a 36 px search glyph; or a `primary` pill with `ink` caps text ("BUY NOW") | 1.0–2.0 s |
-| **Chaos tag / phrase** (E2) | TC-label | Tags "[Close Up]" Jost 500 44–52 px `paper` at 85%; phrases EB Garamond italic 56–72 px `paper`; all with `0 2px 8px rgba(0,0,0,.6)` | inside the ≤ 1.5 s burst |
-| **End block** (P-END-BLOCK) | TC-display | Montserrat 900 caps, 4–7 lines, each line sized to fill x 64–1016 (70–200 px), line height 0.9, `primary`, y 220–1360 | 2.5–4.0 s |
-| **Series lockup** (P-SERIES-LOCKUP) | TC-display | Script name Pinyon 120–160 px `gold` over a Montserrat 900 block 130–170 px `gold`, "ep. NN" Jost 600 40 px `gold` under it, centred at y 900 on W-grid with the grid off | 1.2 s |
-| **Logo word** (P-LOGO-CHIP) | TC-label | "With" script 60 px + logo (creator file, 88 px tall) + wordmark Jost 500 72 px `paper` | 1.0–1.5 s |
-| **Legal line** (P-DISCLOSURE) | TC-legal | Jost 500 24 px, `paper` 85% on footage / `ink` 70% on paper, x 64, y 128 | ≥ 2.0 s, or the whole sponsor segment |
+| **Title lockup** (HA-05, P-TITLE-LOCKUP) | `TC-display` | Montserrat 900 caps **80–108 px**, `primary` (v03/v04 use a lemon `#FBF434`, an option), **no stroke, no shadow**, tracking −2 %, line height 0.92, centred, each line size-fitted to 860–980 px wide (line 2 often smaller: v04 @0:02.5 cap 79 then 62 px), y 230–410, up to 6 words on 2 lines. **Squash-in** (measured v03 @0:00.39–0:00.52, `strip-title-squash-in.jpg`): each line opens from a thin bar (scaleY 0.05 → 1 about the line's centre, a slight vertical smear `filter:${ctx.blur(px, 90)}`) in **3 f**, line 2 starts **2 f** after line 1; no rule (the "dashed rule" on the 6 fps sheet was line 1 at scaleY ≈ 0.05) | 2.0–4.0 s, then leaves with the shot on a cut, or blur-out 4 f |
+| **Card title** (burned on a paper card's photo) | `TC-display` | Montserrat 900 caps 64–84 px, `primary`, line height 0.95, no stroke, x card + 40, y card + 40, up to 3 lines and 5 words (v03 @0:11.5, v04 @0:22) | the card's life |
+| **Counter** (P-COUNT-UP) | `TC-display` | Montserrat 900 280–400 px `primary`, centred x 540, top y 220; digits **append** left to right (3 → 36 → 365), one per spoken beat or every 6 f; unit word(s) Montserrat 900 90–120 px stacked under, line height 0.9 | ≥ 1.0 s after the last digit |
+| **Echo outline** (P-ECHO-OUTLINE) | `TC-display` | The phrase twice in Montserrat 900 120–170 px: filled `primary`, then outline-only (3 px `primary` stroke, transparent fill), stacked as 4 lines over the presenter, clear of the head region | 0.8–1.2 s |
+| **Hash marker** (SM-1) | `TC-label` | "#1." EB Garamond 500, 54 px, `subtitle` with the subtitle's shadow, centred at y 1468 **in place of** the subtitle | 0.5–0.8 s |
+| **Script aside** (P-SCRIPT-ASIDE) | `TC-display` | Nanum Pen Script 84–112 px `paper`, no stroke, alone, top band y 230–420, written on in 8 f | 1.0–2.0 s |
+| **UI chip** (P-UI-CHIP) | `TC-label` | Jost 600 44 px `ink` on a white pill (radius 999, padding 18/34, shadow `0 8px 24px rgba(0,0,0,.25)`) with a 36 px search glyph; or a `primary` pill with `ink` caps text ("BUY NOW") | 1.0–2.0 s |
+| **Chaos tag / phrase** (P-CHAOS-BURST) | `TC-label` | Tags "[Close Up]" Jost 500 44–64 px `paper` at 85 %; phrases EB Garamond italic 500, 48–72 px `paper`; all with `0 2px 8px rgba(0,0,0,.6)` | inside the burst |
+| **End block** (P-END-BLOCK) | `TC-display` | Montserrat 900 caps, 4–7 lines, each line sized to fill x 64–1016 (70–200 px), line height 0.9, `primary`, y 220–1360 | 2.5–4.0 s |
+| **Series lockup** (P-SERIES-LOCKUP) | `TC-display` | The script name 120–160 px `gold` (slot `script`; Pinyon Script from `marker` when a calligraphic name suits it, as the source's "Boyfriend") over a Montserrat 900 block 130–170 px `gold`, "ep. NN" Jost 600 40 px `gold` under it, centred at y 900 on W-grid with the grid off | 1.2 s |
+| **Logo word** (P-LOGO-CHIP) | `TC-label` | "With" script 60 px + the logo (the creator's file, 88 px tall) + the wordmark Jost 500 72 px `paper` | 1.0–1.5 s |
+| **Disclosure line** (P-DISCLOSURE) | legal | Jost 500 24 px, `paper` at 85 % on footage / `ink` at 70 % on paper, x 64, y 128 | ≥ 2.0 s, or the whole sponsored segment |
 
-### 5.5 Language and number rules
-- Spelling: brand, place and tool names exactly as the glossary; English words exact inside Hinglish captions.
-- Numbers on screen are digits, as spoken ("365", "52", "#3"); international grouping by default; Indian grouping and ₹ when the buyer's language is Indian (BV-06).
-- Caps: the block, titles and end block are ALL CAPS (Latin only). The subtitle is sentence case.
-- **Devanagari** (`hi/hi/Deva`): the subtitle falls back to Noto Sans Devanagari 500 (no serif exists); duo titles, titles and counters stay Latin (English keywords), because Anton and Montserrat have no Devanagari. Script connectors in a Devanagari reel become Noto Sans Devanagari 400 at 60 px (no italic exists).
-- Hinglish captions: romanised as spoken; keyword blocks use the English keyword when one is spoken, else the romanised word.
+### 5.5 Language and numbers
+- Spelling: brand, place and tool names exactly as in the glossary; English words exact inside Hinglish captions.
+- Numbers on screen are digits, as spoken ("365", "52", "#3"); international grouping by default; Indian grouping and ₹
+  when the creator speaks an Indian language.
+- Caps: the block, titles and the end block are ALL CAPS (Latin only). The subtitle is sentence case.
+- **Devanagari** (Hindi captions): the subtitle falls back to Noto Sans Devanagari 500 (no serif exists); duo titles,
+  titles and counters stay Latin (English keywords), because Anton and Montserrat have no Devanagari. Script connectors
+  in a Devanagari reel become Noto Sans Devanagari 400 at 60 px.
+- Hinglish captions: romanised as spoken; keyword blocks use the English keyword when one is spoken, else the romanised
+  word.
 
 ---
 
 ## §6 Hook system
 
-**Hook title (every style, 8 Oct 2026; above anything below):** the on-screen title promises the viewer something: an outcome they want, a curiosity gap, or who it's for ("How to go viral as a doctor creating content", not the label "Reels for Doctors"). It doesn't have to repeat the spoken words; it has to be true to what the reel delivers. A title shown as someone's words (in quotes) is still word for word. This section sets the title's shape (lines, sizes, word limits, case, the keyword device), never its voice. Write 8–10 candidates from the formulas below plus the proven patterns ("How to X as a Y", "Why your X isn't working", "The X nobody tells you", "Stop doing X", "Your X vs mine", a number or a contrast), score them on outcome, curiosity, who it's for and brevity, check the best against the stopper tests, and pick; any "write 3" below means this, and the next two go to the storyboard as alternates. A style with no on-screen title applies this to its post title.
+**The hook title.** In this style the hook title *is* the thesis, built on screen word by word as it's spoken, so the
+first sentence the creator says has to be a promise: a thesis the viewer wants to argue with, a question about them
+("Is your **GIRLFRIEND** still **LOVING THE PICTURES** you got of her?"), a count that promises a list. Find the
+strongest such line in the take and open on it; if the take has none, open with an HA-05 title lockup that promises the
+outcome ("How to X as a Y", "Why your X isn't working", "The X nobody tells you", "Stop doing X", a number or a
+contrast), which need not repeat the spoken words but must be true to what the reel delivers. Write 8–10 candidates
+(thesis splits or lockups), score them on outcome, curiosity, who it's for and brevity, pick the best by the stopper
+test, and keep the next two as alternates. The post title follows the same rules.
 
-### 6.1 Stopper tests
-| Test | This style's number |
+### 6.1 The stopper test
+| Test | In this style |
 |---|---|
-| ST-1 Thumbnail | **Not used for HA-12** (f0 is image-only by design); for HA-05, HA-19 and HA-08 the title / word / number reads at 25% scale (≥ 16 px cap height) |
-| ST-2 Mute | The first 3 s tell the thesis without sound (the duo beats carry the whole sentence) |
-| ST-3 Motion at f0 | Live footage in motion, a walk-in, a drone move, or Z-1 starting at f0 |
-| ST-4 Read time | Each beat reads in ≤ 1.2 s (≤ 3 block words + ≤ 5 script words) |
-| ST-5 Change count | ≥ 6 weighted state changes in 0–3 s (`hook_sc_3s`) |
-| ST-6 Payoff-by | Thesis complete by 3.0 s (HA-12); title by 0.7 s (HA-05); premise by 3.0 s (HA-19); hero number by 1.7 s (HA-08) |
+| Mute | The first 3 s tell the thesis without sound: the duo beats carry the whole sentence |
+| Motion at f0 | Live footage in motion, a walk-in, a drone move, or Z-1 push-drift starting at f0; never a static frame or a fade-in |
+| Read time | Each beat reads in 1.2 s or less (up to 3 block words + up to 5 script words) |
+| Payoff by | HA-12: the whole thesis on screen by 3.0 s; HA-05: the title readable by 0.7 s; HA-19: the premise by 3.0 s; HA-08: the hero number by 1.7 s |
+| Thumbnail | Not for HA-12 (f0 is image-only by design); for HA-05, HA-19 and HA-08 the title, word or number reads at 25 % scale (≥ 16 px cap height) |
 
-### 6.2 Default archetype: HA-12 Thesis typography `[DNA]`
-The thesis or question is split into 3–4 typographic beats over one moving cinematic first shot (SH-1). No banner, no result.
+### 6.2 HA-12 Thesis typography (default)
+The thesis or question is split into 3–4 typographic beats over one moving cinematic first shot (SH-1). No banner, no
+result. The hook is the densest stretch of the reel: a connector writing, a block rising, a word joining, the line
+leaving, the next one building, each landing while the last one settles, all over one shot that keeps moving.
 
 | t (s) | Frames | Beat | Picture (SH-1) | Type layer | Subtitle | Camera | Cue moment |
 |---|---|---|---|---|---|---|---|
-| **f0** | 0 | Stopper | A composed moving shot: frame-in-frame (mirror, door, window), overhead/drone, or the creator walking in; presenter visible or entering | Nothing fully visible; connector 1 starts writing (0%) | hidden | Z-1 push-drift from f0 if the shot itself is static | hook (soft) |
+| **f0** | 0 | Stopper | A composed moving shot: frame-in-frame (mirror, door, window), overhead or drone, or the creator walking in; presenter visible or entering | Nothing fully visible; connector 1 starts writing (0 %) | hidden | Z-1 push-drift from f0 if the shot itself is static | hook (soft) |
 | 0.00–0.33 | 0–10 | Connector 1 | same shot | Script connector(s) write on L→R in 8 f at (72, 220), 100 px | — | — | — |
-| 0.40–0.70 | 12–21 | Keyword 1 | same | Block word 1 blur-slides in (4 f) at x 64, top y 330, 200 px | — | — | — |
+| 0.40–0.70 | 12–21 | Keyword 1 | same | Block word 1 rises in (4 f) at x 64, top y 330, 200 px | — | — | — |
 | 0.70–1.00 | 21–30 | Join | same | Block word 2 joins on its word (same line), or connector 2 writes | — | — | — |
-| 1.00–1.30 | 30–39 | Swap | same (the shot keeps moving) | Block blurs out upward (4 f); ≤ 5 f empty | — | — | — |
-| 1.30–2.00 | 39–60 | Keyword 2 | same | Next keyword(s) build line 1 then line 2 (≤ 2 lines) | — | — | — |
-| 2.00–2.30 | 60–69 | Hold → out | same | The full lockup holds ≥ 10 f, then blurs out | — | — | — |
-| 2.30–2.90 | 69–87 | Keyword 3 + close | same | Last block + closing connector below-right ("than online") | — | — | — |
-| 2.70–4.00 | 81–120 | First cut | **T-2 cut on motion** to the first talking piece or B-roll | Lockup holds and leaves with the shot on the cut (no exit animation; v01 @0:03.99) | **CS-1 starts** on the first post-hook word | — | transition |
+| 1.00–1.30 | 30–39 | Swap | same (the shot keeps moving) | The block rises out (4 f); up to 5 f empty | — | — | — |
+| 1.30–2.00 | 39–60 | Keyword 2 | same | The next keyword(s) build line 1, then line 2 | — | — | — |
+| 2.00–2.30 | 60–69 | Hold → out | same | The full lockup holds ≥ 10 f, then rises out | — | — | — |
+| 2.30–2.90 | 69–87 | Keyword 3 + close | same | The last block + the closing connector below-right ("than online") | — | — | — |
+| 2.70–4.00 | 81–120 | First cut | **T-2 cut on motion** to the first talking piece or B-roll | The lockup holds and leaves with the shot on the cut (v01 @0:03.99) | **CS-1 starts** on the first post-hook word | — | transition |
 
-Payoff: the full thesis has been on screen by **3.0 s** (H4). Typical count in 0–3 s: 7 weighted changes (connector, kw1, join, out, kw2a, kw2b, kw3) ≥ 6.
-Evidence: v01 @ 0:00–0:04 (mirror, "When it comes to what YOU WEAR / SHOPPING IN PERSON / IS WAY BETTER than online"), v05 @ 0:00–0:02.7 (overhead couple, P-DUO-CORNERS), v02 @ 0:00–0:02.7 (seated, "3 types of CONTENT creators", block partly behind the cap).
+The whole thesis has been on screen by **3.0 s**. Evidence: v01 @ 0:00–0:04 (mirror, "When it comes to what YOU WEAR /
+SHOPPING IN PERSON / IS WAY BETTER than online"), v05 @ 0:00–0:02.7 (overhead couple, P-DUO-CORNERS), v02 @ 0:00–0:02.7
+(seated, "3 types of CONTENT creators", the block partly behind the cap).
 
-### 6.3 Allowed alternates `[DNA list; VAR choice per reel]`
+### 6.3 Alternate hooks
 **HA-05 Title lockup** (F-B default; v03, v04)
 | t (s) | Picture | Type | Subtitle |
 |---|---|---|---|
 | f0 | SH-2 overhead or SH-3 walk-in: the creator enters the frame | — | hidden |
 | 0.38 | same | Line 1 squash-in starts (a thin yellow bar, 3 f) | — |
-| 0.43–0.55 | same | Line 1 then line 2 squash-in (3 f each, 2 f stagger): readable by 0.55 s | — |
-| 0.8–4.0 | the creator settles (leans on the car, sits, looks up) | Title holds | CS-1 from the first word (≈ 0.8 s) |
-| 2.9–4.0 | cut on motion | Title blurs out on the cut | continues |
-Examples: [NICHE: example] fitness "FIX YOUR SQUAT / IN THREE CUES"; travel "SHOOT BETTER / TRAVEL PHOTOS".
+| 0.43–0.55 | same | Line 1 then line 2 squash in (3 f each, 2 f stagger): readable by 0.55 s | — |
+| 0.8–4.0 | the creator settles (leans on the car, sits, looks up) | The title holds | CS-1 from the first word (≈ 0.8 s) |
+| 2.9–4.0 | cut on motion | The title blurs out on the cut | continues |
+
+For example: "FIX YOUR SQUAT / IN THREE CUES".
 
 **HA-19 Mood montage** (F-A, atmospheric openers)
 | t (s) | Picture | Type |
 |---|---|---|
-| f0 | SH-4 cinematic detail in motion | One block word (Anton 230 px) blur-slides in from f0 (its scene starts at 0; landed by 4 f) |
+| f0 | SH-4 cinematic detail in motion | One block word (Anton 230 px) rises in from f0 (its scene starts at 0; landed by 4 f) |
 | 0.9 | cut on motion to clip 2 | Word 2 replaces word 1 |
 | 1.8 | clip 3 | Word 3 |
-| 2.5–3.0 | talking piece | Closing script line; the premise is complete by 3.0 s |
-Examples: [NICHE: example] "SALT. / SWEAT. / SILENCE." over three gym details; "RAIN. / RAMEN. / RESET." over three Tokyo details.
+| 2.5–3.0 | talking piece | A closing script line; the premise is complete by 3.0 s |
+
+For example: "RAIN. / RAMEN. / RESET." over three Tokyo details.
 
 **HA-08 Count hook** (milestones and challenges; v04 @ 0:03, v02 @ 0:00.67)
 | t (s) | Picture | Type |
 |---|---|---|
 | f0 | SH-11 matted headroom shot, the creator mid-gesture | — |
-| 0.3–1.7 | same | P-COUNT-UP behind the head (E1): digits append on each spoken beat ("3 … 36 … 365"), landed by 1.7 s |
+| 0.3–1.7 | same | P-COUNT-UP behind the head (`behind: true`): digits append on each spoken beat ("3 … 36 … 365"), landed by 1.7 s |
 | 1.7–2.6 | same | The unit stacks under in 100 px ("DAYS STRAIGHT") |
 | 2.7 | cut on motion | — |
-Examples: [NICHE: example] "100 DAYS / NO SUGAR"; "52 CITIES / ONE BACKPACK".
 
-### 6.4 Hook pairs by topic `[NICHE]` (pair type: thesis → scene promise)
+For example: "52 CITIES / ONE BACKPACK".
+
+### 6.4 Hook pairs by topic (thesis → the scene that carries it)
 | Topic | Thesis (duo split: **BLOCK** / script) | The scene that carries it | Paid off by |
 |---|---|---|---|
-| [NICHE: example] Fitness: training alone | "Training **ALONE** is why you **STOPPED** at week three" | Overhead of an empty gym floor, the creator walks in (SH-2/SH-3) | The coach's correction in a 4:3 card with ink arrows |
-| [NICHE: example] Fitness: mornings | "Your **MORNING** decides your **WORKOUT**" | Mirror shot, laces being tied (SH-1) | The bookend: the same mirror at the end |
-| [NICHE: example] Fitness: personas | "**3** types of **GYM** people" | Seated set, three fingers raised, cut on the hand (SH-5) | Three persona scenes graded GR-mono / GR-amber / GR-teal |
-| [NICHE: example] Travel: homestays | "I **STOPPED** booking **HOTELS**. **THIS** happened" | Walk-in through a homestay door (SH-1 frame-in-frame) | A polaroid of the host family's kitchen (P-POLAROID) |
-| [NICHE: example] Travel: street food | "The best **FOOD** in this city has **NO MENU**" | Overhead of a hawker stall (SH-2) | A detail run of five dishes (P-DETAIL-RUN) |
-| [NICHE: example] Travel: phone photos | "Is your **PHONE** still taking **BORING** travel photos?" | Overhead of the creator at a railing (SH-2), corners layout | A before/after polaroid (P-BEFORE-AFTER-POLAROID) |
+| Fitness: training alone | "Training **ALONE** is why you **STOPPED** at week three" | Overhead of an empty gym floor, the creator walks in (SH-2 / SH-3) | The coach's correction in a 4:3 card with ink arrows |
+| Fitness: mornings | "Your **MORNING** decides your **WORKOUT**" | Mirror shot, laces being tied (SH-1) | The bookend: the same mirror at the end |
+| Fitness: personas | "**3** types of **GYM** people" | Seated set, three fingers raised, cut on the hand (SH-5) | Three persona scenes graded GR-mono / GR-amber / GR-teal |
+| Travel: homestays | "I **STOPPED** booking **HOTELS**. **THIS** happened" | A walk-in through a homestay door (SH-1 frame-in-frame) | A polaroid of the host family's kitchen (P-POLAROID) |
+| Travel: street food | "The best **FOOD** in this city has **NO MENU**" | Overhead of a hawker stall (SH-2) | A detail run of five dishes (P-DETAIL-RUN) |
+| Travel: phone photos | "Is your **PHONE** still taking **BORING** travel photos?" | Overhead of the creator at a railing (SH-2), corners layout | A before/after polaroid (P-BEFORE-AFTER-POLAROID) |
 
-### 6.5 Headline writing `[DNA formula; NICHE text]`
-- **Duo thesis formula:** `[script lead-in] + BLOCK KEYWORD + [script bridge] + BLOCK KEYWORD(S) + [script close]`, ≤ 12 words spoken, ≤ 7 words per on-screen lockup, 3–4 beats. A question is allowed ("Is your … ?").
-- **Title lockup formula (HA-05):** `VERB + OBJECT` or `TOPIC + PROMISE`, ≤ 6 words, 2 lines ("CINEMATIC VERTICAL / VIDEO COMPOSITION", "THIS DECISION / CHANGED MY LIFE").
+### 6.5 Headline writing
+- **Duo thesis formula:** `[script lead-in] + BLOCK KEYWORD + [script bridge] + BLOCK KEYWORD(S) + [script close]`, up to
+  12 words spoken, up to 7 per on-screen lockup, 3–4 beats. A question is welcome ("Is your … ?").
+- **Title lockup formula (HA-05):** `VERB + OBJECT` or `TOPIC + PROMISE`, up to 6 words on 2 lines ("CINEMATIC
+  VERTICAL / VIDEO COMPOSITION", "THIS DECISION / CHANGED MY LIFE").
 - Case: blocks and titles ALL CAPS; script as spoken.
-- **Write 3, pick by the stopper tests** (§6.1); the other two go to trial reels.
-- **Banned:** emoji, hashtags inside titles, "game changer", "you won't believe", a count that doesn't match the reel, a keyword the reel never pays off.
+- Write 8–10, pick by the stopper test (§6.1), keep two alternates.
+- **Banned:** emoji, hashtags inside titles, "game changer", "you won't believe", a count that doesn't match the reel, a
+  keyword the reel never pays off.
 
 ### 6.6 Hook sound
-See §11: the hook may carry one soft cue on the first keyword landing and a transition cue on the first cut; the music bed runs from f0.
+The music bed runs from f0. One soft cue may mark the first keyword landing and a transition cue the first cut (§11).
 
-### 6.7 CTA `[DNA device set; VAR values]`
+### 6.7 CTA, sponsor and end cards
 | Device | Spoken pattern | On screen | Hold | Where |
 |---|---|---|---|---|
-| `comment_keyword` | "Just comment {{BV-08.keyword|KEYWORD}} to get …" | **P-CTA-KEYWORD**: script "Just comment" at (72, 236) + **{{BV-08.keyword|KEYWORD}}** Anton 230 px `primary` at y 300 + script "to get it" below-right; over P-POSTER-BACKDROP (the `accent` sun behind the matted creator) or plain footage; scene `kind: "cta-keyword"` | ≥ 2.0 s (keyword readable ≥ 1.5 s) | The last 6–10 s, before the bookend |
-| `link_bio` | "Link in my bio for …" | **P-END-BLOCK**, 4–6 lines ending "LINK IN BIO", over SH-13 texture | 2.5–4.0 s | End, before the bookend |
-| `end_card` | "This was part 1 …" | P-END-BLOCK with the series line ("THIS WAS PART 1 / FOLLOW FOR PART 2") | 2.5–4.0 s | End, before the bookend |
-| `post_only` | A spoken sign-off ("Peace.", "Take notes.") | Subtitle only, over the bookend shot | — | The last 1.0–1.5 s |
+| `comment_keyword` | "Just comment KEYWORD to get …" | **P-CTA-KEYWORD**: script "Just comment" at (72, 236) + **KEYWORD** Anton 230 px `primary` at y 300 + script "to get it" below-right; over P-POSTER-BACKDROP (the `accent` sun behind the matted creator) or plain footage; scene `kind: "cta-keyword"` | ≥ 2.0 s (the keyword readable ≥ 1.5 s) | The last 6–10 s, before the bookend |
+| `link_bio` | "Link in my bio for …" | **P-END-BLOCK**, 4–6 lines ending "LINK IN BIO", over SH-13 texture | 2.5–4.0 s | The end, before the bookend |
+| `end_card` | "This was part 1 …" | P-END-BLOCK with the series line ("THIS WAS PART 1 / FOLLOW FOR PART 2") | 2.5–4.0 s | The end, before the bookend |
+| `post_only` | A spoken sign-off ("Peace.", "Take notes.") | The subtitle only, over the bookend shot | — | The last 1.0–1.5 s |
 
-The buyer's device is {{BV-08.device|comment_keyword}}. Leave 0.3–0.5 s without new type before the CTA keyword lands. CTA tone is `cta`: no meme cues, no chaos. After the CTA, the bookend (§23) carries the last spoken words.
+Leave 0.3–0.5 s without new type before the CTA keyword lands, so it arrives into air. The CTA is confident and clean: no
+chaos, no comedy. After it, the bookend (§7.6) carries the last spoken words.
+
+- **Sponsor (logo chip, P-LOGO-CHIP):** "With" in script (60 px) + the brand's logo file (88 px tall, its own colours) +
+  the wordmark in Jost 500 72 px `paper`, top band y 380–470, on the word naming the brand; 1.0–1.5 s. Without a logo
+  file, the real logo fetched from the brand's site; `fx.logoPlate` sets the name in type only when none can be found.
+  Clear of the face, never over the CTA keyword, never inside the hook's first 3 s.
+- **Disclosure (P-DISCLOSURE):** "Paid partnership" (Jost 500 24 px) at (64, 128) from the first sponsored beat for
+  ≥ 2.0 s, or for the whole sponsored span when the product is used on screen, plus a spoken mention.
+- **End cards:** P-END-BLOCK (`link_bio`, `end_card`): 4–7 lines of yellow Montserrat 900 filling the width over a texture
+  close-up (SH-13, else W-void), 2.5–4.0 s, the keyword or URL line readable ≥ 1.5 s, then the bookend. Never longer than
+  4 s; no subscribe buttons, no follow stacks, no QR codes; the bookend is always the last picture.
 
 ---
 
-## §7 Structure & cadence `[DNA]`
+## §7 Structure and rhythm
 
-### 7.1 Structure type (one per format)
-| Format | Type | Arc and section lengths |
+### 7.1 Structure
+| Format | Type | Arc |
 |---|---|---|
-| F-A | `story` | **HOOK** 2.5–4.0 s (HA-12) → **SETUP** 4–8 s (where we are, why it matters) → **SCENE-n** 2–5 scenes or personas, 6–15 s each → **TURN** 3–6 s ("but…", "then it changed", the realisation; carries the re-hook) → **PAYOFF** 5–10 s (the thesis proven, the answer) → **CTA** 3–6 s → **BOOKEND** 1.0–1.5 s |
-| F-B | `tutorial` | **HOOK** 3.0–4.0 s (HA-05) → **CONTEXT** 4–8 s (why it matters; one spin-in card allowed) → **RULE-n** 3–8 rules, 6–12 s each → **RESULT** 3–6 s (before/after) → **CTA** 3–6 s → **BOOKEND** 1.0–1.5 s |
+| F-A | `story` | **HOOK** 2.5–4.0 s (HA-12) → **SETUP** (where we are, why it matters) → **SCENE-n**, 2–5 scenes or personas → **TURN** ("but…", "then it changed", the realisation; carries the re-hook) → **PAYOFF** (the thesis proven, the answer) → **CTA** → **BOOKEND** 1.0–1.5 s |
+| F-B | `tutorial` | **HOOK** 3.0–4.0 s (HA-05) → **CONTEXT** (why it matters; one spin card allowed) → **RULE-n**, 3–8 rules → **RESULT** (before/after) → **CTA** → **BOOKEND** 1.0–1.5 s |
+
+Section lengths follow the speech. A scene lasts as long as its place or persona has something new to show; a rule lasts
+its example and its demonstration.
 
 ### 7.2 Markers
 | ID | Marker | Recipe | Used in |
 |---|---|---|---|
-| **SM-1** | Hash marker | "#1." EB Garamond 54 px in the caption band, replacing the subtitle for 0.5–0.8 s, on the ordinal word or the cut into the item (v02 @ 0:03, 0:08) | F-A lists of types or reasons |
+| **SM-1** | Hash marker | "#1." EB Garamond 500, 54 px in the caption band, replacing the subtitle for 0.5–0.8 s, on the ordinal word or the cut into the item (v02 @ 0:03, 0:08) | F-A lists of types or reasons |
 | **SM-2** | Rule chapter | The rule's name as a title on W-paper: `ink` Montserrat 900 64 px at y 230, above the example card; or burned on the first example card's photo in `primary` | F-B, every rule |
-| **SM-3** | Series lockup | P-SERIES-LOCKUP once, after the hook (§24) | Series reels |
-| — | `none (spoken only)` | No marker | F-A pure stories (v01, v04) |
-One marker style per reel; numbering ascending.
+| **SM-3** | Series lockup | P-SERIES-LOCKUP once, right after the hook (§7.7) | Series reels |
+| — | Spoken only | No marker | F-A pure stories (v01, v04) |
 
-### 7.3 Unit ritual
-**F-A scene / persona ritual (identical for every item):**
-1. **0 f** cut (T-1 or T-2) to the item's establishing shot (wide, 1.0–1.5 s); a persona's grade starts on this cut; SM-1 "#N." for 15–24 f.
-2. **On the name word:** a persona label duo title (script "The" + BLOCK NAME, z8), held 0.6–1.0 s; or for places the place name as a card title.
+One marker style in a reel; numbering ascending.
+
+### 7.3 The unit rituals
+**F-A scene or persona ritual (the same for every item):**
+1. **0 f** cut (T-1 or T-2) to the item's establishing shot (a wide, 1.0–1.5 s); a persona's grade starts on this cut;
+   SM-1 "#N." for 15–24 f.
+2. **On the name word:** a persona label duo (script "The" + BLOCK NAME, z8), held 0.6–1.0 s; for a place, the place
+   name as a card title.
 3. **2–4 action shots** of 0.8–1.5 s each, one per noun or verb in the description, CS-1 running.
-4. **One support visual** on the item's defining habit: a UI chip, a floating panel, a phone reel, or an E1 behind-head word.
+4. **One support visual** on the item's defining habit: a UI chip, a floating panel, a phone reel, or a behind-head word.
 5. **The punch line** as a duo (script + block on the punch word, "They care **STORY**") or a script aside.
 
-**F-B rule ritual (identical for every rule):**
-1. **On the rule's ordinal or name word:** G-3 paper cut to W-paper; the SM-2 rule title blur-slides in (4 f) at y 230.
+**F-B rule ritual (the same for every rule):**
+1. **On the rule's ordinal or name word:** G-3 paper cut to W-paper; the SM-2 rule title rises in (4 f) at y 230.
 2. **f+8:** the example card (L-card43 or a 9:16 paper card) is already at rest; its clip plays.
-3. **On the word naming the feature:** P-GUIDE-LINES draw (10 f), then P-INK-ARROWS or P-INK-OVAL (10 f); ≤ 3 marks.
-4. **After 1.5–3.0 s on paper:** hard cut to a demonstration clip (the creator applying the rule on location, 2–4 s) or the talking piece.
-5. **Second case (optional):** a second example slides in (P-CARD-CAROUSEL, T-5) when the rule names two cases.
+3. **On the word naming the feature:** P-GUIDE-LINES draw (10 f), then P-INK-ARROWS or P-INK-OVAL (10 f); three marks
+   at most.
+4. **After 1.5–3.0 s on paper:** hard cut to a demonstration clip (the creator applying the rule on location, 2–4 s) or
+   the talking piece.
+5. **A second case (when the rule names two):** a second example slides in (P-CARD-CAROUSEL, T-5).
 
-### 7.4 Open loops and re-hooks
-- **Loops used:** thesis loop (asked in the hook, answered in PAYOFF); count loop ("3 types" → exactly 3 items); result loop (F-B: "by the end…" → the after polaroid); the bookend loop (visual).
-- **Payoff rule:** every loop is closed on screen before the CTA (H11).
-- **Re-hook (standard class):** one, at **43–53% of runtime**: the thesis keyword repeated as a duo title (v04 @ 0:13 "CHANGED / MY LIFE"), a count-up, or the "BUT…" turn duo. Tag that beat `rehook: true`. With `rehook_every_s: 40`, the gaps hook-end → re-hook and re-hook → CTA must each be ≤ 40 s; reels over 85 s get a second re-hook at ~75%.
-- **Intro cap:** hook + series lockup ≤ 15% of runtime (≤ 9 s on a 60 s reel).
+### 7.4 Open loops and the re-hook
+- **Loops:** the thesis loop (asked in the hook, answered in PAYOFF); the count loop ("3 types" → exactly 3 items); the
+  result loop (F-B: "by the end…" → the after polaroid); the bookend loop (visual, §7.6).
+- **Every loop closes on screen before the CTA.**
+- **The re-hook is the turn.** Near the middle of the reel, the thesis keyword comes back as a duo title (v04 @ 0:13
+  "CHANGED / MY LIFE"), a count-up, or the "BUT…" duo. Tag that beat `rehook: true`. A long reel (well past a minute and
+  a half) earns a second one late, so no stretch goes long without a reason to stay.
+- The hook (and the series lockup, when there is one) is over fast, so the first scene arrives while the promise is
+  fresh.
 
-### 7.5 Rhythm and energy curve
-- The curve is **cinematic-flat with peaks**: hook (peak) → setup (calm, awe shots, no type 1–2 s) → scenes (alternating places/personas) → turn (a dip: slow push, one script aside) → payoff (peak: count-up, polaroid, behind-head word) → CTA (confident, poster) → bookend (calm loop).
-- **Light comedy** (tone `comedy: light`): one deadpan beat per 20–30 s: a persona's exaggerated habit, a staged reaction, a dry script aside ("…riveting"). Never two in a row; never on the CTA; no meme cues, no stickers.
-- The last item escalates: the biggest scene, a behind-head word or the poster.
+### 7.5 Rhythm by feel
+- **The curve is cinematic and flat, with peaks.** The hook peaks: type beats every few frames over one moving shot.
+  The setup breathes: an awe shot, a second or two with no type, just the place and the voice. The scenes alternate
+  places and personas. The turn dips: a slow push, one script aside, the quietest moment. The payoff peaks again: a
+  count-up, a polaroid flash, a word behind the head. The CTA is confident (the poster), and the bookend is calm.
+- **The picture never sits still, but it is never random.** In B-roll runs a new shot arrives with each new idea, each
+  listed noun, each turn of the head; cuts hide inside motion (a step, a turn, a whip). A talking piece runs as long as
+  the thought, then a cutaway shows what it's about. A single shot may hold for a few seconds only when it earns it: the
+  hook's moving opener, a slow-push confession, the CTA poster, the end. And it never holds still: Z-2 or the subject
+  moves, and a duo or a typed line is on it.
+- **Travel.** In F-A the location changes often enough that the reel feels like a journey: a new place, set or persona
+  whenever the story moves on.
+- **Type is punctuation, not wallpaper.** The duo title is for the lines that deserve a title; most of the reel is
+  footage and the quiet serif. A behind-head word is a moment of depth for the keyword that most deserves it, so it
+  stays rare enough to feel special. Paper is proof: an F-A reel visits it when a line shows something; an F-B reel
+  lives there for its examples.
+- **Light comedy.** A deadpan beat comes back often enough that the reel never feels like a lecture: a persona's
+  exaggerated habit, a staged reaction, a dry script aside ("…riveting"). Never two comedy beats back to back; never in
+  the CTA or the hook's first 2 s.
+- **The last item escalates:** the biggest scene, a word behind the head, or the poster.
+- For reference, measured on the five reels (a description, not a target): 26.7–51.3 cuts a minute (v01 51.3, v02 37.9,
+  v05 39.1, v03 28.2, v04 26.7; F-B runs about 27–42), median shot 0.87–1.59 s (full-rate re-measure 0.67–1.79 s, pooled
+  1.04 s, p90 3.2 s), 4.8–8.4 picture changes per ten seconds, longest single holds 4.0–6.8 s (the v01 hook mirror, a
+  v04 slow push, the v02 CTA poster, the v03 and v04 ends).
 
-### 7.6 Cadence (state changes)
-| Token | F-A | F-B | Evidence |
-|---|---|---|---|
-| `sc_per_10s` | 5–12 | 5–12 | Scene detection at full rate (thr 0.2): 4.8–8.4 picture changes per 10 s (v02 4.8, v03 5.3, v05 6.0, v04 7.1, v01 8.4) + subtitle swaps (0.5) + type beats |
-| `hook_sc_3s` | 6 | 6 | v01 hook: 8 type beats in 3 s |
-| `max_gap_s` (weight ≥ 1) | 3.0 | 3.0 | v04 @ 0:42–0:47 holds one shot ~6 s: allowed only with a duo title or a Z-2 slow push starting inside it |
-| `hook_max_gap_s` | 0.8 | 0.8 | type beats every 0.17–0.5 s |
-| `max_static_s` | 2.5 | 2.5 | footage is continuous motion |
-| `caption_weight` | 0.5 | 0.5 | support captions |
-| `cuts_per_min` **(DNA)** | 27–51 | 27–42 | v01 51.3, v02 37.9, v04 26.7 · v03 28.2, v05 39.1 |
-| `median_shot_s` | 0.85–1.6 | 0.9–1.6 | 0.87–1.59 (full-rate re-measure: 0.67–1.79, pooled 1.04 s, p90 3.2 s) |
-| Long holds | 1–2 per reel | 1–2 per reel | Single shots of 4.0–6.8 s exist only as the hook mirror (v01 0–4.0), a slow-push hold (v04 @0:42–0:47), the CTA poster (v02 @0:52.5–0:58.5) or the end (v03 @0:59.9, v04 @1:19.8); each carries Z-2 or continuous subject motion + a typed / duo line |
+### 7.6 The bookend loop
+The reel ends on the exact picture it opened with, so the last frame flows into the first and the reel plays again
+(v01 @ 1:23 = @ 0:00; v05 @ 1:01 returns to the opening railing). It's on by default; a reel that doesn't loop says so in
+its plan.
+1. SH-1 plays at f0 as a picture-only scene from source time `s0` (asset `B01`, `offset: s0`).
+2. The BOOKEND scene plays the same asset with `offset: s0 − d` (`d` = 1.0–1.5 s) and lasts `d + 1/30` s to the reel's
+   end, so its last rendered frame is source frame `s0`: the picture of f0.
+3. No type is fully visible on frame 0 or on the last frame; the subtitle of the last words hides 4 f before the end
+   (`captions.overrides` hide `[end − 0.13, end]`).
+4. The last spoken sentence (the sign-off, or the end of the CTA) rides the bookend; the hard end is ≤ 6 f after the last
+   word.
+- **Walk-in / walk-out** (SH-3): when it exists, the creator enters the opening frame within 0.5 s and leaves the closing
+  frame in its last 1.5 s; the bookend then plays the empty plate (v04 @ 0:00, 1:23).
+- **Short pre-roll** (SH-1 has less than 1.0 s before its in-point): the bookend holds SH-1 frozen on source frame `s0`
+  for its last 0.5–1.0 s, after the reel's last talking shot; the final frame still equals f0.
+- **Check it by eye:** put the last frame next to f0 in the stills; the pictures must match.
 
-Cuts count from the cut map, scene `cuts` and `transitions` (card swaps, carousel slides, spins, paper cuts): declare them.
+### 7.7 Series furniture
+- **Series lockup (P-SERIES-LOCKUP):** on W-grid with the grid off and vignette 0.42; the script name (120–160 px, 140
+  default, `gold`) overlapping the top of a block word (Montserrat 900 130–170 px, 150 default, `gold`), "ep. NN" (Jost
+  600 40 px `gold`) centred under it; centred on y 900. The creator's own series logo file replaces the type when
+  they have one.
+- **Placement:** directly after the hook, starting at 5–9 s; holds 1.2 s; enters by a cut, the script writes 10 f, the
+  block rises in 4 f; leaves by a cut. Tag format "ep. {n}"; the name and number come from the reel's brief.
+- No persistent series tag, no progress dots.
 
 ---
 
-## §8 Visual system: type, footage, paper and patterns
+## §8 Visual system: B-roll and patterns
 
-### 8.1 Graphics role and budget
-- `graphics: support`: type, paper cards and ink illustrate the speech; footage carries the story.
-- **Pattern count: 41** (support range 20–45).
-- Runtime share beyond the subtitle: duo titles 10–18%; paper world F-A 0–30%, F-B 20–45%; ink ≤ 8 marks per 60 s.
-- ≥ 4 families per 60 s. **Numbers become pictures:** every spoken count is a P-COUNT-UP or a counted visual (one detail shot per item); never a number only in the subtitle.
+### 8.1 The role of graphics
+- **Footage carries the story; type, paper and ink illustrate it.** They never carry the argument alone. Most of the
+  craft here is choosing and cutting the creator's footage; the patterns below are the vocabulary around it.
+- **Numbers become pictures.** Every spoken count is a P-COUNT-UP or a counted visual (one detail shot per item), never a
+  number only in the subtitle.
+- **Variety comes from the moment.** Places, details, personas, paper and type take turns because the words ask for
+  them; the F-B rule ritual and the recap riffle are the deliberate repeats.
 
 ### 8.2 Families
-| ID | Family | Source class | The buyer supplies |
+| ID | Family | Source | The creator supplies |
 |---|---|---|---|
-| B-1 | Duo type (script + block) | engine | — |
-| B-2 | Behind-head type | engine + matte | matted takes with headroom (SH-11) |
-| B-3 | Kinetic lockups (title, counter, echo, end block, marker) | engine | — |
-| B-4 | Paper cards (9:16, 4:3, riffles, carousels, spin) | engine frame + buyer-owned clips | the clips inside (SH-4, SH-10) |
-| B-5 | Polaroids on grid paper | engine frame + buyer-owned photos | photos / stills (SH-9, SH-4) |
-| B-6 | Devices and UI (app device, phone reel, chips, panels) | buyer-owned screen recordings; else created generic UI | screen recordings (SH-8) |
-| B-7 | Ink and guides | engine | — |
-| B-8 | Graded persona scenes | buyer-owned footage + engine grade | staged scenes (SH-6) |
-| B-9 | Poster / silhouette | engine backdrop + matte | profile take with back light (SH-12) |
-| B-10 | Chaos burst | engine over buyer footage | — |
-| B-11 | Brand and series | buyer-owned logo files; else a type-set logo plate | logo PNG/SVG, series logo (optional) |
-| B-12 | Location B-roll and shot devices | buyer-owned | SH-1…SH-7 |
-| B-13 | Third-party references | **creator-supplied third-party** (another creator's reel, an artwork, a product page); else created (quote card, recreated UI, silhouette) | only what they own or hold |
+| **B-1** | Duo type (script + block) | engine | — |
+| **B-2** | Behind-head type | engine + cut-out | matted takes with headroom (SH-11) |
+| **B-3** | Kinetic lockups (title, counter, echo, end block, marker) | engine | — |
+| **B-4** | Paper cards (9:16, 4:3, riffles, carousels, spin) | engine frame + the creator's clips | the clips inside (SH-4, SH-10) |
+| **B-5** | Polaroids on grid paper | engine frame + the creator's photos | photos and stills (SH-9, SH-4) |
+| **B-6** | Devices and UI (app device, phone reel, chips, panels) | the creator's screen recordings; else the real app or page captured from the web; else a created generic UI | screen recordings (SH-8) |
+| **B-7** | Ink and guides | engine | — |
+| **B-8** | Graded persona scenes | the creator's footage + the grade | staged scenes (SH-6) |
+| **B-9** | Poster / silhouette | engine backdrop + cut-out | a profile take with back light (SH-12) |
+| **B-10** | Chaos burst | engine over the creator's footage | — |
+| **B-11** | Brand and series | the creator's logo files; else the real logo fetched from the web; a type-set logo plate only when none can be found | logo PNG/SVG, series logo (optional) |
+| **B-12** | Location B-roll and shot devices | the creator's | SH-1…SH-7 |
+| **B-13** | Third-party references | the creator's files (another creator's reel, an artwork, a product page); else the real one fetched from the web, source noted; else rebuilt from its exact text (quote card, recreated UI, silhouette) | what they have; the rest is fetched |
 
 ### 8.3 Pattern specs
-Frames are at 30 fps. "Lands" = fully in. Every text pattern sets `text_class`.
+Frames at 30 fps. "Lands" = fully in. Every text scene sets `text_class`.
 
 **Type and titles (B-1, B-2, B-3)**
-| ID | Name | Type | On screen | Motion recipe | When | Family · class | Needs |
-|---|---|---|---|---|---|---|---|
-| **P-DUO-TITLE** | Duo title | overlay | Script connectors + yellow Anton block, 1–2 block words per beat, ≤ 2 lines | Block blur-slide in 4 f (lead 2 f), hold 0.4–0.6 s, blur-slide out 4 f; script write-on 8 f | Hook, thesis lines, persona labels, the turn | B-1 · TC-display | z8, `kind: lockup` |
-| **P-DUO-CORNERS** | Corner duo | overlay | Block centred in the top band; leading script words in the two top corners, trailing words at the block's bottom corners | Corner words write on in sequence (8 f each, 4 f apart); block as P-DUO-TITLE | Question hooks over a symmetric wide (v05 hook) | B-1 · TC-display | z8 |
-| **P-WORD-RELAY** | Word relay | overlay | One block line whose words arrive one per spoken word and leave together | Each word blur-slides in on its onset; the line leaves as one (4 f) | A thesis spoken fast (v01 "SHOPPING / IN / PERSON") | B-1 · TC-display | z8 |
-| **P-DUO-STACK** | Duo stack | overlay | Two block lines (line 1 230 px, line 2 150–170 px) + one script line under them | Line 1 in, line 2 word by word, script line writes along the bottom (v05 "LOVING / THE PICTURES / You got of her?") | The hook's final beat | B-1 · TC-display | z8 |
-| **P-SCRIPT-ASIDE** | Script aside | overlay | A script phrase alone in the top band ("And something…", "trends") | Write-on 8 f, hold 1.0–2.0 s, fade 6 f | A soft transition line, a thought, a dry aside | B-1 · TC-display | z6 |
-| **P-BEHIND-WORD** | Behind-head word | overlay (depth) | One Anton block word 200–340 px behind the head, ≥ 65% visible | Blur-slide in 4 f behind the matte; drifts 8–12 px against the head over its hold; out 4 f | One keyword per 20–60 s on a matted headroom take | B-2 · TC-display | `behind: true`, `exception: "E1"`, matte |
-| **P-BEHIND-LOCKUP** | Behind lockup | overlay (depth) | Script line in front (above the head, clear of it) + block word behind ("We're emotional / BEINGS") | Script writes 8 f, block blur-slides in behind 6 f later | A thesis line on a talking piece | B-2 · TC-display | two scenes: script z6 front, block `behind` E1 |
-| **P-TITLE-LOCKUP** | Title lockup | overlay | Montserrat 900 two-line yellow title in the title band | Lines squash-in (scaleY 0.05 → 1) 3 f, 2 f stagger; hold 2–4 s; leave on the cut or blur-out 4 f | HA-05 hooks, chapter titles over footage | B-3 · TC-display | z6, `kind: lockup` |
-| **P-COUNT-UP** | Count-up | overlay | Montserrat 900 digits appending left to right (3 → 36 → 365) + unit stack | A new digit every spoken beat or 6 f, each digit blur-slides in 4 f; unit lines blur-slide in 4 f, 4 f stagger | Any milestone or count (HA-08, payoff) | B-3 · TC-display | z6 (or `behind` E1), `kind: counter` |
-| **P-ECHO-OUTLINE** | Echo outline | overlay | The phrase 4 lines: filled, outline, filled, outline | Lines rise 6 f with 3 f stagger; hold 0.8–1.2 s | A repeated key phrase ("cinematic images") | B-3 · TC-display | z6 |
-| **P-HASH-MARKER** | Hash marker | overlay | "#N." in the caption band (SM-1) | Hard in on the cut, 15–24 f | Every list item in F-A | B-3 · TC-label | caption band; hide the subtitle with `captions.overrides` |
-| **P-CTA-KEYWORD** | Keyword CTA | overlay | "Just comment" script + KEYWORD block 230 px + "to get it" script | Enter the poster by T-11; the lead-in sentence types on in EB Garamond italic 600 64 px `primary` at y ≈ 450, **2 chars/f** (v02 @0:52.53 "So if you'…"), then the P-DUO-TITLE recipe; the keyword holds ≥ 1.5 s | `comment_keyword` CTA | B-1 · TC-display | z8, `kind: cta-keyword` |
-| **P-END-BLOCK** | End block | overlay | 4–7 lines of Montserrat 900 filling x 64–1016 over a texture close-up | Lines blur-slide in 3 f apart (line 1 at 0); hold 2.5–4.0 s | `link_bio` / `end_card` CTA (v03 @ 1:22) | B-3 · TC-display | z8, `kind: end-card` |
-| **P-SIGNOFF-SUN** | Sign-off sun | overlay (depth) | A giant `soon` gradient block word (yellow → orange) behind the silhouette on the sun backdrop + a script line above | Script writes 8 f; the word rises 10 f behind the matte | The last spoken sign-off of an F-A reel ("See you SOON", v02 @ 0:57) | B-9 · TC-display | `behind` E1 + P-POSTER-BACKDROP |
-
-**Paper world (B-4)**
-| ID | Name | Type | On screen | Motion recipe | When | Family · class | Needs |
-|---|---|---|---|---|---|---|---|
-| **P-PAPER-CARD** | Paper card | stage | A 9:16 creator clip in a rounded card on W-paper with a burned yellow title | Paper cut (G-3, 0 f) with the card at rest, or G-1 shrink (12 f); title blur-slides 4 f at f+8; card leaves by a hard cut (v04 @0:27.9; T-6 fade is an alternate) | An example, a past post, a reference (v03 @ 0:11–0:14) | B-4 · TC-display title | `veos asset add` clip or L-card916 |
-| **P-SPIN-CARD** | Spin-to-vertical | stage | A 16:9 (horizontal) clip as a rounded card (radius 28) on plain black, still playing, that turns a quarter and grows until the now-portrait picture covers the frame | Measured v03 @0:06.45–0:11.0 (`strip-spin-card-90.jpg`): card w 900 at rest 0–8 f, then rotates **0 → 90°** clockwise while scaling **0.55 → ≈ 2.0** (cover) over **75–135 f** (2.5–4.5 s), ease-in-out; the subtitle keeps running; hard cut out | The line about horizontal → vertical, "the old way", a perspective change (≤ 1 per reel) | B-4 | video asset; declare the rotation span in `events` |
-| **P-RECAP-RIFFLE** | Recap riffle | stage | 9:16 cards with their own burned titles, one per **0.5–0.6 s**, on W-paper | Hard cut into the first card at rest; hard swap of the card content and title every **14–18 f** (measured 0.50–0.58 s, v04 @0:19.3–0:28.4, `strip-recap-riffle.jpg`), the frame never moves; out by a hard cut | Year recaps, "everything I made", past episodes (v04 @ 0:19–0:27) | B-4 · TC-display | one asset per card; `cuts` per swap |
-| **P-CARD-CAROUSEL** | Carousel | stage | 9:16 cards sliding horizontally on W-grid; the active card centred (x 176), the next peeking at x 1000 | Slide 8 f ease in-out per step (T-5), 1.0–1.5 s per card | Two to four examples of one idea (v02 @ 0:29–0:31, 0:49–0:51) | B-4 | assets; `cuts` per step |
-| **P-LANDSCAPE-CARD** | Landscape card | stage | A 4:3 example card on W-paper with guide lines and ink | Paper cut; card at rest; guides draw 10 f; ink 10 f | F-B rules about framing, before/after on one card (v03 @ 0:24–0:27) | B-4 | L-card43 or asset |
-| **P-FLOAT-CARDS** | Floating cards | overlay | 3–6 small 9:16 cards (180–260 px wide, radius 16) floating around the presenter on a light set, each a different example | Cards pop in 6 f with 4 f stagger, drift 10–20 px/s, exit by blur 6 f | "All of these", a community, a body of work (v02 @ 0:27, 0:41–0:42) | B-4 | assets; ≤ 4 at once (G2) |
-
-**Polaroids (B-5)**
-| ID | Name | Type | On screen | Motion recipe | When | Family | Needs |
-|---|---|---|---|---|---|---|---|
-| **P-POLAROID** | Polaroid | stage | A white-bordered photo or clip (24 px `frame` border) on W-grid, tilted −2.5…+2.5° | Enters and leaves through the **T-10 flash** (v01 @0:28.93, 0:31.01; v05 @0:26.38): already at rest with a 1% scale / 0.2° settle over 3 f; photos inside riffle by hard swap every 0.5–1.0 s; no push | A moment, a memory, a "look at this", an after-state (v02 @ 0:45–0:48, v05 @ 0:23–0:25) | B-5 | asset |
-| **P-BEFORE-AFTER-POLAROID** | Before/after | stage | Before polaroid, then the after polaroid in the same rect | Before holds 1.0–1.5 s; hard swap of the photo (a cut) on the "after" word; after holds ≥ 1.5 s | F-B RESULT, transformation payoffs (v05 @ 0:57–1:00) | B-5 | two assets (SH-9) |
-
-**Devices and UI (B-6)**
-| ID | Name | Type | On screen | Motion recipe | When | Family · class | Needs |
-|---|---|---|---|---|---|---|---|
-| **P-APP-DEVICE** | App device | stage | A dark rounded device frame with the screen recording, on W-grid | Device rises 10 f; on the button word the camera of the scene scales the device 1.0 → 1.8 toward the control over 12 f, the rest blurs 8 px; back over 10 f | Every app or tool step (v05 @ 0:30–0:54) | B-6 | SH-8 asset; else FB-8; `insert` record |
-| **P-PHONE-REEL** | Phone reel | stage | A portrait phone frame showing a reel, a yellow P-INK-OVAL around the caption or UI region | Phone at rest on W-paper; oval draws 10 f on the word | Talking about posts, captions, a platform (v03 @ 1:10–1:15, v04 @ 0:48–0:53) | B-6 | creator screen capture; else created `fx.appUI({kind: "video"})`; `insert` record |
-| **P-UI-CHIP** | UI chip | overlay | A search bar pill or a button pill ("BUY NOW") over footage | Pop 6 f (scale 0.9 → 1.0 + blur 8 → 0), hold 1–2 s, out 4 f | A search, a purchase, a click habit (v02 @ 0:12, 0:17) | B-6 · TC-label | z6 |
-| **P-FLOAT-PANEL** | Floating panel | overlay | A tall list card (product list, checklist) floating beside the subject, tilted 6° | Slides in from the edge 10 f, drifts 10 px | A persona's habit shown as a list (v02 @ 0:10–0:11) | B-6 · TC-decorative inside + TC-label heading | z5, never on the face |
-
-**Ink and guides (B-7, §22)**
 | ID | Name | Type | On screen | Motion recipe | When | Needs |
 |---|---|---|---|---|---|---|
-| **P-GUIDE-LINES** | Guide lines | annotation | A 3 px white (75%) centre line, or a 3 × 3 grid, over footage or a card | Lines draw from the top 10 f; hold for the rule | Composition, alignment, "the centre", "thirds" (v03 @ 0:20–0:36) | anchor pass |
-| **P-INK-ARROWS** | Ink arrows | annotation | 1–4 hand-drawn `primary` arrows converging on the subject | Shaft 8 f, head 3 f, 4 f stagger, slight wobble | "Look at", "here", "the subject" (v03 @ 0:22, 0:48) | anchor pass |
-| **P-INK-OVAL** | Ink oval | annotation | A hand-drawn `primary` oval (5–7 px) around a region | Draw 10 f with a 15° overshoot | A caption area, an object, a detail (v03 @ 0:58, 1:10) | anchor pass |
-| **P-LASSO** | Lasso | annotation | A thick white (8 px) outline tracing an object being removed or selected | Draw 12 f along the object's outline | Erase / select / cut-out steps (v05 @ 0:36–0:37) | anchor keyframes |
+| **P-DUO-TITLE** | Duo title | overlay | Script connectors + the yellow Anton block, 1–2 block words per beat, up to 2 block lines | Block rises in 4 f (lead 2 f), holds 0.4–0.6 s, rises out 4 f; the script writes on in 8 f | The hook, thesis lines, persona labels, the turn | `TC-display`, z8, `kind: "lockup"` |
+| **P-DUO-CORNERS** | Corner duo | overlay | The block centred in the top band; leading script words in the two top corners, trailing words at the block's bottom corners | Corner words write on in sequence (8 f each, 4 f apart); the block as P-DUO-TITLE | A question hook over a symmetric wide (the v05 hook) | `TC-display`, z8 |
+| **P-WORD-RELAY** | Word relay | overlay | One block line whose words arrive one per spoken word and leave together | Each word rises in on its onset; the line leaves as one (4 f) | A thesis spoken fast (v01 "SHOPPING / IN / PERSON") | `TC-display`, z8 |
+| **P-DUO-STACK** | Duo stack | overlay | Two block lines (line 1 230 px, line 2 150–170 px) + one script line under them | Line 1 in, line 2 word by word, the script line writes along the bottom (v05 "LOVING / THE PICTURES / You got of her?") | The hook's final beat | `TC-display`, z8 |
+| **P-SCRIPT-ASIDE** | Script aside | overlay | A script phrase alone in the top band ("And something…", "trends") | Write-on 8 f, hold 1.0–2.0 s, fade 6 f | A soft transition line, a thought, a dry aside | `TC-display`, z6 |
+| **P-BEHIND-WORD** | Behind-head word | overlay (depth) | One Anton block word 200–340 px behind the head, ≥ 65 % visible | Rises in 4 f behind the cut-out; drifts 8–12 px against the head over its hold; out 4 f | The keyword that deserves depth, on a matted headroom take | `TC-display`, `behind: true`, cut-out (§3.7) |
+| **P-BEHIND-LOCKUP** | Behind lockup | overlay (depth) | A script line in front (above the head, clear of it) + a block word behind ("We're emotional / BEINGS") | The script writes 8 f, the block rises in behind 6 f later | A thesis line on a talking piece | two scenes: the script z6 in front, the block `behind: true` |
+| **P-TITLE-LOCKUP** | Title lockup | overlay | Montserrat 900 two-line yellow title in the title band | Lines squash in (scaleY 0.05 → 1) 3 f, 2 f stagger; hold 2–4 s; leave on the cut or blur out 4 f | HA-05 hooks, chapter titles over footage | `TC-display`, z6, `kind: "lockup"` |
+| **P-COUNT-UP** | Count-up | overlay | Montserrat 900 digits appending left to right (3 → 36 → 365) + the unit stack | A new digit on every spoken beat or every 6 f, each digit rising in 4 f; unit lines rise in 4 f, 4 f stagger | Any milestone or count (HA-08, the payoff) | `TC-display`, z6 (or `behind: true`), `kind: "counter"`, `events` per digit |
+| **P-ECHO-OUTLINE** | Echo outline | overlay | The phrase in 4 lines: filled, outline, filled, outline | Lines rise 6 f with 3 f stagger; hold 0.8–1.2 s | A repeated key phrase ("cinematic images") | `TC-display`, z6 |
+| **P-HASH-MARKER** | Hash marker | overlay | "#N." in the caption band (SM-1) | Hard in on the cut, 15–24 f | Every list item in F-A | `TC-label`; the caption band; hide the subtitle with `captions.overrides` |
+| **P-CTA-KEYWORD** | Keyword CTA | overlay | "Just comment" script + the KEYWORD block 230 px + "to get it" script | Enter the poster by T-11; the lead-in sentence types on in EB Garamond italic 600 64 px `primary` at y ≈ 450, **2 chars/f** (v02 @0:52.53 "So if you'…"), then the P-DUO-TITLE recipe; the keyword holds ≥ 1.5 s | The `comment_keyword` CTA | `TC-display`, z8, `kind: "cta-keyword"` |
+| **P-END-BLOCK** | End block | overlay | 4–7 lines of Montserrat 900 filling x 64–1016 over a texture close-up | Lines rise in 3 f apart (line 1 at 0); hold 2.5–4.0 s | The `link_bio` / `end_card` CTA (v03 @ 1:22) | `TC-display`, z8, `kind: "end-card"` |
+| **P-SIGNOFF-SUN** | Sign-off sun | overlay (depth) | A giant `soon` gradient block word (yellow → orange) behind the silhouette on the sun backdrop + a script line above | The script writes 8 f; the word rises 10 f behind the cut-out | The last spoken sign-off of an F-A reel ("See you SOON", v02 @ 0:57) | `TC-display`, `behind: true` + P-POSTER-BACKDROP |
+
+**Paper world (B-4)**
+| ID | Name | Type | On screen | Motion recipe | When | Needs |
+|---|---|---|---|---|---|---|
+| **P-PAPER-CARD** | Paper card | stage | A 9:16 creator clip in a rounded card on W-paper with a burned yellow title | Paper cut (G-3, 0 f) with the card at rest, or G-1 shrink (12 f); the title rises in 4 f at f+8; the card leaves by a hard cut (v04 @0:27.9; a T-6 fade is the alternate) | An example, a past post, a reference (v03 @ 0:11–0:14) | `veos asset add` clip or L-card916; title `TC-display` |
+| **P-SPIN-CARD** | Spin-to-vertical | stage | A 16:9 (horizontal) clip as a rounded card (radius 28) on plain black, still playing, that turns a quarter and grows until the now-portrait picture covers the frame | Measured v03 @0:06.45–0:11.0 (`strip-spin-card-90.jpg`): card w 900 at rest 0–8 f, then rotates **0 → 90°** clockwise while scaling **0.55 → ≈ 2.0** (cover) over **75–135 f** (2.5–4.5 s), ease-in-out; the subtitle keeps running; hard cut out | The line about horizontal → vertical, "the old way", a perspective change. It's a chapter-opening move: a second spin in the same reel cheapens the first | video asset; declare the rotation span in `events` |
+| **P-RECAP-RIFFLE** | Recap riffle | stage | 9:16 cards with their own burned titles, one per **0.5–0.6 s**, on W-paper | Hard cut into the first card at rest; hard swap of the card content and title every **14–18 f** (measured 0.50–0.58 s, v04 @0:19.3–0:28.4, `strip-recap-riffle.jpg`); the frame never moves; out by a hard cut | Year recaps, "everything I made", past episodes (v04 @ 0:19–0:27) | one asset per card; `cuts` per swap; titles `TC-display` |
+| **P-CARD-CAROUSEL** | Carousel | stage | 9:16 cards sliding horizontally on W-grid; the active card centred (x 176), the next peeking at x 1000 | Slide 8 f ease in-out per step (T-5), 1.0–1.5 s per card | Two to four examples of one idea (v02 @ 0:29–0:31, 0:49–0:51) | assets; `cuts` per step |
+| **P-LANDSCAPE-CARD** | Landscape card | stage | A 4:3 example card on W-paper with guide lines and ink | Paper cut; the card at rest; guides draw 10 f; ink 10 f | F-B rules about framing, a before/after on one card (v03 @ 0:24–0:27) | L-card43 or an asset |
+| **P-FLOAT-CARDS** | Floating cards | overlay | 3–6 small 9:16 cards (180–260 px wide, radius 16) floating around the presenter on a light set, each a different example, around the head rather than on it | Cards pop in 6 f with 4 f stagger, drift 10–20 px/s, exit by blur 6 f; up to 4 on screen at once | "All of these", a community, a body of work (v02 @ 0:27, 0:41–0:42) | assets |
+
+**Polaroids (B-5)**
+| ID | Name | Type | On screen | Motion recipe | When | Needs |
+|---|---|---|---|---|---|---|
+| **P-POLAROID** | Polaroid | stage | A white-bordered photo or clip (24 px `frame` border) on W-grid, tilted −2.5…+2.5° | Enters and leaves through the **T-10 flash** (v01 @0:28.93, 0:31.01; v05 @0:26.38): already at rest, with a 1 % scale / 0.2° settle over 3 f; photos inside riffle by hard swap every 0.5–1.0 s; no push | A moment, a memory, a "look at this", an after-state (v02 @ 0:45–0:48, v05 @ 0:23–0:25) | asset |
+| **P-BEFORE-AFTER-POLAROID** | Before/after | stage | The before polaroid, then the after polaroid in the same rect | The before holds 1.0–1.5 s; a hard swap of the photo (a cut) on the "after" word; the after holds ≥ 1.5 s | F-B RESULT, transformation payoffs (v05 @ 0:57–1:00) | two of the creator's real assets (SH-9) |
+
+**Devices and UI (B-6)**
+| ID | Name | Type | On screen | Motion recipe | When | Needs |
+|---|---|---|---|---|---|---|
+| **P-APP-DEVICE** | App device | stage | A dark rounded device frame with the screen recording, on W-grid | The device rises 10 f; on the button word the scene's own camera scales the device 1.0 → 1.8 toward the control over 12 f, the rest blurs 8 px; back over 10 f. Keep UI text inside the screen above y 1400 (the device's bottom edge meets the subtitle band) | Every app or tool step (v05 @ 0:30–0:54) | SH-8 asset, else FB-8; private data blurred |
+| **P-PHONE-REEL** | Phone reel | stage | A portrait phone frame showing a reel, a yellow P-INK-OVAL around the caption or UI region | The phone at rest on W-paper; the oval draws 10 f on the word | Talking about posts, captions, a platform (v03 @ 1:10–1:15, v04 @ 0:48–0:53) | the creator's screen capture, else the real post captured from the web, else a created `fx.appUI({kind: "video"})` |
+| **P-UI-CHIP** | UI chip | overlay | A search-bar pill or a button pill ("BUY NOW") over footage | Pop 6 f (scale 0.9 → 1.0 + blur 8 → 0), hold 1–2 s, out 4 f | A search, a purchase, a click habit (v02 @ 0:12, 0:17) | `TC-label`, z6 |
+| **P-FLOAT-PANEL** | Floating panel | overlay | A tall list card (product list, checklist) floating beside the subject, tilted 6° | Slides in from the edge 10 f, drifts 10 px | A persona's habit shown as a list (v02 @ 0:10–0:11) | a `TC-label` heading, texture rows inside; z5, beside the face |
+
+**Ink and guides (B-7, §8.6)**
+| ID | Name | Type | On screen | Motion recipe | When | Needs |
+|---|---|---|---|---|---|---|
+| **P-GUIDE-LINES** | Guide lines | annotation | A 3 px white (75 %) centre line, or a 3 × 3 grid, over footage or a card | Lines draw from the top in 10 f; hold for the rule | Composition, alignment, "the centre", "thirds" (v03 @ 0:20–0:36) | the anchor pass |
+| **P-INK-ARROWS** | Ink arrows | annotation | 1–4 hand-drawn `primary` arrows converging on the subject | Shaft 8 f, head 3 f, 4 f stagger, a slight wobble | "Look at", "here", "the subject" (v03 @ 0:22, 0:48) | the anchor pass |
+| **P-INK-OVAL** | Ink oval | annotation | A hand-drawn `primary` oval (5–7 px) around a region | Draws 10 f with a 15° overshoot | A caption area, an object, a detail (v03 @ 0:58, 1:10) | the anchor pass |
+| **P-LASSO** | Lasso | annotation | A thick white (8 px) outline tracing an object being removed or selected | Draws 12 f along the object's outline | Erase / select / cut-out steps (v05 @ 0:36–0:37) | anchor keyframes |
 
 **Footage devices and grades (B-8, B-12)**
 | ID | Name | Type | On screen | Motion recipe | When | Needs |
 |---|---|---|---|---|---|---|
-| **P-FRAME-IN-FRAME** | Frame in frame | cut | The opener seen through a mirror, door, window or screen | — (shot selection); Z-1 if static | SH-1 hook shot; any reveal (v01 @ 0:00, 0:08) | SH-1 |
+| **P-FRAME-IN-FRAME** | Frame in frame | cut | The opener seen through a mirror, door, window or screen | Shot selection; Z-1 if the shot is static | The SH-1 hook shot; any reveal (v01 @ 0:00, 0:08) | SH-1 |
 | **P-DETAIL-RUN** | Detail run | cut | One 0.6–1.0 s detail shot per listed noun | Cut on each noun's onset (R-3) | "every colour, every shape, every…" (v01 @ 0:18–0:25) | SH-4 |
-| **P-PERSONA-GRADE** | Graded persona | footage-treatment | A staged persona scene with its grade (GR-mono / amber / teal) and a label duo | Grade starts on the cut; label duo on the name word | "N types of X", before/after selves (v02 @ 0:03–0:23) | SH-6 + GR-L |
+| **P-PERSONA-GRADE** | Graded persona | footage treatment | A staged persona scene in its grade (GR-mono / amber / teal) with a label duo | The grade starts on the cut; the label duo on the name word | "N types of X", before/after selves (v02 @ 0:03–0:23) | SH-6 + the grade (§4.3) |
 | **P-WALK-BOOKEND** | Walk bookend | cut | The creator walks in on f0 and walks out of the same frame at the end | — | F-A openers and closers (v04 @ 0:00, 1:23) | SH-3 |
-| **P-SNAP-RUN** | Snap run | cut | 2–4 poses of the subject being photographed, each a new shot | One T-10 flash per pose, 10–17 f apart (≤ 3 flashes per s); a shutter / click cue may sit on each flash | "snap the best photos of her", any photo-taking line (v05 @0:16.86–0:18.0, `strip-shutter-flash.jpg`) | SH-4 / SH-6 poses |
+| **P-SNAP-RUN** | Snap run | cut | 2–4 poses of the subject being photographed, each a new shot | One T-10 flash per pose, 10–17 f apart; a shutter cue may sit on each flash | "snap the best photos of her", any photo-taking line (v05 @0:16.86–0:18.0, `strip-shutter-flash.jpg`) | SH-4 / SH-6 poses |
 
 **Poster, chaos, brand, references (B-9 … B-13)**
 | ID | Name | Type | On screen | Motion recipe | When | Needs |
 |---|---|---|---|---|---|---|
-| **P-POSTER-BACKDROP** | Poster backdrop | overlay (depth) | The matted creator (profile) in front of a drawn `accent` sun disc or colour wall, with a duo keyword behind or beside | Backdrop is a `behind: true` z2 scene drawing W-poster's gradient full-frame (the cut-out stays in front); hard cut in | CTA, thesis poster (v02 @ 0:39–0:40, 0:52–0:58) | SH-12, clean matte (FB-12) |
-| **P-CHAOS-BURST** | Chaos burst | overlay (E2) | GR-mono footage with a 3–5 hard-cut flurry, 4–6 snippets ("[Close Up]", "[Wide]", phrase fragments) around (never on) the face | ≤ 45 f total (the source runs ≈ 4 s, v02 @0:04.3–0:08.2; the E2 cap keeps 1.5 s); snippets **type on 1 char/f** at three depths (big foreground ones blurred 6–10 px, mid sharp, small back ones), 4–6 f stagger, drift 20 px/s; shots change every 8–12 f, each joined by **one pure-white frame** (T-10 burst variant, v02 @0:06.79, 0:07.17, `strip-chaos-flash-typewriter.jpg`); a duo inside it blurs out in place; ends with a T-13 whip, a cut or T-7 vortex | One line about overload, doubt, too many options (v02 @ 0:04–0:08) | `exception: "E2"`, `snippets` declared |
-| **P-LOGO-CHIP** | Logo chip | overlay | "With" script + the brand's logo file + wordmark (white) in the top band | Logo pops 6 f, wordmark blur-slides 4 f, script writes 8 f | Sponsor or tool named (v05 @ 0:08) | creator logo file; else `fx.logoPlate`; `insert` record |
-| **P-SERIES-LOCKUP** | Series lockup | stage | Gold script + gold block + "ep. NN" on W-grid without grid | Script writes 10 f; block blur-slides 4 f; hold 1.2 s; cut | Once per series reel, right after the hook (v05 @ 0:09) | §24 |
-| **P-DISCLOSURE** | Disclosure | overlay | "Paid partnership" TC-legal line | Fade 6 f; hold ≥ 2 s | Every sponsored segment (NC-12) | §25 |
-| **P-REF-CARD** | Reference card | stage | Someone else's work (a reel, an artwork, a product page) in a paper card | Paper cut; card at rest; optional guide line / oval | "Iconic paintings…", "this creator did…" (v03 @ 0:51–0:54) | creator file; else created (§12.5); `insert` record |
+| **P-POSTER-BACKDROP** | Poster backdrop | overlay (depth) | The matted creator (profile) in front of a drawn `accent` sun disc (or the `teal_wall` colour wall for a thesis poster), with a duo keyword behind or beside | The backdrop is a `behind: true` z2 scene drawing W-poster's gradient full-frame (the cut-out stays in front); hard cut in, or T-11 | The CTA, a thesis poster (v02 @ 0:39–0:40, 0:52–0:58) | SH-12, a clean matte (FB-12) |
+| **P-CHAOS-BURST** | Chaos burst | overlay | GR-mono footage with a 3–5 hard-cut flurry and 4–6 snippets ("[Close Up]", "[Wide]", phrase fragments) around the face, not on it | Up to 1.5 s, 45 f (the source runs ≈ 4 s, v02 @0:04.3–0:08.2; this style keeps it short); snippets **type on 1 char/f** at three depths (big foreground ones blurred 6–10 px, mid sharp, small back ones), 4–6 f stagger, drift 20 px/s; shots change every 8–12 f, each joined by **one pure-white frame** (the T-10 burst variant, v02 @0:06.79, 0:07.17, `strip-chaos-flash-typewriter.jpg`); a duo inside it blurs out in place; the subtitle hides; it ends with a T-13 whip, a cut or the T-7 vortex, then at least 1.0 s with two elements or fewer | The one line about overload, doubt, too many options (v02 @ 0:04–0:08). Once in a reel, never in the hook's first 2 s or the CTA: a second burst turns chaos into noise | `exception: "E2"`, `snippets` declared, `TC-label`, z8 (recipe §16) |
+| **P-LOGO-CHIP** | Logo chip | overlay | "With" script + the brand's logo file + the wordmark (white) in the top band | The logo pops 6 f, the wordmark rises 4 f, the script writes 8 f | A sponsor or tool named (v05 @ 0:08) | the creator's logo file, else the real logo fetched from the web, else `fx.logoPlate` |
+| **P-SERIES-LOCKUP** | Series lockup | stage | Gold script + gold block + "ep. NN" on W-grid without the grid | The script writes 10 f; the block rises 4 f; hold 1.2 s; cut | Right after the hook of a series reel (v05 @ 0:09) | §7.7 |
+| **P-DISCLOSURE** | Disclosure | overlay | The "Paid partnership" line, 24 px at (64, 128) | Fade 6 f; hold ≥ 2 s | Every sponsored segment | §6.7 |
+| **P-REF-CARD** | Reference card | stage | Someone else's work (a reel, an artwork, a product page) in a paper card | Paper cut; the card at rest; an optional guide line or oval | "Iconic paintings…", "this creator did…" (v03 @ 0:51–0:54) | the creator's file, else the real one fetched from the web, else rebuilt from its exact text (§12.5) |
 
-### 8.4 Line → pattern lookup `[NICHE]`
-| Line type | Primary | Alternates | [NICHE: example] fitness | [NICHE: example] travel |
-|---|---|---|---|---|
-| Thesis / opinion | P-DUO-TITLE | P-DUO-STACK, P-BEHIND-LOCKUP | "Training **ALONE** is why you **STOPPED**" | "The best **FOOD** has **NO MENU**" |
-| Question to the viewer | P-DUO-CORNERS | P-DUO-TITLE | "Is your **SQUAT** still **HURTING** your knees?" | "Is your **PHONE** still taking **BORING** photos?" |
-| "N types / N rules / N reasons" | P-DUO-TITLE with the number as a block + SM-1 | P-COUNT-UP | "**3** types of **GYM** people" | "**4** rules for **STREET** photos" |
-| A milestone or count | P-COUNT-UP | P-BEHIND-WORD (number) | "100 → 100 DAYS" | "52 → 52 CITIES" |
-| Arriving somewhere / a place | P-FRAME-IN-FRAME + card title on a P-PAPER-CARD | P-WALK-BOOKEND | the gym door | the homestay door |
-| Taking photos, posing | P-SNAP-RUN | P-POLAROID via T-10 | the post-workout mirror shots | portraits at a doorway |
-| Listing nouns | P-DETAIL-RUN | P-RECAP-RIFFLE | chalk, straps, the bar, the clock | spices, steam, bowls, the cook's hands |
-| A persona or "type" | P-PERSONA-GRADE + label duo | P-FLOAT-PANEL | "The **EGO LIFTER**" (GR-amber) | "The **CHECKLIST TOURIST**" (GR-teal) |
-| A habit shown as a list or a search | P-UI-CHIP | P-FLOAT-PANEL | "best pre-workout" search pill | "top 10 cafés" search pill |
-| Doubt, overload, too many options | P-CHAOS-BURST (once) | P-SCRIPT-ASIDE | "am I doing it wrong?", "[Form check]" | "[Itinerary]", "too many tabs" |
-| A rule with a frame or alignment | P-LANDSCAPE-CARD + P-GUIDE-LINES | P-PAPER-CARD + P-INK-ARROWS | knee over the toe line | horizon on the third |
-| "Look at this / here" | P-INK-OVAL | P-INK-ARROWS | the hip crease | the person in the frame |
-| An app or tool step | P-APP-DEVICE | P-LOGO-CHIP | a workout tracker setting | a photo editor slider |
-| Remove / select / cut out | P-LASSO | P-INK-OVAL | — | the tourist behind her |
-| Before → after | P-BEFORE-AFTER-POLAROID | P-POLAROID ×2 | form before / after | photo before / after |
-| A past post or episode | P-PAPER-CARD | P-RECAP-RIFFLE | last month's transformation | last trip's reel |
-| Someone else's work | P-REF-CARD (creator file, else created) | P-PHONE-REEL | a coach's viral post (quote card) | a famous photograph (silhouette card) |
-| A key phrase repeated | P-ECHO-OUTLINE | P-DUO-TITLE | "PROGRESSIVE OVERLOAD" | "SLOW TRAVEL" |
-| The turn ("but…", "then it changed") | P-DUO-TITLE (re-hook) | P-BEHIND-WORD | "**BUT** I was **WRONG**" | "**THEN** it **RAINED**" |
-| A feeling, quiet moment | no type: Z-1 push-drift, CS-1 only | P-SCRIPT-ASIDE | sunrise run | a train window |
-| Sponsor or tool named | P-LOGO-CHIP + P-DISCLOSURE | — | the shoe brand | the booking app |
-| CTA (comment) | P-CTA-KEYWORD on P-POSTER-BACKDROP | P-CTA-KEYWORD on footage | "Just comment **PLAN**" | "Just comment **MAP**" |
-| CTA (link / part 2) | P-END-BLOCK | — | "FREE PLAN / LINK IN BIO" | "PART 2 / FOLLOW" |
-| Sign-off | P-SIGNOFF-SUN or the bookend | P-WALK-BOOKEND | "See you **TOMORROW**" | "See you **THERE**" |
+### 8.4 Line → pattern lookup
+Vocabulary, not a decision table: it tells you what this style reaches for. Ask what the moment needs, then use it.
+| Line type | Primary | Alternates | For example |
+|---|---|---|---|
+| Thesis / opinion | P-DUO-TITLE | P-DUO-STACK, P-BEHIND-LOCKUP | "Training **ALONE** is why you **STOPPED**" |
+| Question to the viewer | P-DUO-CORNERS | P-DUO-TITLE | "Is your **PHONE** still taking **BORING** photos?" |
+| "N types / N rules / N reasons" | P-DUO-TITLE with the number as a block + SM-1 | P-COUNT-UP | "**3** types of **GYM** people" |
+| A milestone or count | P-COUNT-UP | P-BEHIND-WORD (the number) | "52 → 52 CITIES" |
+| Arriving somewhere / a place | P-FRAME-IN-FRAME + a card title on a P-PAPER-CARD | P-WALK-BOOKEND | the homestay door |
+| Taking photos, posing | P-SNAP-RUN | P-POLAROID via T-10 | portraits at a doorway |
+| Listing nouns | P-DETAIL-RUN | P-RECAP-RIFFLE | spices, steam, bowls, the cook's hands |
+| A persona or "type" | P-PERSONA-GRADE + a label duo | P-FLOAT-PANEL | "The **EGO LIFTER**" (GR-amber) |
+| A habit shown as a list or a search | P-UI-CHIP | P-FLOAT-PANEL | a "best pre-workout" search pill |
+| Doubt, overload, too many options | P-CHAOS-BURST (once) | P-SCRIPT-ASIDE | "am I doing it wrong?", "[Form check]" |
+| A rule with a frame or alignment | P-LANDSCAPE-CARD + P-GUIDE-LINES | P-PAPER-CARD + P-INK-ARROWS | the horizon on the third |
+| "Look at this / here" | P-INK-OVAL | P-INK-ARROWS | the person in the frame |
+| An app or tool step | P-APP-DEVICE | P-LOGO-CHIP | a photo editor's slider |
+| Remove / select / cut out | P-LASSO | P-INK-OVAL | the tourist behind her |
+| Before → after | P-BEFORE-AFTER-POLAROID | P-POLAROID ×2 | the photo before / after |
+| A past post or episode | P-PAPER-CARD | P-RECAP-RIFFLE | last month's transformation |
+| Someone else's work | P-REF-CARD (the creator's file, else the real one fetched) | P-PHONE-REEL | a coach's viral post, captured from the web |
+| A key phrase repeated | P-ECHO-OUTLINE | P-DUO-TITLE | "SLOW TRAVEL" |
+| The turn ("but…", "then it changed") | P-DUO-TITLE (the re-hook) | P-BEHIND-WORD | "**BUT** I was **WRONG**" |
+| A feeling, a quiet moment | no type: Z-1 push-drift, CS-1 only | P-SCRIPT-ASIDE | a train window |
+| Sponsor or tool named | P-LOGO-CHIP + P-DISCLOSURE | — | the booking app |
+| CTA (comment) | P-CTA-KEYWORD on P-POSTER-BACKDROP | P-CTA-KEYWORD on footage | "Just comment **PLAN**" |
+| CTA (link / part 2) | P-END-BLOCK | — | "FREE PLAN / LINK IN BIO" |
+| Sign-off | P-SIGNOFF-SUN or the bookend | P-WALK-BOOKEND | "See you **TOMORROW**" |
 
-### 8.5 Data and truth
-- Data figures are OFF (§18); counters show only numbers that are spoken or in the script (H18), written as digits.
+### 8.5 Numbers and truth
+- No charts or computed figures in this style; counters show numbers that are spoken or in the script, as digits.
 - Counts are countable: "3 types" shows 3 items; a "52 films" count-up lands on 52.
-- App screens are the creator's recordings; a created UI is generic, unbranded (NC-6).
+- App screens are the creator's recordings, else the real app captured from the web; a created UI is generic and
+  unbranded; illustrations inside it may use
+  made-up but realistic values, no label.
 - Before/after photos are the creator's real results; never simulate an "after".
 
-### 8.6 Comedy layer `[COND: comedy = light]`
-- **Allowed:** staged persona exaggeration (the shot itself), a deadpan script aside, an ironic UI chip ("best camera to buy" typed by the gear persona), a reaction shot.
-- **Not allowed:** stickers, stamps, meme cues, emoji, crash zooms, freeze-frame roasts.
-- **Budget:** ≤ 1 comedy beat per 20 s, never two in a row, never in the CTA or the hook's first 2 s.
-
-### 8.7 Asset rules
-- **Real captures first:** the creator's own footage, photos, screen recordings and past posts.
-- **Allowed mocks:** generic, unbranded UI built with `fx.device` / `fx.appUI`, the search pill and button pill (UI chips are generic shapes, not a brand's UI).
-- **No stock clichés:** no stock B-roll, no generated "cinematic" scenes, no drone stock.
-- **Logos:** only the creator's files (their own brand, a sponsor's supplied logo); otherwise a type-set logo plate (`fx.logoPlate`).
-- **Third-party moments:** ask, then create (§12.5).
-
-### 8.8 Density and variety
-- An event (cut, type beat, card swap, ink mark) every 0.6–1.6 s.
-- ≥ 8 distinct patterns and ≥ 4 families per 60 s.
-- The same pattern ≤ 2 beats in a row, except the F-B rule ritual and P-RECAP-RIFFLE.
-- ≤ 1 behind-head word per 20 s; ≤ 1 chaos burst per reel; ≤ 2 poster beats per reel.
-
----
-
-## §9 Transitions & shot grammar `[DNA]`
-
-### 9.1 Library
-| ID | Transition | Frames | Recipe | Cue role |
-|---|---|---|---|---|
-| **T-1** | Hard cut | 0 | The default (≈ 75% of all cuts) | none |
-| **T-2** | Cut on motion | 0 | Cut inside a gesture, a turn, a whip or a walk, so the motion continues into the next shot (v02 @ 0:02.5 the hand "3", 0:25) | whoosh (optional) |
-| **T-3** | Blur-through | 4–6 | An out-of-focus foreground object (a wheel, a shelf, a hand) wipes the frame in-camera; if the source has none, a 6 f vertical motion blur ramp 0 → 30 px on the outgoing shot and 30 → 0 on the incoming one (built-in footage blur, §9.5) | whoosh |
-| **T-4** | Spin-to-vertical | 75–135 | P-SPIN-CARD (§8.3): 0 → 90°, 0.55 → 2.0, ease-in-out | whoosh |
-| **T-5** | Card slide | 8 | Carousel step on W-grid, ease in-out | soft swish |
-| **T-6** | Card fade-out | 4 | Alternate only: a paper card fades out on cream, then the next shot cuts in (the measured exit at v04 @0:27.9 is a hard cut into a wheel detail) | none |
-| **T-10** | Flash | 5–6 | Exposure bloom: outgoing brightens over 2 f (brightness 1 → 2.5), cut at the white peak, incoming starts blown out and decays to normal over 3 f (v01 @0:28.93 into polaroids, 0:31.01 out; v05 @0:16.86, 0:17.32 one per "photo", 0:26.38; `strip-shutter-flash.jpg`, `strip-flash-polaroid-exit.jpg`). Inside the E2 burst it is a single pure-white frame between shots (v02 @0:06.79, 0:07.17) | shutter / camera click on photo beats, else none |
-| **T-11** | Warm flash | 5 | As T-10 but tinted cream-yellow (`#FFF6C8`), 4 f build, cut at the peak into the poster (v02 @0:52.24–0:52.45, `strip-warm-flash-cta.jpg`) | soft whoosh / shine |
-| **T-12** | Zoom-through on a gesture | ≈ 4 + 24 | Outgoing: punch-in ≈ 1.0 → 1.6 on the gesture (a raised hand) over 4 f with zoom blur, type layer included; hard cut on the gesture to a shot whose gesture sits in the same place; incoming pulls out ≈ 2.3 → 1.0 over ≈ 24 f, expo-out (ORB per-frame scale 0.91 → 0.997; v02 @0:02.40–0:03.55, `strip-zoom-through-gesture.jpg`) | whoosh |
-| **T-13** | Whip pan | 6 + 14 | In-camera: outgoing whips sideways with heavy horizontal smear for 5–6 f; incoming lands still panning, ≈ 130 px/f decelerating to 0 over ≈ 14 f (≈ 750 px total, ORB v02 @0:08.48–0:08.94, `strip-whip-pan.jpg`); the "#N." marker lands mid-whip | whoosh |
-| **T-7** | Vortex | 8 | Radial zoom blur tunnel on the last 8 f of a shot (scale 1 → 1.4, radial blur 0 → 24 px), cut to a calm shot (built-in `zoom-blur`, §9.5) | whoosh |
-| **T-8** | Paper cut | 0 | G-3: footage → W-paper with the card already at rest | none |
-| **T-9** | Hard end | 0 | The bookend's last frame, ≤ 6 f after the last word | none |
-
-### 9.2 Grammar
-| Boundary | Use | Never |
-|---|---|---|
-| f0 | A moving shot (no transition) | A fade-in, a black frame |
-| Hook → body | T-2 cut on motion (2.7–4.0 s) | A morph, a fade |
-| New scene / persona / place | T-1 or T-2 | A dissolve |
-| Footage → paper | T-8 paper cut (or G-1 shrink for "this is the example") | A cross-fade |
-| Paper → footage | T-1 cut (default), T-10 flash out of a polaroid run, or T-6 fade-out then cut | A wipe |
-| Footage ↔ polaroid / photo world | T-10 flash in and out | A slide |
-| "Snap" / photo-taking line | T-10 on every cut to a new pose (one flash per photo, 0.4–0.7 s apart) | More than 4 in a row |
-| Hook → first item ("3 types…" with a hand count) | T-12 zoom-through on the gesture (≤ 1 per reel) | Without a gesture to cut on |
-| Persona → persona, place → place | T-13 whip pan when at least one of the two shots was filmed with a whip (the built-in whip completes the other side), else T-1 | A digital whip between two locked-off shots |
-| Into the CTA poster | T-11 warm flash | A plain fade |
-| Card → card | T-5 slide (carousel) or a content cut (riffle) | A spin |
-| Flashback, "the old way", a chapter | T-4 spin-in (≤ 1 per reel) | — |
-| Out of the chaos burst | T-7 vortex or T-1 | Another chaos device |
-| Last word | T-9 on the bookend picture | A black tail, a fade to black |
-
-### 9.3 Shot grammar `[COND: spine hybrid]`
-| ID | Rule |
-|---|---|
-| **R-1** | Cut on the visual idea, not on every word: one picture change every 0.85–1.6 s in B-roll runs; a talking piece holds ≤ 4 s before a cutaway |
-| **R-2** | Cut on motion: a gesture, a turn, a step or a whip continues across the cut within ±2 f (T-2) |
-| **R-3** | A list of nouns gets one 0.6–1.0 s detail per noun, cut on each noun's onset (P-DETAIL-RUN) |
-| **R-4** | Return to the presenter on the opinion, the turn word or the CTA; never mid-clause |
-| **R-5** | A persona opens with a 1.0–1.5 s establishing wide, then medium action, then the label duo |
-| **R-6** | Change location at least every 10–15 s in F-A (a new place, set or persona) |
-| **R-7** | Type beats follow words; cuts follow pictures. Never cut inside a block's 4 f blur-slide; move the cut ≤ 3 f |
-| **R-8** | The bookend: the final 1.0–1.5 s plays SH-1's pre-roll so the last frame is frame 0's picture (§23) |
-| **R-9** | Walk-in / walk-out: the creator enters the opening frame within 0.5 s and leaves the closing frame in its last 1.5 s when SH-3 exists |
-
-### 9.4 Budget (per 60 s, scaled by runtime)
-- T-1 / T-2: as needed (27–51 cuts/min). T-3 ≤ 3. T-4 ≤ 1 per reel. T-5 ≤ 6. T-6 ≤ 2. T-7 ≤ 1 per reel. T-8 every paper entry. T-10 ≤ 6 (≤ 4 in a row on a photo run). T-11 ≤ 1 per reel. T-12 ≤ 1 per reel. T-13 ≤ 3.
-- The same non-cut transition never 3× in a row (except a P-SNAP-RUN's T-10 flashes).
-
-### 9.5 How the transitions render (built-in `timeline.transitions[]` with a `type`; `renderer/transitions.js`)
-Core draws these over the picture (world, footage, behind-words, scenes z1–6) and under the captions and duo titles unless `layers` says otherwise. Never write them as z4 / z11 scenes. V-FX checks the fields.
-
-| ID | Timeline entry (measured values) |
-|---|---|
-| T-10 | `{"t": <cut>, "type": "flash", "frames": 6, "pre": 2, "peak": 0.9, "decay": 1.6}`: 2 f build, white peak on the cut, 3 f decay (v01 @0:28.93, v05 @0:16.86). **Burst variant** (inside P-CHAOS-BURST): one pure-white frame, `{"t": <cut>, "type": "flash", "frames": 1, "pre": 0, "peak": 1}` |
-| T-11 | `{"t": <cut>, "type": "flash", "colour": "#FFF6C8", "frames": 7, "pre": 4, "peak": 0.9}`: 4 f cream build, cut at the peak into the poster, short decay (v02 @0:52.24) |
-| T-12 | Two built-ins on the same cut. **Outgoing:** `{"t": <cut>, "type": "zoom-blur", "frames": 6, "pre": 4, "amount": 0.3, "punch": 0.4, "at": [<gesture x>, <gesture y>], "layers": "all"}` (4 f punch with zoom blur, type layer included; the engine caps `punch` at 0.4, so the punch reaches 1.4× where the source reaches ≈ 1.6×). **Incoming:** the camera landing Z-4 on the cut, `{"t": <cut>, "preset": "zoom-land", "p": {"origin": {"x": <gesture x>, "y": <gesture y>}}}` (1.5 → 1.0 over 24 f, `expoOut`, radial blur decaying with it). The source pulls out from ≈ 2.3×; V-CAMERA's `slow_push` landing exemption allows at most 1.5×, so the landing starts at 1.5. Cut on the gesture (T-2) so it sits in the same place in both shots; needs ≥ 1.5× headroom (4K, or 1080p with the base reframe at 1.0), else plain T-2 |
-| T-13 | `{"t": <cut>, "type": "whip", "dir": "left", "frames": 20, "pre": 6, "px": 90, "travel": 750, "blend": 0}`: 6 f smear out, the incoming shot arrives ≈ 750 px off and decelerates over 14 f; no cross-blend (the source cuts at the blur peak). Match `dir` to the in-camera whip direction. Use it on in-camera whip pairs (it evens out the smear) or when one of the two shots was whipped; never between two locked-off shots (§9.2) |
-| T-3 (no in-camera blocker) | `timeline.blur`: `{"t": <cut − 3 f>, "kind": "directional", "angle": 90, "px": 30, "frames": 6, "shape": "pulse"}`: vertical smear 0 → 30 px into the cut and 30 → 0 out of it, footage only |
-| T-7 | `{"t": <cut>, "type": "zoom-blur", "frames": 9, "pre": 8, "amount": 0.3, "punch": 0.4}`: the tunnel on the last 8 f (scale 1 → 1.4), then the calm shot cuts in sharp |
-
----
-
-## §10 Motion, camera, layers, finishing `[DNA; motion tokens TUNE ±15%]`
-
-### 10.1 Motion tokens
-| Token | Value |
-|---|---|
-| Beat lead | 2 f before the onset |
-| Blur-slide in (rise-smear) | 4 f: y + 0.8 × cap height (≈ 150–220 px) → 0, vertical smear 24 → 0 px, opacity 0 → 1, expo-out `cubic-bezier(0.22, 1, 0.36, 1)` (v01 @0:00.59) |
-| Blur-slide out | 3–4 f: y 0 → −(110–150) px, smear 0 → 24, opacity 1 → 0, `cubic-bezier(0.64, 0, 0.78, 0)`; last word in leaves first, 1 f apart; script un-writes R→L 4 f |
-| Script write-on | 8 f left-to-right clip mask, linear |
-| Keyword hold | 0.4–0.6 s per beat; titles 2–4 s |
-| Card enter | 6–10 f; card fade-out 4 f |
-| Spin card | 75–135 f, 0 → 90°, scale 0.55 → 2.0, ease-in-out |
-| Carousel step | 8 f in-out |
-| Polaroid entry | via T-10 flash; 3 f settle (1% scale, 0.2°) |
-| Flash (T-10) | 2 f up + cut + 3 f decay; burst variant 1 white frame |
-| Title squash-in | 3 f per line (scaleY 0.05 → 1), 2 f stagger |
-| Typewriter | CTA serif line 2 chars/f; E2 snippets 1 char/f |
-| Riffle swap | 14–18 f per card |
-| Count digit | 6 f per appended digit when spoken as one number |
-| Ink draw | 10 f (arrow shaft 8 + head 3; oval 10 with 15° overshoot) |
-| Vortex | 8 f |
-| Behind-word parallax | 8–12 px over the hold |
-| Hold | Text ≥ 0.25 s per word; titles ≥ 10 f after complete |
-
-### 10.2 Footage camera: zoom policy `slow_push`
-| ID | Preset | Recipe | Use |
-|---|---|---|---|
-| **Z-1** | `push-drift` | 1.00 → 1.06 over the beat (`ease: "linear"`, ≥ 15 f) | A static shot that must feel alive: awe beats, paper-free talking pieces, the hook if SH-1 is static |
-| **Z-2** | `slow-push` | 1.00 → 1.06 over 150 f, `ease: "linear"` (measured 1.06 over 5.3 s, ≈ 1.1%/s, v04 @0:42.4–0:47.6, `strip-slow-push.jpg`) | A hold > 3 s: the turn, a confession, the closing talking piece |
-| **Z-3** | `reset` | back to 1.00 (4 f) on a cut | Only on a cut |
-| **Z-4** | `zoom-land` | landing on a cut: 1.50 → 1.00 over 24 f, `ease: "expoOut"`, `blur: {kind: "radial", amount: 0.18, shape: "decay"}`, `origin` the gesture point (exempt under `slow_push`: starts on a cut, ends on 1.0, ≤ 1.5×) | Only as the incoming half of T-12 (≤ 1 per reel) |
-Rules: **the footage is locked off** (ORB scale 1.000 ± 0.003 per frame on v01 @0:00–0:01 and 0:04, v03 @0:00, v05 @1:03–1:07): movement comes from the subject (walk-ins, gestures, cars) or in-camera moves (whips, drone), not from engine zooms; leave a static shot static when its subject moves. Z-1 only when nothing in the frame moves. ≤ 4 Z events per 60 s; never the same preset twice in a row; never two within 0.4 s; never a punch, crash, shake or rotation as a camera event (N4; T-12 is a built-in transition plus the Z-4 landing, §9.5). A 1080p source allows ≤ 1.35× re-crops; 4K allows 2×.
-
-### 10.3 Canvas camera
-OFF (§21).
-
-### 10.4 Layer order (back to front)
-1. World (W-paper, W-grid, W-void, W-poster) or the blurred footage copy
-2. Paper cards, polaroids, devices on L-hidden (z3)
-3. Footage group: footage → **behind scenes** (P-BEHIND-WORD, P-POSTER-BACKDROP, P-SIGNOFF-SUN word) → the cut-out
-4. GR-L grade layer (z4, until E-16)
-5. Card titles, UI chips, floating panels, ink marks (z5–6)
-6. Title lockup, counter, script asides (z6)
-7. CS-1 subtitle (z7)
-8. Duo titles, CTA keyword, end block, chaos snippets (z8; the subtitle hides under them)
-9. Legal line (z9, TC-legal)
-
-### 10.5 Finishing
-- No grain, no film burns, no resting light-leak overlays (the T-10 / T-11 flashes are transitions). W-paper noise 0.03, W-grid noise 0.04 + vignette 0.42, W-void vignette 0.3.
-- Soft shadows only: cards `0 18px 40px rgba(0,0,0,.18)`, polaroids `0 14px 30px rgba(0,0,0,.35)`, device `0 30px 60px rgba(0,0,0,.45)`.
-- Glow: none. The only gradient fill on type is the sign-off word (`soon` gradient).
-- Card radius: 9:16 cards 40, 4:3 cards 28, device 64, phone 48, floating cards 16, polaroids 2.
-
----
-
-## §11 Sound contract (minimal) `[VAR]`
-Sound comes from the bundled SFX pack and its global rules (S1–S6: every cue marks a visible event, ≤ 2 uses per file, one list-cue exception, no consecutive repeats, catalogue ids only). No per-style palette.
-
-| Line | Decision |
-|---|---|
-| **Cue moments** | `hook` (one soft cue on the first keyword landing), `transitions` (cut-on-motion, T-13 whip and T-12 zoom-through: whoosh; spin-in, vortex, carousel; T-11 into the poster: soft shine; a camera-shutter click on each P-SNAP-RUN flash), `reveals` (count-up landing, polaroid drop, before → after swap, end block), `cta` (the keyword landing). Duo-title beats after the hook, subtitles and ink marks are silent |
-| **Meme cues** | OFF (comedy is `light`) |
-| **Music bed** | ON from f0 `(unverified: audio not observable)`; a cinematic or lo-fi bed that rides the whole reel |
-| **Ducking** | Bed ≥ 18 dB under the voice while the voice speaks; location sound in B-roll kept at −28 to −22 dB under the voice and ducked with it |
-| **Loudness** | −14 LUFS integrated, true peak ≤ −1.5 dBTP; hard end ≤ 6 f after the last word, on the bookend frame (NC-8) |
-
-Mirrored in `tokens.json → sound`.
-
----
-
-## §12 Footage, shot list, fallbacks, inserts
-
-### 12.1 Setups `[DNA what the style assumes; VAR the buyer's setups]`
-| Setup | Camera and framing | Head top y (output) | Light / set | Notes |
-|---|---|---|---|---|
-| **A** Location talking piece | Handheld selfie or gimbal at arm's length, 4K preferred, 24/25/30 fps | 250–520 | Natural light, golden hour preferred | 2–5 locations per reel |
-| **B** Seated set | Tripod, 50–85 mm look, shallow depth | 420–700 | Warm practicals (lamp, textured wall), dark top | v02 interview set |
-| **C** Wide / overhead | Drone, balcony, stairs or tripod high; presenter small | 600–1100 | Composed frame (lines, railings, car, door) | Hook shots, walk-ins |
-| **D** Clean-matte headroom | Tripod, plain or distant background, ≥ 300 px above the head | 560–800 | Separation light | Behind-head words (E1), poster |
-Wardrobe: solid tops; a signature cap or prop is welcome (it recurs). No mic visible in setups B/D.
-
-### 12.2 Shot list `[DNA]`
-| ID | Shot | Spec | Count per 60 s | Must / optional | Formats |
-|---|---|---|---|---|---|
-| **SH-1** | Opening shot | Moving and composed: mirror, doorway, window, overhead, or a walk-in; 3–5 s **plus 1.5 s pre-roll** before the in-point (the bookend uses it) | 1 | must | F-A, F-B |
-| **SH-2** | Overhead / drone | Top-down or high-angle of the presenter at a location, 3–6 s | 0–2 | optional | F-A, F-B |
-| **SH-3** | Walk-in / walk-out | Same spot, same framing: the creator enters at the start and leaves at the end | 1 pair | optional | F-A |
-| **SH-4** | Location B-roll | Details, hands, products, POV, macro inserts, 1–2 s each, 4K or 1080p | 20–40 | must | F-A, F-B |
-| **SH-5** | Talking pieces | 2–5 different setups or locations (A/B) | 2–5 | must | F-A, F-B |
-| **SH-6** | Persona scenes | Same person, outfit / prop / place swap, 3–6 s each | 0–4 | optional (must for "types of" reels) | F-A |
-| **SH-7** | Signature prop / vehicle | 1–3 s each | 0–6 | optional | F-A, F-B |
-| **SH-8** | Screen recordings | The app or tool being taught, portrait, ≥ 1080 px wide | 0–8 | optional (must for app tutorials) | F-B |
-| **SH-9** | Before / after | Stills or clips of the real result | 0–2 | optional (must when the topic has a visual result) | F-B |
-| **SH-10** | Past posts | Screen captures of the creator's own posts | 0–9 | optional | F-A, F-B |
-| **SH-11** | Headroom shot | Setup D, for behind-head words | 1–3 | must | F-A, F-B |
-| **SH-12** | Poster shot | Profile or 3/4 against a plain wall with back light | 0–1 | optional | F-A, F-B |
-| **SH-13** | Texture close-up | Grass, fabric, water, wall, 3–4 s, for the end block | 0–1 | optional | F-B |
-
-### 12.3 Fallbacks
-| ID | For | What the engine does instead | Fidelity cost | Result |
-|---|---|---|---|---|
-| FB-1 | SH-1 | Open on the most moving wide of the presenter with Z-1 push-drift; the bookend reuses its first 1.0 s (ending on its first frame) | No frame-within-frame surprise | degraded |
-| FB-2 | SH-2 | A high-angle phone shot (stairs, balcony); else the title lockup over the widest shot | No aerial scale | degraded |
-| FB-3 | SH-3 | Hold an empty plate of the location 0.5 s before the first and after the last talking shot | The entrance/exit is implied | holds |
-| FB-4 | SH-4 | Alternate two re-crops of the talking take (≤ 1.35× from 1080p, ≤ 2× from 4K) with paper cards / polaroids of the creator's photos, one change every 1.0–1.5 s | Less location variety; the rhythm comes from crops and cards | degraded |
-| FB-5 | SH-5 | One location, two framings (wide / tight) cut on sentence boundaries | No travel feeling | degraded |
-| FB-6 | SH-6 | One location with an outfit or prop swap per persona, told apart by GR-mono / GR-amber / GR-teal and a label duo per persona | Less staging | holds |
-| FB-7 | SH-7 | Drop the prop beats; use SH-4 details | none structural | holds |
-| FB-8 | SH-8 | Created generic UI (`fx.appUI`) inside the P-APP-DEVICE frame | Not the real app | degraded |
-| FB-9 | SH-9 | No before/after; the result becomes a P-PAPER-CARD checklist | No visual proof | degraded |
-| FB-10 | SH-10 | Recap cards built from SH-4 stills with burned titles | Not the real past posts | holds |
-| FB-11 | SH-11 | The word sits above the head on the front layer (40 px clearance), no E1 | No depth sandwich | degraded |
-| FB-12 | SH-12 | Matte the best profile take and draw the W-poster backdrop behind it; if the matte fails at 200%, the CTA duo sits over plain footage | Less graphic sign-off | degraded |
-| FB-13 | SH-13 | The end block sits on W-void | Flatter end card | holds |
-At the checkpoint, list the fallbacks used. If SH-4 gives fewer than 12 clips per 60 s **and** FB-4 cannot reach 27 cuts/min, tell the creator the reel will read as a talking-head edit, and ask for more B-roll before building.
-
-### 12.4 Props, reaction bank, matte, resolution
-- **Props:** one signature prop or vehicle per series (optional); the phone with the app open (F-B); outfit / cap swaps for personas.
-- **Reaction bank (ask at the shoot, 2–3 s each):** a nod to camera, a laugh off-camera, a turn-and-walk-away, a point to camera, a hand counting fingers (a cut-on-motion source).
-- **Matte:** required for E1 and the poster. RobustVideoMatting or Resolve Magic Mask; feather 2 px, choke 1 px; check hair at 200%.
-- **Resolution:** a 2× re-crop needs a 4K source; a 1080p source allows ≤ 1.35×. Drone and overhead shots must be ≥ 2.7K to survive the 9:16 crop.
-
-### 12.5 Third-party inserts: ask, then create `[REQ]`
-Claude never fetches anyone else's media.
-1. **Scan** the transcript (`veos inserts scan`) and list the moments that call for third-party material. In this style they are: another creator's reel or post (P-PHONE-REEL / P-REF-CARD), an artwork or famous photograph (P-REF-CARD), an app's UI (P-APP-DEVICE when it isn't the creator's own recording), a brand logo (P-LOGO-CHIP), a product page (P-FLOAT-PANEL).
-2. **Ask once:** "For these N moments, do you have a clip or screenshot? (drop the files, or say no)".
-3. **Supplied:** use it as given inside the style's frame (paper card, phone, device), cropped and marked with ink, never altered.
-4. **Not supplied: create.** Another creator's reel → `fx.appUI({kind: "video", caption})` in the phone frame; a post → `fx.quoteCard` (verbatim words); an artwork or a person → `fx.silhouette` with the title set in type; an app → `fx.appUI` (generic, unbranded); a logo → `fx.logoPlate`. 
-5. **Record** each in `plan/inserts.json` `{id, moment, origin: creator | created, file?, recipe?, substitute_of?}` and pass `insert: "<id>"` on the scene.
-
-### 12.6 Frame rate, audio and how the footage plays
-- Output 1080 × 1920, **30 fps CFR**; conform 23.98/24/25 fps sources (cinematic sources are usually 24).
-- Voice chain: high-pass 80 Hz, de-ess, light compression; one voice track (a lav or the location mic, never both).
-- **The cut map carries the voice.** The EDL (`veos cut`) is built from the talking pieces (setups A/B/D, their own audio), or from a separate voice-over file when the creator recorded one. Talking pieces in the cut map get face boxes, the matte and E1 words.
-- **B-roll plays over the voice as picture-only scenes.** Every SH-1/SH-2/SH-4/SH-6/SH-7 clip is `veos asset add`-ed and shown with `VEOS.fx.clip` at z4, full-bleed, frame-exact from its in-point, with `extra: {cuts: [0], continuous: true}` so it counts as a cut and as live motion:
-```js
-VEOS.fx.clip({ id: "b-kettle", asset: "B07", t_in: 3.10, t_out: 4.02, z: 4, offset: 2.40, kind: "broll",
-  in: "none", out: "none", extra: { cuts: [0], continuous: true } });
-```
-- Grade layers (GR-L) at z4 are declared **after** the B-roll scenes they grade (same z: declaration order decides).
-- A persona scene with the creator's own line on camera stays in the cut map; a persona scene played under the voice is B-roll.
-
----
-
-## §13 Output contract `[DNA]`
-
-### 13.1 Core beat fields
-```yaml
-- id: 7
-  section: SCENE-2                 # HOOK | SETUP | SCENE-n | TURN | PAYOFF | CTA | BOOKEND (F-B: CONTEXT | RULE-n | RESULT)
-  t0: 18.40
-  t1: 21.10
-  spoken: "And the ego lifter only cares about one thing"
-  trigger: {word: "ego", at: 18.92}
-  tone: warn                        # hype | awe | explain | warn | win | cta
-  line_type: persona
-  layout: L-full
-  visual: "Amber-graded gym, the creator in a lifting belt mid-rep; 'The EGO LIFTER' duo lands on 'ego'"
-  layers: [grade-amber-1, duo-ego]
-  pattern: P-PERSONA-GRADE
-  sfx: []
-```
-
-### 13.2 Conditional fields (this style)
-| Switch / module | Fields |
-|---|---|
-| captions | `caption {profile: CS-1, overrides[]}` (hide for "#N." markers, text fixes) |
-| ink | `ink [{mark: arrow \| oval \| guide \| lasso, target: {x, y, w, h}, frames}]` from the anchor pass |
-| continuity | `bookend {shot: SH-1, src_in, src_out}` on the BOOKEND beat; `walk: in \| out` |
-| series | `series {name, number}` on the series beat |
-| brand | `sponsor {id, disclosure}` on every sponsored beat |
-| grades | `grade: GR-mono \| GR-amber \| GR-teal \| GR-warm` (per beat) |
-| footage ≥ medium | `shot_id: SH-n`, `fallback_used: FB-n \| null` |
-| third-party moment | `insert {id, origin: creator \| created}` |
-| declared exception | `exception: E1 \| E2` (also on the scene) |
-| re-hook | `rehook: true` |
-
-### 13.3 Reel header
-```yaml
-format: F-A                      # F-A | F-B
-theme: null                      # single
-hook_archetype: HA-12            # HA-12 | HA-05 | HA-19 | HA-08
-structure: story                 # story | tutorial
-count: 3                         # items / rules / personas promised, or null
-keyword: "{{BV-08.keyword|KEYWORD}}"
-cta_device: comment_keyword
-grades: {persona-1: GR-mono, persona-2: GR-amber, persona-3: GR-teal}
-bookend: {shot: SH-1, clip: B01, src_in: 12.40, pre_roll: [10.90, 12.40]}
-series: null                     # or {name, number}
-sponsor: null                    # or {id, disclosure}
-exceptions: {E1: [21.4], E2: [6.1]}
-```
-
-### 13.4 Hook proposals (3)
-```yaml
-- name: "Mirror thesis"
-  archetype: HA-12
-  thesis: "When it comes to what you wear, shopping in person is way better than online"
-  duo_beats: ["when it comes to what | YOU WEAR", "SHOPPING / IN PERSON", "IS WAY / BETTER | than online"]
-  scene_promise: {shot: SH-1 mirror, payoff: "the try-on scenes at 0:09-0:26"}
-  storyboard: "f0 mirror, creator small, script writing | 0.47 YOU | 0.80 WEAR | 1.07 out | 1.40 SHOPPING IN PERSON | 2.33 IS WAY BETTER + 'than online' | 3.9 cut on motion to the doorway"
-  sound: [soft hit on 'YOU', whoosh on the first cut]
-  stopper_test: {mute: pass, motion_f0: pass, read_s: 1.0, changes_3s: 8, payoff_s: 2.9}
-```
-
-### 13.5 Checkpoint (before building)
-1. Three hooks with stopper results.
-2. The beat sheet with tones, patterns, grades and shot ids.
-3. The transition map and the cue moments.
-4. The duo-title list (beats, words, times) and every behind-head word with its matte check.
-5. The bookend plan (SH-1 clip, pre-roll span, the words that ride it).
-6. The inserts record (creator-supplied vs created) and the fallbacks used.
-7. Style stills: f0, 1.5 s (mid-hook), one paper beat, one persona or rule beat, the CTA, the last frame next to f0.
-**Wait for approval.**
-
----
-
-## §14 Worked examples `[NICHE]`
-Times are planning estimates; replace them with `words.edit.json` onsets.
-
-### 14.1 F-A story · [NICHE: example] travel · "I stopped booking hotels" (66 s, keyword STAY)
-**Header:** F-A · HA-12 · story · count null · CTA `comment_keyword` STAY · bookend SH-1 (a homestay doorway seen from inside; the creator walks in from the street) · no grades beyond GR-warm · E1 at 41.2 s.
-
-**Hook (0–3.1 s):**
-| t (s) | Spoken | Picture | Type layer | Subtitle | Camera / cue |
-|---|---|---|---|---|---|
-| f0 | — | SH-1: doorway frame, the creator far away in the street, walking toward it | "I" starts writing at (72, 236) | hidden | hook cue at 0.45 |
-| 0.10 | "I" | same | script "I" written (8 f) | — | — |
-| 0.45 | "stopped" | same | **STOPPED** blur-slides in, 220 px, top y 330 | — | — |
-| 1.05 | (out) | same, closer | STOPPED blurs out | — | — |
-| 1.20 | "booking" | same | **BOOKING** line 1 (200 px) | — | — |
-| 1.55 | "hotels." | same | **HOTELS** line 2 | — | — |
-| 2.10 | (out) | the creator reaches the door | lockup out | — | — |
-| 2.30 | "and this" | same | script "and" + **THIS** | — | — |
-| 2.75 | "happened" | same | script "happened" below-right; thesis complete | — | — |
-| 3.10 | — | **T-2** cut on his step through the door → SH-4 kettle detail | out 2 f before the cut | CS-1 starts | transition cue |
-
-**Plan:**
-| Section | t (s) | Spoken (gist) | Patterns and picture |
-|---|---|---|---|
-| SETUP | 3.1–9.0 | "Six months, eleven cities, zero hotels." | P-DETAIL-RUN (kettle, keys, shoes at the door) → talking piece A on a rooftop; **P-COUNT-UP** "11" + "CITIES" at 5.2 (lands on "eleven") |
-| SCENE-1 | 9.0–20.0 | The first morning: breakfast with the host family | P-DETAIL-RUN of four nouns (rice, chilli, steam, hands) at 0.8 s each → **P-POLAROID** of the family's kitchen (the creator's photo) on W-grid on "they made me family" → back to talking piece B |
-| SCENE-2 | 20.0–30.5 | "Half the price, and I knew where the locals eat" | **P-UI-CHIP** "hotels near me" over his phone shot (deadpan, light comedy) → street food B-roll → **P-PAPER-CARD** of his own past reel "Hoi An homestay" (SH-10) with card title |
-| TURN (re-hook) | 30.5–35.0 | "But it's not for everyone." | **P-DUO-TITLE** "**BUT** it's not for **EVERYONE**" on a talking piece, `rehook: true` (47% of 66 s) |
-| SCENE-3 | 35.0–46.0 | Shared bathrooms, no reception, roosters at 5 am | P-DETAIL-RUN of the three → **P-BEHIND-WORD** "NOISE" behind his head on SH-11 at 41.2 (E1) → P-SCRIPT-ASIDE "…riveting" over a rooster (light comedy) |
-| PAYOFF | 46.0–58.0 | "What I got instead: every city from the inside." | **P-RECAP-RIFFLE** of six hosts' doorways, city names as card titles, 0.5 s each (cuts) → talking piece with **Z-2** slow push |
-| CTA | 58.0–64.5 | "Comment STAY and I'll send you all eleven." | **P-POSTER-BACKDROP** (SH-12 profile, `accent` sun) + **P-CTA-KEYWORD** "Just comment / **STAY** / for the list", held 2.4 s |
-| BOOKEND | 64.5–66.0 | "See you inside." | SH-1 pre-roll [src 10.9–12.4]: the doorway, the creator far in the street; the last frame equals f0 |
-Cut count ≈ 37 (34 cuts/min); duo titles 4; paper share ≈ 14%; presence ≈ 52%.
-
-### 14.2 F-A types · [NICHE: example] fitness · "3 types of gym people" (61 s, keyword PLAN)
-**Header:** F-A · HA-12 · story (list of types) · count 3 · SM-1 markers · CTA `comment_keyword` PLAN · grades persona-1 GR-mono, persona-2 GR-amber, persona-3 GR-teal · E2 at 6.0 s · E1 at 1.3 s · runtime 61 s.
-
-**Hook (0–2.9 s):**
-| t (s) | Spoken | Picture | Type layer | Subtitle | Camera / cue |
-|---|---|---|---|---|---|
-| f0 | — | Setup B seated set, the creator gesturing (live) | — | hidden | — |
-| 0.60 | "There are three" | same | **3** blur-slides in at (150, 360), 230 px, left of his cap (front, 40 px clear) | — | hook cue |
-| 0.95 | "types of" | same | script "types of" writes to the right of the 3 | — | — |
-| 1.30 | "gym" | same | **GYM** blur-slides in **behind** his head (E1, 260 px, ≥ 65% visible) | — | — |
-| 1.70 | "people" | same | script "people" under it, right-aligned | — | — |
-| 2.30 | — | he raises three fingers | lockup out | — | — |
-| 2.50 | — | **T-2** cut on the hand to a close-up of the three fingers | — | — | transition cue |
-| 2.85 | "Number one" | cut to persona 1 | — | **SM-1 "#1."** in the caption band | — |
-
-**Plan:**
-| Section | t (s) | Spoken (gist) | Patterns and picture |
-|---|---|---|---|
-| PERSONA-1 | 2.9–12.5 | The overthinker: 40 tutorials, never lifts | GR-mono starts on the cut (GR-L) → label duo "The **OVERTHINKER**" (z8, front, no E1 inside GR-L) → **P-CHAOS-BURST** at 6.0–7.4 ("[Form check]", "[Program]", "am I doing it wrong", "[Day 1]", "too many") with a 4-cut flurry, then ≥ 1.0 s clean → action shots of him scrolling on a bench → punch duo "Still on **DAY ONE**" |
-| PERSONA-2 | 12.5–22.0 | The ego lifter: heavier every week, form gone | "#2." → GR-amber → label duo "The **EGO LIFTER**" → **P-UI-CHIP** search "heaviest deadlift ever" (light comedy) → detail run (chalk, plates, belt) → punch duo "Doesn't care about **FORM**" |
-| PERSONA-3 | 22.0–31.0 | The trend chaser: a new program every reel | "#3." → GR-teal → label duo "The **TREND** CHASER" → **P-PHONE-REEL** of his own saved-reels screen capture with **P-INK-OVAL** on the caption |
-| TURN (re-hook) | 31.0–35.5 | "The one who wins is the boring one." | Back to GR-warm on a white set (the grade ends on the cut) → **P-DUO-TITLE** "the **BORING** one" `rehook: true` (50% of 61 s) |
-| PAYOFF | 35.5–51.0 | Shows up, logs it, repeats | **P-FLOAT-CARDS** of four client check-in clips around him (assets, creator-owned) → **P-COUNT-UP** "312" + "SESSIONS" landing on "three hundred twelve" → talking piece Z-2 |
-| CTA | 51.0–59.5 | "Comment PLAN for my 4-week starter plan." | **P-POSTER-BACKDROP** + **P-CTA-KEYWORD** "Just comment / **PLAN** / for the plan" 2.2 s → **P-SIGNOFF-SUN** "See you / **TOMORROW**" |
-| BOOKEND | 59.5–61.0 | "Show up." | SH-1 pre-roll of the seated set; last frame equals f0 |
-Re-hook check: the turn at 31.0 s sits at 50% of 61 s; the gaps 2.9 → 31.0 s and 31.0 → 51.0 s are both ≤ 40 s. Cut count ≈ 40 (39 cuts/min); grade events 3; E2 once.
-
-### 14.3 F-B tutorial · [NICHE: example] travel · "Edit travel photos on your phone in 4 steps" (72 s, keyword PRESET)
-**Header:** F-B · HA-05 · tutorial · count 4 · SM-2 rule chapters · series "Travel Lab" ep. 03 (P-SERIES-LOCKUP) · sponsor: the editing app (P-LOGO-CHIP + P-DISCLOSURE) · CTA `link_bio` (P-END-BLOCK) · bookend SH-2 (overhead of the creator at a river railing).
-
-**Hook (0–3.6 s):**
-| t (s) | Spoken | Picture | Type layer | Subtitle | Camera / cue |
-|---|---|---|---|---|---|
-| f0 | — | SH-2 overhead: the creator walks into the frame toward the railing | — | hidden | — |
-| 0.38 | — | same | line 1 squash-in starts | — | hook cue |
-| 0.45–0.70 | — | same | **EDIT TRAVEL PHOTOS / ON YOUR PHONE** mask-wipes up (Montserrat 900, 72 px): readable by 0.7 s | — | — |
-| 0.85 | "Your travel photos look flat," | he leans on the railing | title holds | CS-1 starts | — |
-| 2.40 | "here's the fix in four steps." | same | title holds | — | — |
-| 3.60 | — | **T-2** cut on his turn | title blurs out | — | transition cue |
-
-**Plan:**
-| Section | t (s) | Spoken (gist) | Patterns and picture |
-|---|---|---|---|
-| SERIES | 3.6–4.8 | — | **P-SERIES-LOCKUP** "Travel / **LAB** / ep. 03" on W-grid (intro = 4.8 s = 7% ✓) |
-| CONTEXT | 4.8–11.0 | "We're doing it all in one free app." | **P-LOGO-CHIP** "With <app>" (the sponsor's supplied logo) + **P-DISCLOSURE** "Paid partnership" for the whole sponsored span (4.8–58.0) → **P-SPIN-CARD** of "the photo I took in Lisbon" |
-| RULE-1 | 11.0–22.0 | Remove distractions | SM-2 "REMOVE THE NOISE" (ink on W-paper) → **P-APP-DEVICE** (SH-8) → **P-LASSO** on the tourist behind her (12 f) → zoom into "Erase" (12 f) → hard swap of the screen to the cleaned photo on "gone" |
-| RULE-2 | 22.0–33.0 | Straighten and crop | SM-2 "STRAIGHTEN" → **P-LANDSCAPE-CARD** of the photo with **P-GUIDE-LINES** (thirds) + **P-INK-ARROWS** to the horizon → device crop step |
-| RULE-3 (re-hook) | 33.0–44.0 | Lift the shadows | **P-DUO-TITLE** "This one **CHANGES** everything" `rehook: true` (46% of 72 s) → device zoom to the Shadows slider (1.0 → 1.8, 12 f) |
-| RULE-4 | 44.0–55.0 | Warmth and a soft vignette | SM-2 "WARM IT UP" → device slider → **P-CARD-CAROUSEL** of three more photos with the same settings |
-| RESULT | 55.0–62.0 | "Before. After." | **P-BEFORE-AFTER-POLAROID** on W-grid: before 1.2 s, cut to after on "after", hold 1.8 s |
-| CTA | 62.0–70.5 | "My preset is free, link in bio." | **P-END-BLOCK** "FREE / TRAVEL / PRESET / LINK / IN BIO" over SH-13 (river water close-up), 3.5 s |
-| BOOKEND | 70.5–72.0 | "Go shoot." | SH-2 pre-roll: the empty railing from above, the creator about to enter; the last frame equals f0 |
-Cut count ≈ 38 (32 cuts/min, cards and slides included as `transitions`); paper share ≈ 36%; presence ≈ 41% (F-B band 35–55%).
-
----
-
-## §15 QA checklist `[DNA]`
-
-**1. Profile conformance**
-- [ ] Format declared (F-A or F-B) and its layouts only (`V-LAYOUT`); duration 55–85 s (`review`); presence 45–60% (F-B 35–55%) and max absence 6 s / 8 s (`V-PRESENCE`).
-
-**2. Hook**
-- [ ] f0 moves; the first type beat by 0.7 s (HA-12) or the title by 0.7 s (HA-05) (`V-F0`).
-- [ ] ≥ 6 weighted changes in 0–3 s; no gap > 0.8 s in the hook (`V-CADENCE`).
-- [ ] The thesis complete by 3.0 s; each beat reads in ≤ 1.2 s; ≤ 7 words per lockup (`V-F0`, `V-TITLE`).
-- [ ] The mute test passes: the beats alone tell the thesis (`review`).
-
-**3. Body and cadence**
-- [ ] 27–51 cuts/min (F-B 27–42), median shot 0.85–1.6 s; card swaps declared as cuts (`V-CADENCE`).
-- [ ] 5–12 weighted changes per 10 s; max gap 3.0 s; nothing static > 2.5 s (`V-CADENCE`).
-- [ ] The unit ritual identical for every item / rule; markers match the count (`V-PROMISE`, `review`).
-- [ ] One re-hook at 43–53% of runtime; gaps ≤ 40 s (`V-REHOOK`).
-- [ ] Duo titles: 4–9 per 60 s, never two at once, blocks land on their words ±5 f (`V-ONWORD`, `review`).
-- [ ] Only `primary` as a bright text hue; ink blocks on light worlds; ≤ 2 bright roles per frame (`V-HUES`, `V-TYPE`).
-- [ ] Camera: only push-drift / slow-push / reset; never twice in a row (`V-CAMERA`).
-
-**4. Captions**
-- [ ] CS-1 on every spoken word outside duo / E2 / morph spans; 3–6 words, 1 line, ≤ 28 characters, y 1468, 54 px EB Garamond with the 2 px stroke; lead ≤ 0.15 s (`V-CAPTION`, `V-TYPE`).
-- [ ] Spelling and glossary exact; ".." only on real pauses (`V-CAPTION`).
-
-**5. Modules**
-- [ ] **Ink (§22):** ≤ 3 marks on screen, `primary` 5–7 px, every mark on its target from the anchor pass, finished before the scene ends, never on the face (`review`).
-- [ ] **Continuity (§23):** the last frame's picture equals f0's; no type fully visible on either; the bookend carries the last words; walk-in/out when SH-3 exists (`V-CONTINUITY` pending → `review`).
-- [ ] **Series (§24):** the lockup once, inside the intro cap; the episode number from the brief (`V-REHOOK`, `review`).
-- [ ] **Brand (§25):** disclosure visible ≥ 2 s or for the whole sponsored span and spoken; logo only from the creator's file; end card ≤ 4 s (`V-PROMISE`, `review`).
-
-**6. Truth and inserts**
-- [ ] Every number on screen spoken or in the script (`V-NUMFMT`, `review`).
-- [ ] Every third-party moment recorded: creator-supplied or created and labelled (`V-INSERTS`).
-- [ ] E1: ≥ 65% visible, first/last letters clear, hold ≥ 0.6 s, ≤ 1 at a time, none inside a GR-L span (`V-EXC`).
-- [ ] E2: once, ≤ 1.5 s, ≤ 6 snippets, face clear, subtitles hidden, a clean second after, not in the CTA (`V-EXC`).
-- [ ] Grades: one id per persona, no two consecutive personas alike, ≤ 8 events (`V-GRADE` pending → `review`).
-
-**7. Sound contract**
-- [ ] Cues only on hook / transitions / reveals / CTA moments, each tied to a picture event (S1–S6); no meme cues; bed ≥ 18 dB under the voice; −14 LUFS, true peak ≤ −1.5 dBTP.
-
-**8. End and export**
-- [ ] CTA keyword ≥ 1.5 s on screen (`V-PROMISE`); hard end ≤ 6 f after the last word on the bookend frame; no black tail; 1080 × 1920, 30 fps CFR.
-
----
-
-## §16 Frame template / persistent chrome
-OFF (`profile.modules.chrome = false`): nothing persists on screen; the frame changes with every shot.
-
-## §17 Running state & anchored graphics
-OFF (`profile.modules.running_state = false`, `profile.modules.anchors = false`): counters are one-off count-ups; ink targets come from the §22 anchor pass as static points or 2–4 keyframes.
-
-## §18 Data contract
-OFF (`profile.modules.data_figures = false`): no charts or computed figures; every number on screen is spoken or in the script (H18).
-
-## §19 Evidence & citations
-OFF (`profile.modules.citations = false`): no source cards or credit lines. Third-party material follows the ask-then-create flow (§12.5).
-
-## §20 Dialogue
-OFF (`profile.modules.dialogue = false`): one voice; a partner or a friend on camera is footage, not a speaker track.
-
-## §21 Canvas camera
-OFF (`profile.modules.canvas_camera = false`; graphics are `support`, PV-5): the camera moves over footage only (§10.2).
-
-## §22 Ink & annotation layer `[COND: modules.ink] [DNA look; TUNE width]`
-- **Stroke tokens:** colour `primary`, width 5–7 px (6 default), round caps, wobble ±1.5 px (seeded, per path), draw-on 10 f, 15° overshoot at the start of ovals.
-- **Guides:** `paper` at 75%, 3 px, straight, drawn from the top in 10 f; centre line, rule-of-thirds grid, or one horizon line.
+### 8.6 Comedy and the ink layer
+**Comedy is light.** Staged persona exaggeration (the shot itself), a deadpan script aside, an ironic UI chip ("best
+camera to buy" typed by the gear persona), a reaction shot. Never stickers, stamps, meme cues, emoji, crash zooms or
+freeze-frame roasts.
+
+**The ink layer** (yellow hand-drawn marks; F-B lives on it, F-A borrows it for "look at this"):
+- **Stroke:** colour `primary`, width 5–7 px (6 default), round caps, wobble ±1.5 px (seeded, per path), draw-on 10 f,
+  a 15° overshoot at the start of ovals.
+- **Guides:** `paper` at 75 %, 3 px, straight, drawn from the top in 10 f; a centre line, a rule-of-thirds grid, or one
+  horizon line.
 - **Lasso:** `paper` 8 px, traced along the object's outline over 12 f.
-- **Marks:** arrow (shaft 8 f, then head 3 f), oval, underline (8 f), guide line, lasso. No circles of text, no scribbles, no notes in marker type.
-- **Targets:** the anchor pass reads sampled frames of the clip and writes each target's rect `{x, y, w, h}` in output px; a moving subject gets 2–4 keyframes (linear between them); a target leaving the frame ends the mark.
-- **Rules:** ≤ 3 marks on screen; marks finish before their scene ends; never on the face; one mark per spoken "here / this / look"; arrows converge on the subject, never point off-frame.
+- **Marks:** arrow (shaft 8 f, then head 3 f), oval, underline (8 f), guide line, lasso. No circles of text, no scribbles,
+  no notes in marker type.
+- **Targets:** the anchor pass reads sampled frames of the clip and writes each target's rect `{x, y, w, h}` in output
+  px; a moving subject gets 2–4 keyframes (linear between them); a target leaving the frame ends the mark.
+- **Rules:** at most three marks on screen; marks finish before their scene ends; around a face, not across it; one mark
+  per spoken "here / this / look"; arrows converge on the subject, never point off-frame.
 ```js
 // P-INK-OVAL: a hand-drawn oval that draws on over 10 f from local time `at`.
 function inkOval(ctx, lt, o) {           // o = {cx, cy, rx, ry, rot, at}
@@ -1225,60 +900,511 @@ VEOS.scene({ id: "ink-caption", t_in: 70.2, t_out: 72.4, z: 6, in: "none", out: 
   render(ctx, lt) { return ctx.html(inkOval(ctx, lt, { cx: 540, cy: 1195, rx: 260, ry: 74, at: 0 })); } });
 ```
 
-## §23 Continuity: the bookend loop `[COND: modules.continuity] [DNA]`
-- **Bookend (DNA):** the last 1.0–1.5 s replays the opening shot SH-1 from its **pre-roll**, so the reel's final frame shows exactly the picture of frame 0 and the reel loops (v01 @ 1:23 = @ 0:00; v05 @ 1:01 returns to the opening railing).
-- **Recipe:**
-  1. SH-1 plays at f0 as a picture-only scene from source time `s0` (`VEOS.fx.clip({asset: "B01", offset: s0, ...})`).
-  2. The BOOKEND scene plays the same asset with `offset: s0 − d` (`d` = 1.0–1.5 s) and lasts `d + 1/30` s to the reel's end, so its last rendered frame is source frame `s0`, the picture of f0.
-  3. No type is fully visible on frame 0 or on the last frame; the subtitle of the last words hides 4 f before the end (`captions.overrides` hide `[end − 0.13, end]`).
-  4. The last spoken sentence (sign-off or the end of the CTA) rides the bookend; the hard end is ≤ 6 f after the last word (NC-8).
-- **Walk-in / walk-out** (SH-3): when it exists, the creator enters the opening frame within 0.5 s and leaves the closing frame in the last 1.5 s; the bookend then plays the empty plate.
-- **Motif / morph chain:** none (`motif: null`, `morph_required: false`).
-- **Fallback (SH-1 has < 1.0 s of pre-roll):** the bookend holds SH-1 frozen on source frame `s0` for its last 0.5–1.0 s (a still is allowed there: `max_static_s` 2.5 s), preceded by the reel's last talking shot; the final frame still equals f0.
-- **Validator:** V-CONTINUITY is pending (E-19); until it ships, the checkpoint shows the last frame next to f0 and QA compares them (§15).
-
-## §24 Series furniture `[COND: modules.series] [DNA look; VAR name/number]`
-- **Series lockup (P-SERIES-LOCKUP):** on W-grid with the grid off and vignette 0.42; script name (Pinyon Script 140 px `gold`) overlapping the top of a block word (Montserrat 900 150 px `gold`), "ep. NN" (Jost 600 40 px `gold`) centred under it; centred on y 900. The creator's own series logo file replaces the type when supplied.
-- **Placement:** directly after the hook, starting ≤ 12% of runtime (5–9 s); hold 1.2 s; enters by a cut, script writes 10 f, block blur-slides 4 f; leaves by a cut. It counts toward the intro cap (hook + lockup ≤ 15%).
-- **Tokens:** `series {name: null, number: null, tag_format: "ep. {n}", card: {at_s: [5, 9], hold_s: 1.2}}`; the name and the number come from the reel brief (VAR, off until the buyer turns it on).
-- No persistent series tag, no progress dots.
-
-## §25 Sponsor, brand & end cards `[COND: modules.brand] [DNA look; VAR assets]`
-- **Logo chip (P-LOGO-CHIP):** "With" in script (60 px) + the brand's logo file (88 px tall, its own colours) + the wordmark in Jost 500 72 px `paper`, top band y 380–470, on the word naming the brand; 1.0–1.5 s. Without a logo file: `fx.logoPlate` (the name set in type, no logo).
-- **Disclosure (P-DISCLOSURE, NC-12):** "Paid partnership" (BV-14 wording) in `TC-legal` 24 px at (64, 128), from the first sponsored beat for ≥ 2.0 s, or for the whole sponsored span when the product is used on screen; plus a spoken mention.
-- **Sponsor placement:** never over the face, never over the CTA keyword, never inside the hook's first 3 s.
-- **End cards:** P-END-BLOCK (`link_bio`, `end_card`): 4–7 lines of yellow Montserrat 900 filling the width over a texture close-up (SH-13, else W-void), 2.5–4.0 s, the keyword or URL line readable ≥ 1.5 s, followed by the bookend. No subscribe buttons, no follow stacks, no QR codes.
-- **Rules:** end card ≤ 4 s; no black tail; the bookend is the last picture.
+### 8.7 Assets
+- **Real captures first:** the creator's own footage, photos, screen recordings and past posts.
+- **Allowed mocks:** a generic, unbranded UI built with `fx.device` / `fx.appUI`; the search pill and button pill (generic
+  shapes, not a brand's UI).
+- **No stock clichés:** no stock B-roll, no generated "cinematic" scenes, no drone stock.
+- **Logos:** the creator's files first (their own brand, a sponsor's logo), else the real logo fetched from the web; a
+  type-set logo plate (`fx.logoPlate`) only when none can be found.
+- **Third-party moments:** fetch the real thing, source noted (§12.5).
 
 ---
 
-## Part C. Declared exceptions and the non-overridable core
+## §9 Transition system
 
-### C.1 Non-overridable core
-NC-1 … NC-14 apply unchanged (structure Part C.1): the face is never covered; meaning text never overlaps meaning text (except an E2 burst); smooth motion; legibility floors; IG UI bands; truth; creator-owned media only; audio targets; determinism; ≤ 4 bright hues; disclosure; quote integrity; redaction.
+### 9.1 Library
+| ID | Transition | Frames | Recipe | Cue |
+|---|---|---|---|---|
+| **T-1** | Hard cut | 0 | The default, by far the most common | none |
+| **T-2** | Cut on motion | 0 | Cut inside a gesture, a turn, a whip or a walk, so the motion continues into the next shot (v02 @ 0:02.5 the hand "3", 0:25) | an optional whoosh |
+| **T-3** | Blur-through | 4–6 | An out-of-focus foreground object (a wheel, a shelf, a hand) wipes the frame in-camera; if the source has none, a 6 f vertical motion-blur ramp 0 → 30 px on the outgoing shot and 30 → 0 on the incoming one (§9.5) | whoosh |
+| **T-4** | Spin-to-vertical | 75–135 | P-SPIN-CARD (§8.3): 0 → 90°, 0.55 → 2.0, ease-in-out | whoosh |
+| **T-5** | Card slide | 8 | A carousel step on W-grid, ease in-out | soft swish |
+| **T-6** | Card fade-out | 4 | Alternate only: a paper card fades out on cream, then the next shot cuts in (the measured exit at v04 @0:27.9 is a hard cut into a wheel detail) | none |
+| **T-7** | Vortex | 8 | A radial zoom-blur tunnel on the last 8 f of a shot (scale 1 → 1.4, radial blur 0 → 24 px), then a calm shot cuts in sharp (§9.5) | whoosh |
+| **T-8** | Paper cut | 0 | G-3: footage → W-paper with the card already at rest | none |
+| **T-9** | Hard end | 0 | The bookend's last frame, ≤ 6 f after the last word | none |
+| **T-10** | Flash | 6 | An exposure bloom: the outgoing shot brightens over 2 f (brightness 1 → 2.5), cut at the white peak, the incoming one starts blown out and decays to normal over 3 f (v01 @0:28.93 into the polaroids, 0:31.01 out; v05 @0:16.86, 0:17.32 one per "photo", 0:26.38; `strip-shutter-flash.jpg`, `strip-flash-polaroid-exit.jpg`). Inside the chaos burst it's a single pure-white frame between shots (v02 @0:06.79, 0:07.17) | a shutter click on photo beats, else none |
+| **T-11** | Warm flash | 7 | As T-10 but tinted cream-yellow (`#FFF6C8`), a 4 f build, cut at the peak into the poster (v02 @0:52.24–0:52.45, `strip-warm-flash-cta.jpg`) | soft whoosh or shine |
+| **T-12** | Zoom-through on a gesture | ≈ 4 + 24 | Outgoing: a punch-in ≈ 1.0 → 1.6 on the gesture (a raised hand) over 4 f with zoom blur, the type layer included; a hard cut on the gesture to a shot whose gesture sits in the same place; the incoming shot pulls out ≈ 2.3 → 1.0 over ≈ 24 f, expo-out (ORB per-frame scale 0.91 → 0.997; v02 @0:02.40–0:03.55, `strip-zoom-through-gesture.jpg`) | whoosh |
+| **T-13** | Whip pan | 6 + 14 | In-camera: the outgoing shot whips sideways with heavy horizontal smear for 5–6 f; the incoming one lands still panning, ≈ 130 px/f decelerating to 0 over ≈ 14 f (≈ 750 px in all, ORB v02 @0:08.48–0:08.94, `strip-whip-pan.jpg`); the "#N." marker lands mid-whip | whoosh |
 
-Style-specific consequences:
-- **NC-1:** behind-head words are *behind* (E1), never in front; chaos snippets keep ≥ 40 px from the face box.
-- **NC-5:** the subtitle band (y 1437–1499) stays above y 1500; the legal line sits at the top (y 128), not the bottom.
-- **NC-14:** screen recordings (SH-8) are checked for emails, phone numbers and account names; blur them for their whole time on screen.
+### 9.2 Grammar
+| Boundary | Use | Never |
+|---|---|---|
+| f0 | A moving shot (no transition) | A fade-in, a black frame |
+| Hook → body | T-2 cut on motion (2.7–4.0 s) | A morph, a fade |
+| New scene / persona / place | T-1 or T-2 | A dissolve |
+| Footage → paper | T-8 paper cut (or G-1 shrink for "this is the example") | A cross-fade |
+| Paper → footage | T-1 cut (default), T-10 flash out of a polaroid run, or T-6 fade-out then cut | A wipe |
+| Footage ↔ polaroid / photo world | T-10 flash in and out | A slide |
+| A "snap" / photo-taking line | T-10 on every cut to a new pose (one flash per photo, 0.4–0.7 s apart) | — |
+| Hook → first item ("3 types…" with a hand count) | T-12 zoom-through on the gesture | Without a gesture to cut on |
+| Persona → persona, place → place | T-13 whip pan when at least one of the two shots was filmed with a whip (the built-in whip completes the other side), else T-1 | A digital whip between two locked-off shots |
+| Into the CTA poster | T-11 warm flash | A plain fade |
+| Card → card | T-5 slide (carousel) or a content cut (riffle) | A spin |
+| Flashback, "the old way", a chapter | T-4 spin | — |
+| Out of the chaos burst | T-7 vortex or T-1 | Another chaos device |
+| Last word | T-9 on the bookend picture | A black tail, a fade to black |
 
-### C.2 Exceptions used
-| ID | Token | Limits in tokens.json | Scenes set |
+### 9.3 Shot grammar
+| ID | Rule |
+|---|---|
+| **R-1** | **Cut on the visual idea, not on every word.** In B-roll runs the picture moves on with each new idea; a talking piece runs as long as its thought, then cuts away to what it's about |
+| **R-2** | **Cut on motion:** a gesture, a turn, a step or a whip continues across the cut within ±2 f (T-2) |
+| **R-3** | **A list of nouns** gets one 0.6–1.0 s detail per noun, cut on each noun's onset (P-DETAIL-RUN) |
+| **R-4** | **Return to the presenter** on the opinion, the turn word or the CTA; never mid-clause |
+| **R-5** | **A persona** opens with a 1.0–1.5 s establishing wide, then medium action, then the label duo |
+| **R-6** | **Travel:** in F-A the place changes whenever the story moves on (a new location, set or persona), so it feels like a journey |
+| **R-7** | **Type beats follow words; cuts follow pictures.** Never cut inside a block's 4 f rise; move the cut up to 3 f |
+| **R-8** | **The bookend:** the final 1.0–1.5 s plays SH-1's pre-roll so the last frame is frame 0's picture (§7.6) |
+| **R-9** | **Walk-in / walk-out:** the creator enters the opening frame within 0.5 s and leaves the closing frame in its last 1.5 s when SH-3 exists |
+
+### 9.4 How the moves breathe
+Hard cuts and cuts on motion run constantly and nobody notices them: that's the vlog rhythm. Everything a viewer *can*
+name is a moment. The flash belongs to photos and polaroids, and it can fire on every pose of a photo run because that's
+what a camera does. The whip joins two places when the camera actually whipped. The warm flash happens once, into the
+poster. The spin, the vortex and the zoom-through are one-offs: each is the best move in the reel exactly once, and a
+repeat turns it into a trick. Never the same visible move three times running, except the flashes of a snap run.
+
+### 9.5 How the transitions render
+Built-in `timeline.transitions[]` entries with a `type` (`renderer/transitions.js`). The engine draws them over the
+picture (world, footage, behind-scenes, scenes z1–6) and under the captions and duo titles unless `layers` says
+otherwise. Never build them as scenes.
+
+| ID | Timeline entry (measured values) |
+|---|---|
+| T-10 | `{"t": <cut>, "type": "flash", "frames": 6, "pre": 2, "peak": 0.9, "decay": 1.6}`: 2 f build, the white peak on the cut, 3 f decay (v01 @0:28.93, v05 @0:16.86). **Burst variant** (inside P-CHAOS-BURST): one pure-white frame, `{"t": <cut>, "type": "flash", "frames": 1, "pre": 0, "peak": 1}` |
+| T-11 | `{"t": <cut>, "type": "flash", "colour": "#FFF6C8", "frames": 7, "pre": 4, "peak": 0.9}`: a 4 f cream build, cut at the peak into the poster, a short decay (v02 @0:52.24) |
+| T-12 | Two built-ins on the same cut. **Outgoing:** `{"t": <cut>, "type": "zoom-blur", "frames": 6, "pre": 4, "amount": 0.3, "punch": 0.4, "at": [<gesture x>, <gesture y>], "layers": "all"}` (a 4 f punch with zoom blur, the type layer included; the engine caps `punch` at 0.4, so it reaches 1.4× where the source reaches ≈ 1.6×). **Incoming:** the camera landing Z-4 on the cut, `{"t": <cut>, "preset": "zoom-land", "p": {"origin": {"x": <gesture x>, "y": <gesture y>}}}` (1.5 → 1.0 over 24 f, `expoOut`, a radial blur decaying with it; the source pulls out from ≈ 2.3×, the `slow_push` policy lands from 1.5× at most). Cut on the gesture (T-2) so it sits in the same place in both shots; it needs ≥ 1.5× headroom (4K, or 1080p with the base reframe at 1.0), else a plain T-2 |
+| T-13 | `{"t": <cut>, "type": "whip", "dir": "left", "frames": 20, "pre": 6, "px": 90, "travel": 750, "blend": 0}`: 6 f of smear out, the incoming shot arrives ≈ 750 px off and decelerates over 14 f; no cross-blend (the source cuts at the blur peak). Match `dir` to the in-camera whip; use it on in-camera whip pairs or when one of the two shots was whipped, never between two locked-off shots |
+| T-3 (no in-camera blocker) | `timeline.blur`: `{"t": <cut − 3 f>, "kind": "directional", "angle": 90, "px": 30, "frames": 6, "shape": "pulse"}`: a vertical smear 0 → 30 px into the cut and 30 → 0 out of it, footage only |
+| T-7 | `{"t": <cut>, "type": "zoom-blur", "frames": 9, "pre": 8, "amount": 0.3, "punch": 0.4}`: the tunnel on the last 8 f (scale 1 → 1.4), then the calm shot cuts in sharp |
+
+---
+
+## §10 Motion tokens, camera and zoom, layers, finishing
+
+### 10.1 Motion tokens
+| Token | Value |
+|---|---|
+| Beat lead | 2 f before the onset |
+| Block rise-smear in | 4 f: y + 0.8 × cap height (≈ 150–220 px; tokens 180) → 0, vertical smear 24 → 0 px, opacity 0 → 1, expo-out `cubic-bezier(0.22, 1, 0.36, 1)` (v01 @0:00.59) |
+| Block rise-out | 4 f: y 0 → −130 px (110–150 measured), smear 0 → 24, opacity 1 → 0, `cubic-bezier(0.64, 0, 0.78, 0)`; last word in leaves first, 1 f apart; the script un-writes R→L in 4 f |
+| Script write-on | 8 f left-to-right clip mask, linear |
+| Keyword hold | 0.4–0.6 s per beat; titles 2–4 s |
+| Card enter | 6–10 f; card fade-out 4 f |
+| Spin card | 75–135 f, 0 → 90°, scale 0.55 → 2.0, ease-in-out `cubic-bezier(0.65, 0, 0.35, 1)` |
+| Carousel step | 8 f in-out |
+| Polaroid entry | via the T-10 flash; a 3 f settle (1 % scale, 0.2°) |
+| Flash (T-10) | 2 f up + the cut + 3 f decay; the burst variant is 1 white frame |
+| Title squash-in | 3 f per line (scaleY 0.05 → 1), 2 f stagger |
+| Typewriter | the CTA serif line 2 chars/f; chaos snippets 1 char/f |
+| Riffle swap | 14–18 f per card |
+| Count digit | 6 f per appended digit when spoken as one number |
+| Ink draw | 10 f (arrow shaft 8 + head 3; oval 10 with a 15° overshoot) |
+| Vortex | 8 f |
+| Behind-word parallax | 8–12 px over the hold |
+| Hold | text ≥ 0.25 s per word; titles ≥ 10 f after complete |
+
+### 10.2 Footage camera (`zoom_policy: slow_push`)
+| ID | Preset | Recipe | Use |
 |---|---|---|---|
-| E1 | `behind_text` | `{"min_visible": 0.65, "max_at_once": 1, "min_hold_s": 0.6}` | `behind: true`, `exception: "E1"`, `text_class: "TC-display"` |
-| E2 | `chaos_burst` | `{"max_s": 1.5, "max_per_60s": 1, "max_per_reel": 1, "max_snippets": 6, "clean_after_s": 1.0}` | `exception: "E2"`, `snippets: N`, z8 |
+| **Z-1** | `push-drift` | 1.00 → 1.06 over the beat (`ease: "linear"`, at least 15 f) | A static shot that must feel alive: awe beats, plain talking pieces, the hook if SH-1 is static |
+| **Z-2** | `slow-push` | 1.00 → 1.06 over 150 f, `ease: "linear"` (measured 1.06 over 5.3 s, ≈ 1.1 %/s, v04 @0:42.4–0:47.6, `strip-slow-push.jpg`) | A hold longer than about 3 s: the turn, a confession, the closing talking piece |
+| **Z-3** | `reset` | Back to 1.00 on a cut | Only on a cut |
+| **Z-4** | `zoom-land` | Landing on a cut: 1.50 → 1.00 over 24 f, `ease: "expoOut"`, `blur: {kind: "radial", amount: 0.18, shape: "decay"}`, `origin` the gesture point (it starts on a cut and ends on 1.0, so `slow_push` allows it) | Only as the incoming half of T-12 |
 
-### C.3 How they are declared
-Playbook §2.2 (limits, reason, evidence) → `tokens.json → exceptions` → `exception: "E1" | "E2"` on each scene → V-EXC checks them per frame (E1 visible ratio needs the occlusion measure, E-21; until then a warning and the 200% matte check at the checkpoint).
+**The footage is locked off** (ORB scale 1.000 ± 0.003 per frame on v01 @0:00–0:01 and 0:04, v03 @0:00, v05
+@1:03–1:07): movement comes from the subject (walk-ins, gestures, cars) or from in-camera moves (whips, drone), not from
+engine zooms. Leave a static shot static when its subject moves; Z-1 only when nothing in the frame moves. The camera is a
+breath you feel, never a move you see: never a punch, crash, shake or rotation as a camera event (T-12 is a built-in
+transition plus the Z-4 landing), never two moves within 0.4 s, and a different move from one to the next so it never
+feels mechanical. A 1080p source allows re-crops up to 1.35×; 4K allows 2×.
 
-**E2 scene recipe (P-CHAOS-BURST):**
+### 10.3 Layer order (back to front)
+1. The world (W-paper, W-grid, W-void, W-poster) or the blurred footage copy
+2. Paper cards, polaroids, devices on L-hidden (z3)
+3. The footage group: the graded footage → **behind scenes** (P-BEHIND-WORD, P-POSTER-BACKDROP, the P-SIGNOFF-SUN word)
+   → the cut-out. Grades live here, on the footage, never on the graphics.
+4. B-roll clip scenes over the voice (z4, each grading its own frame, §12.6)
+5. Card titles, UI chips, floating panels, ink marks (z5–6)
+6. The title lockup, the counter, script asides (z6)
+7. The CS-1 subtitle (z7)
+8. Duo titles, the CTA keyword, the end block, chaos snippets (z8; the subtitle hides under them)
+9. The disclosure line (z9)
+
+### 10.4 Finishing
+- No grain, no film burns, no resting light-leak overlays (the T-10 / T-11 flashes are transitions). W-paper noise 0.03,
+  W-grid noise 0.04 + vignette 0.42, W-void vignette 0.3.
+- Soft shadows only: cards `0 18px 40px rgba(0,0,0,.18)`, polaroids `0 14px 30px rgba(0,0,0,.35)`, the device `0 30px 60px
+  rgba(0,0,0,.45)`.
+- No glow. The only gradient fill on type is the sign-off word (`soon`).
+- Radii: 9:16 cards 40, 4:3 cards 28, the device 64, the phone 48, floating cards 16, polaroids 2.
+
+---
+
+## §11 Sound
+
+Sound is minimal: the voice, a bed, and a few cues that each mark something you see. Catalogue ids only; every cue sits on
+a visible event, no file more than twice, never the same file twice in a row.
+
+| Line | Decision |
+|---|---|
+| **Cue moments** | `hook` (one soft cue on the first keyword landing), `transitions` (cut on motion, the T-13 whip and the T-12 zoom-through: a whoosh; the spin, the vortex, the carousel; T-11 into the poster: a soft shine; a camera-shutter click on each P-SNAP-RUN flash), `reveals` (the count-up landing, the polaroid drop, the before → after swap, the end block), `cta` (the keyword landing). Duo beats after the hook, subtitles and ink marks are silent |
+| **Good starting points** (all in the catalogue) | `appear-enter` (a soft hook or reveal cue), `air-low-woosh` (a calm whoosh on a cut on motion), `fast-swish-movement-fast-swish-movement` (the carousel slide), `camera-shutter-2025-02-19-17-59-23-utc-dslr-camera-shutter-v1` (a snap-run flash), `05405-shine-ding` (the warm flash into the poster, the CTA keyword) |
+| **Meme cues** | none: comedy is light |
+| **Music bed** | From f0 (not observable in the source; a cinematic-vlog default): a cinematic or lo-fi bed that rides the whole reel |
+| **Ducking** | The bed ≥ 18 dB under the voice while it speaks; location sound in B-roll kept at −28 to −22 dB under the voice and ducked with it |
+| **Loudness** | −14 LUFS integrated, true peak ≤ −1.5 dBTP; a hard end ≤ 6 f after the last word, on the bookend frame |
+
+When in doubt, leave a cue out: the cuts and the type carry the energy.
+
+---
+
+## §12 Footage handling
+
+### 12.1 Setups
+| Setup | Camera and framing | Head top y (output) | Light / set | Notes |
+|---|---|---|---|---|
+| **A** Location talking piece | Handheld selfie or gimbal at arm's length, 4K preferred, 24/25/30 fps | 250–520 | Natural light, golden hour preferred | 2–5 locations in a reel |
+| **B** Seated set | Tripod, a 50–85 mm look, shallow depth | 420–700 | Warm practicals (a lamp, a textured wall), a dark top | the v02 interview set |
+| **C** Wide / overhead | Drone, balcony, stairs or a high tripod; the presenter small | 600–1100 | A composed frame (lines, railings, a car, a door) | Hook shots, walk-ins |
+| **D** Clean-matte headroom | Tripod, a plain or distant background, ≥ 300 px above the head | 560–800 | Separation light | Behind-head words, the poster |
+
+Wardrobe: solid tops; a signature cap or prop is welcome (it recurs). No mic visible in setups B and D.
+
+### 12.2 Shots
+| ID | Shot | Spec | How many | Must / optional | Formats |
+|---|---|---|---|---|---|
+| **SH-1** | Opening shot | Moving and composed: a mirror, doorway, window, overhead, or a walk-in; 3–5 s **plus 1.5 s of pre-roll** before the in-point (the bookend uses it) | 1 | must | F-A, F-B |
+| **SH-2** | Overhead / drone | Top-down or high-angle of the presenter at a location, 3–6 s | 0–2 a minute | optional | F-A, F-B |
+| **SH-3** | Walk-in / walk-out | The same spot, the same framing: the creator enters at the start and leaves at the end | 1 pair | optional | F-A |
+| **SH-4** | Location B-roll | Details, hands, products, POV, macro inserts, 1–2 s each, 4K or 1080p | 20–40 a minute | must | F-A, F-B |
+| **SH-5** | Talking pieces | 2–5 different setups or locations (A/B) | 2–5 | must | F-A, F-B |
+| **SH-6** | Persona scenes | The same person with an outfit, prop or place swap, 3–6 s each | 0–4 | optional (must for "types of" reels) | F-A |
+| **SH-7** | Signature prop / vehicle | 1–3 s each | 0–6 | optional | F-A, F-B |
+| **SH-8** | Screen recordings | The app or tool being taught, portrait, ≥ 1080 px wide | 0–8 | optional (must for app tutorials) | F-B |
+| **SH-9** | Before / after | Stills or clips of the real result | 0–2 | optional (must when the topic has a visual result) | F-B |
+| **SH-10** | Past posts | Screen captures of the creator's own posts | 0–9 | optional | F-A, F-B |
+| **SH-11** | Headroom shot | Setup D, for behind-head words | 1–3 | must | F-A, F-B |
+| **SH-12** | Poster shot | Profile or 3/4 against a plain wall with back light | 0–1 | optional | F-A, F-B |
+| **SH-13** | Texture close-up | Grass, fabric, water, a wall, 3–4 s, for the end block | 0–1 | optional | F-B |
+
+### 12.3 Fallbacks
+| ID | For | What happens instead | What it costs | Result |
+|---|---|---|---|---|
+| **FB-1** | SH-1 | Open on the most moving wide of the presenter (walking, gesturing) with Z-1 push-drift; the bookend reuses its first 1.0 s (ending on its first frame) | No frame-within-frame surprise | degraded |
+| **FB-2** | SH-2 | A high-angle phone shot (stairs, balcony, pole); else the title lockup over the widest shot | No aerial scale | degraded |
+| **FB-3** | SH-3 | Hold an empty plate of the location 0.5 s before the first and after the last talking shot | The entrance and exit are implied | holds |
+| **FB-4** | SH-4 | Alternate two re-crops of the talking take (up to 1.35× from 1080p, 2× from 4K) with paper cards and polaroids of the creator's photos, a change every 1.0–1.5 s | Less location variety; the rhythm comes from crops and cards | degraded |
+| **FB-5** | SH-5 | One location, two framings (wide / tight) cut on sentence boundaries | No travel feeling | degraded |
+| **FB-6** | SH-6 | One location with an outfit or prop swap per persona, told apart by GR-mono / GR-amber / GR-teal and a label duo per persona | Less staging | holds |
+| **FB-7** | SH-7 | Drop the prop beats; use SH-4 details | Nothing structural | holds |
+| **FB-8** | SH-8 | The real app or page captured from the web inside the P-APP-DEVICE frame; else a created generic UI (`fx.appUI`) | Not the creator's own recording (or, created, not the real app) | degraded |
+| **FB-9** | SH-9 | No before/after; the result becomes a P-PAPER-CARD checklist | No visual proof | degraded |
+| **FB-10** | SH-10 | Recap cards built from SH-4 stills with burned titles | Not the real past posts | holds |
+| **FB-11** | SH-11 | The word sits above the head on the front layer (40 px clear of the head region), not behind it | No depth sandwich | degraded |
+| **FB-12** | SH-12 | Matte the best profile take and draw the W-poster backdrop behind it; if the matte fails at 200 %, the CTA duo sits over plain footage | A less graphic sign-off | degraded |
+| **FB-13** | SH-13 | The end block sits on W-void | A flatter end card | holds |
+
+Note the fallbacks used in your plan. If the B-roll is too thin to keep the picture moving even with FB-4, build the
+strongest edit this style allows from what there is and say so in one line with the storyboard: this style is its
+footage, and more B-roll next time is the fix.
+
+### 12.4 Props, the reaction bank, the cut-out, resolution
+- **Props:** one signature prop or vehicle per series (optional); the phone with the app open (F-B); outfit or cap swaps
+  for personas.
+- **Reaction bank (worth asking for at the shoot, 2–3 s each):** a nod to camera, a laugh off camera, a turn and walk
+  away, a point to camera, a hand counting fingers (a cut-on-motion source).
+- **Cut-out:** needed for behind-head words and the poster; feather 2 px, choke 1 px; check the hair at 200 %.
+- **Resolution:** a 2× re-crop needs a 4K source; a 1080p source allows 1.35×. Drone and overhead shots must be ≥ 2.7K
+  to survive the 9:16 crop.
+
+### 12.5 Third-party inserts: fetch the real thing
+When the creator names a real reel, post, artwork, app, brand or product page, the viewer should see the real one.
+1. **Find the moments** that call for it. In this style: another creator's reel or post (P-PHONE-REEL / P-REF-CARD), an
+   artwork or famous photograph (P-REF-CARD), an app's UI that isn't the creator's own recording (P-APP-DEVICE), a brand
+   logo (P-LOGO-CHIP), a product page (P-FLOAT-PANEL).
+2. **The creator's own files** in their folder come first.
+3. **Otherwise search the web and fetch it:** the real logo, the real post, the real page or artwork (captured and framed
+   on the part that matters). Note where it came from.
+4. **Use it as it is** inside the style's frame (paper card, phone, device), cropped and marked with ink, never altered
+   to say something it doesn't; a post or headline word for word.
+5. **Nothing usable to be found: rebuild it from its exact words.** Another creator's reel →
+   `fx.appUI({kind: "video", caption})` in the phone frame; a post → `fx.quoteCard` (verbatim words); an artwork or a
+   person → `fx.silhouette` with the title set in type; an app → `fx.appUI` (generic, unbranded); a logo →
+   `fx.logoPlate`. No labels, no credit lines.
+
+### 12.6 Frame rate, audio and how the footage plays
+- Output 1080 × 1920, **30 fps CFR**; conform 23.98/24/25 fps sources (cinematic sources are usually 24).
+- Voice chain: high-pass 80 Hz, de-ess, light compression; one voice track (a lav or the location mic, never both).
+- **The cut map carries the voice.** The EDL is built from the talking pieces (setups A/B/D, their own audio), or from
+  the separate voice-over file when the creator recorded one. Talking pieces in the cut map get the face boxes, the
+  cut-out and the behind-head words, and the engine grades them (GR-warm, or a persona grade, §4.3).
+- **B-roll plays over the voice as picture-only scenes.** Every SH-1/SH-2/SH-4/SH-6/SH-7 clip is `veos asset add`-ed and
+  shown full-bleed at z4, frame-exact from its in-point, declared as a cut and as live motion. Video assets aren't graded
+  by the engine, so the scene grades its own frame: the warm footage grade by default, the persona's grade inside a
+  persona span.
 ```js
-// ≤ 45 f; 4-6 snippets around (never on) the face; GR-mono under it (GR-L scene, declared after it at z4).
+// B-roll over the voice, graded like the camera footage. grade: a GR id inside a persona span, else the warm footage grade.
+function roll(o) {   // o = {id, asset, t_in, t_out, offset, grade}
+  return VEOS.scene({ id: o.id, t_in: o.t_in, t_out: o.t_out, z: 4, in: "none", out: "none", kind: "broll", roles: [],
+    cuts: [0], continuous: true, box: { x: 0, y: 0, w: 1080, h: 1920 },
+    render(ctx, lt) {
+      const g = ctx.grade(o.grade || ctx.tokens.grades.footage);
+      return ctx.html(`<div style="position:absolute;inset:0;background:url('${ctx.videoFrame(o.asset, (o.offset || 0) + lt)}') center/cover;${g}"></div>`);
+    } });
+}
+roll({ id: "b-kettle", asset: "B07", t_in: 3.10, t_out: 4.02, offset: 2.40 });
+roll({ id: "b-hoarder-1", asset: "B12", t_in: 9.05, t_out: 10.20, offset: 0.80, grade: "GR-amber" });
+```
+- A persona scene with the creator's own line on camera stays in the cut map (graded by a `timeline.grades[]` span,
+  §4.3); a persona scene played under the voice is B-roll (graded by `roll`).
+
+---
+
+## §13 What your plan should settle
+
+Your `ideas.md` is a page or two, for you. In this style it has decided, before any code:
+1. **The format** (F-A or F-B) and the hook archetype (HA-12 / HA-05 / HA-19 / HA-08).
+2. **The hook:** SH-1 (clip, in-point, its motion), the duo split of the thesis with every beat's words, frame and rect
+   (or the lockup's lines and sizes), the first cut on motion and its frame pair; the 8–10 candidates, the pick, two
+   alternates.
+3. **The shot map:** for every sentence, the clip that carries it (asset, offset, length), every cut with its T-id and
+   the motion it hides in; the detail runs one noun at a time.
+4. **The type layer:** every duo title (beats, words, times, rects), every behind-head word (the take, the head top, the
+   word's rect, the matte check), the counters, the card titles, the asides.
+5. **Paper and personas:** which lines step onto paper and on which card; each persona's grade; the chaos burst, if any,
+   with its snippets.
+6. **The furniture:** the bookend (SH-1's clip, the pre-roll span, the words that ride it), the ink anchors, the series
+   number, the sponsor's logo and disclosure.
+7. **The inserts** (creator's / fetched, with its source / created) and the fallbacks used.
+8. **The sound:** each cue on its event, the bed from f0.
+9. **The moments you'll look at hardest on the storyboard:** f0 (moving, no type fully visible), 1.5 s (mid-hook: a
+   block landed, the head clear), a behind-head word (≥ 65 % visible, letters clear of the hair), one paper beat (yellow
+   never on cream), one persona or rule beat (its grade), the CTA, and the last frame next to f0.
+
+**Beat fields this style adds:** `caption {profile: CS-1, overrides[]}` (hide for "#N." markers, text fixes); `ink [{mark:
+arrow | oval | guide | lasso, target: {x, y, w, h}, frames}]` from the anchor pass; `bookend {shot: SH-1, src_in,
+src_out}` on the BOOKEND beat and `walk: in | out`; `series {name, number}`; `sponsor {id, disclosure}` on every
+sponsored beat; `grade: GR-warm | GR-mono | GR-amber | GR-teal`; `shot_id: SH-n`, `fallback_used: FB-n | null`;
+`exception: E2` (the chaos burst only); `rehook: true`. The reel header carries `format`,
+`hook_archetype`, `structure`, `count`, `keyword`, `cta_device`, `grades`, `bookend`, `series`, `sponsor`.
+
+A beat and a header, for the shape:
+```yaml
+- id: 7
+  section: SCENE-2                 # HOOK | SETUP | SCENE-n | TURN | PAYOFF | CTA | BOOKEND (F-B: CONTEXT | RULE-n | RESULT)
+  t0: 18.40
+  t1: 21.10
+  spoken: "And the ego lifter only cares about one thing"
+  trigger: {word: "ego", at: 18.92}
+  tone: warn                        # hype | awe | explain | warn | win | cta
+  layout: L-full
+  visual: "Amber-graded gym, the creator in a lifting belt mid-rep; 'The EGO LIFTER' duo lands on 'ego'"
+  layers: [grade-amber-1, duo-ego]
+  pattern: P-PERSONA-GRADE
+  grade: GR-amber
+  shot_id: SH-6
+  sfx: []
+```
+```yaml
+format: F-A                        # the reel header
+hook_archetype: HA-12
+structure: story
+count: 3
+keyword: "PLAN"
+cta_device: comment_keyword
+grades: {persona-1: GR-mono, persona-2: GR-amber, persona-3: GR-teal}
+bookend: {shot: SH-1, clip: B01, src_in: 12.40, pre_roll: [10.90, 12.40]}
+series: null                       # or {name, number}
+sponsor: null                      # or {id, disclosure}
+```
+
+A hook proposal, for the shape (write 8–10; this is the pick):
+```yaml
+- name: "Mirror thesis"
+  archetype: HA-12
+  thesis: "When it comes to what you wear, shopping in person is way better than online"
+  duo_beats: ["when it comes to what | YOU WEAR", "SHOPPING / IN PERSON", "IS WAY / BETTER | than online"]
+  scene_promise: {shot: SH-1 mirror, payoff: "the try-on scenes at 0:09-0:26"}
+  storyboard: "f0 mirror, creator small, script writing | 0.47 YOU | 0.80 WEAR | 1.07 out | 1.40 SHOPPING IN PERSON | 2.33 IS WAY BETTER + 'than online' | 3.9 cut on motion to the doorway"
+  sound: [soft cue on 'YOU', whoosh on the first cut]
+  stopper: {mute: pass, motion_f0: pass, read_s: 1.0, payoff_s: 2.9}
+```
+
+---
+
+## §14 Worked examples
+
+Times are planning estimates: take the real ones from the words. They show the standard; match it, then beat it.
+
+### 14.1 F-A story, travel: "I stopped booking hotels" (66 s, keyword STAY)
+**Header:** F-A · HA-12 · story · no count · CTA `comment_keyword` STAY · bookend SH-1 (a homestay doorway seen from
+inside; the creator walks in from the street) · GR-warm throughout · a behind-head word at 41.2 s.
+
+**Hook (0–3.1 s):**
+| t (s) | Spoken | Picture | Type layer | Subtitle | Camera / cue |
+|---|---|---|---|---|---|
+| f0 | — | SH-1: the doorway frame, the creator far away in the street, walking toward it | "I" starts writing at (72, 236) | hidden | hook cue at 0.45 |
+| 0.10 | "I" | same | script "I" written (8 f) | — | — |
+| 0.45 | "stopped" | same | **STOPPED** rises in, 220 px, top y 330 | — | — |
+| 1.05 | (out) | same, closer | STOPPED rises out | — | — |
+| 1.20 | "booking" | same | **BOOKING** line 1 (200 px) | — | — |
+| 1.55 | "hotels." | same | **HOTELS** line 2 | — | — |
+| 2.10 | (out) | the creator reaches the door | the lockup rises out | — | — |
+| 2.30 | "and this" | same | script "and" + **THIS** | — | — |
+| 2.75 | "happened" | same | script "happened" below-right; the thesis complete | — | — |
+| 3.10 | — | **T-2** cut on his step through the door → SH-4 kettle detail | out 2 f before the cut | CS-1 starts | transition cue |
+
+**Plan:**
+| Section | t (s) | Spoken (gist) | Patterns and picture |
+|---|---|---|---|
+| SETUP | 3.1–9.0 | "Six months, eleven cities, zero hotels." | P-DETAIL-RUN (kettle, keys, shoes at the door) → talking piece A on a rooftop; **P-COUNT-UP** "11" + "CITIES" at 5.2 (lands on "eleven") |
+| SCENE-1 | 9.0–20.0 | The first morning: breakfast with the host family | P-DETAIL-RUN of four nouns (rice, chilli, steam, hands) at 0.8 s each → **P-POLAROID** of the family's kitchen (the creator's photo) on W-grid on "they made me family", in and out through T-10 → back to talking piece B |
+| SCENE-2 | 20.0–30.5 | "Half the price, and I knew where the locals eat" | **P-UI-CHIP** "hotels near me" over his phone shot (deadpan, light comedy) → street-food B-roll → **P-PAPER-CARD** of his own past reel "Hoi An homestay" (SH-10) with its card title |
+| TURN (re-hook) | 30.5–35.0 | "But it's not for everyone." | **P-DUO-TITLE** "**BUT** it's not for **EVERYONE**" on a talking piece, `rehook: true`; Z-2 slow push |
+| SCENE-3 | 35.0–46.0 | Shared bathrooms, no reception, roosters at 5 am | P-DETAIL-RUN of the three → **P-BEHIND-WORD** "NOISE" behind his head on SH-11 at 41.2 (`behind: true`) → P-SCRIPT-ASIDE "…riveting" over a rooster (light comedy) |
+| PAYOFF | 46.0–58.0 | "What I got instead: every city from the inside." | **P-RECAP-RIFFLE** of six hosts' doorways, city names as card titles, 0.5 s each (cuts) → talking piece with **Z-2** slow push |
+| CTA | 58.0–64.5 | "Comment STAY and I'll send you all eleven." | T-11 warm flash → **P-POSTER-BACKDROP** (SH-12 profile, the `accent` sun) + **P-CTA-KEYWORD** "Just comment / **STAY** / for the list", held 2.4 s |
+| BOOKEND | 64.5–66.0 | "See you inside." | SH-1 pre-roll [src 10.9–12.4]: the doorway, the creator far away in the street; the last frame equals f0 |
+
+How it breathes: about 37 cuts, mostly hidden in steps and turns; duo titles on the hook, the turn and the CTA, plus the
+count-up; paper for about 9 s (the polaroid, the card, the riffle); the creator on screen about half the time.
+
+### 14.2 F-A types, fitness: "3 types of gym people" (61 s, keyword PLAN)
+**Header:** F-A · HA-12 · story (a list of types) · count 3 · SM-1 markers · CTA `comment_keyword` PLAN · grades
+persona-1 GR-mono, persona-2 GR-amber, persona-3 GR-teal · the chaos burst at 6.0 s · a behind-head word at 1.3 s.
+
+**Hook (0–2.9 s):**
+| t (s) | Spoken | Picture | Type layer | Subtitle | Camera / cue |
+|---|---|---|---|---|---|
+| f0 | — | Setup B seated set, the creator gesturing (live) | — | hidden | — |
+| 0.60 | "There are three" | same | **3** rises in at (150, 360), 230 px, left of his cap (front, 40 px clear of the head region) | — | hook cue |
+| 0.95 | "types of" | same | script "types of" writes to the right of the 3 | — | — |
+| 1.30 | "gym" | same | **GYM** rises in **behind** his head (`behind: true`, 260 px, ≥ 65 % visible) | — | — |
+| 1.70 | "people" | same | script "people" under it, right-aligned | — | — |
+| 2.30 | — | he raises three fingers | the lockup rises out | — | — |
+| 2.50 | — | **T-2** cut on the hand to a close-up of the three fingers | — | — | transition cue |
+| 2.85 | "Number one" | cut to persona 1 | — | **SM-1 "#1."** in the caption band | — |
+
+**Plan:**
+| Section | t (s) | Spoken (gist) | Patterns and picture |
+|---|---|---|---|
+| PERSONA-1 | 2.9–12.5 | The overthinker: 40 tutorials, never lifts | GR-mono starts on the cut → the label duo "The **OVERTHINKER**" (z8) → **P-CHAOS-BURST** at 6.0–7.4 ("[Form check]", "[Program]", "am I doing it wrong", "[Day 1]", "too many") with a 4-cut flurry joined by single white frames, then at least 1.0 s clean → action shots of him scrolling on a bench → the punch duo "Still on **DAY ONE**" |
+| PERSONA-2 | 12.5–22.0 | The ego lifter: heavier every week, form gone | "#2." → GR-amber → the label duo "The **EGO LIFTER**" → **P-UI-CHIP** search "heaviest deadlift ever" (light comedy) → detail run (chalk, plates, belt) → the punch duo "Doesn't care about **FORM**" |
+| PERSONA-3 | 22.0–31.0 | The trend chaser: a new program every reel | "#3." → GR-teal → the label duo "The **TREND** CHASER" → **P-PHONE-REEL** of his own saved-reels screen capture with **P-INK-OVAL** on the caption |
+| TURN (re-hook) | 31.0–35.5 | "The one who wins is the boring one." | Back to GR-warm on a white set (the grade ends on the cut) → **P-DUO-TITLE** "the **BORING** one" `rehook: true` |
+| PAYOFF | 35.5–51.0 | Shows up, logs it, repeats | **P-FLOAT-CARDS** of four client check-in clips around him (the creator's assets, clear of his head) → **P-COUNT-UP** "312" + "SESSIONS" landing on "three hundred twelve" → talking piece with Z-2 |
+| CTA | 51.0–59.5 | "Comment PLAN for my 4-week starter plan." | T-11 → **P-POSTER-BACKDROP** + **P-CTA-KEYWORD** "Just comment / **PLAN** / for the plan" 2.2 s → **P-SIGNOFF-SUN** "See you / **TOMORROW**" |
+| BOOKEND | 59.5–61.0 | "Show up." | SH-1 pre-roll of the seated set; the last frame equals f0 |
+
+How it breathes: about 40 cuts; three personas in three different grades, each opened by its marker and closed by its
+punch duo; the chaos burst once, early, on the one line about overload; the turn sits near the middle and is the
+quietest beat.
+
+### 14.3 F-B tutorial, travel: "Edit travel photos on your phone in 4 steps" (72 s)
+**Header:** F-B · HA-05 · tutorial · count 4 · SM-2 rule chapters · series "Travel Lab" ep. 03 (P-SERIES-LOCKUP) ·
+sponsor: the editing app (P-LOGO-CHIP + P-DISCLOSURE) · CTA `link_bio` (P-END-BLOCK) · bookend SH-2 (overhead of the
+creator at a river railing).
+
+**Hook (0–3.6 s):**
+| t (s) | Spoken | Picture | Type layer | Subtitle | Camera / cue |
+|---|---|---|---|---|---|
+| f0 | — | SH-2 overhead: the creator walks into the frame toward the railing | — | hidden | — |
+| 0.38 | — | same | line 1 squash-in starts | — | hook cue |
+| 0.45–0.70 | — | same | **EDIT TRAVEL PHOTOS / ON YOUR PHONE** squash in (Montserrat 900, line 1 ≈ 96 px, line 2 fitted smaller): readable by 0.7 s | — | — |
+| 0.85 | "Your travel photos look flat," | he leans on the railing | the title holds | CS-1 starts | — |
+| 2.40 | "here's the fix in four steps." | same | the title holds | — | — |
+| 3.60 | — | **T-2** cut on his turn | the title blurs out | — | transition cue |
+
+**Plan:**
+| Section | t (s) | Spoken (gist) | Patterns and picture |
+|---|---|---|---|
+| SERIES | 3.6–4.8 | — | **P-SERIES-LOCKUP** "Travel / **LAB** / ep. 03" on W-grid |
+| CONTEXT | 4.8–11.0 | "We're doing it all in one free app." | **P-LOGO-CHIP** "With <app>" (the sponsor's logo, theirs or fetched from the app's site) + **P-DISCLOSURE** "Paid partnership" for the whole sponsored span (4.8–58.0) → **P-SPIN-CARD** of "the photo I took in Lisbon" |
+| RULE-1 | 11.0–22.0 | Remove distractions | SM-2 "REMOVE THE NOISE" (ink on W-paper) → **P-APP-DEVICE** (SH-8) → **P-LASSO** on the tourist behind her (12 f) → zoom into "Erase" (12 f) → a hard swap of the screen to the cleaned photo on "gone" |
+| RULE-2 | 22.0–33.0 | Straighten and crop | SM-2 "STRAIGHTEN" → **P-LANDSCAPE-CARD** of the photo with **P-GUIDE-LINES** (thirds) + **P-INK-ARROWS** to the horizon → the device's crop step |
+| RULE-3 (re-hook) | 33.0–44.0 | Lift the shadows | **P-DUO-TITLE** "This one **CHANGES** everything" `rehook: true` → the device zooms to the Shadows slider (1.0 → 1.8, 12 f) |
+| RULE-4 | 44.0–55.0 | Warmth and a soft vignette | SM-2 "WARM IT UP" → the device slider → **P-CARD-CAROUSEL** of three more photos with the same settings |
+| RESULT | 55.0–62.0 | "Before. After." | **P-BEFORE-AFTER-POLAROID** on W-grid: the before 1.2 s, a cut to the after on "after", held 1.8 s |
+| CTA | 62.0–70.5 | "My preset is free, link in bio." | **P-END-BLOCK** "FREE / TRAVEL / PRESET / LINK / IN BIO" over SH-13 (a river-water close-up), 3.5 s |
+| BOOKEND | 70.5–72.0 | "Go shoot." | SH-2 pre-roll: the empty railing from above, the creator about to enter; the last frame equals f0 |
+
+How it breathes: about 38 cuts, with card swaps and slides declared as cuts; paper and the device carry the middle, and
+the creator comes back on location between rules to show each one being used; the before/after is the peak, held longer
+than anything before it.
+
+---
+
+## §15 Your look at the storyboard: the checklist
+
+Watch it once as a stranger with a thumb over the next reel, then once as the editor whose name is on it. Fix what
+bothers you, in one pass.
+
+**The style (does it feel like §The feel?)**
+- Frame 0 is a moving, composed shot from the creator's life; by the first cut the whole thesis has been seen, and it
+  works on mute.
+- Without the type, every frame is still a good shot; no card or word covers a great one.
+- One yellow, only on words worth remembering; the script never carries a keyword.
+- The picture keeps travelling with the voice: cuts hidden in motion, a detail for every listed noun, a new place
+  whenever the story moves on.
+- Paper appears only when a line shows something, and the reel steps back into the footage on the next opinion.
+- Personas are told apart by their grades at a glance; the creator's answer is warm again.
+- The curve is there: a dense hook, a calm setup, a quiet turn, a peak at the payoff, a confident CTA, a calm loop.
+- The visible moves are moments, not habits: the flash on photos, the whip on real whips, the spin, the vortex and the
+  zoom-through once each at most.
+- Start to end, it feels like the creator's short film, and the loop makes you watch the start again.
+
+**Craft (by eye, in context; the facts are in §2)**
+- The person: the face reads whenever the moment is about them; front duo beats sit above the head or behind it; card
+  titles off the faces in their clips; nothing chops a head or buries a face by accident.
+- Behind-head words: most of the word visible for the whole hold, the first and last letters clear of the hair, one at a
+  time, long enough to read, on a clean matte.
+- No text over text by accident: one duo at a time, the subtitle out of the way under every z8 element, at most three ink
+  marks.
+- On the word: every block lands on its word; counters on the number word; ink on its word; no cut inside a block's rise.
+- Every number on screen spoken or scripted, as digits; counts match the items and markers; the thesis paid off before
+  the CTA; the CTA keyword readable; names spelt exactly; fetched posts and headlines word for word; ".." only on real
+  pauses.
+- CS-1: 54 px EB Garamond 600, pale lemon with the 1 px stroke and the hard shadow, one line, cy 1468, on every spoken
+  word outside duo, chaos and morph spans.
+- Yellow never on cream, white or greige; ink blocks on light worlds; a yellow block that's hard to read has its stroke
+  or moved.
+- No credit lines on inserts; private data blurred in screen recordings; a sponsored reel carries "Paid partnership"
+  ≥ 2 s and says it.
+- The chaos burst (if any): short, a handful of snippets around the face, subtitles hidden, a clean second after, not in
+  the hook's first 2 s or the CTA.
+- The last frame's picture equals f0's; no type fully visible on either.
+- The file itself (1080 × 1920, 30 fps, −14 LUFS, a hard end ≤ 6 f after the last word, no black tail) is the render's
+  job; it checks it.
+
+---
+
+## §16 Build notes
+- **Fonts:** Anton, Montserrat (900), Nanum Pen Script, EB Garamond, Jost, Pinyon Script, JetBrains Mono, Noto Sans
+  Devanagari, all bundled.
+- **Determinism:** every frame is a function of its index; video frames come from `ctx.videoFrame(name, seconds)` only;
+  no CSS animation in scenes.
+- **Built in, no scene:** the flashes, the whip, the zoom-blur, the vortex and the blur-through (§9.5); the footage grade
+  on camera footage (§4.3); the camera presets (§10.2).
+- **Scenes you build:** each duo beat (§5.2 helpers), the B-roll `roll` scenes (§12.6), the paper cards, polaroids and
+  devices, the ink (§8.6), the chaos burst (below). Persona grades on camera footage are `timeline.grades[]` spans
+  (§4.3), not scenes.
+- **Declare the cuts:** card swaps, carousel steps, riffle swaps and spins go in `cuts` or `transitions`, so the engine
+  sees the picture changes inside one scene.
+- **The chaos burst** (P-CHAOS-BURST): up to 45 f; 4–6 snippets around the face, not on it; the footage under it in
+  GR-mono (carry `grade: "GR-mono"` on the burst scene for camera footage; the flurry's B-roll clips are `roll` scenes
+  with `grade: "GR-mono"`, each 6–9 f, `cuts: [0]`, joined by the one-white-frame flash).
+```js
+// Snippets placed clear of the head region (check ctx.face() at planning time and move any that would come within 40 px).
 const SNIPS = [{ t: "[Close Up]", x: 96, y: 380, f: "ui", s: 48, at: 0.00 }, { t: "am I doing it wrong", x: 520, y: 520, f: "serif", s: 64, at: 0.13 },
                { t: "[Wide]", x: 760, y: 300, f: "ui", s: 48, at: 0.27 }, { t: "[Day 1]", x: 120, y: 1180, f: "ui", s: 52, at: 0.40 },
                { t: "too many", x: 560, y: 1260, f: "serif", s: 70, at: 0.53 }];
 VEOS.scene({ id: "chaos-1", t_in: 6.00, t_out: 7.40, z: 8, in: "none", out: "none", exception: "E2", snippets: SNIPS.length,
-  text: true, text_class: "TC-label", text_content: SNIPS.map(s => s.t).join(" "), roles: [],
+  grade: "GR-mono", text: true, text_class: "TC-label", text_content: SNIPS.map(s => s.t).join(" "), roles: [],
   box: { x: 64, y: 260, w: 952, h: 1080 }, events: SNIPS.map(s => s.at),
   render(ctx, lt) {
     return ctx.html(SNIPS.map(s => { const k = (lt - s.at) * 30; if (k < 0) return "";
@@ -1287,133 +1413,42 @@ VEOS.scene({ id: "chaos-1", t_in: 6.00, t_out: 7.40, z: 8, in: "none", out: "non
         color:${ctx.col("paper")};opacity:${(0.85 * e).toFixed(2)};filter:blur(${(6 * (1 - e)).toFixed(1)}px);text-shadow:0 2px 8px rgba(0,0,0,.6);white-space:nowrap">${ctx.esc(s.t)}</div>`; }).join(""));
   } });
 ```
-The picture flurry under it (3–5 cuts of 6–9 f) comes from B-roll scenes, each with `cuts: [0]`. Check the face box with `ctx.face()` at planning time and move any snippet that would come within 40 px of it.
 
 ---
 
-## Part D. Personalisation
+## Appendix A. Evidence map
+The full map (every element → `vNN @ m:ss`, the fidelity audit and the full-frame-rate motion pass) is in `evidence.md`.
+Sources: five of OMGAdrian's reels (720 × 1280 at 23.98 fps, measured on a 1080 × 1920 upscale), 58–85 s each.
 
-### D.1 Lock levels in this template
-| Area | Lock |
+| What | Evidence |
 |---|---|
-| Style DNA, "Copy these 5", D1–D8, §1, §2, §9, §13, §15 | DNA |
-| Source type, spine, captions role, graphics, footage dependency, the format set, the CTA device set, the modules ink / continuity | DNA |
-| Presenter share (±10 pts), max absence (4–9 s), duration (short ↔ standard), energy (one step), cadence (±15%), motion tokens (±15%), type sizes (ranges in `locks`), caption size 54–62 and y 1470–1510, world tints, grade strength | TUNE |
-| `primary` and `accent` hex, language, numbers, CTA device and keyword, series and brand on/off, comedy off ↔ light, formats enabled, footage setups | VAR |
-| §6.4 hook pairs, §8.4 lookup, §14, App. A, glossary | NICHE |
-| Exceptions E1 / E2 | DNA (switching one off = VAR, stricter) |
+| Duo titles: a yellow condensed block + white pen script, rise-smear beats | v01 @ 0:00–0:03, v02 @ 0:00.67–0:02.2, v05 @ 0:00–0:02.5 (`strip-hook-duo-blurslide.jpg`) |
+| The pale-lemon serif subtitle at y ≈ 1468 | v01 from 0:04, v03 from 0:00.83, v04 from 0:02, v05 from 0:02.8 |
+| Behind-head words; the poster and the sign-off sun | v02 @ 0:33, 0:38–0:40, 0:52–0:58; v05 @ 0:07 |
+| The cream paper world, polaroids on grid paper, ink | v03 @ 0:11–0:36, 1:10–1:15; v04 @ 0:19–0:27; v01 @ 0:29–0:30; v02 @ 0:45–0:48; v05 @ 0:23–0:25 |
+| Persona grades and the chaos burst | v02 @ 0:04–0:08 (mono), 0:09–0:17 (amber), 0:18–0:23 (teal) |
+| The bookend loop, walk-in / walk-out | v01 @ 1:23 vs 0:00; v04 @ 0:00, 1:23; v05 @ 1:01 |
+| Locked-off footage, the flashes, the whip, the zoom-through, the slow push | ORB motion pass, `strip-*.jpg` (v01, v02, v04, v05) |
 
-### D.2 Branding questions (one round, each with "keep the template default")
-| ID | Question | Feeds |
-|---|---|---|
-| BV-01 | "Your name and handle?" | `creator.name/handle`, the end block, the series lockup, P-LOGO-CHIP for the creator's own brand |
-| BV-02 | "One or two brand colours? (the first replaces the yellow, the second the poster sun; or keep yellow + sun)" | `roles.primary` ({{BV-02.primary|#F7DE0B}}), `roles.accent` ({{BV-02.accent|#D42A05}}); nudged to ≥ 4.5:1 with ink |
-| BV-05 | "Which language do you speak in your reels, and which captions do you want?" (English / Hinglish in Latin / Hinglish → English captions / Hindi in Devanagari) | `profile.language`, always asked: **English** → English captions (default) · **Hinglish** → romanised Hinglish captions · **Hindi** → Devanagari captions; numbers follow (BV-06) | English ({{BV-05.speech|en}} → {{BV-05.captions|en}}) | en}}) |
-| BV-08 | "Your call to action: a comment keyword, link in bio, a part-2 end card, or none?" | `profile.cta.chosen` ({{BV-08.device|comment_keyword}}: {{BV-08.keyword|KEYWORD}}) |
+Not verifiable from the reels: the speech language beyond English (read from burnt-in subtitles), the music bed, the
+exact grade numbers (visual approximations), the presenter's on-screen time (estimated from 1 fps sheets).
 
-Defaulted, changeable later: BV-03 fonts within each class; BV-06 numbers (from BV-05); BV-09 formats; BV-11 comedy off/light; BV-13 series name and number; BV-14 disclosure wording; BV-15 never-on-screen list; BV-16 logo and series logo files; BV-17 duration 55–85 s.
+## Appendix B. Hook-title bank
+Duo split shown as **BLOCK** / script. Fill a template for each reel; write 8–10 and pick by §6.1.
 
-### D.3 Footage is not asked at setup
-Per reel the editor uses what the buyer drops in and applies §12.3, listing the fallbacks at the checkpoint. The first reel's checkpoint also shows the shot list (§12.2) as "what to shoot next time".
-
-### D.4 How NICHE slots grow
-- §6.4: each reel's thesis → scene-promise pair is appended at P7.
-- §8.4: new line types map to existing patterns (≤ 10 niche patterns over time, from existing families).
-- §14: after the first approved reel of each format, it becomes that format's worked example.
-- App. A: approved hooks and titles are appended.
-- Glossary: confirmed brand, place and tool spellings.
-
----
-
-## Part E. Changes against the structure and the coverage decision
-| Item | Decision | Why |
-|---|---|---|
-| `sc_per_10s` | **5–12** (coverage said 5–8) | At 51 cuts/min the cuts alone are 8.5 per 10 s, before subtitles and type beats; 5–8 would fail v01 itself |
-| `max_gap_s` | 3.0 s | v04 @ 0:42–0:47 holds one shot ~6 s under subtitles; the style allows a hold only with a duo title or a Z-2 push inside it |
-| Subtitle size | 54 px (measured 47–48 at full resolution) | Coverage chose E1 + E2 only; 54 px meets G4 without E3 |
-| E2 per reel | 1 (registry allows 2; v02 shows two) | Naman's brief: once per reel |
-| `source_type` | `narrated_footage` with talking pieces as the cut map and B-roll as picture-only clip scenes | The engine's cut map carries a source's picture and its audio together; B-roll over the voice plays as `fx.clip` scenes (§12.6) |
-| Duo titles | Built as scenes (§5.2), not as a caption variant | The corners layout, the behind-head words and the per-beat replace/join logic need per-word placement |
-| Fonts | (resolved, audit) Nanum Pen Script connectors, Montserrat 900 wide block (closer than Archivo Black) | both bundled |
-
-**Engine requests (for the orchestrator):**
-1. ~~Bundle a pen-handwriting OFL font and Archivo Black~~ (done: Nanum Pen Script + Archivo Black are bundled and used).
-2. **E-16 grades on the footage layer** (below behind-scenes and the cut-out): today's GR-L z4 backdrop-filter greys E1 words and costs a G2 slot.
-3. **E-19 V-CONTINUITY with a bookend check** (last frame vs frame 0 picture difference).
-4. **E-21 E1 occlusion measure** (visible-glyph ratio from the matte).
-5. ~~Built-in flash / whip / zoom-blur transitions, a directional blur for type, per-preset camera `ease`~~ (done: T-10/T-11/T-12/T-13/T-3/T-7 are `timeline.transitions[]` / `timeline.blur` entries, §9.5; the duo smear uses `ctx.blur(px, 90)`; Z-1/Z-2 run `ease: "linear"`; T-12's incoming half is the Z-4 landing, capped at 1.5× by V-CAMERA where the source reaches 2.3×).
-6. A **B-roll-over-voice EDL** (picture from source X, audio from the talking take) would let B-roll count as cut-map cuts and use the cut-out; today B-roll scenes declare `cuts: [0]`.
-
----
-
-## Part F. IDs used in this playbook
-| Prefix | IDs |
-|---|---|
-| D / BD | D1–D8 · BD… (buyer) |
-| H / N / BN | H1–H22 · N1–N14 · BN… |
-| E / NC | E1, E2 · NC-1…NC-14 |
-| W / L / G | W-footage, W-paper, W-grid, W-void, W-poster · L-full, L-card916, L-card43, L-hidden · G-1…G-6 |
-| GR | GR-warm, GR-mono, GR-amber, GR-teal (GR-L = today's render path) |
-| CS | CS-1 |
-| HA / ST | HA-12 (default), HA-05 (F-B default), HA-19, HA-08 · ST-1…ST-6 |
-| SM | SM-1 hash marker, SM-2 rule chapter, SM-3 series lockup |
-| B / P | B-1…B-13 · 41 patterns (§8.3) |
-| T / R / Z | T-1…T-13 · R-1…R-9 · Z-1 push-drift, Z-2 slow-push, Z-3 reset, Z-4 zoom-land (T-12 only) |
-| SH / FB | SH-1…SH-13 · FB-1…FB-13 |
-| F | F-A Vlog / story, F-B Tutorial with paper cards |
-| BV | BV-01, BV-02, BV-05, BV-08 asked; BV-03, 06, 09, 11, 13–17 defaulted |
-| V | V-F0, V-CADENCE, V-ONWORD, V-SAFE, V-FACE, V-PRESENCE, V-CAPTION, V-TYPE, V-EXC, V-HUES, V-CAMERA, V-LAYOUT, V-TITLE, V-PROMISE, V-INSERTS, V-REHOOK, V-NUMFMT, V-COMEDY, V-GRADE (pending), V-CONTINUITY (pending) |
-
----
-
-## App. A Headline & hook bank `[NICHE]`
-Duo split shown as **BLOCK** / script. Write 3 per reel and pick by §6.1.
-
-**F-A (vlog / story)**
-| # | Hook | Archetype | Niche |
+| # | Template | Hook | For example |
 |---|---|---|---|
-| 1 | "Training **ALONE** is why you **STOPPED** at week three" | HA-12 | fitness |
-| 2 | "**3** types of **GYM** people" | HA-12 | fitness |
-| 3 | "Your **MORNING** decides your **WORKOUT**" | HA-12 | fitness |
-| 4 | "**100 DAYS** / no sugar" (count-up 1 → 100) | HA-08 | fitness |
-| 5 | "**SALT.** / **SWEAT.** / **SILENCE.**" | HA-19 | fitness |
-| 6 | "I **STOPPED** booking **HOTELS**. **THIS** happened" | HA-12 | travel |
-| 7 | "The best **FOOD** in this city has **NO MENU**" | HA-12 | travel |
-| 8 | "**52 CITIES** / one backpack" | HA-08 | travel |
-| 9 | "When it comes to **TRAVEL**, **SLOW** is way **BETTER**" | HA-12 | travel |
-| 10 | "**RAIN.** / **RAMEN.** / **RESET.**" | HA-19 | travel |
-
-**F-B (tutorial)**
-| # | Title lockup or duo | Archetype | Niche |
-|---|---|---|---|
-| 1 | "FIX YOUR SQUAT / IN THREE CUES" | HA-05 | fitness |
-| 2 | "BUILD A HOME / WORKOUT PLAN" | HA-05 | fitness |
-| 3 | "Is your **SQUAT** still **HURTING** your knees?" | HA-12 | fitness |
-| 4 | "STRETCH LIKE / A PRO IN 5 MIN" | HA-05 | fitness |
-| 5 | "TRACK YOUR / LIFTS ON YOUR PHONE" | HA-05 | fitness |
-| 6 | "EDIT TRAVEL PHOTOS / ON YOUR PHONE" | HA-05 | travel |
-| 7 | "SHOOT BETTER / TRAVEL PHOTOS" | HA-05 | travel |
-| 8 | "Is your **PHONE** still taking **BORING** travel photos?" | HA-12 | travel |
-| 9 | "PACK ONE BAG / FOR TWO WEEKS" | HA-05 | travel |
-| 10 | "PLAN A TRIP / IN ONE EVENING" | HA-05 | travel |
-
-## App. B Evidence map
-The full map, with every DNA rule traced to frames and the `(unverified)` list, is in `evidence.md` (shipped with the template, not with buyer copies). Summary:
-| Element | Evidence |
-|---|---|
-| Duo titles: yellow condensed block + white script, blur-slide beats | v01 @ 0:00–0:03, v02 @ 0:00.67–0:02.2, v05 @ 0:00–0:02.5 |
-| Corners layout of the script words | v05 @ 0:00–0:02.5 |
-| Pale-lemon serif subtitle at y ≈ 1468 | v01 from 0:04, v03 from 0:00.83, v04 from 0:02, v05 from 0:02.8 |
-| Behind-head words (E1) | v02 @ 0:33, 0:38–0:40, 0:53, 0:57; v05 @ 0:07 |
-| Chaos burst (E2) | v02 @ 0:04–0:08 (and 0:34–0:36) |
-| Cream paper world and 9:16 cards | v03 @ 0:11–0:14, 0:20–0:23, 0:41–0:43, 0:57–0:59; v04 @ 0:19–0:27, 0:34–0:41 |
-| Polaroids and grid paper | v01 @ 0:29–0:30; v02 @ 0:45–0:48; v05 @ 0:23–0:25, 0:57–1:00 |
-| Spin-in card | v03 @ 0:06–0:10 |
-| Ink arrows, ovals, guide lines | v03 @ 0:20–0:36, 0:48–0:50, 0:57–0:59, 1:10–1:15 |
-| Grades per persona | v02 @ 0:04–0:08 (mono), 0:09–0:17 (amber), 0:18–0:23 (teal) |
-| Title lockup hook | v03 @ 0:00–0:04, v04 @ 0:00–0:02.9 |
-| Count-up | v04 @ 0:03–0:05, 1:14–1:18 |
-| Bookend loop, walk-in / walk-out | v01 @ 1:23 vs 0:00; v04 @ 0:00, 1:23; v05 @ 1:01 |
-| Cut rhythm 26.7–51.3 cuts/min | `cuts.json` v01–v05 |
-| CTA devices | v02 @ 0:54–0:58 (keyword + SOON), v03 @ 1:22 (end block), v05 @ 1:09 (spoken) |
-| Series lockup, logo chip, disclosure | v05 @ 0:08, 0:09, 0:57 |
+| 1 | "[Doing X] **[ALONE / WRONG]** is why you **[STOPPED / FAILED]** at [point]" | HA-12 | "Training **ALONE** is why you **STOPPED** at week three" |
+| 2 | "**[N]** types of **[GROUP]** people" | HA-12 | "**3** types of **GYM** people" |
+| 3 | "Your **[MOMENT]** decides your **[RESULT]**" | HA-12 | "Your **MORNING** decides your **WORKOUT**" |
+| 4 | "**[N] [UNITS]** / [no X / one Y]" (count-up) | HA-08 | "**52 CITIES** / one backpack" |
+| 5 | "**[WORD.]** / **[WORD.]** / **[WORD.]**" over three details | HA-19 | "**RAIN.** / **RAMEN.** / **RESET.**" |
+| 6 | "I **[STOPPED]** [doing] **[THING]**. **THIS** happened" | HA-12 | "I **STOPPED** booking **HOTELS**. **THIS** happened" |
+| 7 | "The best **[THING]** in this [place] has **[NO X]**" | HA-12 | "The best **FOOD** in this city has **NO MENU**" |
+| 8 | "When it comes to **[TOPIC]**, **[A]** is way **[BETTER]**" | HA-12 | "When it comes to **TRAVEL**, **SLOW** is way **BETTER**" |
+| 9 | "Is your **[THING]** still **[BAD ADJECTIVE]** [your X]?" | HA-12 | "Is your **PHONE** still taking **BORING** travel photos?" |
+| 10 | "[VERB] [OBJECT] / [PROMISE]" (title lockup) | HA-05 | "EDIT TRAVEL PHOTOS / ON YOUR PHONE" |
+| 11 | "[FIX / BUILD] YOUR [THING] / IN [N] [UNITS]" | HA-05 | "FIX YOUR SQUAT / IN THREE CUES" |
+| 12 | "[DO X] LIKE / A PRO IN [N] MIN" | HA-05 | "STRETCH LIKE / A PRO IN 5 MIN" |
+| 13 | "[PLAN / PACK] [X] / [IN / FOR] [CONSTRAINT]" | HA-05 | "PACK ONE BAG / FOR TWO WEEKS" |
+| 14 | "THIS DECISION / CHANGED MY [X]" | HA-05 | "THIS DECISION / CHANGED MY LIFE" |

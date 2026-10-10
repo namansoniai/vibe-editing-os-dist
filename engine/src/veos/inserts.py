@@ -1,8 +1,9 @@
 """`veos inserts scan|check`: the ask-then-create flow for third-party material (E-10, structure §12.5, NC-7, NC-13).
 
-The engine never fetches anyone else's media. Third-party material (a post read aloud, a news headline, another
-creator's clip, a product, an app screen, a chart from somewhere, an event, a person) appears only when the creator
-hands it over; everything else is a visual the planner creates from the script's own words.
+Third-party material (a post read aloud, a news headline, another creator's clip, a product, an app screen, a chart
+from somewhere, an event, a person) is the real thing: the creator's own file first, else fetched from the web by the
+editor with its source recorded (`veos asset add <file> --source <url>`, origin `fetched`; 10 Oct 2026); a visual
+created from the script's own words only when nothing usable turns up.
 
 scan   transcript (work/words.edit.json, edit time) + the script (project.json `script`, `--script`, or
        plan/script.md) -> plan/inserts.scan.json: the moments that call for third-party material, each with
@@ -19,8 +20,9 @@ plan/inserts.json (written by the planner after the one question):
   {"version": 1,
    "asked": {"question": str, "moments": [scan ids], "answer": str},
    "creator_texts": [str],              # text the creator typed in reply (a headline, a post) - quotable verbatim
-   "inserts": [{"id", "moment", "t0", "t1", "kind", "origin": "creator" | "created",
-                "file"?        (origin creator: the asset name from `veos asset add --origin creator`),
+   "inserts": [{"id", "moment", "t0", "t1", "kind", "origin": "creator" | "created" | "fetched",
+                "file"?        (origin creator / fetched: the asset name from `veos asset add`: `--origin creator`,
+                                or `--source <url>` for a file fetched from the web),
                 "recipe"?      (origin created: quote_card | headline_card | recreated_ui | diagram | logo_plate |
                                 silhouette | citation_strip),
                 "substitute_of"? (origin created: what third-party material it stands in for),
@@ -53,8 +55,11 @@ PLAIN = {"post": "the post you read out", "headline": "the news headline", "clip
          "product": "{name} (logo or product shot)", "app_ui": "{name} on screen"}
 PLAIN_UNNAMED = {"person": "the person you mention", "app_ui": "the screen you describe", "product": "the product you mention"}
 DEFAULT_LABEL = ""   # made-up cards carry no label (kept for callers that pass a label explicitly)
+# origins that point to a real file in plan/assets: the creator's own, or one fetched from the web (its URL recorded)
+FILE_ORIGINS = ("creator", "fetched")
 # record problems that are facts (validate blocks on them): someone's words not verbatim, media of unknown origin
-FACT_MARKERS = ("(NC-13)", "(NC-7)", "is not quoted from the script", "--origin creator", "is not in plan/assets")
+FACT_MARKERS = ("(NC-13)", "(NC-7)", "is not quoted from the script", "--origin creator", "was not added as origin",
+                "is not in plan/assets")
 
 
 def fact_problem(msg: str) -> bool:
@@ -197,7 +202,7 @@ def script_text_of(proj, explicit: str | None = None) -> tuple[str | None, str |
         cands += [proj.root / "plan" / "script.md", proj.root / "plan" / "script.txt"]
     for c in cands:
         if c.is_file():
-            return c.read_text(encoding="utf-8", errors="replace"), c.as_posix()
+            return c.read_text(encoding="utf-8-sig", errors="replace"), c.as_posix()
     if explicit:
         raise VeosError("INPUT_MISSING", f"script not found: {explicit}", "Check the --script path.")
     return None, None
@@ -550,24 +555,26 @@ def record_problems(data, proj=None, corpus_docs: list[str] | None = None, style
         if r.get("kind") and r["kind"] not in KINDS + ("other",):
             out.append((rid, f"{tag}: unknown kind '{r['kind']}'", f"Use one of {', '.join(KINDS)} or other."))
         origin = r.get("origin")
-        if origin and origin not in ("creator", "created"):
-            out.append((rid, f"{tag}: origin '{origin}' is not allowed (creator | created). The engine never fetches media (NC-7)",
-                        "Use the creator's own file (origin creator) or build a card (origin created)."))
-        if origin == "creator":
+        if origin and origin not in FILE_ORIGINS + ("created",):
+            out.append((rid, f"{tag}: origin '{origin}' is not allowed (creator | created | fetched)",
+                        "Use the creator's own file (origin creator), a file fetched from the web (origin fetched: "
+                        "`veos asset add <file> --source <url>`) or a card (origin created)."))
+        if origin in FILE_ORIGINS:
             f = r.get("file")
+            how = "--origin creator" if origin == "creator" else "--source <url>"
             if not f:
-                out.append((rid, f"{tag} is origin creator but has no `file`",
-                            "Add the creator's file with `veos asset add <file> --origin creator` and set `file` to its name."))
+                out.append((rid, f"{tag} is origin {origin} but has no `file`",
+                            f"Add the file with `veos asset add <file> {how}` and set `file` to its name."))
             elif proj is not None:
                 nm = asset_name(f)
                 rec = origins.get(nm)
                 exists = adir is not None and (any(adir.glob(nm + ".*")) or (adir / nm).is_dir())
                 if not exists:
                     out.append((rid, f"{tag}: file '{f}' is not in plan/assets",
-                                f"Run `veos asset add <the creator's file> --name {nm} --origin creator`."))
-                elif not rec or rec.get("origin") != "creator":
-                    out.append((rid, f"{tag}: asset '{nm}' was not added with --origin creator",
-                                f"Re-add it: `veos asset add <file> --name {nm} --origin creator` (only the creator's own files are shown)."))
+                                f"Run `veos asset add <file> --name {nm} {how}`."))
+                elif not rec or rec.get("origin") != origin:
+                    out.append((rid, f"{tag}: asset '{nm}' was not added as origin {origin}",
+                                f"Re-add it: `veos asset add <file> --name {nm} {how}`."))
         if origin == "created":
             recipe = r.get("recipe")
             if not recipe:
@@ -584,11 +591,11 @@ def record_problems(data, proj=None, corpus_docs: list[str] | None = None, style
                 out.append((rid, f"{tag}: a {recipe} needs `quote_text` (the exact words it shows)",
                             "Copy the words from the script or transcript, verbatim."))
         qt = r.get("quote_text")
-        if qt and corpus_docs is not None and origin != "creator" and not is_verbatim(qt, corpus_docs):
+        if qt and corpus_docs is not None and origin not in FILE_ORIGINS and not is_verbatim(qt, corpus_docs):
             out.append((rid, f"{tag}: quote_text \"{str(qt)[:60]}\" is not in the script, the transcript or the creator's own text (NC-13)",
                         "Quote only words that were said or written in the script, verbatim; never paraphrase someone's words."))
         src = r.get("source")
-        if isinstance(src, dict) and src.get("headline") and corpus_docs is not None and origin != "creator" \
+        if isinstance(src, dict) and src.get("headline") and corpus_docs is not None and origin not in FILE_ORIGINS \
                 and not is_verbatim(src["headline"], corpus_docs):
             out.append((rid, f"{tag}: headline \"{str(src['headline'])[:60]}\" is not quoted from the script or the creator",
                         "Use the exact headline as the script (or the creator) gives it."))
@@ -640,7 +647,7 @@ def main(args, project) -> dict:
         ms = scan(words.get("words") if isinstance(words, dict) else words, md, _brands(proj), args.min_score, "")
         q = question(ms)
         ptrs = find_pointers(words.get("words") if isinstance(words, dict) else words)
-        out = {"version": 1, "engine": "veos.inserts/1", "script": spath, "fetch": False, "moments": ms, "question": q,
+        out = {"version": 1, "engine": "veos.inserts/1", "script": spath, "fetch": True, "moments": ms, "question": q,
                "pointers": ptrs}
         write_json(proj.path("plan", "inserts.scan.json"), out)
         return {"moments": len(ms), "by_kind": {k: sum(1 for m in ms if m["kind"] == k) for k in KINDS if any(m["kind"] == k for m in ms)},

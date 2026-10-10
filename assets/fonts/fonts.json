@@ -220,6 +220,69 @@
     "license_file": "assets/LICENSES/fonts/noto-serif-devanagari.txt",
     "note": "serif Devanagari (long-form-recut Hindi captions)"
   },
+  "Noto Sans Telugu": {
+    "files": [
+      "NotoSansTelugu-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-telugu.txt",
+    "note": "caption font for Telugu-script words (any slot); loaded by renderer/captions.js"
+  },
+  "Noto Sans Tamil": {
+    "files": [
+      "NotoSansTamil-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-tamil.txt",
+    "note": "caption font for Tamil-script words (any slot); loaded by renderer/captions.js"
+  },
+  "Noto Sans Kannada": {
+    "files": [
+      "NotoSansKannada-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-kannada.txt",
+    "note": "caption font for Kannada-script words (any slot); loaded by renderer/captions.js"
+  },
+  "Noto Sans Malayalam": {
+    "files": [
+      "NotoSansMalayalam-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-malayalam.txt",
+    "note": "caption font for Malayalam-script words (any slot); loaded by renderer/captions.js"
+  },
+  "Noto Sans Bengali": {
+    "files": [
+      "NotoSansBengali-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-bengali.txt",
+    "note": "caption font for Bengali-script words (any slot); loaded by renderer/captions.js"
+  },
+  "Noto Sans Gujarati": {
+    "files": [
+      "NotoSansGujarati-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-gujarati.txt",
+    "note": "caption font for Gujarati-script words (any slot); loaded by renderer/captions.js"
+  },
+  "Noto Sans Gurmukhi": {
+    "files": [
+      "NotoSansGurmukhi-VF.ttf"
+    ],
+    "weights": "variable 100-900",
+    "license": "OFL-1.1",
+    "license_file": "assets/LICENSES/fonts/noto-sans-gurmukhi.txt",
+    "note": "caption font for Gurmukhi words (any slot; Punjabi is written in Gurmukhi); loaded by renderer/captions.js"
+  },
   "Noto Color Emoji": {
     "files": [
       "NotoColorEmoji-Regular.ttf"

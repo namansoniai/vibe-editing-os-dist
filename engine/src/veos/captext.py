@@ -36,6 +36,27 @@ hua hui hue jaata jaati jaate jata jati jate sakta sakti sakte sake chahiye abhi
 jo jis jise jisme jisse jiska jiski jiske jinka jinki jinke uska uski uske unka unki unke iska iski iske apna apni apne
 phir fir wahi yahi waha yaha wahan yahan""".split())
 STOPWORDS = STOP_EN | STOP_HI
+# common romanised Hindi / Hinglish content words (STOP_HI holds the function words). A caption word that reads as
+# romanised Hindi or a regional language is never a "misspelling" of a glossary term ("saal" is not "SaaS").
+ROMAN_INDIC = set("""saal saalon baat baatein kaam kaamon naam paisa paise paison log logon din dino raat subah shaam
+ghar duniya zindagi dil dimaag sach jhooth galat sahi theek thik accha acha achha bura bada badi bade chhota chhoti
+chhote naya nayi naye purana purani puraane pura poora puri poori aaj kal parso hamesha kabhi pehle pahle baad
+saath sath bina andar bahar upar neeche niche aage peeche piche paas door jaldi dheere sirf bilkul shayad zaroor
+zarur pakka sabse jitna utna kitna kitne kitni itna itne itni uthna baithna dekho dekh dekha dekhna suno suna
+socho socha samjho samjha samajh samajhna bolo bola bolna likho likha likhna padho padha padhna chalo chala chalna
+banao banaya banana bana bani bane lagta lagti lagte laga lagi lage milta milti milte mila mili mile chahta chahti
+chahte dhyan tarah tareeka tarika cheez cheezein jagah waqt samay saal mahina mahine hafta ghanta minute rupaye
+rupees lakh lakhs crore crores hazaar hazar sau dus bees pachaas sath pachas aadmi aurat ladka ladki bachcha bacche
+dost dosto doston bhaiyo behno log sabko sabki sabke khud apna apni apne pyaar pyar mazaa maza mast badhiya
+bekaar bakwaas pagal kamaal kamal dhamaal zabardast""".split())
+_INDIC_SHAPE = re.compile(r"aa|ii|uu|^(?:bh|dh|kh|jh|chh)[aeiou]")
+
+
+def looks_roman_indic(word: str) -> bool:
+    """True when a Latin-script word reads as romanised Hindi or another Indian language (a known word, a Hindi function
+    word, or a shape English words rarely have: a doubled a / i / u, or a leading bh / dh / kh / jh / chh)."""
+    w = norm(word)
+    return w in STOP_HI or w in ROMAN_INDIC or w in _HINGLISH_ROMAN or bool(_INDIC_SHAPE.search(w))
 COMMON_VERBS = set("""use uses used using try tries tried build builds built start starts started need needs needed take
 takes took give gives gave look looks looked work works worked tell tells told feel feels felt keep keeps kept put puts
 call calls called find finds found show shows showed help helps helped run runs ran turn turns turned""".split())
@@ -217,9 +238,11 @@ class Glossary:
         return self.terms.get(k) or self.aliases.get(k)
 
     def near_miss(self, token: str) -> str | None:
+        """The glossary term this Latin-script word misspells, or None. Words that read as romanised Hindi or a regional
+        language are never flagged (looks_roman_indic: "saal" is not "SaaS")."""
         c = core(token)
         k = self._k(c)
-        if len(k) < 4 or k in self.terms or k in self.aliases or norm(c) in STOPWORDS:
+        if len(k) < 4 or k in self.terms or k in self.aliases or norm(c) in STOPWORDS or looks_roman_indic(c):
             return None
         best, bd = None, 99
         for tk, term in self.terms.items():
@@ -269,6 +292,9 @@ LOANWORDS = {"यूज": "use", "यूज़": "use", "योज़": "use", "
              "प्लान": "plan", "मोड": "mode", "बट": "but", "ओके": "okay", "सेट": "set", "टूल": "tool", "टूल्स": "tools",
              "कमांड": "command", "कमांड्स": "commands", "फीचर": "feature", "फीचर्स": "features", "स्क्रीन": "screen",
              "लिंक": "link", "बायो": "bio", "कमेंट": "comment", "पेज": "page", "डेटा": "data", "एआई": "AI"}
+
+
+_HINGLISH_ROMAN = set(HINGLISH.values())
 
 
 def hinglish(word: str) -> str:

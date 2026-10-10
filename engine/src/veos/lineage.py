@@ -48,7 +48,7 @@ ALTERNATIVES = {
     "NC-4": "use the smallest legal size for that text class, or put the text on a pill or box for contrast",
     "NC-5": "keep meaning text inside the safe box (y 110-1540, clear of the right button column)",
     "NC-6": "label it as an example, or use a number the script actually says",
-    "NC-7": "supply the clip yourself (veos asset add), or let the editor build a created card instead",
+    "NC-7": "add the file with `veos asset add` (--source <url> for one fetched from the web), or build a created card",
     "NC-8": "turn the music bed down or off instead; the mix stays at -14 LUFS with the bed 18 dB under the voice",
     "NC-9": "use a seeded variation instead of true randomness",
     "NC-10": "keep at most 4 bright hues per frame: recolour one role instead of adding a hue",
@@ -63,7 +63,7 @@ NC_WHY = {
     "NC-1": "nothing may cover the presenter's face", "NC-2": "meaning texts may not overlap",
     "NC-3": "motion must stay smooth", "NC-4": "text must stay legible (size floors and contrast)",
     "NC-5": "Instagram's UI covers those areas", "NC-6": "no invented facts, numbers or UIs",
-    "NC-7": "the editor never fetches other people's media", "NC-8": "the loudness and voice-over-bed limits are fixed",
+    "NC-7": "every insert needs a recorded origin (creator, created, or fetched with its source)", "NC-8": "the loudness and voice-over-bed limits are fixed",
     "NC-9": "renders must be repeatable", "NC-10": "at most 4 bright hues per frame",
     "NC-11": "flash safety", "NC-12": "sponsors must be disclosed", "NC-13": "quotes stay verbatim",
     "NC-14": "personal identifiers stay blurred", "fixed-meaning": "these colours carry a fixed meaning in every style",
@@ -177,8 +177,6 @@ def _nc_check(tokens: dict, path: str, old, new) -> dict | None:
         return _nc("NC-8", path, old, new, -18)
     if path == "max_bright_per_frame" and _isnum(new) and new > 4:
         return _nc("NC-10", path, old, new, 4)
-    if path == "inserts.fetch" and new is True:
-        return _nc("NC-7", path, old, new, False)
     cls = _text_class_of(tokens, path)
     if cls and cls in NC4_FLOOR:
         floor = NC4_FLOOR[cls]
@@ -315,7 +313,7 @@ def update_playbook_md(pbdir: Path, tokens: dict, new_lines: list[str] | None = 
     f = pbdir / "playbook.md"
     if not f.exists():
         return
-    text = f.read_text(encoding="utf-8")
+    text = f.read_text(encoding="utf-8-sig")
     title = copy_title(tokens)
     if re.search(r"^# .*$", text, flags=re.M):
         text = re.sub(r"^# .*$", lambda _m: f"# {title}", text, count=1, flags=re.M)

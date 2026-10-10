@@ -22,6 +22,7 @@ import numpy as np
 
 from . import diarize as D
 from .core import VeosError, need_project, r3, read_json, write_json
+from .cut import seg_speed, src_frames
 from .sync import source_audio, to_session
 
 QWORDS = {"what", "how", "why", "when", "who", "which", "where", "do", "does", "did", "is", "are", "can", "could",
@@ -163,8 +164,8 @@ def _patch_edit_words(proj, master: str, src_words: list[dict], cast: dict) -> i
         if sw.get("onset_from") == "speaker" and segs:   # carry the voice-onset start fix into edit time
             for sg in segs:
                 lo = sg["in_frame"] / 30.0
-                if sg["src"] == master and lo <= sw["s"] < lo + (sg["f1"] - sg["f0"]) / 30.0:
-                    w["s"] = round(sg["t0"] + sw["s"] - lo, 3)
+                if sg["src"] == master and lo <= sw["s"] < lo + src_frames(sg) / 30.0:
+                    w["s"] = round(sg["t0"] + (sw["s"] - lo) / seg_speed(sg), 3)
                     w["onset_from"] = "speaker"
                     break
         for k in ("speaker", "spk_conf", "overlap", "role", "speaker_name"):

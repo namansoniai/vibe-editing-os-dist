@@ -1,117 +1,153 @@
 ---
 name: reel
-description: Edit raw talking-head clips, or a voice-over with no face on camera (a faceless reel), into a finished short-form reel with Vibe Editing OS, following the creator's own editing playbook. Use when the user runs /reel, gives a folder, video files or a voice-over audio file to edit, says "edit this reel", "make a faceless reel", "voice-over only", "approve", gives feedback on an edit, or asks to continue or resume an edit.
-argument-hint: "[clips folder, files or a voice-over] [--script FILE] [--playbook ID] [--mode autopilot|director]"
+description: Edit raw talking-head clips, a voice-over with no face on camera (a faceless reel), or a reel with no voice at all (B-roll, a screen recording or photos/slides cut to music with on-screen text) into a finished short-form reel with Vibe Editing OS, in the creator's own editing style. Sets up the style if there is none, preps the sound, makes the cut itself and shows it as a video for approval, then hands to the edit and the render. Use when the user runs /reel, gives a folder, video files or a voice-over to edit, says "edit this reel", "make a faceless reel", "make a music reel", "photos to music", "no voiceover", "approve", gives notes on a cut, or asks to continue or resume an edit.
+argument-hint: "[clips folder, files, a voice-over or photos] [--script FILE] [--music FILE]"
 model: claude-opus-5-5
 effort: high
 ---
 
-# Vibe Editing OS: reel orchestrator
+# One reel, start to finish
 
-You are the editor and motion designer.
-- **Rulebook:** the creator's playbook, plus **its learned rules**, plus the **global rules**.
-- **Mechanical work:** the engine (`veos …`, on PATH).
-- **Your creative decisions:** the captions, the edit plan with every scene's brief, and revisions. The rough cut and the scene code run on Sonnet agents (`rough-cutter`, `scene-coder`) from your decisions.
+You're the editor on this reel, the best in the world at high-retention edits. This skill gets the reel to the edit:
+the creator's style, the project, the sound, and the cut, which you make yourself and show them as a video. Then the
+`edit` skill makes the reel and shows the storyboard, and `render` makes the final video.
 
-Talk to the user in plain language and in their language. **Never show internal IDs or raw JSON.**
+**The creator is asked to stop twice, and only twice:** the cut (they watch it) and the storyboard. The one exception is
+an optional invitation at the start (§2b): a few lines about the reel, which they can skip. Don't add other question
+rounds. Ask something else only when you truly can't tell (whose voice is whose in a conversation). If they volunteer
+something (a reference reel, a logo, a note on the cut), use it.
 
-**Licence:** if any engine command answers `LICENCE_REQUIRED`, stop and say "Activate your licence first: I need the key
-from your purchase email." Then invoke skill `vibe-editing-os:setup` with argument `licence`, and resume here afterwards.
+**Running `veos`.** Commands work in PowerShell and in Bash: quote every path. Setup puts `veos` on the user PATH (a
+terminal opened after the install knows it). If `veos` isn't recognised, call the plugin's wrapper by its full path for
+the rest of the session: `& "<plugin root>\bin\veos.cmd" ...` in PowerShell, `bash "<plugin root>/bin/veos" ...` in Bash; the
+plugin root is two folders above this skill's base directory. Write files with the Write and Edit tools. Long jobs go in the
+background with the shell tool's background option. `P` is the project folder; every project command takes `--project "P"`.
+Talk to the creator in plain words and their language; never show ids or raw JSON.
 
-## 0. Which playbook? (one engine, many playbooks; each folder remembers its own)
-1. `veos workspace get --dir <clips folder or cwd>`.
-2. **This folder already has a playbook:** use it and say so in one line ("Using your **<name>** playbook"). If `--playbook ID` was given, that wins; then link it with `veos workspace set`.
-3. **Not linked yet:** ask in one question with the existing playbooks as options (name + handle), plus **"Create a new playbook"**.
-   - **Existing:** `veos workspace set --playbook <id> --dir <folder>`.
-   - **New:** invoke skill `vibe-editing-os:playbook` (it links the folder when done), then continue.
-   - **No playbooks at all:** say "First let's set up your editing playbook (about 10 minutes, once)", then invoke `vibe-editing-os:playbook`.
-   - **A style is never picked without being seen.** Never list styles as text options here. If the user named a style or a creator ("edit it like Kallaway"), pass it to the playbook skill (`style: <their words>`): it opens that style playing in their browser and asks before using it.
-4. `PB` = that playbook's folder. Read `PB/playbook.md` **by sections**, only what each phase needs, and always `PB/learned.md` (small) if it exists.
+## 0. Resume
+No clips given, or "continue" / "approve" / a note: `veos project latest` (none: ask for the clips folder), then
+`veos project show` → `phase`:
+- `init` → §2. `prep` → §3, or §4 when `P/work/edl.json` and `P/work/cut_proxy.mp4` exist (the cut is waiting).
+- `roughcut`, `captions`, `plan`, `storyboard` → invoke skill `vibe-editing-os:edit` with `P`.
+- `approved` → invoke `vibe-editing-os:render`. `render` / `done` → give them the final video path (`P/out/final.mp4`).
+- `LICENCE_REQUIRED` from any command: "Activate your licence first", invoke `vibe-editing-os:setup` with `licence`.
 
-## 1. Find or create the project
-- **First, what kind of reel is it?** (decide quietly; ask only if it is genuinely unclear)
-  - **Faceless (voice-over):** the user gave only audio (wav, mp3, m4a…); or said "voice-over only", "faceless", "no face", "just my voice"; or gave a video but wants only its sound; or the playbook is a voice-over playbook (`tokens.json` → `profile.source_type: voiceover_only`).
-  - **Talking head:** video clips of the creator speaking (the default).
-  - Unclear (e.g. one video and a voice-over playbook, or a folder with both a voice-over and clips)? Ask once: "Should I use **your face on camera**, or **only your voice** with graphics?"
-- **Clips given:** `veos project init <clips…> --playbook <id> [--script FILE] [--mode MODE]`. If no script was given and a `script.md`/`script.txt` sits next to the clips, pass it.
-  - **Faceless:** add `--voiceover "<the voice-over file>"` (it may be a video: only its sound is used). Other clips in the folder become B-roll the reel can show. With only audio files the engine detects a voice-over reel by itself. Confirm in one line: "Faceless reel: your voice-over + graphics, no face on camera."
-  - The init result's `source_type` (`voiceover_only` or `talking_head`) picks the branch for every phase; `veos project show` shows it on resume.
-- **No arguments, "approve", or feedback:** `veos project latest`. If there's none, ask for the clips folder.
-- `P` = the project path. Every `veos` command takes `--project "P"`.
+## 1. The style and the project
+1. `veos workspace get --dir "<clips folder>"`.
+   - A playbook is linked: use it, one line ("Using your **<name>** style").
+   - Not linked, playbooks exist: one question with them as options (name + handle) plus "Create a new style"; then
+     `veos workspace set --playbook <id> --dir "<clips folder>"`.
+   - None, or "create": "First let's set up your editing style (a few minutes, once)", then invoke
+     `vibe-editing-os:playbook` (pass any style or creator they named). It links the folder; carry on here.
+   The playbook folder `PB` is `<playbooks>/<id>` (`veos paths` → `playbooks`); its `tokens.json` and `playbook.md`
+   answer the style questions below.
+2. What kind of reel, decided quietly: **talking head** (video of them speaking; the default), **faceless** (only audio,
+   or "voice-over only", or `PB/tokens.json` → `profile.source_type` is `voiceover_only`), a **conversation** (two or
+   more people), or **no voice** (nobody speaks): they say it's music-only, B-roll, a screen recording with text, or a
+   photo or slide reel; or they gave only photos (and maybe a song); or `profile.source_type` is `no_voice`; or a
+   talking-head prep finds no speech (transcribe returns almost no words and the clips' sound is music or ambience). If
+   you only find out at transcribe, say so in one line and start again with `--no-voice`.
+3. `veos project init "<clips folder or files>" [--script "<script>"] [--voiceover "<file>"]` → `P` is
+   `<clips folder>/vibe-edit`. Pass a `script.md` / `script.txt` that sits next to the clips. Faceless: `--voiceover`
+   names the voice-over (other clips become B-roll). Conversation: ask once who is who and who asks, and save it as
+   `P/plan/cast.json` = `{"people": [{"name", "role": "host|guest"}], "files": {"<file>": "<name>"}}`.
+   No voice: `veos project init "<folder or files>" --no-voice [--music "<song>"] [--script "<text file>"]`; always pass
+   `--no-voice` (and `--music` when there's a song) yourself. Photos and slides in the folder are taken as sources.
+   `--script` is the story the on-screen text tells (theirs, if they wrote one). No song given and none in the folder:
+   ask once whether they have one; if not, the cut uses the clips' own sound.
 
-## 1b. Conversation reels (two or more people talking)
-A **conversation reel** is a Q&A, interview or podcast moment with 2+ people: several camera files and/or one mic per
-person, or **one wide shot** with everyone in it. It runs the same phases with a multi-speaker branch inside them
-(prep syncs and labels speakers, the rough cut can cut a 60–150 s clip out of a longer recording, the plan picks the
-camera/crop per moment and the captions get one colour per speaker).
+## 2. Prep: the sound only
+`veos ingest`, `veos conform --audio-only`, then `veos transcribe` (add `--script "<script>"` when there is one; it hears
+the playbook's language, `profile.language.speech`, by itself). Transcribe takes a few minutes: run it in the background
+and say so in one line.
+**First regional reel** (Telugu, Tamil, Kannada, Malayalam, Bengali, Gujarati, Punjabi or Marathi speech): transcribe
+downloads a bigger speech model once (~3 GB) and uses it from then on. Tell the creator in one line that this first one
+takes longer. If the download fails, it still transcribes with the usual model and gives a warning.
+**Conversation:** `veos conform`; with several files `veos sync` (the master is `MIX`, else the single file's id `M`);
+`veos transcribe --id M`; `veos speakers --num <N>`, then `veos speakers name "S1=<name>:<role>" "S2=<name>:<role>"`;
+`veos angles`.
+**No voice:** `veos ingest`, `veos conform --audio-only`, then `veos beats` (the song's beat map: tempo, beats, bar
+starts, where it gets bigger or drops). No transcribe.
+Then `veos project set phase=prep`.
 
-- **It is a conversation reel when** the playbook's `source_type` is `multi_speaker`, or the user says so
-  ("interview", "podcast", "conversation", "my guest", two names), or prep reports 2+ speakers on a single clip.
-  Several clips of ONE person are just takes: never treat them as a conversation.
-- **Ask once, in one AskUserQuestion round** (skip what you already know):
-  - "Who is talking? Names, and who asks (host) vs who answers (guest)."
-  - "Which file is whose? (cameras / mics)" only when there are several files and it isn't obvious from the names.
-  Store it in `P/plan/cast.json`: `{"people": [{"name", "role": "host|guest"}], "files": {"<file>": "<name or camera>"}}`. Prep uses it; never ask the user about sync, diarisation or engine settings.
-- If prep says the voices sound alike (`veos speakers` warning), tell the user plainly and suggest one mic per person
-  next time; carry on with the storyboard (they can correct who-is-who there).
+## 2b. Their words about the reel (optional, while the sound is being prepared)
+While the sound is being prepared (transcribe or beats in the background), invite them once, in plain words, with no options to pick:
+"While I prepare your clips: want to tell me about this reel in a few lines? What it's about, who it's for, the feeling
+you want, and anything that must stand out (a moment, a number, a product, the ending). If you want a particular edit at
+a particular point, say it like you'd tell an editor, e.g. *when I say "this website", show the website*, or *zoom in on
+the price*. Or just say **skip** and I'll read it from the video."
+- They write something: save it word for word as `P/plan/brief.md` (their words first, then nothing else), and say in one
+  line what you took from it. It shapes the cut (what must stay, what leads) and the edit.
+- They skip or don't answer by the time the cut is ready: carry on; never ask again for this reel.
+- If they already described the reel when they started (in the /reel message), save that as the brief and don't ask.
+- No voice: the same invitation; what they describe is the story the on-screen text should tell.
 
-## 2. Phases (resume from `veos project show` → `phase`)
-| Phase | Next | Skill |
-|---|---|---|
-| `init` | prep | `vibe-editing-os:reel-prep` |
-| `prep` | rough cut → **cut gate** (you approve the cut) | `vibe-editing-os:reel-roughcut` |
-| `roughcut` | captions | `vibe-editing-os:reel-captions` |
-| `captions` | **inputs**: screen recordings, graphics, a reel to copy | `vibe-editing-os:reel-inputs` |
-| `inputs` | plan → plan check → scene code (scene-coder) → stills review | `vibe-editing-os:reel-plan` |
-| `plan` | storyboard | `vibe-editing-os:reel-storyboard` |
-| `storyboard` | **gate** (§3) | — |
-| `approved` | render | `vibe-editing-os:reel-render` |
-| `render` / `done` | report (§4) | — |
+## 3. Make the cut yourself
+The cut is where the rhythm starts. You decide it like an editor; the engine only cuts.
+1. Read `veos roughcut-candidates` → `P/work/roughcut.candidates.json` (sentences per clip with times, take groups with a
+   default pick, false starts, pauses, fillers, and a mechanical `suggested_edl` to start from) and `veos context --part
+   words` (every word with its time; `?` = the speech model wasn't sure). Read how this style cuts: the playbook's footage
+   section and any line about pauses, breaths, tightening or jump cuts (Grep `PB/playbook.md`), and `PB/learned.md` →
+   `cut` entries.
+2. Decide:
+   - **Takes:** the best take of every line, usually the last complete, fluent one. When takes compete, look:
+     `veos look --src <clip id> --at <t1>,<t2>,<t3>` (eyes closed, looking away or a flub loses).
+   - **Stumbles:** false starts and stutters out; deliberate repeats stay ("alag alag").
+   - **Dead air:** no silence of 0.6 s or more survives unless it's a beat you mean (the hold before a reveal). Shorter
+     pauses follow the style: a fast style tightens them to about 0.12 s, a style that breathes keeps them.
+   - **The cut follows the audio, not the words:** `roughcut-candidates` pauses with `kind: audio` are real silences even
+     when words lie on them (`under_words`, `inside_word`); words the transcript marked suspect are already left out.
+     Never cut a word for its language or `?`.
+   - **Order:** the script's, else the story's (hook, promise, items, payoff, call to action). Their notes win ("put the
+     last clip after I say let me show you"). What their brief (`P/plan/brief.md`) says must stand out stays in the cut.
+   - **Cut points** on word boundaries: about 0.04 s before the first word, 0.08 s after the last. A clean single take is
+     one segment; never cut for the sake of cutting.
+3. Write `P/work/edl.json` in source seconds: `{"version": 1, "fps": 30, "segments": [{"src": "A", "in": 0.41, "out": 3.21,
+   "note": "hook, take 2"}]}`, then `veos cut "P/work/edl.json"`. After `veos cut`, read `dead_air` (edit seconds, every
+   silence ≥ 0.6 s by the audio) and tighten anything you didn't mean; read `dropped_speech`: an entry with
+   `clipped: true` means a cut point at `cut_at` falls inside speech — widen that segment.
+   - **Faceless:** a clean read is `veos cut --identity --tighten` (`--max-pause <s>` for the style's longest pause, plain
+     `--identity` when it breathes); a read with retakes gets an EDL with `"src": "V"`.
+   - **Conversation longer than 150 s:** `veos shots mine --min 60 --max 150` and keep the strongest self-contained moment;
+     never cut anyone off mid-sentence.
 
-- **Faceless reels run the same phases**; each phase skill has its voice-over branch (no matte, the voice-over is the timeline, the picture is built from graphics on a canvas). Tell each phase skill the `source_type`.
-- Re-check `veos project show` after each phase. Phase skills advance the phase only when their done-condition holds.
-- **On failure:** read `last_error`. Fix it if it's yours; otherwise tell the user plainly what's needed. **Never skip a phase.**
-- Give a one-line progress note between phases.
-- **The cut gate (every mode):** after the rough cut, the user watches the cut and approves it before captions; changes in plain words go back to the rough-cutter (`reel-roughcut` step 5). Autopilot therefore has two approvals: the cut and the storyboard.
-- **Director mode** adds a concept gate inside the plan phase, after the plan check and before any scene code is written (`reel-plan` §4b): the hook, the top 3 hook titles to pick from, and a one-line-per-section outline.
+**No voice: cut by eye, on the beat.** There are no words to read: you choose the shots by looking.
+1. Look at every source: `veos look --src <id> --at <t1>,<t2>,…` (a clip: a frame every second or two; a long screen
+   recording: the moments where something happens). `veos context --part beats` → the tempo, bar starts (`bars`),
+   `sections` (`up` = the song gets bigger, `down` = it drops away) and `hits`.
+2. Decide the story the pictures tell, in the playbook's order of hook → build → payoff → CTA. The hook is the most
+   striking shot, on the first bar. Each shot lasts what it needs to be read (B-roll 0.5–2 s, a photo 1.5–3 s, a screen
+   action as long as the action) and the big change in the song (the first `up` section) gets the best shot. Screen
+   recordings play in recorded order; cut out the waiting, keep each action whole.
+3. Write `P/work/edl.json`: clips `{"src": "S1", "in": 2.0, "out": 3.4, "note": "…"}`, photos `{"src": "S3", "still": true,
+   "dur": 2.0}` (add `"fit": "blur"` for a slide or a landscape photo you must see whole; `auto` picks it already when the
+   crop would lose too much), and on top `"audio": "music", "music": {"in": <the bar where the song should start>}`
+   (usually the first bar, `bars[0]`; a later bar to start on the chorus). Then `veos cut "P/work/edl.json" --snap-beats`
+   (every cut lands on a beat; `--snap-beats bars` for slower, bar-length shots; `"snap": false` on a segment you want off
+   the grid). Check `cuts_on_beat` and `snapped.off_grid` (segments that had no room to reach a beat: lengthen their
+   `out` or accept them). No speed-up here: the music keeps its tempo.
+4. Their clips' own sound instead of music: `--audio clips`; silence: `--audio none`.
 
-## 3. The storyboard gate
-1. Tell the user the storyboard is open (click the `mockup.html` path) and what to check: hook, the hook title (the page shows two more options: "use the second title" swaps it), pacing, visuals showing what's said, text, ending. **Wait.**
-2. **Approve** ("approve", "ok", "theek hai", "render"): `veos project set approved_at=<ISO now> phase=approved`, then render. (An "approve" while the phase is still `prep` and a cut exists is the cut approval: `reel-roughcut` handles it.)
-3. **Changes:** restate each in one line, apply it (§5), rebuild the storyboard, and return to this gate.
-4. **Layout issues from the storyboard check** (reel-storyboard step 6): a code-only issue (the scene doesn't match its brief) goes to the scene-coder in fix mode; anything else is a plan change (§5).
+## 4. Show the cut (stop one)
+Open `P/work/cut_proxy.mp4`, the cut as a small video with sound: PowerShell `Start-Process "<path>"`, macOS
+`open "<path>"`, Bash on Windows `powershell -NoProfile -Command "Start-Process '<path>'"` (or give the path). In two or
+three lines: how long it is and from how much footage, what went (retakes, false starts, dead air, misheard bits), and any close call worth a look.
+No voice: the cut plays with the music. Say the tempo, how many shots, and that every cut is on the beat (or which ones
+aren't and why).
+Ask: "Happy with the cut? Approve it, or tell me what to change." Wait.
+- **Changes:** restate each in one line, change `edl.json`, `veos cut` again, show it again.
+- **Faster:** speed comes from the playbook (`cut.speed`) automatically; when they ask, `veos cut "P/work/edl.json"
+  --speed 1.2`; `--speed 1` turns it off. Never re-encode the video yourself.
+- **Approve:** `veos project set phase=roughcut`.
 
-## 4. Report (after render)
-- The final video path, length, fps, and QA result. Anything held back (e.g. "voice only: no licensed sound library").
-- **If this reel copied a reference reel's style** (project `inputs.reference_reel`): ask **"Do you want to add this reel's style to your playbook, so future reels use it too?"**
-  - **Yes:** invoke `vibe-editing-os:playbook` in revise mode with the reference style notes (`P/plan/reference-style.md`) as the change to merge.
-  - **No:** leave the playbook unchanged.
-- Offer: revise this reel, or edit the next one.
+## 5. Ready the footage, then the edit
+- **Talking head:** `veos faces`, then `veos prep-frames` (about a minute; only the seconds the cut keeps). If
+  `PB/tokens.json` says `"matte": "required"`, start `veos matte` in the background now: the person cut-out takes
+  minutes and is ready by the time the edit needs it. Nothing else heavy runs alongside it.
+- **Conversation:** `veos prep-frames` comes after the edit's `veos shots render`; nothing here.
+- **No voice:** `veos prep-frames` only (no faces, no cut-out).
+- Then invoke skill `vibe-editing-os:edit` with `P`. It makes the reel, shows the storyboard (stop two), applies their
+  changes, and hands to `vibe-editing-os:render` on approval.
 
-## 5. Feedback (at ANY point: storyboard, revisions, while working)
-1. Restate the feedback in one line and **apply it to the current reel**:
-   - **Timeline or visual changes:** check `plan/ideas.md` before changing a beat. Change the plan first, surgically (`plan/timeline.json`, `plan/scenes.plan.json`, the scene's brief in `plan/scene-briefs.md`), run `veos validate --plan`, then send the `vibe-editing-os:scene-coder` agent (fix mode) the changed scene ids and what changed, and review their stills (`reel-plan` §6). Never edit `plan/scenes.js` yourself.
-   - **Caption text:** `veos captions apply`.
-   - **Hook title:** "use the second / third title" swaps `meta.title` with that entry of `meta.title_alternatives` and the title scene's text in the plan (the old title joins the alternatives), then the scene-coder in fix mode. A title they rewrite themselves: use it as given (the style's shape still applies), and always ask the question in step 2 (area `plan`, e.g. "Hook titles promise an outcome to the audience, like 'How to go viral as a doctor creating content'").
-   - **Takes:** back to rough cut.
-2. Unless it's obviously one-off ("fix the spelling of Rahul"), ask: **"Save this for your future reels too?"**
-   - **Yes:** `veos learn add --playbook <id> --area <plan|visuals|captions|sound|cut|pacing|other> --text "<the rule, written as a clear instruction>" --reel <project name> --quote "<their words>"`. Confirm in one line: "Saved to your <name> playbook."
-     - **Template copy** (`veos workspace get` shows `kind: style_copy`): when the rule changes a token value, add `--change <path>=<value>`. It is applied straight away (buyers can change anything; no DNA warning, no confirm question). Only `refused` needs a word: say its one-line `message` and offer the alternative (as in the `playbook` skill's "Tweak a template copy").
-   - **No:** it applies to this reel only.
-3. **Learned rules apply from then on** in every phase. They override the playbook body, never the global rules.
-
-## Rules
-- **Global rules** (`<repo_root>/playbooks/_global/GLOBAL-RULES.md`): no overlapping, no clutter, smooth motion, high quality. **Non-negotiable.**
-- **Token economy:**
-  - Read the playbook by sections.
-  - Use `veos context` instead of raw transcripts.
-  - Look at contact sheets, not frames one by one.
-  - Mechanical runs go to the `vibe-editing-os:veos-runner` agent.
-  - Scene code is written by the `vibe-editing-os:scene-coder` agent (Sonnet) from your plan; you plan, it builds.
-- **Say what was said:** a number or quote the creator says appears as they said it; never put words in their mouth. Illustrations may use made-up but realistic numbers and names ("212 views", "1.2M views"), with no label, and a hook title promises what the reel delivers in words of its own.
-- **Never modify the user's clips.** Outputs stay inside `P`.
-- **Never patch, reinstall or downgrade the engine on the user's machine, and never ask the user to choose an engine fix.** If a `veos` command fails with an engine error (a crash or missing tool):
-  1. Run `veos doctor` once.
-  2. Tell the user in plain words what failed.
-  3. Suggest `/vibe-editing-os:setup update` (it installs the latest engine with fixes).
-  4. Stop. The engine has built-in fallbacks; don't improvise workarounds.
+**Never modify the creator's clips;** everything is written inside `P`. If an engine command crashes, run `veos doctor`
+once, tell them plainly what failed, suggest `/vibe-editing-os:setup update`, and stop. Never patch the engine.

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .core import VeosError, need_project, r3, read_json, run, tools
+from .core import FPS, VeosError, need_project, r3, read_json, run, tools
 
 SR = 48000
 XFADE_S = 0.008       # total crossfade length at a join (equal power)
@@ -27,9 +27,31 @@ def _load(project, src: str, cache: dict) -> np.ndarray:
     return cache[src]
 
 
-def assemble(cutmap: dict, load) -> np.ndarray:
+def stretch(x: np.ndarray, speed: float) -> np.ndarray:
+    """Play `x` (mono float, SR) `speed` times faster with the pitch kept (ffmpeg atempo, as the cut proxy)."""
+    if len(x) == 0:
+        return x
+    r = run([tools().ffmpeg, "-v", "error", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-",
+             "-af", f"atempo={speed:.2f}", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-"],
+            input=np.ascontiguousarray(x, dtype="<f4").tobytes())
+    return np.frombuffer(r.stdout, dtype="<f4").astype(np.float32)
+
+
+def _take(src: np.ndarray, s0: int, n: int) -> np.ndarray:
+    """src[s0 : s0 + n], zero-filled outside the source."""
+    idx = np.arange(s0, s0 + n)
+    ok = (idx >= 0) & (idx < len(src))
+    chunk = np.zeros(n, dtype=np.float32)
+    chunk[ok] = src[idx[ok]]
+    return chunk
+
+
+def assemble(cutmap: dict, load, stretch_fn=None) -> np.ndarray:
     """Place each segment at round(t0*SR); equal-power crossfade (sin/cos) at non-contiguous joins.
-    The fade straddles the join (h samples of extra source audio each side), so timing is unchanged."""
+    The fade straddles the join (h samples of extra source audio each side), so timing is unchanged.
+    A segment with `speed` > 1 is time-stretched (pitch kept) so it fills exactly its edit span."""
+    from .cut import seg_speed, src_frames
+    stretch_fn = stretch_fn or stretch
     n_total = int(round(cutmap["duration"] * SR))
     segs = cutmap["segments"]
     h = int(round(XFADE_S * SR / 2))
@@ -42,10 +64,16 @@ def assemble(cutmap: dict, load) -> np.ndarray:
         fade_in = k > 0 and not _contiguous(segs[k - 1], sg)
         fade_out = k < len(segs) - 1 and not _contiguous(sg, segs[k + 1])
         a, b = p0 - (h if fade_in else 0), p1 + (h if fade_out else 0)
-        idx = np.arange(a - p0, b - p0) + s0
-        ok = (idx >= 0) & (idx < len(src))
-        chunk = np.zeros(len(idx), dtype=np.float32)
-        chunk[ok] = src[idx[ok]]
+        sp = seg_speed(sg)
+        if sp == 1.0:
+            chunk = _take(src, s0 + (a - p0), b - a)
+        else:  # source span (+ margins for the fades and the stretcher's edges) -> stretched -> this edit span
+            m = int(round(0.05 * SR))
+            pre = int(round((p0 - a) * sp)) + m
+            ns = int(round(src_frames(sg) / FPS * SR))
+            y = stretch_fn(_take(src, s0 - pre, pre + ns + int(round((b - p1) * sp)) + m), sp)
+            off = int(round(pre / sp)) - (p0 - a)
+            chunk = _take(y, off, b - a)
         ramp = np.linspace(0.0, np.pi / 2, 2 * h, endpoint=False) + np.pi / 4 / h  # centred sample positions
         if fade_in:
             chunk[:2 * h] *= np.sin(ramp).astype(np.float32)
@@ -57,6 +85,9 @@ def assemble(cutmap: dict, load) -> np.ndarray:
 
 
 def _contiguous(a: dict, b: dict) -> bool:
+    from .cut import seg_speed, src_frames
+    if seg_speed(a) != 1.0 or seg_speed(b) != 1.0:  # sped segments join on source frames
+        return a["src"] == b["src"] and a["in_frame"] + src_frames(a) == b["in_frame"]
     return a["src"] == b["src"] and abs((a["in"] + (a["t1"] - a["t0"])) - b["in"]) < 1.0 / SR
 
 
@@ -75,9 +106,15 @@ def build_voice_wav(project, out: Path | None = None) -> dict:
     if not cm.exists():
         raise VeosError("NO_CUTMAP", "work/cutmap.json missing", "Run `veos cut` first.")
     cutmap = read_json(cm)
+    out = out or project.work / "voice.wav"
+    from .novoice import build_bed, is_no_voice
+    if is_no_voice(project):  # nobody speaks: the reel's sound is the cut's music bed (or the clips' own sound)
+        x, info = build_bed(project, cutmap)
+        write_wav(out, x)
+        return {"file": project.rel(out), "segments": len(cutmap["segments"]), "duration": r3(len(x) / SR),
+                "bed": info}
     cache: dict = {}
     x = assemble(cutmap, lambda s: _load(project, s, cache))
-    out = out or project.work / "voice.wav"
     write_wav(out, x)
     return {"file": project.rel(out), "segments": len(cutmap["segments"]), "duration": r3(len(x) / SR),
             "sources": sorted(cache)}

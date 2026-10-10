@@ -211,7 +211,7 @@ def _sig() -> str:
 
 def read_state() -> dict | None:
     try:
-        return json.loads(state_path().read_text(encoding="utf-8"))
+        return json.loads(state_path().read_text(encoding="utf-8-sig"))
     except Exception:  # noqa: BLE001
         return None
 

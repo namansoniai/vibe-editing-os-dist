@@ -185,7 +185,14 @@ def _mix(args, project) -> dict:
         if p and not Path(p).exists():
             raise VeosError("AUDIO_MISSING", f"file not found: {p}", "Check the path.")
     dur = float(args.dur)
-    chain = f"[0:a]aformat=channel_layouts=mono,{CHAIN},apad"
+    from .novoice import is_no_voice
+    bed = bool(getattr(args, "bed", False)) or is_no_voice(project)  # no voice: the input is the reel's music bed
+    pre_gain = "anull"
+    if bed:  # quiet or very peaky music (acoustic, a click track): bring it near the target; the limiter below takes the peaks
+        bl = loudness(args.voice)["lufs"]
+        if bl > -70:
+            pre_gain = f"volume={min(12.0, max(0.0, TARGET_I - bl)):.2f}dB"
+    chain = f"[0:a]aformat=channel_layouts=mono,{pre_gain if bed else CHAIN},apad"
     with tempfile.TemporaryDirectory(dir=_scratch_dir()) as td:
         pre = str(Path(td) / "pre.wav")
         ins = ["-i", str(args.voice)]
@@ -198,7 +205,7 @@ def _mix(args, project) -> dict:
             n += 1
         if args.music:
             # music gain so the bed sits (music_db + 14) LU relative to the voice, before ducking
-            vl = loudness(args.voice, CHAIN)["lufs"]
+            vl = loudness(args.voice, "anull" if bed else CHAIN)["lufs"]
             ml = loudness(args.music)["lufs"]
             gain = (vl + (args.music_db - TARGET_I)) - ml if ml > -90 else 0.0
             ins += ["-stream_loop", "-1", "-i", str(args.music)]
@@ -213,17 +220,25 @@ def _mix(args, project) -> dict:
             project, "mix")
         out = Path(args.out)
         out.parent.mkdir(parents=True, exist_ok=True)
-        _loudnorm_two_pass(ff, pre, str(out), dur)
+        if bed and loudness(pre)["lufs"] <= -70:  # a no-voice reel cut with no sound and no effects: silence, not noise
+            run([ff, "-y", "-v", "error", "-f", "lavfi", "-i", f"anullsrc=r={SR}:cl=stereo", "-t", f"{dur}",
+                 "-c:a", "pcm_s16le", str(out)], project, "mix")
+        else:
+            _loudnorm_two_pass(ff, pre, str(out), dur)
     res = loudness(out)
     got = len(decode_mono(out)) / SR
     warns = []
-    if abs(res["lufs"] - TARGET_I) > 0.5:
+    if bed and res["lufs"] <= -70:
+        warns.append("the reel is silent (no music, no clip sound, no effects)")
+    elif abs(res["lufs"] - TARGET_I) > 0.5:
         warns.append(f"loudness {res['lufs']} LUFS is off target {TARGET_I}")
     if res["tp"] > TARGET_TP + 0.05:
         warns.append(f"true peak {res['tp']} dBTP is above {TARGET_TP}")
     summary = {"out": out.as_posix(), "lufs": res["lufs"], "tp": res["tp"], "dur": r3(got), "channels": 2,
                "sfx": bool(args.sfx), "music": bool(args.music), "warnings": warns}
-    if args.sfx and not getattr(args, "no_balance_check", False):
+    if bed:
+        summary["bed"] = True  # no voice to keep the effects under: no balance gate
+    if args.sfx and not bed and not getattr(args, "no_balance_check", False):
         from .sfxlib import check_balance
         bal = check_balance(Path(args.voice), Path(args.sfx))
         summary["sfx_balance"] = {k: bal[k] for k in ("median_db", "p90_db", "max_db")}
@@ -262,6 +277,9 @@ def add_args(p, cmd: str) -> None:
         p.add_argument("--music", default=None, help="optional music bed")
         p.add_argument("--music-db", type=float, default=-26.0, help="music bed loudness (LUFS) when the master is -14")
         p.add_argument("--no-balance-check", action="store_true", help="skip the SFX-under-voice gate")
+        p.add_argument("--bed", action="store_true",
+                       help="the first input is a music bed, not a voice (automatic in a no-voice project): no voice "
+                            "chain, no SFX-under-voice gate")
 
 
 def main(args, project) -> dict:

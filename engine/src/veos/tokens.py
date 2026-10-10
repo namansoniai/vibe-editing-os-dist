@@ -6,7 +6,7 @@ colours get an OKLCH lightness auto-fix when contrast against their `text_on` fa
 zones / fixed meanings / loudness are rejected.
 
 v3 (`"schema": "veos.tokens/3"`, playbooks/_styles/tokens.schema.md): `effective_style` resolves style -> format ->
-theme -> override patch (through `locks`), enforces the exception registry and `inserts.fetch: false`, maps a v1 file's
+theme -> override patch (through `locks`), enforces the exception registry, defaults `inserts` to `fetch: true` (10 Oct 2026), maps a v1 file's
 `rules_v0` / budgets to the v3 blocks (the v1 file itself loads unchanged), and PV-1...PV-12 are checked by
 profilecheck.py. engine/SPEC.md section 7.
 """
@@ -400,6 +400,19 @@ def _v1_rules(pb: dict) -> dict:
     return {"rules": rules, "aliases": aliases}
 
 
+INSERT_DEFAULTS = {"fetch": True, "ask_creator": False}
+
+
+def _insert_defaults(eff: dict) -> None:
+    """Fetching media the reel needs from the web is allowed (Naman, 10 Oct 2026): the editor searches and fetches it
+    (the creator's own files first) and records the source (`veos asset add --source <url>`, origin `fetched`)."""
+    ins = eff.get("inserts")
+    if not isinstance(ins, dict):
+        ins = eff["inserts"] = {}
+    for k, v in INSERT_DEFAULTS.items():
+        ins.setdefault(k, v)
+
+
 def v1_view(pb: dict) -> dict:
     """The v3 blocks synthesised for a v1 file (tokens.schema §4). The v1 keys themselves are not touched."""
     roles = pb.get("roles") or {}
@@ -582,7 +595,7 @@ def effective_style(pb: dict, *, fmt: str | None = None, theme: str | None = Non
 
     v1 (no `schema`): the file unchanged plus synthesised v3 blocks (profile, cadence, hooks, validator...) that are
     absent from v1; `override` is NOT applied (v1 behaviour: overrides only reach work/tokens.json colours/fonts/patch).
-    v3: style -> format -> theme -> override patch (with `locks`), exceptions registry, `inserts.fetch` rejected.
+    v3: style -> format -> theme -> override patch (with `locks`), exceptions registry, `inserts` defaults (fetch: true, ask_creator: false).
     `_resolved` records {schema, format, theme, base_profile, layouts}.
     """
     warnings = [] if warnings is None else warnings
@@ -595,6 +608,7 @@ def effective_style(pb: dict, *, fmt: str | None = None, theme: str | None = Non
         for k, v in v1_view(pb).items():
             eff.setdefault(k, v)
         eff["_resolved"] = {"schema": 1, "format": "F-A", "theme": None, "base_profile": None, "layouts": []}
+        _insert_defaults(eff)
         return eff
 
     override = override or {}
@@ -663,8 +677,7 @@ def effective_style(pb: dict, *, fmt: str | None = None, theme: str | None = Non
         ok, v = apply_lock(path, old, val, locks, warnings)
         if ok:
             _set_path(eff, path, v)
-    if (eff.get("inserts") or {}).get("fetch") is True:
-        errors.append("inserts.fetch is true: the engine never fetches third-party media (NC-7); set it to false")
+    _insert_defaults(eff)
     # v1 budgets are fallbacks for the v3 cadence / hooks / presenter numbers (tokens.schema §4)
     b, cad = eff.get("budgets") or {}, eff["cadence"]
     for bk, ck in (("change_every_s", "max_gap_s"), ("hook_change_every_s", "hook_max_gap_s"),

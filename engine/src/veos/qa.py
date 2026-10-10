@@ -95,6 +95,8 @@ def main(args, project) -> dict:
     if not vs:
         raise VeosError("NO_VIDEO", "no video stream in the file", "This is not a finished video.")
     checks: list[dict] = []
+    from .novoice import is_no_voice
+    no_voice = is_no_voice(project)  # nobody speaks: no voice to sync against
 
     def add(name: str, ok: bool, value, need: str = "") -> None:
         checks.append({"check": name, "pass": bool(ok), "value": value, "need": need})
@@ -120,15 +122,18 @@ def main(args, project) -> dict:
         add("audio stereo 48 kHz", au.get("channels") == 2 and int(au.get("sample_rate", 0)) == SR,
             f"{au.get('channels')}ch {au.get('sample_rate')} Hz", "2ch 48000 Hz")
         L = loudness(final)
-        add("loudness", abs(L["lufs"] - (-14)) <= 1.0, f"{L['lufs']} LUFS", "-14 +/-1")
-        add("true peak", L["tp"] <= -1.5, f"{L['tp']} dBTP", "<= -1.5")
+        if no_voice and L["lufs"] <= -70:  # a no-voice reel cut with no sound at all (cut --audio none, no effects)
+            add("loudness", True, "silent (no-voice reel without sound)", "-14 +/-1")
+        else:
+            add("loudness", abs(L["lufs"] - (-14)) <= 1.0, f"{L['lufs']} LUFS", "-14 +/-1")
+            add("true peak", L["tp"] <= -1.5, f"{L['tp']} dBTP", "<= -1.5")
         adur = float(au.get("duration") or 0)
         add("audio/video length", abs(adur - vdur) <= 0.05, f"audio {adur:.3f}s vs video {vdur:.3f}s", "within 50 ms")
     else:
         add("audio stereo 48 kHz", False, "no audio stream", "2ch 48000 Hz")
     tail = _black_tail(final, vdur)
     add("black tail", tail <= 0.2, f"{tail:.2f} s", "<= 0.2 s")
-    if args.ref_audio:
+    if args.ref_audio and not no_voice:
         ref = Path(args.ref_audio)
         if not ref.exists():
             raise VeosError("FILE_MISSING", f"reference audio not found: {ref}", "Check --ref-audio.")
@@ -156,7 +161,8 @@ def main(args, project) -> dict:
     report.write_text("\n".join(lines), encoding="utf-8")
     rel = project.rel if project is not None else (lambda p: Path(p).as_posix())
     return {"pass": len(passed), "total": len(checks), "fail": [f"{c['check']}: {c['value']} (need {c['need']})" for c in failed],
-            "all_pass": not failed, "report": rel(report), "sheet": rel(sheet), "frames": frames, "duration": r3(vdur)}
+            "all_pass": not failed, "report": rel(report), "sheet": rel(sheet), "frames": frames, "duration": r3(vdur),
+            **({"sync": "skipped: no-voice reel (no voice to sync)"} if no_voice and args.ref_audio else {})}
 
 
 def add_args(p, cmd: str) -> None:

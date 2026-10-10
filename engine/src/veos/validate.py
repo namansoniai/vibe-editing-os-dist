@@ -19,14 +19,20 @@ Output (summary dict; cli prints it as one JSON line and `plan/validate.json` ge
   passed   true only when `failures` is empty
   failures [{rule, beat, t, msg, fix, playbook_rule?}]   advice [same shape]   warnings [str]   stats {...}
 
-Two levels (Naman, 8 Oct 2026: directions, not limits). `failures` are facts and block the reel: an accidental overlap
-(G1), a jump instead of a move (G3), something in front covering the face (V-FACE), text too small or faint to read
-(V-TYPE), a number or quote that doesn't match what was said (the fact parts of V-DATA / V-INSERTS / V-CITE), a broken
-promise count (V-PROMISE from meta.count), the code not matching the plan (V-PLAN), a malformed effect or anchor field,
-an unknown sound id (S6), a missing person cut-out (V-CUTOUT). Everything else is `advice`: direction for the
-Director while it plans, never a fix loop, never a block (BLOCKING below; a rule marks a finding advice with
-vcommon.advice()). V-DEPICT (a beat showing only words) and V-POINT (the speaker points with words, no picture on
+Two levels (Naman, 10 Oct 2026: checks never gate; only a broken build blocks). `failures` are build integrity only:
+the code not matching the scene plan when a plan file exists (V-PLAN), a malformed effect field (V-FX), an unknown or
+do-not-use sound id (S6), a scene drawn behind the person or breaking out with no cut-out to draw it (V-CUTOUT); engine
+and runtime errors raise. Everything else (V-FACE incl. the head region and window crops, G1 overlaps, G3 jumps, V-TYPE,
+V-DATA, V-INSERTS, V-CITE, V-PROMISE, V-ANCHOR, ...) is `advice`: compact notes the Director may ignore, judged by eye
+in context ("captions on the face is okay, that's how editing works sometimes"), never a fix loop (BLOCKING below; a
+rule marks a finding advice with vcommon.advice()). The summary keeps ADVICE_PER_RULE advice findings per rule
+(`stats.advice_by_rule` counts all; plan/validate.json keeps every one). V-DEPICT (a beat showing only words) and V-POINT (the speaker points with words, no picture on
 screen) are advice on every reel, plan and code (depictrules.py).
+Taste is not checked (Naman, 9 Oct 2026: taste is conviction and creative direction, never counted): pacing
+(V-CADENCE), re-hooks (V-REHOOK), layout shares and schedules (V-LAYOUT), camera variety counts (V-CAMERA), sound
+density (S4), clutter counts (G2), presenter share (V-PRESENCE), bright-hue counts (V-HUES) and V-F0's timers are
+measured but never said: vcommon.TASTE_RULES / vcommon.taste() findings are dropped (`stats.taste_quiet` counts them per rule;
+`stats.cadence`, `stats.layouts`, `stats.presence` stay).
 `rule` is the stable registry id (V-...; G1-G3; S1-S6). `playbook_rule` is the playbook's own id when it cites the rule:
 the v1 alias (M1, M7, M12...) for reference playbooks, or the H-id a v3 playbook's §2 maps to the V-id.
 Expected errors (missing timeline/scenes/playbook, unparsable JSON, invalid v3 tokens) raise VeosError -> ok=false, exit 1.
@@ -60,7 +66,7 @@ from .profilecheck import rule_presence, rule_profile
 from .structurerules import rule_rehook, rule_theme
 from .typefloors import rule_exc, rule_type
 from .vcommon import (HEADLINE_KINDS, SUBTITLE_Z, advice, enter_frames, exit_frames, expand, fail, fr, get_path,  # noqa: F401 (re-exported)
-                      norm_box, overlap, settled_at)
+                      is_taste, norm_box, overlap, settled_at, taste)
 
 NON_BRIGHT = {"ink", "paper", "canvas", "grid", "night"}
 EMOJI_RE = re.compile("[\U0001F000-\U0001FAFF☀-➿⭐⭕←-⇿⌀-⏿⬀-⯿]")
@@ -125,6 +131,7 @@ class Ctx:
         self.measured_world: dict[int, dict[str, tuple]] = {}  # canvas-camera scenes in world space (V-SAFE)
         self.framing: dict | None = None            # E-16b base reframe record (window framing ranges)
         self.face_raw: list | None = None           # face boxes before the E-16b base reframe (None: same as face)
+        self.frames_dir = None                      # work/frames (cut-out frames c%05d.webp: the head silhouette, V-FACE)
         for k, v in ((measure or {}).get("frames") or {}).items():
             try:
                 self.measured[int(k)] = {sid: tuple(float(x) for x in r) for sid, r in v.items() if isinstance(r, (list, tuple)) and len(r) >= 4}
@@ -550,35 +557,251 @@ def rule_safe(c: Ctx, p: dict):
 FACE_EXEMPT_KINDS = END_CARD_KINDS + ("transition", "wash", "flash", "sweep", "light-pass")
 
 
+SUBS = "__subtitles"
+# Every non-behind layer the renderer draws ABOVE the person counts (renderer/core.js composeFrame: `above` = z > 3 goes
+# after the footage window, the cut-out and the head breakout; `below` = z <= 3 is painted before the footage window, so
+# the person (window, cut-out, breakout head) covers it and it can never cover them).
+FACE_MIN_Z = 4
+
+
+def _r(b) -> str:
+    return f"x {b[0]:.0f}-{b[2]:.0f}, y {b[1]:.0f}-{b[3]:.0f}"
+
+
+class _Person:
+    """Where the presenter is on screen at frame n: the face box and the HEAD REGION (face, hair, room above the head;
+    presenter.screen_head) from the cut-out silhouette when its frame exists (read lazily, only when something comes
+    near the head), else the face box grown by presenter.HAIR_UP / SIDES."""
+
+    def __init__(self, c: Ctx):
+        from .presenter import SIL_SIDE_MAX, SIL_UP_MAX, screen_face, screen_head, silhouette
+        self.c, self.face_fn, self.head_fn, self.sil_fn = c, screen_face, screen_head, silhouette
+        self.wide = (SIL_SIDE_MAX, SIL_UP_MAX, SIL_SIDE_MAX)
+        self.fdir = getattr(c, "frames_dir", None)
+        self.cache: dict[int, tuple] = {}
+        self.sils: dict[int, tuple | None] = {}
+
+    def fit_at(self, n: int) -> tuple | None:
+        """(presenter.window_fit result, source) at frame n for a windowed stage, or None (full frame, no presenter).
+        The cut-out silhouette is read only when the widest possible head would not fit the window."""
+        from .presenter import screen_window_fit
+        c = self.c
+        raw = c.face[n] if c.face is not None and n < len(c.face) else None
+        if not raw:
+            return None
+        src = c.face_raw[n] if c.face_raw is not None and n < len(c.face_raw) else raw
+        got = screen_window_fit(c, n, raw, src)
+        if got is None:
+            return None
+        cut = Path(self.fdir) / f"c{n:05d}.webp" if self.fdir else None
+        if cut is None or not cut.exists():
+            return got, "face box grown for the hair"
+        wide = screen_window_fit(c, n, raw, src, self.wide)
+        if wide is not None and not wide["cut"]:
+            return got, "face box grown for the hair"  # even the widest possible hair fits: no need to read the cut-out
+        sil = self.sils[n] if n in self.sils else self.sils.setdefault(n, self.sil_fn(cut, src))
+        if sil is None:
+            return got, "face box grown for the hair"
+        return screen_window_fit(c, n, raw, src, sil) or got, "cut-out silhouette"
+
+    def at(self, n: int, near: list) -> tuple | None:
+        """(face rect, head rect, source) at frame n, or None when no presenter shows. `near`: rects about to be judged
+        (the silhouette is only read when one of them reaches the widest possible head)."""
+        c = self.c
+        if n in self.cache:
+            return self.cache[n]
+        raw = c.face[n] if c.face is not None and n < len(c.face) else None
+        src = c.face_raw[n] if c.face_raw is not None and n < len(c.face_raw) else raw
+        fb = self.face_fn(c, n, raw, src) if raw else None
+        if fb is None:
+            return None
+        hb, how = self.head_fn(c, n, raw, src) or fb, "face box grown for the hair"
+        cut = Path(self.fdir) / f"c{n:05d}.webp" if self.fdir else None
+        if cut is None or not cut.exists():
+            self.cache[n] = (fb, hb, how)
+            return self.cache[n]
+        wide = self.head_fn(c, n, raw, src, self.wide) or hb
+        if not any(overlap(r, wide) for r in near):
+            return fb, hb, how  # nothing comes near: no need to read the cut-out (not cached: a later caller may)
+        sil = self.sils[n] if n in self.sils else self.sils.setdefault(n, self.sil_fn(cut, src))
+        if sil is not None:
+            hb, how = self.head_fn(c, n, raw, src, sil) or fb, "cut-out silhouette"
+        self.cache[n] = (fb, hb, how)
+        return self.cache[n]
+
+
+def _runs(frames: list[int], gap: int = 15) -> list[tuple[int, int]]:
+    out: list[list[int]] = []
+    for n in sorted(frames):
+        if out and n - out[-1][1] <= gap:
+            out[-1][1] = n
+        else:
+            out.append([n, n])
+    return [(a, b) for a, b in out]
+
+
 def rule_face(c: Ctx, p: dict):
-    """NC-1: nothing drawn in front of the speaker covers their face, judged where the face really is on screen
-    (presenter.screen_face: card / pip / stack / split windows, the panel and `low` stages, the measured footage
-    transform; frames where no face shows are skipped). Behind-the-speaker scenes, z < 5, z11 light passes,
-    transitions and end cards never count. No clearance margin: a graphic may sit right next to the face."""
+    """NC-1, advice only (Naman, 10 Oct 2026: "captions on the face is okay"; the Director's eye decides in context):
+    notes where something drawn in front of the presenter covers their face, hair or the top of their head. Judged where the person really is on screen (presenter.screen_face / screen_head: full, low, card, pip,
+    stack and split windows, the head-breakout strip above a card / pip window, the measured footage transform;
+    frames where no presenter shows are skipped) against the presenter's HEAD REGION: the cut-out silhouette above the
+    chin when the cut-out frame exists, else the face box raised by 0.75 face heights for the hair plus headroom and
+    widened 15 % each side. Every non-behind scene drawn above the person (z >= 4: core.js draws z <= 3 under the footage
+    window) counts, and so do the auto-subtitles (their measured rect,
+    `__subtitles` in plan/measure.json; captions without a measured frame are judged on the caption engine's rect, and
+    a chunk the caption engine could not place clear of the person is noted too). Behind-the-speaker scenes, z11 light
+    passes, transitions and end cards never count. No clearance margin: a graphic may sit right next to the head.
+    On a windowed stage it also notes a window cropping the head (_window_crops)."""
     if c.face is None or (not p.get("legacy") and c.presence() == "none"):
         return []
-    from .presenter import screen_face
     out = []
+    person = _Person(c)
     frames = sorted(c.measured) if c.measured else list(range(0, c.frames, SAMPLE_EVERY))
-    seen = set()
+    seen, sub_hits = set(), []
     for n in frames:
-        raw = c.face[n] if n < len(c.face) else None
-        src = c.face_raw[n] if c.face_raw is not None and n < len(c.face_raw) else raw
-        fb = screen_face(c, n, raw, src) if raw else None
-        if fb is None:
-            continue
+        cands = []
         for s in c.scenes:
-            if s.get("id") in seen or s.get("z", 0) < 5 or s.get("behind") or not c.active(s, n):
+            if s.get("id") in seen or s.get("z", 0) < FACE_MIN_Z or s.get("behind") or not c.active(s, n):
                 continue
             if s.get("z", 0) >= 11 or s.get("kind") in FACE_EXEMPT_KINDS or s.get("transition"):
                 continue
             bb = c.rect(s, n)
-            if bb is not None and overlap(bb, fb):
-                seen.add(s.get("id"))
-                src_kind = "measured" if n in c.measured and s.get("id") in c.measured[n] else "declared"
-                out.append(fail("V-FACE", c.beat_id(n / FPS), n / FPS,
-                                f"scene {s.get('id')} covers the face from frame {n} ({src_kind} rect)",
-                                f"move {s.get('id')} off the face, or put it behind the speaker (behind: true)"))
+            if bb is not None:
+                cands.append((s, bb))
+        sub = (c.measured.get(n) or {}).get(SUBS)
+        if not cands and sub is None:
+            continue
+        got = person.at(n, [bb for _, bb in cands] + ([sub] if sub is not None else []))
+        if got is None:
+            continue
+        fb, hb, how = got
+        for s, bb in cands:
+            if not overlap(bb, hb):
+                continue
+            seen.add(s.get("id"))
+            src_kind = "measured" if n in c.measured and s.get("id") in c.measured[n] else "declared"
+            what = "the face" if overlap(bb, fb) else "the presenter's hair / top of the head"
+            out.append(fail("V-FACE", c.beat_id(n / FPS), n / FPS,
+                            f"scene {s.get('id')} covers {what} from frame {n} ({src_kind} rect {_r(bb)}; head region "
+                            f"{_r(hb)}, {how})",
+                            f"move {s.get('id')} clear of the person's face, hair and head (head region {_r(hb)}), "
+                            "or put it behind the speaker (behind: true)"))
+        if sub is not None and overlap(sub, hb):
+            sub_hits.append((n, sub, hb, how, overlap(sub, fb)))
+    out += _subtitle_runs(c, sub_hits)
+    out += _caption_chunks_on_head(c, person)
+    out += _window_crops(c, person)
+    return out
+
+
+MORPH_SKIP = 16  # frames after a stage change that may still be a window morph (layouts.js MORPH_FRAMES tops out at 14)
+
+
+def _morph_frames(c: Ctx) -> set[int]:
+    """Frames inside a stage morph (the window is moving between two layouts: a passing crop is not a framing)."""
+    sm = c.style.get("stage_morphs") if isinstance(c.style.get("stage_morphs"), dict) else {}
+    out: set[int] = set()
+    for i, e in enumerate(c.stage):
+        if i == 0 or e.get("via") == "cut":
+            continue
+        d = e.get("dur")
+        if not isinstance(d, (int, float)) or isinstance(d, bool):
+            d = sm.get(e.get("via")) if isinstance(sm.get(e.get("via")), (int, float)) else MORPH_SKIP
+        a = fr(e.get("t", 0))
+        out |= set(range(a, a + max(int(d), 0) + 1))
+    return out
+
+
+def _window_crops(c: Ctx, person: _Person) -> list[dict]:
+    """Naman, 9 Oct 2026: a window never crops the creator's head. On a windowed stage (card, pip, split / stack cell,
+    letterbox band, the legacy panels: the footage inside a rect smaller than the frame) the whole head region must lie
+    inside the visible window; only a card / pip `breakout` strip (the cut-out drawn above the window's top edge) lets
+    it rise past the top. Full-frame stages (punch-ins and crash zooms included) are exempt: a tight close-up crops the
+    head by design. Judged on the measured frames plus a sample every SAMPLE_EVERY frames, with the real presenter ->
+    screen mapping (the measured footage transform, camera included, when `veos measure` recorded it); stage morphs skip."""
+    skip = _morph_frames(c)
+    frames = sorted((set(c.measured) | set(c.text_measure or {}) | set(range(0, c.frames, SAMPLE_EVERY))) - skip)
+    hits: dict[tuple, list] = {}
+    for n in frames:
+        got = person.fit_at(n)
+        if got is None or not got[0]["cut"]:
+            continue
+        fit, how = got
+        side = "top" if "top" in fit["cut"] else max(fit["cut"], key=fit["cut"].get)
+        hits.setdefault((fit["layout"], side), []).append((n, fit, how))
+    out = []
+    for (lid, side), rows in hits.items():
+        by_n = {r[0]: r for r in rows}
+        for a, b in _runs(list(by_n), gap=SAMPLE_EVERY * 3):
+            n, fit, how = max((by_n[k] for k in by_n if a <= k <= b), key=lambda r: r[1]["cut"].get(side, 0))
+            px = fit["cut"][side]
+            edge = {"top": "top edge", "bottom": "bottom edge", "left": "left edge", "right": "right edge"}[side]
+            what = ("the top of the creator's head/hair" if side == "top" else
+                    "the creator's chin/face" if side == "bottom" else "the side of the creator's head/hair")
+            bo = f" (its head breakout strip included, {fit['bo']:.0f} px)" if fit["bo"] and side == "top" else ""
+            out.append(fail("V-FACE", c.beat_id(a / FPS), a / FPS,
+                            f"the window crops {what} on layout {lid} at frames {a}-{b}: the head region {_r(fit['head'])} "
+                            f"reaches {px:.0f} px past the window's {edge}{bo}, visible window {_r(fit['win'])} ({how})",
+                            "frame the presenter so the whole head fits the window: lower the face (`eye`) or make it "
+                            "smaller (`face`) on this layout or its stage entry, open the window taller or higher, give a "
+                            "card / pip a `breakout` (with the cut-out) so the head may rise over its top edge, or use a "
+                            "full-frame layout for this footage"))
+    return out
+
+
+def _subtitle_runs(c: Ctx, hits: list) -> list[dict]:
+    out = []
+    by_n = {h[0]: h for h in hits}
+    for a, b in _runs(list(by_n)):
+        n, sub, hb, how, face = by_n[a]
+        what = "the face" if any(by_n[k][4] for k in by_n if a <= k <= b) else "the presenter's hair / top of the head"
+        out.append(fail("V-FACE", c.beat_id(a / FPS), a / FPS,
+                        f"the captions cover {what} at frames {a}-{b} (measured caption rect {_r(sub)}; head region "
+                        f"{_r(hb)}, {how})",
+                        "move the captions clear of the person: rebuild them (`veos captions build` keeps them off the "
+                        "head on every layout) or give this layout a caption band below the chin or above the head "
+                        "(layouts.<id>.caption cy / position.face_fallback_cy); never over the hair"))
+    return out
+
+
+def _caption_chunks_on_head(c: Ctx, person: _Person) -> list[dict]:
+    """Caption chunks (work/captions.json) that no measured frame shows: judged on the caption engine's rect, and a
+    chunk the engine flagged `face_overlap` (no clear band on its layout) is noted outright."""
+    out = []
+    for ch in c.caption_raw or []:
+        if "lines" not in ch:
+            continue  # v1 auto-subtitles: the renderer places them itself (judged on the measured rect only)
+        try:
+            f0, f1 = int(ch["f0"]), int(ch["f1"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if any(SUBS in (c.measured.get(n) or {}) for n in range(f0, f1)):
+            continue  # measured: the real rect was judged above
+        r = ch.get("rect") or {}
+        try:
+            rect = (float(r["x"]), float(r["y"]), float(r["x"]) + float(r["w"]), float(r["y"]) + float(r["h"]))
+        except (KeyError, TypeError, ValueError):
+            rect = None
+        hit = None
+        for n in sorted({f0, (f0 + f1 - 1) // 2, max(f0, f1 - 1)} | set(range(f0, f1, SAMPLE_EVERY))):
+            got = person.at(n, [rect] if rect else [])
+            if got and rect and overlap(rect, got[1]):
+                hit = (n, got)
+                break
+        if hit is None and ch.get("face_overlap"):
+            out.append(fail("V-FACE", c.beat_id(f0 / FPS), f0 / FPS,
+                            f"caption {ch.get('id')} '{str(ch.get('text', ''))[:40]}' has no band clear of the person on "
+                            f"layout {ch.get('layout')} (the caption engine flagged it)",
+                            "give this layout a caption band below the chin or above the head (layouts.<id>.caption cy / "
+                            "position.face_fallback_cy), a smaller caption, or reframe the presenter"))
+        elif hit is not None:
+            n, (fb, hb, how) = hit
+            what = "the face" if overlap(rect, fb) else "the presenter's hair / top of the head"
+            out.append(fail("V-FACE", c.beat_id(n / FPS), n / FPS,
+                            f"caption {ch.get('id')} '{str(ch.get('text', ''))[:40]}' covers {what} at frame {n} "
+                            f"(caption engine rect {_r(rect)}; head region {_r(hb)}, {how})",
+                            "rebuild the captions (`veos captions build` keeps them off the head on every layout) or "
+                            "move this layout's caption band below the chin or above the head; never over the hair"))
     return out
 
 
@@ -723,6 +946,8 @@ def _camera_spans(c: Ctx, presets: dict) -> dict[int, tuple[float, float, bool]]
 
 
 def rule_camera(c: Ctx, p: dict):
+    """V-CAMERA: presets exist, the zoom policy holds, camera v2 fields are valid. The variety counts (the same preset
+    twice in a row, a preset's max_per_reel) are taste (vcommon.taste): validate leaves them out of its output."""
     legacy = bool(p.get("legacy"))
     out, prev = [], None
     presets = c.style.get("camera_presets", {})
@@ -789,9 +1014,9 @@ def rule_camera(c: Ctx, p: dict):
         if pr == "shake" or pr is None:  # a preset-less crop is a re-crop on a cut, not a move
             continue
         if prev is not None and pr == prev:
-            out.append(fail("V-CAMERA", c.beat_id(e.get("t", 0)), e.get("t", 0),
-                            f"camera preset '{pr}' is used twice in a row",
-                            f"change the camera move at {e.get('t', 0):.2f} s to a different preset (or remove it)"))
+            out.append(taste(fail("V-CAMERA", c.beat_id(e.get("t", 0)), e.get("t", 0),
+                                  f"camera preset '{pr}' is used twice in a row",
+                                  f"change the camera move at {e.get('t', 0):.2f} s to a different preset (or remove it)")))
         prev = pr
     counts: dict[str, int] = {}
     for e in c.camera:
@@ -799,8 +1024,8 @@ def rule_camera(c: Ctx, p: dict):
     for pr, n in counts.items():
         mx = (presets.get(pr) or {}).get("max_per_reel")
         if mx and n > mx:
-            out.append(fail("V-CAMERA", None, 0, f"camera preset '{pr}' is used {n} times (max {mx} per reel)",
-                            f"remove {n - mx} use(s) of '{pr}'"))
+            out.append(taste(fail("V-CAMERA", None, 0, f"camera preset '{pr}' is used {n} times (max {mx} per reel)",
+                                  f"remove {n - mx} use(s) of '{pr}'")))
     return out
 
 
@@ -984,9 +1209,24 @@ OFF_BY_PRESENCE_NONE = ("V-PRESENCE", "V-FACE")
 # playbook's registry omits them (v1 files included) or switches them off
 ALWAYS_ON = ("V-TYPE", "V-EXC", "V-INSERTS", "V-CITE")  # + NC-7 / NC-13 (E-10): no-ops without inserts or sources
 RULES = REGISTRY  # back-compat name
-# the rules whose findings are facts and block the reel; every other rule (and any finding marked advice) is advice
-BLOCKING = frozenset({"G1", "G3", "V-FACE", "V-TYPE", "V-DATA", "V-INSERTS", "V-CITE", "V-PROMISE", "V-PLAN", "V-FX",
-                      "S6", "V-ANCHOR", "V-CUTOUT"})
+# the rules whose findings break the build and block the reel; every other rule (and any finding marked advice) is
+# advice (Naman, 10 Oct 2026: taste and craft are the Director's eye, never a gate)
+BLOCKING = frozenset({"V-PLAN", "V-FX", "S6", "V-CUTOUT"})
+ADVICE_PER_RULE = 3  # advice kept per rule in the output (the rest counted in stats.advice_by_rule)
+ADVICE_KEYS = ("rule", "beat", "t", "msg", "fix", "playbook_rule")
+
+
+def compact_advice(adv: list[dict], per_rule: int | None = None) -> tuple[list[dict], dict[str, int]]:
+    """(the first `per_rule` (default ADVICE_PER_RULE) findings of each rule, trimmed to ADVICE_KEYS; {rule: total})."""
+    keep = ADVICE_PER_RULE if per_rule is None else per_rule
+    counts: dict[str, int] = {}
+    out = []
+    for f in adv:
+        r = str(f.get("rule"))
+        counts[r] = counts.get(r, 0) + 1
+        if counts[r] <= keep:
+            out.append({k: f[k] for k in ADVICE_KEYS if k in f})
+    return out, dict(sorted(counts.items()))
 
 
 def is_advice(f: dict) -> bool:
@@ -1182,6 +1422,10 @@ def main(args, project):
         warnings.append("timeline.layers is ignored (v2): visuals are scenes in plan/scenes.js; beats[].layers lists scene ids")
     style = load_style(proj, tl, warnings)
     plan_mode = bool(getattr(args, "plan", False))
+    if plan_mode and not sceneplan.has_plan(proj):  # the one-file flow writes no scene plan: judge the code, no V-PLAN
+        plan_mode = False
+        warnings.append("--plan: no plan/scenes.plan.json, so there is no scene plan to check; judged the scenes in "
+                        "plan/scenes.js instead")
     planned = sceneplan.load_plan(proj) if plan_mode or sceneplan.has_plan(proj) else None
     try:
         scenes = planned if plan_mode else load_scenes_meta(proj)
@@ -1236,6 +1480,7 @@ def main(args, project):
     if plan_mode:
         ctx.text_measure = None
     ctx.project = proj  # V-CAPTION reads work/captions.json
+    ctx.frames_dir = proj.abs((tl.get("inputs") or {}).get("frames") or "work/frames/")  # V-FACE: the cut-out silhouette
     cm = proj.work / "cutmap.json"
     if cm.exists():
         try:
@@ -1258,7 +1503,7 @@ def main(args, project):
     gstats = {}
     for gid, fn in GLOBAL_CHECKS.items():
         got = fn(ctx)
-        gstats[gid] = len(got)
+        gstats[gid] = sum(1 for f in got if not is_taste(f))  # G2 clutter counts are taste: never said
         failures.extend(got)
     failures.extend(sfx_failures)
     # --- E-14 hook (feat/faceless): V-CANVAS runs when the timeline has canvas-camera moves. Foundation: register
@@ -1281,7 +1526,7 @@ def main(args, project):
     # the scene plan (sceneplan.py): complete before the code, and the code true to it after
     if plan_mode:
         bp = proj.path(*sceneplan.BRIEFS_FILE)
-        briefs = bp.read_text(encoding="utf-8") if bp.exists() else None
+        briefs = bp.read_text(encoding="utf-8-sig") if bp.exists() else None
         gstats["V-PLAN"] = len(vp := sceneplan.plan_checks(tl, scenes, briefs, ctx.duration))
         failures.extend(vp)
     elif planned is not None:
@@ -1309,6 +1554,12 @@ def main(args, project):
     # (counts in stats.depict: text_only_beats, pointers, pointers_shown)
     from .depictrules import rule_depict, rule_point
     failures.extend(rule_depict(ctx) + rule_point(ctx))
+    # taste nags leave the output (Naman, 9 Oct 2026): pacing, shares, schedules, variety and density counts
+    quiet: dict[str, int] = {}
+    for f in failures:
+        if is_taste(f):
+            quiet[f["rule"]] = quiet.get(f["rule"], 0) + 1
+    failures = [f for f in failures if not is_taste(f)]
     failures.sort(key=lambda f: (f["t"], f["rule"]))
     failures, adv = split_levels(failures)
 
@@ -1330,8 +1581,11 @@ def main(args, project):
         **ctx.stats_extra,
     }
     stats["advice"] = len(adv)
+    short, stats["advice_by_rule"] = compact_advice(adv)
+    stats["taste_quiet"] = dict(sorted(quiet.items()))  # {rule: n} the Director's taste owns: measured, never said
     result = {"ok": True, "passed": not failures, "failures": failures, "advice": adv, "warnings": warnings, "stats": stats}
     if plan_mode:
         result["mode"] = "plan"
+    # the file keeps every advice finding; the summary the Director reads keeps a few per rule
     write_json(proj.path("plan", "validate.plan.json" if plan_mode else "validate.json"), result)
-    return result
+    return {**result, "advice": short}

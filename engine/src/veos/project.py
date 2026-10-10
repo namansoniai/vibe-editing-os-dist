@@ -25,29 +25,45 @@ def add_args(p, cmd):
                         "puppet plates, so face detection is skipped")
     p.add_argument("--voiceover", action="append", default=None, metavar="FILE",
                    help="init: the voice-over file (audio, or a video whose picture is ignored); implies voiceover_only")
+    p.add_argument("--no-voice", action="store_true",
+                   help="init: nobody speaks (B-roll / screen recording / photos + music + on-screen text): no_voice")
+    p.add_argument("--music", default=None, metavar="FILE",
+                   help="init: the music track of a no-voice reel (its beat map drives the cut)")
 
 
-SOURCE_TYPES = ["talking_head", "voiceover_only", "animated_plates"]
+SOURCE_TYPES = ["talking_head", "voiceover_only", "animated_plates", "no_voice"]
 
 
-def detect_source_type(clips: list[Path], explicit: str | None, voiceover: list | None, playbook: str | None) -> tuple[str, str]:
-    """(source_type, why). Explicit flag > --voiceover > the playbook profile > every clip is audio > talking_head."""
+def detect_source_type(clips: list[Path], explicit: str | None, voiceover: list | None, playbook: str | None,
+                       no_voice: bool = False, music: bool = False) -> tuple[str, str]:
+    """(source_type, why). Explicit flag > --no-voice > --voiceover > --music > the playbook profile > only photos >
+    every clip (photos aside) is audio > talking_head."""
     from .media import AUDIO_EXT
+    from .novoice import is_still
     if explicit:
         return explicit, "chosen"
+    if no_voice:
+        return "no_voice", "no voice: the cut follows the music"
     if voiceover:
         return "voiceover_only", "voice-over file given"
+    if music:
+        return "no_voice", "a music track given: the cut follows the music"
     if playbook:
         try:
             from .tokens import load_playbook
             prof = (load_playbook(playbook).get("profile") or {})
             if prof.get("source_type") == "voiceover_only":
                 return "voiceover_only", "the playbook is voice-over only"
+            if prof.get("source_type") == "no_voice":
+                return "no_voice", "the playbook's reels have no voice (clips / photos + music + text)"
             if prof.get("source_type") == "animated_plates":
                 return "animated_plates", "the playbook edits animation plates (no face detection)"
         except Exception:  # noqa: BLE001 - a missing / v3 playbook must not block init
             pass
-    if clips and all(c.suffix.lower() in AUDIO_EXT for c in clips):
+    media = [c for c in clips if not is_still(c)]
+    if clips and not media:
+        return "no_voice", "only photos given"
+    if media and all(c.suffix.lower() in AUDIO_EXT for c in media):  # a photo next to a voice-over is its thumbnail
         return "voiceover_only", "only audio files given"
     return "talking_head", "video clips"
 
@@ -118,10 +134,13 @@ def _init(args, project) -> dict:
     for v in vo:
         if not v.exists():
             raise VeosError("INPUT_MISSING", f"voice-over not found: {v}", "Check the --voiceover path.")
-    clips = [f for f in _collect(args.items) if root not in f.parents]
+    music = Path(args.music).expanduser().resolve() if getattr(args, "music", None) else None
+    if music is not None and not music.exists():
+        raise VeosError("INPUT_MISSING", f"music not found: {music}", "Check the --music path.")
+    clips = [f for f in _collect(args.items, stills=True) if root not in f.parents]
     clips += [v for v in vo if v not in clips]
-    if not clips:
-        raise VeosError("NO_MEDIA", "no video or audio files found", "Pass video files or a folder that contains them.")
+    if music is not None and music not in clips:
+        clips.append(music)
     script = None
     if args.script:
         sp = Path(args.script).expanduser()
@@ -129,13 +148,21 @@ def _init(args, project) -> dict:
             raise VeosError("INPUT_MISSING", f"script not found: {args.script}", "Check the --script path.")
         script = sp.resolve().as_posix()
     pb = args.playbook or _workspace_playbook(first, root)
-    stype, why = detect_source_type(clips, getattr(args, "source_type", None), vo, pb)
+    stype, why = detect_source_type(clips, getattr(args, "source_type", None), vo, pb, getattr(args, "no_voice", False),
+                                    music is not None)
+    if stype != "no_voice":  # photos are sources only in a no-voice reel
+        from .novoice import is_still
+        clips = [c for c in clips if not is_still(c)]
+    if not clips:
+        raise VeosError("NO_MEDIA", "no video or audio files found", "Pass video files or a folder that contains them.")
     t = now()
     st = {"version": 1, "created": t, "updated": t, "clips": [c.as_posix() for c in clips], "script": script,
           "mode": args.mode or "autopilot", "playbook": pb, "source_type": stype, "inputs": None,
           "phase": "init", "approved_at": None, "last_error": None, "history": [{"t": t, "phase": "init"}]}
     if vo:
         st["voiceover"] = [v.as_posix() for v in vo]
+    if music is not None:
+        st["music"] = [music.as_posix()]
     root.mkdir(parents=True, exist_ok=True)
     write_json(root / "project.json", st)
     register(root, t)

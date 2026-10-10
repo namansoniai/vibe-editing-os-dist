@@ -54,6 +54,37 @@ def _version(exe: str | None) -> str | None:
         return None
 
 
+def _user_path_windows() -> list[str]:
+    """The USER Path entries stored in the registry (HKCU, Environment), unexpanded; [] off Windows or on error."""
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment") as k:
+            raw = str(winreg.QueryValueEx(k, "Path")[0] or "")
+        return [d for d in raw.split(";") if d.strip()]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def veos_on_path(home: Path) -> tuple[bool, str, str]:
+    """Can a shell run `veos` by name? (ok, detail, hint). Looks in this process' PATH, then (Windows) in the user Path
+    new terminals get: the installer puts VEOS_HOME/bin there."""
+    win = platform.system() == "Windows"
+    names = ("veos.cmd", "veos") if win else ("veos",)
+    for n in names:
+        w = shutil.which(n)
+        if w:
+            return True, w, ""
+    if win:
+        for d in _user_path_windows():
+            for n in names:
+                f = Path(os.path.expandvars(d.strip())) / n
+                if f.is_file():
+                    return True, f"{f} (on your user Path: new terminals find it)", ""
+        return False, "not on PATH", (f"Run /vibe-editing-os:setup again (it adds {home / 'bin'} to your user Path), or "
+                                      "call the plugin's bin\\veos.cmd by its full path.")
+    return False, "not on PATH", f"Add {home / 'bin'} to your PATH, or call the plugin's bin/veos by its full path."
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]  # engine/src/veos -> repo root
 
@@ -67,8 +98,9 @@ def main(args, project) -> dict:
     home = veos_home()
     checks: list[dict] = []
 
-    def add(name: str, ok: bool, detail: str, hint: str = "") -> None:
-        checks.append({"name": name, "ok": bool(ok), "detail": detail, **({} if ok else {"hint": hint})})
+    def add(name: str, ok: bool, detail: str, hint: str = "", advisory: bool = False) -> None:
+        checks.append({"name": name, "ok": bool(ok), "detail": detail, **({} if ok else {"hint": hint}),
+                       **({"advisory": True} if advisory else {})})
 
     # machine
     ram = _ram_gb()
@@ -84,6 +116,9 @@ def main(args, project) -> dict:
         "Under 8 GB of RAM: renders will be slow; close other programs.")
     add("VEOS_HOME", home.exists(), str(home), "Run /reel-setup to create the tools folder.")
     add("python", sys.version_info >= (3, 11), platform.python_version(), "Use Python 3.11 or newer.")
+    # `veos` by name in a new terminal (advisory: the skills fall back to the wrapper's full path)
+    pok, pdet, phint = veos_on_path(home)
+    add("veos on PATH", pok, pdet, phint, advisory=True)
 
     # licence (local file only, no network): one line
     from . import licence
@@ -144,6 +179,12 @@ def main(args, project) -> dict:
     wok = any(list(p.glob("snapshots/*/model.bin")) for p in wh)
     add("model: speech-to-text (whisper turbo)", wok, wh[0].name if wok else "missing",
         "Run /reel-setup to download the transcription model (about 1.6 GB).")
+    from . import speechmodel
+    big = speechmodel.is_present(speechmodel.LARGE)
+    # optional: not having it yet is normal (it is fetched on the first regional reel), so it never shows as a problem
+    add("model: speech-to-text large-v3 (regional languages)", True,
+        "present" if big else "not downloaded yet; it downloads by itself (~3 GB, once) on the first Telugu / Tamil / "
+        "Kannada / Malayalam / Bengali / Gujarati / Punjabi / Marathi reel")
 
     # speaker labels for multi-speaker reels (E-13): local ONNX models, no account or token
     from . import diarize
@@ -169,14 +210,19 @@ def main(args, project) -> dict:
     else:
         add("fonts", False, f"no fonts.json in {fdir}", "The assets/fonts folder is missing; re-download the repo.")
 
-    problems = [f"{c['name']}: {c['detail']}. {c['hint']}" for c in checks if not c["ok"]]
+    blocking = [c for c in checks if not c["ok"] and not c.get("advisory")]
+    problems = [f"{c['name']}: {c['detail']}. {c['hint']}" for c in blocking]
+    notes = [f"{c['name']}: {c['detail']}. {c['hint']}" for c in checks if not c["ok"] and c.get("advisory")]
     if problems:
-        status = f"veos: {len(problems)} problem(s): " + "; ".join(c["name"] for c in checks if not c["ok"]) + " (run `veos doctor`)"
+        status = f"veos: {len(problems)} problem(s): " + "; ".join(c["name"] for c in blocking) + " (run `veos doctor`)"
     else:
         status = f"veos: ready (ffmpeg {fv.split()[0] if fv else '?'}, {len(checks)} checks ok)"
+    if notes:
+        status += "; " + "; ".join(c["name"] + ": no" for c in checks if not c["ok"] and c.get("advisory"))
     return {"status": status, "ready": not problems, "licence": f"licence: {lic_line}", "licence_ok": lic_ok,
-            "machine_ready": all(c["ok"] for c in checks if c["name"] != "licence"), "machine": machine, "home": str(home), "checks": checks,
-            "problems": problems, "quick": bool(args.quick)}
+            "machine_ready": all(c["ok"] for c in checks if c["name"] != "licence" and not c.get("advisory")),
+            "machine": machine, "home": str(home), "checks": checks, "problems": problems, "notes": notes,
+            "on_path": pok, "quick": bool(args.quick)}
 
 
 def add_args(p, cmd: str) -> None:

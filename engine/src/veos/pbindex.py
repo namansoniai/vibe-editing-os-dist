@@ -504,7 +504,7 @@ def ensure(pid: str, out: Path, force: bool = False) -> dict:
     if why is None:
         stats = rec.get("stats") or {}
         return {"file": out, "rebuilt": False, "why": "fresh", "lines": rec.get("lines"), "stats": stats}
-    text, stats = render(raw.decode("utf-8", "replace"), pid, md_path.resolve().as_posix())
+    text, stats = render(raw.decode("utf-8-sig", "replace"), pid, md_path.resolve().as_posix())
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8", newline="\n")
     n = text.count("\n")

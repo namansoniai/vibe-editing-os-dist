@@ -31,6 +31,7 @@ COMMANDS.update({"track": "track"})  # Package E: object / point tracking -> pla
 COMMANDS.update({"look": "look"})  # see the cut before planning: frames by meaning -> review/look/ (+ --at close looks)
 COMMANDS.update({"roughcut-candidates": "roughcut"})  # sentence-level take / false-start / pause list for the rough cut
 COMMANDS.update({"stills": "stills"})  # review stills at every scene's declared moments -> review/stills/
+COMMANDS.update({"beats": "beats"})  # no-voice reels: the music's beat map -> work/beats.json
 # commands that run without an activated licence (licence.py); every other command needs one (LICENCE_REQUIRED)
 UNGATED = {"doctor", "licence", "license", "paths"}
 
