@@ -4,7 +4,16 @@ home="${VEOS_HOME:-${CLAUDE_PLUGIN_OPTION_VEOS_HOME:-}}"
 if [ -z "$home" ]; then
   case "$(uname -s 2>/dev/null)" in
     Darwin) home="$HOME/Library/Application Support/VibeEditingOS" ;;
-    MINGW*|MSYS*|CYGWIN*) home="${LOCALAPPDATA:-$HOME/AppData/Local}/VibeEditingOS" ;;
+    MINGW*|MSYS*|CYGWIN*)
+      # same order as core.veos_home / install.ps1: %USERPROFILE%\VibeEditingOS if it exists, else the 0.6.0 folder in
+      # %LOCALAPPDATA% if it holds an engine, else %USERPROFILE%\VibeEditingOS (outside AppData: the Claude desktop app is
+      # an MSIX package, and Windows redirects a package's AppData writes)
+      prof="${USERPROFILE:-$HOME}"; prof="${prof//\\//}"
+      legacy="${LOCALAPPDATA:-$prof/AppData/Local}"; legacy="${legacy//\\//}/VibeEditingOS"
+      home="$prof/VibeEditingOS"
+      if [ ! -d "$home" ] && { [ -f "$legacy/venv/Scripts/python.exe" ] || [ -f "$legacy/dev-venv/Scripts/python.exe" ]; }; then
+        home="$legacy"
+      fi ;;
     *) home="${XDG_DATA_HOME:-$HOME/.local/share}/VibeEditingOS" ;;
   esac
 fi
@@ -24,6 +33,11 @@ fi
 export VEOS_HOME="$home"
 export PLAYWRIGHT_BROWSERS_PATH="$home/browsers"
 export HF_HOME="$home/models/hf"
+export TORCH_HOME="$home/models/torch"
+export MPLCONFIGDIR="$home/cache/matplotlib"
+export PIP_CACHE_DIR="$home/cache/pip"
+mkdir -p "$home/tmp" 2>/dev/null
+if [ -d "$home/tmp" ]; then export TMP="$home/tmp" TEMP="$home/tmp" TMPDIR="$home/tmp"; fi
 [ -d "$home/app" ] && export VEOS_APP="$home/app"
 export HF_HUB_DISABLE_SYMLINKS_WARNING=1
 export PYTHONIOENCODING=utf-8

@@ -11,9 +11,10 @@ effort: high
 The creator approved the storyboard. Make the final video, check it's technically sound, and hand it over. No creative
 changes here, no review rounds, nothing they didn't ask for.
 
-**Running `veos`.** Commands work in PowerShell and in Bash: quote every path. Setup puts `veos` on the user PATH; if
-`veos` isn't recognised, call the plugin's wrapper by its full path: `& "<plugin root>\bin\veos.cmd" ...` in PowerShell, `bash "<plugin root>/bin/veos" ...` in
-Bash; the plugin root is two folders above this skill's base directory. `P` is the project folder; every project command
+**Running `veos`.** Always the plugin's wrapper by its full path (a PATH change never reaches this session): PowerShell
+`& "<plugin root>\bin\veos.cmd" <args>`, Bash `bash "<plugin root>/bin/veos" <args>` (macOS, or Git Bash on Windows). The
+plugin root is two folders above this skill's base directory; `veos <args>` below always means this. Quote every path.
+`P` is the project folder; every project command
 takes `--project "P"`. Use absolute paths for every file argument.
 
 ## Steps

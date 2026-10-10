@@ -24,15 +24,84 @@ class VeosError(Exception):
         self.code, self.message, self.hint = code, message, hint
 
 
+def has_engine(home: Path) -> bool:
+    """A Windows VEOS_HOME with an installed engine (the installer's venv, or a dev-venv)."""
+    return any((home / v / "Scripts" / "python.exe").is_file() for v in ("venv", "dev-venv"))
+
+
+def windows_homes() -> tuple[Path, Path]:
+    """(new, legacy) default homes on Windows. The new one sits in the user profile, outside AppData: a packaged app (the
+    Claude desktop app from the Store / claude.ai is MSIX) has its %LOCALAPPDATA% writes silently redirected to
+    %LOCALAPPDATA%/Packages/Claude_*/LocalCache, which broke uv's Python links. 0.6.0 and earlier installed in the legacy one."""
+    profile = Path(os.environ.get("USERPROFILE") or Path.home())
+    local = Path(os.environ.get("LOCALAPPDATA") or profile / "AppData" / "Local")
+    return profile / "VibeEditingOS", local / "VibeEditingOS"
+
+
 def veos_home() -> Path:
+    """VEOS_HOME env -> (Windows) %USERPROFILE%/VibeEditingOS if it exists -> legacy %LOCALAPPDATA%/VibeEditingOS if it holds
+    an engine (installs from 0.6.0 and earlier keep working) -> %USERPROFILE%/VibeEditingOS. Same order in install.ps1 and
+    plugin/bin/veos(.cmd), so the installer and the engine always agree."""
     env = os.environ.get("VEOS_HOME")
     if env:
         return Path(env)
     if platform.system() == "Windows":
-        return Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local")) / "VibeEditingOS"
+        new, legacy = windows_homes()
+        if new.exists() or not has_engine(legacy):
+            return new
+        return legacy
     if platform.system() == "Darwin":
         return Path.home() / "Library" / "Application Support" / "VibeEditingOS"
     return Path.home() / ".local" / "share" / "VibeEditingOS"
+
+
+def home_env(home: Path | None = None) -> dict[str, str]:
+    """Everything the engine downloads, caches or scratches lives inside VEOS_HOME, never in AppData / the system temp:
+    browsers, model caches, temp files. The values the `veos` wrappers set; `python -m veos` applies them at start."""
+    h = Path(home or veos_home())
+    tmp = str(h / "tmp")
+    return {"VEOS_HOME": str(h), "PLAYWRIGHT_BROWSERS_PATH": str(h / "browsers"), "HF_HOME": str(h / "models" / "hf"),
+            "TORCH_HOME": str(h / "models" / "torch"), "MPLCONFIGDIR": str(h / "cache" / "matplotlib"),
+            "PIP_CACHE_DIR": str(h / "cache" / "pip"), "HF_HUB_DISABLE_SYMLINKS_WARNING": "1",
+            "TMP": tmp, "TEMP": tmp, "TMPDIR": tmp}
+
+
+def apply_home_env() -> Path:
+    """Set home_env() for this process (temp dirs always; the caches only where not already set, so a wrapper or a test
+    can point them elsewhere). Creates VEOS_HOME/tmp; leaves the temp vars alone if it can't."""
+    home = veos_home()
+    env = home_env(home)
+    try:
+        Path(env["TMP"]).mkdir(parents=True, exist_ok=True)
+        for k in ("TMP", "TEMP", "TMPDIR"):
+            os.environ[k] = env[k]
+        import tempfile
+        tempfile.tempdir = None  # re-read on next use
+    except OSError:
+        pass
+    for k, v in env.items():
+        if k not in ("TMP", "TEMP", "TMPDIR"):
+            os.environ.setdefault(k, v)
+    return home
+
+
+def packaged_app() -> str | None:
+    """Windows: the package this process runs inside (e.g. the Claude desktop app's MSIX package), or None. Inside one,
+    %LOCALAPPDATA% writes are redirected to %LOCALAPPDATA%/Packages/<package>/LocalCache."""
+    if platform.system() != "Windows":
+        return None
+    try:
+        import ctypes
+        k32 = ctypes.windll.kernel32
+        n = ctypes.c_uint32(0)
+        if k32.GetCurrentPackageFullName(ctypes.byref(n), None) == 15700:  # APPMODEL_ERROR_NO_PACKAGE
+            return None
+        buf = ctypes.create_unicode_buffer(max(n.value, 1))
+        if k32.GetCurrentPackageFullName(ctypes.byref(n), buf) == 0:
+            return buf.value or "unknown package"
+    except Exception:  # noqa: BLE001 - very old Windows / no kernel32 export
+        return None
+    return None
 
 
 @dataclass(frozen=True)

@@ -28,7 +28,7 @@ no title gate. Third-party logos, screenshots and posts the reel needs are fetch
 ```
 plugin/
   .claude-plugin/plugin.json   name "vibe-editing-os"
-  bin/veos  bin/veos.cmd       wrapper → VEOS_HOME python -m veos (skills call it by full path when `veos` isn't on PATH)
+  bin/veos  bin/veos.cmd       wrapper → VEOS_HOME python -m veos (skills always call it by its full path)
   setup/install.ps1|sh         the installer (setup skill)
   skills/setup/SKILL.md        install, update, doctor, licence; PowerShell or Bash (user's own model)
   skills/playbook/SKILL.md     path A: a ready-made style by eye + the language; path B: interview → inspiration reels

@@ -16,9 +16,10 @@ Most creators want this quick, and then they want a result so good they go crazy
 them, keep it human, and decide everything else yourself. They never write the playbook, and nothing is required that
 most people don't have (no logo, no brand kit, no keyword); when they volunteer something, use it.
 
-**Running `veos`.** Commands work in PowerShell and in Bash: quote every path. If `veos` isn't recognised, call the
-plugin's wrapper by its full path: `& "<plugin root>\bin\veos.cmd" ...` in PowerShell, `bash "<plugin root>/bin/veos" ...` in
-Bash; the plugin root is two folders above this skill's base directory. Write files only with the Write and Edit tools.
+**Running `veos`.** Always the plugin's wrapper by its full path (a PATH change never reaches this session): PowerShell
+`& "<plugin root>\bin\veos.cmd" <args>`, Bash `bash "<plugin root>/bin/veos" <args>` (macOS, or Git Bash on Windows). The
+plugin root is two folders above this skill's base directory; `veos <args>` below always means this. Quote every path.
+Write files only with the Write and Edit tools.
 Open a page or folder for them with PowerShell `Start-Process "<path>"`, macOS `open "<path>"`, or Bash on Windows
 `powershell -NoProfile -Command "Start-Process '<path>'"`; if it won't open, give the path.
 

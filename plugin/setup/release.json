@@ -1,0 +1,7 @@
+{
+  "version": "0.6.1",
+  "app_urls": [
+    "https://github.com/namansoniai/vibe-editing-os-dist/releases/download/v0.6.1/vibe-editing-os-app-0.6.1.zip"
+  ],
+  "app_sha256": "bd309f6b0f56477597d3389fc3c77d6d3917b416562bfbada3b5385938532b8c"
+}

@@ -4,10 +4,9 @@ Look things up here; the creative decisions live in SKILL.md and the playbook. `
 Every `veos` command takes `--project "P"`. Times are edit seconds; frame = round(t × 30); the canvas is 1080×1920 at 30 fps.
 
 **Shell.** Commands work in PowerShell and in Bash: quote every path, and nothing else is shell-specific unless shown
-twice. Setup puts `veos` on the user PATH (terminals opened after the install know it). If `veos` isn't recognised,
-call the wrapper by its full path: `<plugin root>/bin/veos.cmd` on Windows (in
-PowerShell: `& "<plugin root>\bin\veos.cmd" ...`), `bash "<plugin root>/bin/veos" ...` elsewhere (works even if the file lost its run permission). The plugin root is two folders
-above this skill's base directory. Long jobs (matte, storyboard, render) go in the background with the shell tool's
+twice. **Running `veos`:** always the plugin's wrapper by its full path (a PATH change never reaches this session):
+PowerShell `& "<plugin root>\bin\veos.cmd" <args>`, Bash `bash "<plugin root>/bin/veos" <args>` (macOS, or Git Bash on
+Windows). The plugin root is two folders above this skill's base directory; `veos <args>` here always means this. Long jobs (matte, storyboard, render) go in the background with the shell tool's
 background option; you're told when they finish.
 
 **Files.** Write and change every file with the Write and Edit tools, not PowerShell `Out-File`, `Set-Content` or

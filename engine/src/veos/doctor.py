@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 
-from .core import _find, r3, read_json, veos_home
+from .core import _find, packaged_app, r3, read_json, veos_home
 
 DISK_MIN_GB = 3  # below this a reel can run out of room mid-edit
 
@@ -115,6 +115,13 @@ def main(args, project) -> dict:
     add("memory", ram is None or ram >= 8, f"{ram:.0f} GB RAM" if ram else "unknown",
         "Under 8 GB of RAM: renders will be slow; close other programs.")
     add("VEOS_HOME", home.exists(), str(home), "Run /reel-setup to create the tools folder.")
+    pkg = packaged_app()
+    if pkg:  # informational only: VEOS_HOME outside AppData is not redirected
+        in_appdata = os.environ.get("LOCALAPPDATA") and str(home).lower().startswith(os.environ["LOCALAPPDATA"].lower())
+        add("app package", True, f"running inside the packaged app '{pkg.split('_')[0]}'; Windows redirects "
+            "its AppData writes, " + ("and VEOS_HOME is the older AppData folder: it works, but if setup ever fails at "
+                                      "the Python step, rename that folder and run setup again (it then installs in "
+                                      "your user folder)" if in_appdata else "which doesn't affect VEOS_HOME"))
     add("python", sys.version_info >= (3, 11), platform.python_version(), "Use Python 3.11 or newer.")
     # `veos` by name in a new terminal (advisory: the skills fall back to the wrapper's full path)
     pok, pdet, phint = veos_on_path(home)

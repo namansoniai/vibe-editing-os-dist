@@ -17,10 +17,10 @@ an optional invitation at the start (§2b): a few lines about the reel, which th
 rounds. Ask something else only when you truly can't tell (whose voice is whose in a conversation). If they volunteer
 something (a reference reel, a logo, a note on the cut), use it.
 
-**Running `veos`.** Commands work in PowerShell and in Bash: quote every path. Setup puts `veos` on the user PATH (a
-terminal opened after the install knows it). If `veos` isn't recognised, call the plugin's wrapper by its full path for
-the rest of the session: `& "<plugin root>\bin\veos.cmd" ...` in PowerShell, `bash "<plugin root>/bin/veos" ...` in Bash; the
-plugin root is two folders above this skill's base directory. Write files with the Write and Edit tools. Long jobs go in the
+**Running `veos`.** Always the plugin's wrapper by its full path (a PATH change never reaches this session): PowerShell
+`& "<plugin root>\bin\veos.cmd" <args>`, Bash `bash "<plugin root>/bin/veos" <args>` (macOS, or Git Bash on Windows). The
+plugin root is two folders above this skill's base directory; `veos <args>` below always means this. Quote every path.
+Write files with the Write and Edit tools. Long jobs go in the
 background with the shell tool's background option. `P` is the project folder; every project command takes `--project "P"`.
 Talk to the creator in plain words and their language; never show ids or raw JSON.
 

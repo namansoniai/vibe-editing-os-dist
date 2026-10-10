@@ -49,7 +49,7 @@ chopped by a window edge is not.
   "Looking at the storyboard"). Never go quiet for more than about a minute and a half, and never write everything in
   one giant generation.
 - Everything goes to disk as you go. If you're interrupted or resumed, read what's in `P/plan/` and carry on from there.
-- Commands must run in PowerShell or Bash alike (REFERENCE, Shell). Write files only with Write and Edit.
+- Commands must run in PowerShell or Bash alike, and `veos` always by the wrapper's full path (REFERENCE, Shell). Write files only with Write and Edit.
 
 ## 1. Read
 1. `veos project show` → playbook id, `source_type`, phase; `veos paths` → `playbooks`, `renderer_core`, `repo_root`.

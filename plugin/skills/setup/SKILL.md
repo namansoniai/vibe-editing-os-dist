@@ -6,7 +6,8 @@ user-invocable: true
 ---
 # setup
 
-Installs everything the plugin needs into one folder (`VEOS_HOME`; Windows `%LOCALAPPDATA%\VibeEditingOS`, macOS
+Installs everything the plugin needs into one folder (`VEOS_HOME`; Windows `%USERPROFILE%\VibeEditingOS`, or
+`%LOCALAPPDATA%\VibeEditingOS` for an install from version 0.6.0 or earlier, which keeps working; macOS
 `~/Library/Application Support/VibeEditingOS`). No admin rights, nothing else on the computer is changed.
 
 Vibe Editing OS needs a **licence key** from the purchase email (it looks like `VEOS-XXXX-XXXX-XXXX-XXXX`). One key works
@@ -15,10 +16,10 @@ an anonymous computer id and the computer's name are sent.
 
 **Shells.** On Windows you may have PowerShell only (Claude Desktop), Bash only, or both: every command here works in
 either, written once when it's the same and twice (PowerShell / Bash) when it isn't. The **plugin root** is two folders
-above this skill's base directory. **Running `veos`:** the installer puts `veos` on the user PATH, so a terminal opened
-after the install knows it (this session's may not yet). If `veos` isn't recognised, call the plugin's wrapper by its
-full path for the rest of the session: PowerShell `& "<plugin root>\bin\veos.cmd" ...`, Bash `bash "<plugin root>/bin/veos" ...`.
-Before the first install it prints `ENGINE_MISSING`, which means: install.
+above this skill's base directory. **Running `veos`:** always the plugin's wrapper by its full path (a PATH change never
+reaches this session): PowerShell `& "<plugin root>\bin\veos.cmd" <args>`, Bash `bash "<plugin root>/bin/veos" <args>`
+(macOS, or Git Bash on Windows); `veos <args>` below always means this. Before the first install it prints
+`ENGINE_MISSING`, which means: install.
 
 **Beta first:** check whether the file `<plugin root>/setup/channel.json` exists (Glob or Read it; no shell needed). If it
 does, this is the **beta** for Naman's editors: no licence key is needed and every style is unlocked. Follow **Beta**
@@ -33,25 +34,32 @@ below instead of everything about licence keys, and never ask for a key.
 
 ## Running the installer
 The OS is in your environment details (win32 = Windows, darwin = macOS). Run it **in the background** (the shell tool's
-background option; it can take 10–20 minutes) with the key in the environment when there is one:
+background option; it can take 15–60 minutes, depending on the connection) with the key in the environment when there is one:
 - Windows, PowerShell: `$env:VEOS_LICENCE_KEY='<key>'; powershell -NoProfile -ExecutionPolicy Bypass -File "<plugin root>\setup\install.ps1"`
 - Windows, Bash: `VEOS_LICENCE_KEY='<key>' powershell -NoProfile -ExecutionPolicy Bypass -File "<plugin root>/setup/install.ps1"`
 - macOS: `VEOS_LICENCE_KEY='<key>' bash "<plugin root>/setup/install.sh"`
 
 No key (beta, update): leave out the `VEOS_LICENCE_KEY` part. Update: add `-Update` (Windows) or `--update` (macOS) after
-the script path. A repository question (`repository not configured`): ask for the GitHub repo URL and run again with
-`VEOS_REPO` set the same way as the key.
+the script path. The installer needs no git, Xcode or developer tools, and gets the app version that matches this plugin:
+never suggest installing any of them. On a Mac, if macOS offers to install developer tools, the user clicks **Not Now**.
 
 While it runs, read its background output every minute or two (or `install.log` in `VEOS_HOME`, with the Read tool). The
 lines look like `[5/10] Installing the veos engine...`: give the user one short progress line each time the step number
 changes, never the raw log. When "activating your licence" passes, say "Licence activated" once. The last line is JSON:
 - `"ok":true`: run `veos doctor` and report plainly: ready or not, its `licence` line, and any failing check with its
   hint. If `doctor_ready` is false, name the missing piece and offer to run setup again. Its `notes` are advice, never a
-  problem: "veos on PATH: no" only means a new terminal is needed (or the wrapper's full path works meanwhile).
+  problem; skip the "veos on PATH" note (the skills always call the wrapper by its full path). With
+  `"licence_pending":true` the licence server couldn't be reached (the install carried on without it): say its
+  `licence_message` plainly and offer **Activate the licence** once they're online (other `licence_error` codes: **Licence
+  answers**).
 - `"ok":false` with `"step":"licence"`: handle `licence_error` with **Licence answers**, ask for the key again if that
   helps, and run it again with the new key (it resumes; everything done is skipped).
-- `"ok":false` otherwise: the failing `step`, the `error` in one sentence, and the `hint`. Common causes: no internet or
-  a proxy, a full disk. Offer to run it again: it resumes.
+- `"ok":false` with `"step":"busy"`: another install is already running (an earlier background job or session): don't
+  start one; follow that one's progress in `install.log` and report as above.
+- `"ok":false` with `"step":"platform"` or `"disk"`: say the `error` as it is (it's already plain) and the `hint`. Nothing
+  was downloaded. Disk: offer to run it again once space is freed. Platform: stop.
+- `"ok":false` otherwise: the failing `step`, the `error` in one sentence, and the `hint`. Common causes: no internet, or
+  antivirus HTTPS scanning / an office proxy (the hint names it when that's the cause). Offer to run it again: it resumes.
 
 ## Beta (only when `setup/channel.json` exists)
 - **Install** (argument empty): run `veos doctor --quick` and `veos licence status`.
@@ -71,9 +79,10 @@ changes, never the raw log. When "activating your licence" passes, say "Licence 
    - `ready: true`: say it's ready and stop (offer `/vibe-editing-os:setup update`).
    - `machine_ready: true` but `licence_ok: false`: only the licence is missing: **Activate the licence**.
 2. Tell the user in plain words: it downloads about 3 GB (the editing engine with its own Python, the video tool ffmpeg, a
-   rendering browser, and three AI models: speech-to-text, background removal, face detection); it takes 10–20 minutes
-   and can be safely re-run or resumed; it needs about 4 GB to install plus about 1 GB of free space per minute of video
-   while editing.
+   rendering browser, and three AI models: speech-to-text, background removal, face detection); it takes 15–20 minutes
+   on a fast connection and up to an hour on a slow one or a hotspot. Keep Claude open and the computer plugged in (it
+   stays awake while installing); if it stops, run setup again: it resumes, half-done downloads included. It needs about 6 GB free to install (about 4 GB stay) plus about 1 GB of free
+   space per minute of video while editing. Macs need Apple Silicon (M1 or later) and macOS 14 or newer.
 3. One AskUserQuestion call, two questions:
    - **"Ready to install now?"** Options: "Yes, install now", "Not now".
    - **"Your licence key (from your purchase email)"**: "Pick *Other* and paste the key. It looks like
@@ -84,7 +93,8 @@ changes, never the raw log. When "activating your licence" passes, say "Licence 
    bought it yet" → a licence is needed to use Vibe Editing OS; stop. A pasted key: keep only its letters, digits and
    dashes. **Never repeat the full key back**; say "the key ending …XXXX".
 4. **Running the installer** above, with the key. It activates the licence right after it installs the engine, before
-   the big downloads, so a wrong key is caught in the first few minutes.
+   the big downloads, so a wrong key is caught in the first few minutes. If the licence server can't be reached, the
+   install carries on and tries again at the end.
 
 ## Update (argument `update`)
 **Running the installer** with the update flag and no key. It pulls the newest app version and reinstalls the engine
@@ -132,7 +142,8 @@ Never show the code or raw JSON; use the engine's `message` and `hint` in plain 
   reels (clips or photos cut to music) need only the browser and ffmpeg.
 - Every engine command except `veos doctor`, `veos licence …` and `veos paths` needs an active licence (except in the
   beta); without one it answers `LICENCE_REQUIRED`.
-- Never delete `VEOS_HOME`. To uninstall, first **Move my licence**, then delete that folder.
+- Never delete `VEOS_HOME`. To uninstall, first **Move my licence**, then delete that folder (`veos doctor` shows it
+  as `home`; on Windows also `%LOCALAPPDATA%\VibeEditingOS` if an older version left one).
 - Never edit, copy or create `VEOS_HOME/licence.json` by hand: it is signed and tied to this computer.
 - Never patch, downgrade or edit the engine, and never ask the user to pick an engine fix. Report the failing step
   plainly and suggest `/vibe-editing-os:setup update`.
